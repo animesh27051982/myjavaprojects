@@ -1,0 +1,183 @@
+<ui:composition
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:p="http://primefaces.org/ui"
+    xmlns:pc="http://primefaces.org/california">
+
+    <div class="layout-sidebar #{guestPreferences.darkMenu ? 'layout-sidebar-dark' : ''} #{guestPreferences.gradientMenu ? 'layout-sidebar-gradient': ''}">
+        <div id="nano-container" class="nano">
+            <div class="nano-content sidebar-scroll-content">
+                <ui:fragment rendered="#{guestPreferences.profileMode == 'inline'}">
+                    <div class="user-profile">
+                        <a id="sidebar-profile-button" href="#">
+                            <p:graphicImage name="images/avatar.png" library="california-layout" />
+                            <span class="sidebar-profile-name">Pauline Harrell</span>
+                            <span class="sidebar-profile-role">Site Controller</span>
+                        </a>
+                        <ul id="sidebar-usermenu" class="usermenu">
+                            <li>
+                                <a href="#">
+                                    <i class="fa fa-fw fa-user"></i>
+                                    <span class="topbar-item-name">Profile</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#">
+                                    <i class="fa fa-fw fa-cog"></i>
+                                    <span class="topbar-item-name">Settings</span>
+                                    <i class="layout-menuitem-toggler fa fa-fw fa-angle-down"></i>
+                                </a>
+                                <ul>
+                                    <li role="menuitem">
+                                        <a href="#">
+                                            <i class="fa fa-fw fa-paint-brush"></i>
+                                            <span>Change</span>
+                                        </a>
+                                    </li>
+                                    <li role="menuitem">
+                                        <a href="#">
+                                            <i class="fa fa-fw fa-star-o"></i>
+                                            <span>Favorites</span>
+                                        </a>
+                                    </li>
+                                    <li role="menuitem">
+                                        <a href="#">
+                                            <i class="fa fa-fw fa-lock"></i>
+                                            <span>Lock Screen</span>
+                                        </a>
+                                    </li>
+                                    <li role="menuitem">
+                                        <a href="#">
+                                            <i class="fa fa-fw fa-picture-o"></i>
+                                            <span>Wallpaper</span>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </li>
+                            <li>
+                                <a href="#">
+                                    <i class="fa fa-fw fa-envelope-o"></i>
+                                    <span class="topbar-item-name">Messages</span>
+                                    <i class="layout-menuitem-toggler fa fa-fw fa-angle-down"></i>
+                                </a>
+                                <ul>
+                                    <li role="menuitem">
+                                        <a href="#" class="topbar-message">
+                                            <p:graphicImage name="images/avatar1.png" library="california-layout" width="25"/>
+                                            <span>Give me a call</span>
+                                        </a>
+                                    </li>
+                                    <li role="menuitem">
+                                        <a href="#" class="topbar-message">
+                                            <p:graphicImage name="images/avatar2.png" library="california-layout" width="25"/>
+                                            <span>Reports attached</span>
+                                        </a>
+                                    </li>
+                                    <li role="menuitem">
+                                        <a href="#" class="topbar-message">
+                                            <p:graphicImage name="images/avatar3.png" library="california-layout" width="25"/>
+                                            <span>About your invoice</span>
+                                        </a>
+                                    </li>
+                                    <li role="menuitem">
+                                        <a href="#" class="topbar-message">
+                                            <p:graphicImage name="images/avatar2.png" library="california-layout" width="25"/>
+                                            <span>Meeting today</span>
+                                        </a>
+                                    </li>
+                                    <li role="menuitem">
+                                        <a href="#" class="topbar-message">
+                                            <p:graphicImage name="images/avatar4.png" library="california-layout" width="25"/>
+                                            <span>Out of office</span>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </li>
+                            <li>
+                                <a href="#">
+                                    <i class="fa fa-fw fa-bell-o"></i>
+                                    <span class="topbar-item-name">Notifications</span>
+                                    <i class="layout-menuitem-toggler fa fa-fw fa-angle-down"></i>
+                                </a>
+                                <ul>
+                                    <li role="menuitem">
+                                        <a href="#">
+                                            <i class="fa fa-fw fa-tasks"></i>
+                                            <span>Pending tasks</span>
+                                        </a>
+                                    </li>
+                                    <li role="menuitem">
+                                        <a href="#">
+                                            <i class="fa fa-fw fa-calendar-check-o"></i>
+                                            <span>Meeting today</span>
+                                        </a>
+                                    </li>
+                                    <li role="menuitem">
+                                        <a href="#">
+                                            <i class="fa fa-fw fa-download"></i>
+                                            <span>Download</span>
+                                        </a>
+                                    </li>
+                                    <li role="menuitem">
+                                        <a href="#">
+                                            <i class="fa fa-fw fa-plane"></i>
+                                            <span>Book flight</span>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div>
+                </ui:fragment>
+
+                <h:form id="menuform">
+                    <pc:menu widgetVar="me">
+                        <p:menuitem id="om_dashboard" value="Workflow Dashboard" icon="fa fa-fw fa-home" outcome="/dashboard"/>
+                        <p:menuitem id="perf_dashboard" value="Performance Dashboard" icon="fa fa-fw fa-home" outcome="/dashboard"/>
+                        <p:submenu id="om_hierarchy" label="Contracts" icon="fa fa-fw fa-gg">
+                            <p:submenu id="om_sm1" label="Submenu 1" icon="fa fa-fw fa-sign-in">
+                                <p:submenu id="om_sm11" label="Submenu 1.1" icon="fa fa-fw fa-sign-in">
+                                    <p:menuitem id="om_lnk111" value="Link 1.1.1" icon="fa fa-fw fa-sign-in" url="#" />
+                                    <p:menuitem id="om_lnk112" value="Link 1.1.2" icon="fa fa-fw fa-sign-in" url="#" />
+                                    <p:menuitem id="om_lnk113" value="Link 1.1.3" icon="fa fa-fw fa-sign-in" url="#" />
+                                </p:submenu>
+                                <p:submenu id="om_sm12" label="Submenu 1.2" icon="fa fa-fw fa-sign-in">
+                                    <p:menuitem id="om_lnk121" value="Link 1.2.1" icon="fa fa-fw fa-sign-in" url="#" />
+                                </p:submenu>
+                            </p:submenu>
+                            <p:submenu id="om_sm2" label="Submenu 2" icon="fa fa-fw fa-sign-in">
+                                <p:submenu id="om_sm21" label="Submenu 2.1" icon="fa fa-fw fa-sign-in">
+                                    <p:menuitem id="om_lnk211" value="Link 2.1.1" icon="fa fa-fw fa-sign-in" url="#" />
+                                    <p:menuitem id="om_lnk212" value="Link 2.1.2" icon="fa fa-fw fa-sign-in" url="#" />
+                                </p:submenu>
+                                <p:submenu id="om_sm22" label="Submenu 2.2" icon="fa fa-fw fa-sign-in">
+                                    <p:menuitem id="om_lnk221" value="Link 2.2.1" icon="fa fa-fw fa-sign-in" url="#" />
+                                </p:submenu>
+                            </p:submenu>
+                        </p:submenu>
+                        <p:submenu label="Performance" icon="fa fa-fw fa-gg">
+                        </p:submenu>
+                        <p:submenu label="Reports" icon="fa fa-fw fa-gg">
+                        </p:submenu>
+                        <p:submenu label="Administration" icon="fa fa-fw fa-gg">
+                            <p:submenu label="Users" icon="fa fa-fw fa-sign-in"></p:submenu>
+                            <p:submenu label="Reporting Units" icon="fa fa-fw fa-sign-in"></p:submenu>
+                            <p:submenu label="Reporting Groups" icon="fa fa-fw fa-sign-in"></p:submenu>
+                            <p:submenu label="Customers" icon="fa fa-fw fa-sign-in"></p:submenu>
+                            <p:submenu label="Vendors" icon="fa fa-fw fa-sign-in"></p:submenu>
+                            <p:submenu label="Financial Periods" icon="fa fa-fw fa-sign-in"></p:submenu>
+                            <p:submenu label="Platforms" icon="fa fa-fw fa-sign-in"></p:submenu>
+                            <p:submenu label="Exchange Rates" icon="fa fa-fw fa-sign-in"></p:submenu>
+                            <p:submenu label="Financial Periods" icon="fa fa-fw fa-sign-in"></p:submenu>
+                            <p:submenu label="Calendar" icon="fa fa-fw fa-sign-in"></p:submenu>
+                        </p:submenu>
+                    </pc:menu>
+                </h:form>
+            </div>
+        </div>
+
+    </div>
+
+</ui:composition>
