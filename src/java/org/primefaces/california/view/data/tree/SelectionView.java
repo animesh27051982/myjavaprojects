@@ -22,23 +22,24 @@ import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ManagedProperty;
 import javax.faces.bean.ViewScoped;
 import javax.faces.context.FacesContext;
-import org.primefaces.model.TreeNode;
 import org.primefaces.california.service.DocumentService;
+import org.primefaces.event.CellEditEvent;
+import org.primefaces.model.TreeNode;
 
-@ManagedBean(name="treeSelectionView")
+@ManagedBean(name = "treeSelectionView")
 @ViewScoped
 public class SelectionView implements Serializable {
-    
+
     private TreeNode root1;
     private TreeNode root2;
     private TreeNode root3;
     private TreeNode selectedNode;
     private TreeNode[] selectedNodes1;
     private TreeNode[] selectedNodes2;
-    
+
     @ManagedProperty("#{documentService}")
     private DocumentService service;
-    
+
     @PostConstruct
     public void init() {
         root1 = service.createDocuments();
@@ -87,17 +88,17 @@ public class SelectionView implements Serializable {
     }
 
     public void displaySelectedSingle() {
-        if(selectedNode != null) {
+        if (selectedNode != null) {
             FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_INFO, "Selected", selectedNode.getData().toString());
             FacesContext.getCurrentInstance().addMessage(null, message);
         }
-	}
-    
+    }
+
     public void displaySelectedMultiple(TreeNode[] nodes) {
-        if(nodes != null && nodes.length > 0) {
+        if (nodes != null && nodes.length > 0) {
             StringBuilder builder = new StringBuilder();
 
-            for(TreeNode node : nodes) {
+            for (TreeNode node : nodes) {
                 builder.append(node.getData().toString());
                 builder.append("<br />");
             }
@@ -105,5 +106,15 @@ public class SelectionView implements Serializable {
             FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_INFO, "Selected", builder.toString());
             FacesContext.getCurrentInstance().addMessage(null, message);
         }
-	}
+    }
+
+    public void onCellEdit(CellEditEvent event) {
+        Object oldValue = event.getOldValue();
+        Object newValue = event.getNewValue();
+
+        if (newValue != null && !newValue.equals(oldValue)) {
+            FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "Cell Changed", "Old: " + oldValue + ", New:" + newValue);
+            FacesContext.getCurrentInstance().addMessage(null, msg);
+        }
+    }
 }

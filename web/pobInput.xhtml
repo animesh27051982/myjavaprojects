@@ -1,0 +1,161 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                template="/WEB-INF/template.xhtml">
+
+    <ui:define name="head">
+        <style type="text/css">
+            .cars-datalist .text-column p:last-child{
+                color:#757575;
+            }
+
+            .cars-datalist .car-item {
+                padding: 8px 14px;
+            }
+
+            .cars-datalist .car-item img, .cars-datalist .car-item .car-details {
+                display: inline-block;
+                vertical-align: middle;
+                margin-right: 14px;
+            }
+
+            .cars-datalist .car-item button {
+                float: right;
+            }
+
+            .cars-datalist ul {
+                margin: 0;
+                padding: 0;
+            }
+
+            .cars-datalist li:not(:last-child) {
+                border-bottom: 1px solid #d6d7d9;
+            }
+
+            .ui-car-display {
+                text-align: center;
+            }
+
+            @media (max-width:640px) {
+                .cars-datalist .text-column {
+                    text-align: center;
+                }
+            }
+        </style>
+    </ui:define>
+
+    <ui:define name="title">Input Summary 1</ui:define>
+
+    <ui:define name="viewname">Input Summary 1</ui:define>
+
+    <ui:define name="content">
+        <h:form id="form">
+            <p:growl id="messages" showDetail="true" />
+
+            <div class="ui-g">
+
+                <div class="ui-g-12 ui-md-12 ui-lg-6">
+                    <div class="card card-w-title">
+                        <h1>Download POB Input Template</h1>
+                        <p:commandButton value="Download May Template" style="width:auto;" icon="ui-icon-arrowthick-1-s"/>
+                    </div>
+
+                </div>
+
+                <div class="ui-g-12 ui-md-12 ui-lg-6">
+                    <div class="card card-w-title">
+                        <h1>Upload Completed POB Template</h1>
+                        <p:fileUpload fileUploadListener="#{fileUploadView.handleFileUpload}" auto="true" dragDropSupport="true" label="Upload May Template"
+                                      multiple="false" update="messages" sizeLimit="100000" allowTypes="/(\.|\/)(xlsx)$/" style="width:25%" />
+                    </div>
+                </div>
+
+                <div class="ui-g-12">
+                    <div class="card card-w-title">
+                        <h1>Performance Obligation Inputs (4 Workdays Remaining)</h1>
+
+                        <p:treeTable value="#{treeSelectionView.root2}" editable="true" editMode="cell" var="document">
+                            <f:facet name="header">
+                                Performance Obligations
+                            </f:facet>
+
+                            <p:ajax event="cellEdit" listener="#{treeSelectionView.onCellEdit}" />
+
+                            <p:column style="width: 300px;" headerText="Reporting Unit - Contract" sortBy="#{document.name}">
+                                <h:outputText value="#{document.name}" />
+                            </p:column>
+                            <p:column style="white-space:pre-line;" headerText="ASC 605 Old Rev Rec Method">
+                                <p:cellEditor>
+                                    <f:facet name="output"><h:outputText value="#{document.pobCountRejected}" /></f:facet>
+                                    <f:facet name="input"><p:inputText value="#{document.pobCountRejected}" style="width:100%"/></f:facet>
+                                </p:cellEditor>
+                            </p:column>
+                            <p:column style="white-space:pre-line;" headerText="Dissagregated Revenue OE vs AM">
+                                <p:cellEditor>
+                                    <f:facet name="output"><h:outputText value="#{document.pobCountRejected}" /></f:facet>
+                                    <f:facet name="input"><p:inputText value="#{document.pobCountRejected}" style="width:100%"/></f:facet>
+                                </p:cellEditor>
+                            </p:column>
+                            <p:column style="white-space:pre-line;" headerText="Allocated Transaction Price (Net LD)">
+                                <p:cellEditor>
+                                    <f:facet name="output"><h:outputText value="#{document.pobCountRejected}" /></f:facet>
+                                    <f:facet name="input"><p:inputText value="#{document.pobCountRejected}" style="width:100%"/></f:facet>
+                                </p:cellEditor>
+                            </p:column>
+                            <p:column style="white-space:pre-line;" headerText="Amount of Propbable LD">
+                                <p:cellEditor>
+                                    <f:facet name="output"><h:outputText value="#{document.pobCountRejected}" /></f:facet>
+                                    <f:facet name="input"><p:inputText value="#{document.pobCountRejected}" style="width:100%"/></f:facet>
+                                </p:cellEditor>
+                            </p:column>
+                            <p:column style="white-space:pre-line;" headerText="Estimate at Completion">
+                                <p:cellEditor>
+                                    <f:facet name="output"><h:outputText value="#{document.pobCountRejected}" /></f:facet>
+                                    <f:facet name="input"><p:inputText value="#{document.pobCountRejected}" style="width:100%"/></f:facet>
+                                </p:cellEditor>
+                            </p:column>
+                            <p:column style="white-space:pre-line;" headerText="Cummulative Cost Incurred">
+                                <p:cellEditor>
+                                    <f:facet name="output"><h:outputText value="#{document.pobCountRejected}" /></f:facet>
+                                    <f:facet name="input"><p:inputText value="#{document.pobCountRejected}" style="width:100%"/></f:facet>
+                                </p:cellEditor>
+                            </p:column>
+                            <p:column style="white-space:pre-line;" headerText="Interco Progress (Not Received)">
+                                <p:cellEditor>
+                                    <f:facet name="output"><h:outputText value="#{document.pobCountRejected}" /></f:facet>
+                                    <f:facet name="input"><p:inputText value="#{document.pobCountRejected}" style="width:100%"/></f:facet>
+                                </p:cellEditor>
+                            </p:column>
+                            <p:column style="white-space:pre-line;" headerText="3rd Party Progress (Not Received)">
+                                <p:cellEditor>
+                                    <f:facet name="output"><h:outputText value="#{document.pobCountRejected}" /></f:facet>
+                                    <f:facet name="input"><p:inputText value="#{document.pobCountRejected}" style="width:100%"/></f:facet>
+                                </p:cellEditor>
+                            </p:column>
+                            <p:column style="white-space:pre-line;" headerText="Shipment Delivery Date (if complete)">
+                                <h:outputText value="#{document.pobCountRejected}" />
+                            </p:column>
+                        </p:treeTable>
+
+                        <p:toolbar>
+                            <f:facet name="right">
+                                <p:menuButton value="Cancel Edits"/>
+                                <p:menuButton value="Save Inputs"/>
+                                <p:commandButton type="button" value="Proceed to Calculation Review" icon="ui-icon-check" ajax="false" action="pobCalculationReview"/>
+                            </f:facet>
+                        </p:toolbar>
+
+
+
+                    </div>
+                </div>
+
+
+            </div>
+        </h:form>
+
+    </ui:define>
+
+</ui:composition>
