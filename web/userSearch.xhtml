@@ -1,0 +1,45 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                template="/WEB-INF/template.xhtml">
+
+    <ui:define name="head">
+        <style type="text/css">
+
+        </style>
+    </ui:define>
+
+    <ui:define name="title">User Search</ui:define>
+
+    <ui:define name="viewname">User Search</ui:define>
+
+    <ui:define name="content">
+        <h:form id="form">
+            <p:growl id="messages" showDetail="true" />
+
+            <div class="ui-g">
+
+                <div class="ui-g-12">
+                    <div class="card card-w-title">
+                        <h1>Users</h1>
+                        <p:dataTable var="car" value="#{userSearchUsers}"  paginator="true" rows="30">
+
+                            <p:column filterBy="#{user.name}" headerText="Name" sortBy="#{user.name}" filterMatchMode="contains">
+                                <h:outputText value="#{user.name}" />
+                            </p:column>
+
+                            <p:column filterBy="#{user.email}" headerText="Email" sortBy="#{user.email}" filterMatchMode="contains">
+                                <h:outputText value="#{user.email}" />
+                            </p:column>
+
+                        </p:dataTable>
+                    </div>
+                </div>
+            </div>
+        </h:form>
+
+    </ui:define>
+
+</ui:composition>

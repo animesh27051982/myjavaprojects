@@ -1,0 +1,111 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                template="/WEB-INF/template.xhtml">
+
+    <ui:define name="head">
+        <style type="text/css">
+
+        </style>
+    </ui:define>
+
+    <ui:define name="title">Calculation Review</ui:define>
+
+    <ui:define name="viewname">Calculation Review</ui:define>
+
+    <ui:define name="content">
+        <h:form id="form">
+            <p:growl id="messages" showDetail="true" />
+
+            <div class="ui-g">
+
+                <div class="ui-g-12">
+                    <div class="card card-w-title">
+                        <h1>Performance Obligation Calculation Review</h1>
+
+                        <p:tabView>
+                            <p:tab title="Calculation Summary 1">
+                                <p:treeTable value="#{treeSelectionView.root2}" var="document">
+                                    <p:column style="width: 300px;" headerText="Reporting Unit - Contract" sortBy="#{document.name}">
+                                        <h:outputText value="#{document.name}" />
+                                    </p:column>
+                                    <p:column style="white-space:pre-line;" headerText="Rev Rec Method">
+                                        <h:outputText value="#{document.pobCountRejected}" />
+                                    </p:column>
+                                    <p:column style="white-space:pre-line;" headerText="Delivery Date">
+                                        <h:outputText value="#{document.pobCountRejected}" />
+                                    </p:column>
+                                    <p:column style="white-space:pre-line;" headerText="Allocated Transaction Price">
+                                        <h:outputText value="#{document.pobCountRejected}" />
+                                    </p:column>
+                                    <p:column style="white-space:pre-line;" headerText="Estimate at Completion">
+                                        <h:outputText value="#{document.pobCountRejected}" />
+                                    </p:column>
+                                    <p:column style="white-space:pre-line;" headerText="Estimated Gross Profit" >
+                                        <h:outputText value="#{document.pobCountRejected}" title="Net Revenue - Adjusted Cost of Goods Sold"/>
+                                    </p:column>
+                                    <p:column style="white-space:pre-line;" headerText="Estimated Gross Margin">
+                                        <h:outputText value="#{document.pobCountRejected}" />
+                                    </p:column>
+                                    <p:column style="white-space:pre-line;" headerText="Prior Period Estimate-at-Completion">
+                                        <h:outputText value="#{document.pobCountRejected}" />
+                                    </p:column>
+                                    <p:column style="white-space:pre-line;" headerText="Change in Estimate">
+                                        <h:outputText value="#{document.pobCountRejected}" />
+                                    </p:column>
+                                </p:treeTable>
+                            </p:tab>
+                            <p:tab title="Calculation Summary 2">
+                                <p:treeTable value="#{treeSelectionView.root2}" var="document">
+                                    <p:column style="width: 300px;" headerText="Reporting Unit - Contract" sortBy="#{document.name}">
+                                        <h:outputText value="#{document.name}" />
+                                    </p:column>
+                                    <p:column style="white-space:pre-line;" headerText="Costs Incurred Locally / Received from Suppliers">
+                                        <f:facet name="output"><h:outputText value="#{document.pobCountRejected}" /></f:facet>
+                                    </p:column>
+                                    <p:column style="white-space:pre-line;" headerText="Third Party Progress - Not Received">
+                                        <f:facet name="output"><h:outputText value="#{document.pobCountRejected}" /></f:facet>
+                                    </p:column>
+                                    <p:column style="white-space:pre-line;" headerText="Inter-Company Progress - Not Received">
+                                        <f:facet name="output"><h:outputText value="#{document.pobCountRejected}" /></f:facet>
+                                    </p:column>
+                                    <p:column style="white-space:pre-line;" headerText="Total ITD Costs">
+                                        <f:facet name="output"><h:outputText value="#{document.pobCountRejected}" /></f:facet>
+                                    </p:column>
+                                </p:treeTable>
+                            </p:tab>
+                            <p:tab title="Billing Summary">
+                                <p:treeTable value="#{treeSelectionView.root2}" var="document">
+                                    <p:column style="width: 300px;" headerText="Reporting Unit - Contract" sortBy="#{document.name}">
+                                        <h:outputText value="#{document.name}" />
+                                    </p:column>
+                                    <p:column style="white-space:pre-line;" headerText="Costs Incurred Locally / Received from Suppliers">
+                                        <f:facet name="output"><h:outputText value="#{document.pobCountRejected}" /></f:facet>
+                                    </p:column>
+                                    <p:column style="white-space:pre-line;" headerText="Period Billing">
+                                        <f:facet name="output"><h:outputText value="#{document.pobCountRejected}" /></f:facet>
+                                    </p:column>
+                                    <p:column style="white-space:pre-line;" headerText="Cumulative Billings">
+                                        <f:facet name="output"><h:outputText value="#{document.pobCountRejected}" /></f:facet>
+                                    </p:column>
+                                </p:treeTable>
+                            </p:tab>
+                        </p:tabView>
+
+                        <p:toolbar>
+                            <f:facet name="right">
+                                <p:menuButton value="Back to Inputs" />
+                                <p:menuButton value="Submit for Approval" />
+                            </f:facet>
+                        </p:toolbar>
+
+                    </div>
+                </div>
+            </div>
+        </h:form>
+
+    </ui:define>
+
+</ui:composition>

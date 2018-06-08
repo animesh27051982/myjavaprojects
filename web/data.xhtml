@@ -5,50 +5,50 @@
                 xmlns:p="http://primefaces.org/ui"
                 template="/WEB-INF/template.xhtml">
 
-<ui:define name="head">
-    <style type="text/css">
-        .cars-datalist .text-column p:last-child{
-            color:#757575;
-        }
+    <ui:define name="head">
+        <style type="text/css">
+            .cars-datalist .text-column p:last-child{
+                color:#757575;
+            }
 
-        .cars-datalist .car-item {
-            padding: 8px 14px;
-        }
+            .cars-datalist .car-item {
+                padding: 8px 14px;
+            }
 
-        .cars-datalist .car-item img, .cars-datalist .car-item .car-details {
-            display: inline-block;
-            vertical-align: middle;
-            margin-right: 14px;
-        }
+            .cars-datalist .car-item img, .cars-datalist .car-item .car-details {
+                display: inline-block;
+                vertical-align: middle;
+                margin-right: 14px;
+            }
 
-        .cars-datalist .car-item button {
-            float: right;
-        }
+            .cars-datalist .car-item button {
+                float: right;
+            }
 
-        .cars-datalist ul {
-            margin: 0;
-            padding: 0;
-        }
+            .cars-datalist ul {
+                margin: 0;
+                padding: 0;
+            }
 
-        .cars-datalist li:not(:last-child) {
-            border-bottom: 1px solid #d6d7d9;
-        }
+            .cars-datalist li:not(:last-child) {
+                border-bottom: 1px solid #d6d7d9;
+            }
 
-        .ui-car-display {
-            text-align: center;
-        }
-
-        @media (max-width:640px) {
-            .cars-datalist .text-column {
+            .ui-car-display {
                 text-align: center;
             }
-        }
-    </style>
-</ui:define>
 
-<ui:define name="title">Data</ui:define>
+            @media (max-width:640px) {
+                .cars-datalist .text-column {
+                    text-align: center;
+                }
+            }
+        </style>
+    </ui:define>
 
-<ui:define name="viewname">Data</ui:define>
+    <ui:define name="title">Data</ui:define>
+
+    <ui:define name="viewname">Data</ui:define>
 
     <ui:define name="content">
         <h:form id="form">
@@ -56,8 +56,8 @@
                 <div class="ui-g-12">
                     <div class="card card-w-title">
                         <h1>DataTable</h1>
-                        <p:dataTable var="car" value="#{dtSelectionView.cars7}" selectionMode="single" reflow="true"
-                        selection="#{dtSelectionView.selectedCar}" rowKey="#{car.id}" paginator="true" rows="10">
+                        <p:dataTable var="car" value="#{dtSelectionView.cars7}"  reflow="true"
+                                     selection="#{dtSelectionView.selectedCar}" rowKey="#{car.id}" paginator="true" rows="10">
                             <f:facet name="header">
                                 Single with Row Click
                             </f:facet>
@@ -133,7 +133,7 @@
                 <div class="ui-g-12 ui-md-8">
                     <div class="card card-w-title">
                         <h1>PickList</h1>
-                        <p:pickList id="pickList" value="#{pickListView.cities}" var="cities" itemLabel="#{cities}" itemValue="#{cities}" 
+                        <p:pickList id="pickList" value="#{pickListView.cities}" var="cities" itemLabel="#{cities}" itemValue="#{cities}"
                                     showSourceControls="true" showTargetControls="true" showSourceFilter="true" showTargetFilter="true" responsive="true">
                             <f:facet name="sourceCaption">From</f:facet>
                             <f:facet name="targetCaption">To</f:facet>
@@ -174,7 +174,7 @@
                     <div class="card card-w-title">
                         <h1>DataList</h1>
                         <p:dataList value="#{dataListView.cars3}" var="car"
-                            type="unordered" itemType="none" paginator="true" rows="7" styleClass="cars-datalist">
+                                    type="unordered" itemType="none" paginator="true" rows="7" styleClass="cars-datalist">
                             <f:facet name="header">
                                 Cars For Sale
                             </f:facet>
@@ -221,12 +221,12 @@
                             <p:panelGrid columns="1" style="width:100%" styleClass="ui-panelgrid-blank ui-car-display">
                                 <f:facet name="header">
                                     <div style="text-align:center">
-                                            <p:graphicImage name="demo/images/car/#{car.brand}-big.gif"/>
+                                        <p:graphicImage name="demo/images/car/#{car.brand}-big.gif"/>
                                     </div>
                                 </f:facet>
 
                                 <h:outputText value="Id: #{car.id}" />
-    
+
                                 <h:outputText value="Year #{car.year}" />
 
                                 <h:outputText value="Color: #{car.color}" />

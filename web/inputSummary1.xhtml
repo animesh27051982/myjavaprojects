@@ -1,0 +1,132 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                template="/WEB-INF/template.xhtml">
+
+    <ui:define name="head">
+        <style type="text/css">
+            .cars-datalist .text-column p:last-child{
+                color:#757575;
+            }
+
+            .cars-datalist .car-item {
+                padding: 8px 14px;
+            }
+
+            .cars-datalist .car-item img, .cars-datalist .car-item .car-details {
+                display: inline-block;
+                vertical-align: middle;
+                margin-right: 14px;
+            }
+
+            .cars-datalist .car-item button {
+                float: right;
+            }
+
+            .cars-datalist ul {
+                margin: 0;
+                padding: 0;
+            }
+
+            .cars-datalist li:not(:last-child) {
+                border-bottom: 1px solid #d6d7d9;
+            }
+
+            .ui-car-display {
+                text-align: center;
+            }
+
+            @media (max-width:640px) {
+                .cars-datalist .text-column {
+                    text-align: center;
+                }
+            }
+        </style>
+    </ui:define>
+
+    <ui:define name="title">Input Summary 1</ui:define>
+
+    <ui:define name="viewname">Input Summary 1</ui:define>
+
+    <ui:define name="content">
+        <h:form id="form">
+            <div class="ui-g">
+
+                <div class="ui-g-12">
+                    <div class="card card-w-title">
+                        <h1>POB Inputs (4 Workdays Remaining)</h1>
+                        <p:treeTable value="#{treeSelectionView.root2}" editable="true" editMode="cell" var="document">
+                            <f:facet name="header">
+                                POBs
+                            </f:facet>
+
+                            <p:ajax event="cellEdit" listener="#{treeSelectionView.onCellEdit}" />
+
+                            <p:column style="width: 300px;" headerText="Reporting Unit - Contract" sortBy="#{document.name}">
+                                <h:outputText value="#{document.name}" />
+                            </p:column>
+                            <p:column style="white-space:pre-line;" headerText="Platform">
+                                <h:outputText value="#{document.platform}" />
+                            </p:column>
+                            <p:column style="white-space:pre-line;" headerText="Revenue Recognition Method">
+                                <h:outputText value="#{document.pobCountInputRequired}" />
+                            </p:column>
+                            <p:column style="white-space:pre-line;" headerText="Delivery Date">
+                                <p:cellEditor>
+                                    <f:facet name="output">
+                                        <div class="ui-inputgroup">
+                                            <h:outputText value="#{document.pobCountInvalid}" />
+                                            <i class="fa fa-edit"></i>
+                                        </div>
+                                    </f:facet>
+                                    <f:facet name="input">
+                                        <p:inputText value="#{document.pobCountInvalid}" style="width:100%" />
+                                        <i class="fa fa fa-edit"></i>
+                                    </f:facet>
+
+                                </p:cellEditor>
+
+                            </p:column>
+                            <p:column style="white-space:pre-line;" headerText="Allocated Transaction Price">
+                                <p:cellEditor>
+                                    <f:facet name="output"><h:outputText value="#{document.pobCountRejected}" /></f:facet>
+                                    <f:facet name="input"><p:inputText value="#{document.pobCountRejected}" style="width:100%"/></f:facet>
+                                </p:cellEditor>
+                            </p:column>
+                            <p:column style="white-space:pre-line;" headerText="Estimate at Completion">
+                                <p:cellEditor>
+                                    <f:facet name="output"><h:outputText value="#{document.pobCountRejected}" /></f:facet>
+                                    <f:facet name="input"><p:inputText value="#{document.pobCountRejected}" style="width:100%"/></f:facet>
+                                </p:cellEditor>
+                            </p:column>
+                            <p:column style="white-space:pre-line;" headerText="Estimated Gross Profit">
+                                <p:cellEditor>
+                                    <f:facet name="output"><h:outputText value="#{document.pobCountRejected}" /></f:facet>
+                                    <f:facet name="input"><p:inputText value="#{document.pobCountRejected}" style="width:100%"/></f:facet>
+                                </p:cellEditor>
+                            </p:column>
+                            <p:column style="white-space:pre-line;" headerText="Estimated Gross Margin">
+                                <p:cellEditor>
+                                    <f:facet name="output"><h:outputText value="#{document.pobCountRejected}" /></f:facet>
+                                    <f:facet name="input"><p:inputText value="#{document.pobCountRejected}" style="width:100%"/></f:facet>
+                                </p:cellEditor>
+                            </p:column>
+                            <p:column style="white-space:pre-line;" headerText="Prior Period Estimate at Completion">
+                                <h:outputText value="#{document.pobCountRejected}" />
+                            </p:column>
+                            <p:column style="white-space:pre-line;" headerText="Change in Estimate">
+                                <h:outputText value="#{document.pobCountRejected}" />
+                            </p:column>
+                        </p:treeTable>
+                    </div>
+                </div>
+
+
+            </div>
+        </h:form>
+
+    </ui:define>
+
+</ui:composition>
