@@ -10,5 +10,5 @@
         <property name="URL" value="jdbc:oracle:thin:@localhost:1521:orcl"/>
         <property name="driverClass" value="oracle.jdbc.OracleDriver"/>
     </jdbc-connection-pool>
-    <jdbc-resource enabled="true" jndi-name="java:app/FlowServe" object-type="user" pool-name="oracle-thin_orcl_C##FlowPool"/>
+    <jdbc-resource enabled="true" jndi-name="FlowServe" object-type="user" pool-name="oracle-thin_orcl_C##FlowPool"/>
 </resources>

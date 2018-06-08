@@ -5,10 +5,12 @@
  */
 package com.flowserve.system606.model;
 
+import java.io.Serializable;
+
 /**
  *
  * @author kgraves
  */
-public class PriceDeterminationMethod {
+public class PriceDeterminationMethod implements Serializable {
 
 }

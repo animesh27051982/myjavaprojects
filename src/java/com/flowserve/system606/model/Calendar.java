@@ -6,13 +6,12 @@
 package com.flowserve.system606.model;
 
 import java.io.Serializable;
-import javax.persistence.Entity;
 import javax.persistence.Table;
 
-@Entity
+//@Entity
 @Table(name = "CALENDARS")
 public class Calendar implements Serializable {
 
     private static final long serialVersionUID = 3874543028733747925L;
-    
+
 }

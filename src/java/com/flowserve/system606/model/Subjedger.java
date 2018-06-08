@@ -6,11 +6,10 @@
 package com.flowserve.system606.model;
 
 import java.io.Serializable;
-import javax.persistence.Entity;
 import javax.persistence.Table;
 
-@Entity
+//@Entity
 @Table(name = "SUBLEDGERS")
 public class Subjedger implements Serializable {
-    
+
 }
