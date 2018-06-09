@@ -10,8 +10,6 @@ import java.util.logging.Logger;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 @Entity
@@ -31,10 +29,9 @@ public class BusinessPlatform implements Comparable<BusinessPlatform>, Serializa
     @Column(name = "CODE")
     private String code;
 
-    @OneToOne
-    @JoinColumn(name = "NAME")
-    private BusinessUnit businessUnit;
-
+//    @OneToOne
+//    @JoinColumn(name = "NAME")
+//    private BusinessUnit businessUnit;
     public BusinessPlatform() {
     }
 
@@ -75,12 +72,11 @@ public class BusinessPlatform implements Comparable<BusinessPlatform>, Serializa
         this.code = code;
     }
 
-    public BusinessUnit getBusinessUnit() {
-        return businessUnit;
-    }
-
-    public void setBusinessUnit(BusinessUnit businessUnit) {
-        this.businessUnit = businessUnit;
-    }
-
+//    public BusinessUnit getBusinessUnit() {
+//        return businessUnit;
+//    }
+//
+//    public void setBusinessUnit(BusinessUnit businessUnit) {
+//        this.businessUnit = businessUnit;
+//    }
 }

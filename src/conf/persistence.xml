@@ -1,23 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <persistence version="2.1" xmlns="http://xmlns.jcp.org/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/persistence http://xmlns.jcp.org/xml/ns/persistence/persistence_2_1.xsd">
     <persistence-unit name="FlowServePU" transaction-type="JTA">
-        <!--        <jta-data-source>FlowServe</jta-data-source>
-        <exclude-unlisted-classes>false</exclude-unlisted-classes>-->
-        <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
-        <jta-data-source>FlowServe</jta-data-source>
-        <class>com.flowserve.system606.model.User</class>
-        <exclude-unlisted-classes>true</exclude-unlisted-classes>
+        <jta-data-source>JNDI-Flow</jta-data-source>
+        <exclude-unlisted-classes>false</exclude-unlisted-classes>
         <properties>
-            <property name="eclipselink.target-database" value="org.eclipse.persistence.platform.database.oracle.Oracle11Platform"/>
-            <!--<property name="eclipselink.ddl-generation" value="drop-and-create-tables"/>-->
-            <property name="eclipselink.ddl-generation" value="create-tables"/>
-            <!--    <property name="eclipselink.ddl-generation.output-mode" value="database"/>    -->
-            <property name="eclipselink.ddl-generation.output-mode" value="sql-script"/>
-            <property name="eclipselink.application-location" value="D:\Users\shubhamv\Documents\NetBeansProjects"/>
-            <property name="eclipselink.create-ddl-jdbc-file-name" value="create_ddl_cca.sql"/>
-            <property name="eclipselink.logging.level" value="WARNING"/>
-            <property name="eclipselink.logging.parameters" value="true"/>
-            <property name="eclipselink.weaving.changetracking" value="false"/>
+            <property name="javax.persistence.schema-generation.database.action" value="create"/>
         </properties>
     </persistence-unit>
 </persistence>

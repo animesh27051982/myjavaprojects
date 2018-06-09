@@ -5,6 +5,8 @@
  */
 package com.flowserve.system606.model;
 
-public class RevenueRecognitionMethod {
+import java.io.Serializable;
+
+public class RevenueRecognitionMethod implements Serializable {
 
 }

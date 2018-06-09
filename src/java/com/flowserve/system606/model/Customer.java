@@ -29,9 +29,8 @@ public class Customer implements Comparable<Customer>, Serializable {
     @Column(name = "NUMBER")
     private String number;
 
-    @Column(name = "FINANCIAL_SYSTEM_ID")
-    private FinancialSystem financialSystem;
-
+    //@Column(name = "FINANCIAL_SYSTEM_ID")
+    //private FinancialSystem financialSystem;
     public Customer() {
     }
 
@@ -72,12 +71,11 @@ public class Customer implements Comparable<Customer>, Serializable {
         this.number = number;
     }
 
-    public FinancialSystem getFinancialSystem() {
-        return financialSystem;
-    }
-
-    public void setFinancialSystem(FinancialSystem financialSystem) {
-        this.financialSystem = financialSystem;
-    }
-
+//    public FinancialSystem getFinancialSystem() {
+//        return financialSystem;
+//    }
+//
+//    public void setFinancialSystem(FinancialSystem financialSystem) {
+//        this.financialSystem = financialSystem;
+//    }
 }

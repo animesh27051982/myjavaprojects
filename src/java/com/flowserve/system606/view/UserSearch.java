@@ -4,6 +4,7 @@ import com.flowserve.system606.model.User;
 import com.flowserve.system606.service.AdminService;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import javax.ejb.EJB;
 import javax.faces.bean.ManagedBean;
@@ -14,15 +15,30 @@ import javax.faces.bean.ViewScoped;
 public class UserSearch implements Serializable {
 
     private static final long serialVersionUID = -1438027991420003830L;
-
+    List<User> users = new ArrayList<User>();
     @EJB
     private AdminService adminService;
+    private String searchString = "";
 
-    public List<User> getUsers() throws Exception {
-        List<User> users = new ArrayList<User>();
-//        List<User> users = adminService.findAllUsers();
-//        Collections.sort(users);
+    public void search() throws Exception {
 
+        users = adminService.searchUsers(searchString);
+        Collections.sort(users);
+    }
+
+    public String getSearchString() {
+        return searchString;
+    }
+
+    public void setSearchString(String searchString) {
+        this.searchString = searchString;
+    }
+
+    public List<User> getUsers() {
         return users;
+    }
+
+    public void setUsers(List<User> users) {
+        this.users = users;
     }
 }

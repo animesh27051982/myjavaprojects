@@ -16,30 +16,49 @@
     <ui:define name="viewname">User Search</ui:define>
 
     <ui:define name="content">
-        <h:form id="form">
-            <p:growl id="messages" showDetail="true" />
+        <div style="min-height: calc(100vh - 235px);">
+            <h:form id="mainForm">
+                <p:growl id="messages" showDetail="true" />
 
-            <div class="ui-g">
+                <div class="ui-g">
 
-                <div class="ui-g-12">
-                    <div class="card card-w-title">
-                        <h1>Users</h1>
-                        <p:dataTable var="car" value="#{userSearchUsers}"  paginator="true" rows="30">
+                    <div class="ui-g-12">
+                        <div class="card card-w-title">
+                            <h1>Users</h1>
+                            <p:focus for="searchString" />
 
-                            <p:column filterBy="#{user.name}" headerText="Name" sortBy="#{user.name}" filterMatchMode="contains">
-                                <h:outputText value="#{user.name}" />
-                            </p:column>
+                            <p:inputText id="searchString" value="#{userSearch.searchString}"/>
 
-                            <p:column filterBy="#{user.email}" headerText="Email" sortBy="#{user.email}" filterMatchMode="contains">
-                                <h:outputText value="#{user.email}" />
-                            </p:column>
+                            <p:commandButton id="search" value="Search" ajax="true" icon="ui-icon-arrowrefresh-1-w" actionListener="#{userSearch.search}" update="mainForm:userTable" style="margin-left:10px" />
+                            <p:ajaxStatus style="width:20px;height:20px;">
+                                <f:facet name="start">
+                                    <h:graphicImage value="images/loader.gif" style="width: 20px;"/>
+                                </f:facet>
+                                <f:facet name="complete">
+                                    <h:outputText value="" />
+                                </f:facet>
+                            </p:ajaxStatus>
+                            <p:defaultCommand target="search" />
+                            <p:dataTable id="userTable" var="user" value="#{userSearch.users}"  paginator="true" rows="30">
 
-                        </p:dataTable>
+                                <p:column filterBy="#{user.name}" headerText="Name" sortBy="#{user.name}" filterMatchMode="contains">
+                                    <h:outputText value="#{user.name}" />
+                                </p:column>
+
+                                <p:column filterBy="#{user.flsId}" headerText="ID" sortBy="#{user.flsId}" filterMatchMode="contains">
+                                    <h:outputText value="#{user.flsId}" />
+                                </p:column>
+
+                                <p:column filterBy="#{user.emailAddress}" headerText="Email" sortBy="#{user.emailAddress}" filterMatchMode="contains">
+                                    <h:outputText value="#{user.emailAddress}" />
+                                </p:column>
+
+                            </p:dataTable>
+                        </div>
                     </div>
                 </div>
-            </div>
-        </h:form>
-
+            </h:form>
+        </div>
     </ui:define>
 
 </ui:composition>

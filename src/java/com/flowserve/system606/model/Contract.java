@@ -108,10 +108,10 @@ public class Contract implements Comparable<Contract>, Serializable {
 
     @OneToOne
     @JoinColumn(name = "SALES_DESTINATION_COUNTRY_ID")
-    private Country salesDestinationCountry;
+    //private Country salesDestinationCountry;
 
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)  // TODO - Need to decide whether to use OneToMany or ManyToOne on the child side
-    @JoinColumn(name = "CONTRACT_ID")
+    //@JoinColumn(name = "CONTRACT_ID")
     private List<PerformanceObligation> exchanges = new ArrayList<PerformanceObligation>();
 
     public Contract() {
