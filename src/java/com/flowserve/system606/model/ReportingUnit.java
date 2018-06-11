@@ -11,6 +11,8 @@ import java.util.logging.Logger;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 @Entity
@@ -23,8 +25,12 @@ public class ReportingUnit implements Comparable<ReportingUnit>, Serializable {
     @Column(name = "REPORTING_UNIT_ID")
     private Long id;
 
+    @Column(name = "REPORTING_UNIT_NAME")
     private String name;
+    @Column(name = "REPORTING_UNIT_NUMBER")
     private String number;
+    @OneToOne
+    @JoinColumn(name = "BUSINESS_PLATFORM_ID")
     private BusinessPlatform businessPlatform;
 
     @Column(name = "FUNCTIONAL_CURRENCY")
