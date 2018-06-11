@@ -30,13 +30,13 @@ public class PerformanceMeasurement implements Comparable<PerformanceMeasurement
     @JoinColumn(name = "FINANCIAL_PERIOD_ID")
     private FinancialPeriod financialPeriod;
 
-    @Column(name = "ALLOCATED_TRANSCACTION_PRICE")
+    @Column(name = "TRX_PRICE")
     private BigDecimal allocatedTransactionPrice;
 
     @Column(name = "DISCOUNT_AMOUNT")
     private BigDecimal discountAmount;
 
-    @Column(name = "ALLOCATED_DISCOUNTED_TRANSCACTION_PRICE")
+    @Column(name = "AD_TRX_PRICE")
     private BigDecimal allocatedDiscountedTransactionPrice;
 
     public PerformanceMeasurement() {
