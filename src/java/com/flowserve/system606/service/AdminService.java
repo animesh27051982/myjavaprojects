@@ -35,4 +35,8 @@ public class AdminService {
         query.setParameter("NAME", "%" + searchString.toUpperCase() + "%");
         return (List<User>) query.getResultList();
     }
+
+    public void updateUser(User u) throws Exception {
+        em.merge(u);
+    }
 }

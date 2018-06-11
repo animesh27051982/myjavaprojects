@@ -52,7 +52,9 @@
                                 <p:column filterBy="#{user.emailAddress}" headerText="Email" sortBy="#{user.emailAddress}" filterMatchMode="contains">
                                     <h:outputText value="#{user.emailAddress}" />
                                 </p:column>
-
+                                <p:column  headerText="Option" >
+                                    <h:commandLink value="Edit User" action="#{userController.edit(user)}"></h:commandLink>
+                                </p:column>
                             </p:dataTable>
                         </div>
                     </div>

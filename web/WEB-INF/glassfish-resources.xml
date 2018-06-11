@@ -11,4 +11,5 @@
         <property name="driverClass" value="oracle.jdbc.OracleDriver"/>
     </jdbc-connection-pool>
     <jdbc-resource enabled="true" jndi-name="JNDI-Flow" object-type="user" pool-name="oracle-thin_orcl_C##FlowPool"/>
+    <jdbc-resource enabled="true" jndi-name="java:app/JNDI-Flowserve" object-type="user" pool-name="oracle-thin_orcl_C##FlowPool"/>
 </resources>
