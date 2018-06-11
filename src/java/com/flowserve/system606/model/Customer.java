@@ -23,10 +23,10 @@ public class Customer implements Comparable<Customer>, Serializable {
     @Column(name = "CUSTOMER_ID")
     private Long id;
 
-    @Column(name = "NAME")
+    @Column(name = "CUSTOMER_NAME")
     private String name;
 
-    @Column(name = "NUMBER")
+    @Column(name = "CUSTOMER_NUMBER")
     private String number;
 
     //@Column(name = "FINANCIAL_SYSTEM_ID")
