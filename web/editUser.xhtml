@@ -20,24 +20,27 @@
             <h:form>
                 <div class="ui-fluid">
                     <div class="ui-g">
-                        <div class="ui-g-12">
+                        <div class="ui-g-12 ui-md-12 ui-lg-6">
                             <div class="card card-w-title">
                                 <h1>Edit User</h1>
-                                <p:panelGrid columns="2" columnClasses="ui-grid-col-2,ui-grid-col-4,ui-grid-col-2,ui-grid-col-4" layout="grid" styleClass="ui-panelgrid-blank form-group" style="border:0px none; background-color:transparent;">
+                                <p:panelGrid columns="2" columnClasses="ui-grid-col-6,ui-grid-col-6" layout="grid" styleClass="ui-panelgrid-blank form-group" style="border:0px none; background-color:transparent;">
                                     <p:outputLabel for="name" value="Name"/>
                                     <p:inputText id="name" value="#{userEdit.user.name}"/>
                                     <p:outputLabel for="id" value="ID"/>
                                     <p:inputText id="id" value="#{userEdit.user.flsId}"/>
                                     <p:outputLabel for="email" value="Email ID"/>
                                     <p:inputText id="email" value="#{userEdit.user.emailAddress}"/>
-
-
-
-
-
-                                    <p:outputLabel for="btn" value="" />
-                                    <p:commandButton id="btn" value="Update" icon="ui-icon-edit" action="#{userController.update(userEdit.user)}" style="max-width:150px;"/>
+                                    <f:facet name="footer">
+                                        <p:toolbar>
+                                            <f:facet name="right">
+                                                <p:commandButton id="btn" value="Update" icon="ui-icon-edit" action="#{userController.update(userEdit.user)}" style="max-width:150px;"/>
+                                            </f:facet>
+                                        </p:toolbar>
+                                    </f:facet>
                                 </p:panelGrid>
+
+
+
                             </div>
                         </div>
                     </div>
