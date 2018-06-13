@@ -21,8 +21,14 @@
                 <div class="ui-fluid">
                     <div class="ui-g">
                         <div class="ui-g-12 ui-md-12 ui-lg-6">
+                            <!--
+                            Setting to 12, 12, 6.  This will cause input area to switch to full width (12 cols) when screen size is small.  Large screen half-size (6 cols)
+                            ui-lg => number of columns for a large screen (screen width > 1024px)
+                            ui-md => number of columns for a medium screen (screen width < 1024px )
+                            ui-g = > number of columns by default (or screen width < 425px if lg and md columns are define)-->
                             <div class="card card-w-title">
                                 <h1>Edit User</h1>
+                                <!--  Only two cols, so only two col columnClasses.  I had to use 6 and 6 to get this layout properly-->
                                 <p:panelGrid columns="2" columnClasses="ui-grid-col-6,ui-grid-col-6" layout="grid" styleClass="ui-panelgrid-blank form-group" style="border:0px none; background-color:transparent;">
                                     <p:outputLabel for="name" value="Name"/>
                                     <p:inputText id="name" value="#{userEdit.user.name}"/>
@@ -30,6 +36,7 @@
                                     <p:inputText id="id" value="#{userEdit.user.flsId}"/>
                                     <p:outputLabel for="email" value="Email ID"/>
                                     <p:inputText id="email" value="#{userEdit.user.emailAddress}"/>
+                                    <!-- Use p:toolbar for nicely stlyed command button area -->
                                     <f:facet name="footer">
                                         <p:toolbar>
                                             <f:facet name="right">
@@ -38,9 +45,6 @@
                                         </p:toolbar>
                                     </f:facet>
                                 </p:panelGrid>
-
-
-
                             </div>
                         </div>
                     </div>
