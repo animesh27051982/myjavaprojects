@@ -10,6 +10,7 @@ import java.util.List;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 
 /**
@@ -21,10 +22,6 @@ public class AdminService {
 
     @PersistenceContext(unitName = "FlowServePU")
     private EntityManager em;
-
-    public void persist(Object object) {
-        em.persist(object);
-    }
 
     public List<User> searchUsers(String searchString) throws Exception {  // Need an application exception type defined.
         if (searchString == null || searchString.trim().length() < 2) {
@@ -39,4 +36,22 @@ public class AdminService {
     public void updateUser(User u) throws Exception {
         em.merge(u);
     }
+
+    public void persist(Object object) {
+        em.persist(object);
+    }
+
+    public List<User> findUserByFlsId(String adname) {
+        Query query = em.createQuery("SELECT u FROM User u WHERE UPPER(u.flsId) = :FLS_ID ORDER BY UPPER(u.id)");
+        query.setParameter("FLS_ID", adname.toUpperCase());
+        return (List<User>) query.getResultList();
+
+    }
+
+    public void updater(User u) throws Exception {
+
+        em.persist(u);
+
+    }
+
 }

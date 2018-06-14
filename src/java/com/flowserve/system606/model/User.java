@@ -39,6 +39,12 @@ public class User implements Comparable<User>, Serializable {
     @Column(name = "EMAIL_ADDRESS", length = 512)
     private String emailAddress;
 
+    public User(String flsId, String name, String emailAddress) {
+        this.flsId = flsId;
+        this.name = name;
+        this.emailAddress = emailAddress;
+    }
+
     @Override
     public int compareTo(User obj) {
         return this.name.compareTo(obj.getName());
@@ -86,4 +92,5 @@ public class User implements Comparable<User>, Serializable {
     public void setEmailAddress(String emailAddress) {
         this.emailAddress = emailAddress;
     }
+
 }
