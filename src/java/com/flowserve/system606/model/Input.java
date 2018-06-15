@@ -13,6 +13,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import static javax.persistence.TemporalType.TIMESTAMP;
 
 @Entity
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
@@ -34,6 +36,7 @@ public abstract class Input<T> extends BaseEntity<Long> {
     @OneToOne
     @JoinColumn(name = "CREATED_BY_ID")
     private User createdBy;
+    @Temporal(TIMESTAMP)
     @Column(name = "CREATION_DATE")
     private LocalDateTime creationDate;
     @Column(name = "IS_VALID")
