@@ -101,6 +101,7 @@ public class AppInitializeService {
                 String[] values = line.split("\\|");
 
                 InputType inputType = new InputType();
+                inputType.setOwnerEntityType(values[count++]);
                 inputType.setInputClass(values[count++]);
                 inputType.setName(values[count++]);
                 inputType.setDescription(values[count++]);
