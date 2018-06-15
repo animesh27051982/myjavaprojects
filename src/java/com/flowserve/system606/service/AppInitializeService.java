@@ -90,29 +90,32 @@ public class AppInitializeService {
             logger.info("Initializing InputTypes");
             BufferedReader reader = new BufferedReader(new InputStreamReader(AppInitializeService.class.getResourceAsStream("/resources/app_data_init_files/init_input_types.txt"), "UTF-8"));
 
+            int count = 0;
             String line = null;
             while ((line = reader.readLine()) != null) {
                 if (line.trim().length() == 0) {
                     continue;
                 }
 
+                count = 0;
                 String[] values = line.split("\\|");
-                logger.info("Size: " + values.length);
 
                 InputType inputType = new InputType();
-                inputType.setInputClass(values[0]);
-                inputType.setName(values[1]);
-                inputType.setExcelSheet(values[2]);
-                inputType.setExcelCol(values[3]);
-                inputType.setGroupName(values[4]);
-                inputType.setGroupPosition(Integer.parseInt(values[5]));
+                inputType.setInputClass(values[count++]);
+                inputType.setName(values[count++]);
+                inputType.setDescription(values[count++]);
+                inputType.setExcelSheet(values[count++]);
+                inputType.setExcelCol(values[count++]);
+                inputType.setGroupName(values[count++]);
+                inputType.setGroupPosition(Integer.parseInt(values[count++]));
                 inputType.setEffectiveFrom(LocalDate.now());
-                inputType.setEffectiveTo(LocalDate.now());
+                //inputType.setEffectiveTo(LocalDate.now());
                 inputType.setActive(true);
 
                 logger.info("Creating InputType: " + inputType.getName());
 
-                adminService.update(inputType);
+                adminService.persist(inputType);
+
             }
 
             reader.close();
