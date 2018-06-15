@@ -7,42 +7,7 @@
 
     <ui:define name="head">
         <style type="text/css">
-            .cars-datalist .text-column p:last-child{
-                color:#757575;
-            }
 
-            .cars-datalist .car-item {
-                padding: 8px 14px;
-            }
-
-            .cars-datalist .car-item img, .cars-datalist .car-item .car-details {
-                display: inline-block;
-                vertical-align: middle;
-                margin-right: 14px;
-            }
-
-            .cars-datalist .car-item button {
-                float: right;
-            }
-
-            .cars-datalist ul {
-                margin: 0;
-                padding: 0;
-            }
-
-            .cars-datalist li:not(:last-child) {
-                border-bottom: 1px solid #d6d7d9;
-            }
-
-            .ui-car-display {
-                text-align: center;
-            }
-
-            @media (max-width:640px) {
-                .cars-datalist .text-column {
-                    text-align: center;
-                }
-            }
         </style>
     </ui:define>
 
@@ -58,15 +23,16 @@
 
                 <div class="ui-g-12 ui-md-12 ui-lg-6">
                     <div class="card card-w-title">
-                        <h1>Download POB Input Template</h1>
-                        <p:commandButton value="Download May Template" style="width:auto;" icon="ui-icon-arrowthick-1-s"/>
+                        <h1>Download MAY-18 POB Input Template</h1>
+                        <p:commandButton value="Download May Template" ajax="false" style="width:auto;" icon="ui-icon-arrowthick-1-s">
+                            <p:fileDownload value="#{pobInput.file}" />
+                        </p:commandButton>
                     </div>
-
                 </div>
 
                 <div class="ui-g-12 ui-md-12 ui-lg-6">
                     <div class="card card-w-title">
-                        <h1>Upload Completed POB Template</h1>
+                        <h1>Upload Completed MAY-18 POB Template</h1>
                         <p:fileUpload fileUploadListener="#{fileUploadView.handleFileUpload}" auto="true" dragDropSupport="true" label="Upload May Template"
                                       multiple="false" update="messages" sizeLimit="100000" allowTypes="/(\.|\/)(xlsx)$/" style="width:25%" />
                     </div>
@@ -74,79 +40,163 @@
 
                 <div class="ui-g-12">
                     <div class="card card-w-title">
-                        <h1>Performance Obligation Inputs (4 Workdays Remaining)</h1>
+                        <h1><strong>MAY-18 Performance Obligation Inputs (4 Workdays Remaining)</strong></h1>
+                        <h4>Preparer:  Kelly Graves</h4>
+                        <h4>Status: Draft</h4>
+                        <h4>Input Set Version: 4</h4>
+                        <h4>Input Set Date: 18-MAY-2018 12:23 PM CST</h4>
+                        <h4>Input File:  1200_POCI_IMPORT_TEMPLATE_MAY-18_v1.xlsx</h4>
 
-                        <p:treeTable value="#{treeSelectionView.root2}" editable="true" editMode="cell" var="document">
-                            <f:facet name="header">
-                                Performance Obligations
-                            </f:facet>
 
-                            <p:ajax event="cellEdit" listener="#{treeSelectionView.onCellEdit}" />
 
-                            <p:column style="width: 300px;" headerText="Reporting Unit - Contract" sortBy="#{document.name}">
-                                <h:outputText value="#{document.name}" />
-                            </p:column>
-                            <p:column style="white-space:pre-line;" headerText="ASC 605 Old Rev Rec Method">
-                                <p:cellEditor>
-                                    <f:facet name="output"><h:outputText value="#{document.pobCountRejected}" /></f:facet>
-                                    <f:facet name="input"><p:inputText value="#{document.pobCountRejected}" style="width:100%"/></f:facet>
-                                </p:cellEditor>
-                            </p:column>
-                            <p:column style="white-space:pre-line;" headerText="Dissagregated Revenue OE vs AM">
-                                <p:cellEditor>
-                                    <f:facet name="output"><h:outputText value="#{document.pobCountRejected}" /></f:facet>
-                                    <f:facet name="input"><p:inputText value="#{document.pobCountRejected}" style="width:100%"/></f:facet>
-                                </p:cellEditor>
-                            </p:column>
-                            <p:column style="white-space:pre-line;" headerText="Allocated Transaction Price (Net LD)">
-                                <p:cellEditor>
-                                    <f:facet name="output"><h:outputText value="#{document.pobCountRejected}" /></f:facet>
-                                    <f:facet name="input"><p:inputText value="#{document.pobCountRejected}" style="width:100%"/></f:facet>
-                                </p:cellEditor>
-                            </p:column>
-                            <p:column style="white-space:pre-line;" headerText="Amount of Propbable LD">
-                                <p:cellEditor>
-                                    <f:facet name="output"><h:outputText value="#{document.pobCountRejected}" /></f:facet>
-                                    <f:facet name="input"><p:inputText value="#{document.pobCountRejected}" style="width:100%"/></f:facet>
-                                </p:cellEditor>
-                            </p:column>
-                            <p:column style="white-space:pre-line;" headerText="Estimate at Completion">
-                                <p:cellEditor>
-                                    <f:facet name="output"><h:outputText value="#{document.pobCountRejected}" /></f:facet>
-                                    <f:facet name="input"><p:inputText value="#{document.pobCountRejected}" style="width:100%"/></f:facet>
-                                </p:cellEditor>
-                            </p:column>
-                            <p:column style="white-space:pre-line;" headerText="Cummulative Cost Incurred">
-                                <p:cellEditor>
-                                    <f:facet name="output"><h:outputText value="#{document.pobCountRejected}" /></f:facet>
-                                    <f:facet name="input"><p:inputText value="#{document.pobCountRejected}" style="width:100%"/></f:facet>
-                                </p:cellEditor>
-                            </p:column>
-                            <p:column style="white-space:pre-line;" headerText="Interco Progress (Not Received)">
-                                <p:cellEditor>
-                                    <f:facet name="output"><h:outputText value="#{document.pobCountRejected}" /></f:facet>
-                                    <f:facet name="input"><p:inputText value="#{document.pobCountRejected}" style="width:100%"/></f:facet>
-                                </p:cellEditor>
-                            </p:column>
-                            <p:column style="white-space:pre-line;" headerText="3rd Party Progress (Not Received)">
-                                <p:cellEditor>
-                                    <f:facet name="output"><h:outputText value="#{document.pobCountRejected}" /></f:facet>
-                                    <f:facet name="input"><p:inputText value="#{document.pobCountRejected}" style="width:100%"/></f:facet>
-                                </p:cellEditor>
-                            </p:column>
-                            <p:column style="white-space:pre-line;" headerText="Shipment Delivery Date (if complete)">
-                                <h:outputText value="#{document.pobCountRejected}" />
-                            </p:column>
-                        </p:treeTable>
+                        <p:tabView>
+                            <p:tab title="EAC Inputs (need better title from Mark)">
+                                <p:treeTable value="#{treeSelectionView.root2}" editable="true" editMode="cell" var="document">
+                                    <f:facet name="header">
+                                        Performance Obligations
+                                    </f:facet>
+
+                                    <p:ajax event="cellEdit" listener="#{treeSelectionView.onCellEdit}" />
+
+                                    <p:column style="width: 300px;" headerText="Reporting Unit - Contract" sortBy="#{document.name}">
+                                        <h:outputText value="#{document.name}" />
+                                    </p:column>
+                                    <p:column style="white-space:pre-line;" headerText="Rev Rec Method">
+                                        <p:cellEditor>
+                                            <f:facet name="output"><h:outputText value="#{document.pobCountRejected}" /></f:facet>
+                                            <f:facet name="input"><p:inputText value="#{document.pobCountRejected}" style="width:100%"/></f:facet>
+                                        </p:cellEditor>
+
+                                    </p:column>
+                                    <p:column style="white-space:pre-line;" headerText="Delivery Date">
+                                        <p:cellEditor>
+                                            <f:facet name="output"><h:outputText value="#{document.pobCountRejected}" /></f:facet>
+                                            <f:facet name="input"><p:inputText value="#{document.pobCountRejected}" style="width:100%"/></f:facet>
+                                        </p:cellEditor>
+
+                                    </p:column>
+                                    <p:column style="white-space:pre-line;" headerText="Allocated Transaction Price">
+                                        <p:cellEditor>
+                                            <f:facet name="output"><h:outputText value="#{document.pobCountRejected}" /></f:facet>
+                                            <f:facet name="input"><p:inputText value="#{document.pobCountRejected}" style="width:100%"/></f:facet>
+                                        </p:cellEditor>
+                                    </p:column>
+                                    <p:column style="white-space:pre-line;" headerText="Estimate at Completion">
+                                        <p:cellEditor>
+                                            <f:facet name="output"><h:outputText value="#{document.pobCountRejected}" /></f:facet>
+                                            <f:facet name="input"><p:inputText value="#{document.pobCountRejected}" style="width:100%"/></f:facet>
+                                        </p:cellEditor>
+                                    </p:column>
+                                    <p:column style="white-space:pre-line;" headerText="Estimated Gross Profit" >
+                                        <p:cellEditor>
+                                            <f:facet name="output"><h:outputText value="#{document.pobCountRejected}" /></f:facet>
+                                            <f:facet name="input"><p:inputText value="#{document.pobCountRejected}" style="width:100%"/></f:facet>
+                                        </p:cellEditor>
+                                    </p:column>
+                                    <p:column style="white-space:pre-line;" headerText="Estimated Gross Margin">
+                                        <p:cellEditor>
+                                            <f:facet name="output"><h:outputText value="#{document.pobCountRejected}" /></f:facet>
+                                            <f:facet name="input"><p:inputText value="#{document.pobCountRejected}" style="width:100%"/></f:facet>
+                                        </p:cellEditor>
+                                    </p:column>
+                                    <p:column style="white-space:pre-line;" headerText="Prior Period Estimate-at-Completion">
+                                        <p:cellEditor>
+                                            <f:facet name="output"><h:outputText value="#{document.pobCountRejected}" /></f:facet>
+                                            <f:facet name="input"><p:inputText value="#{document.pobCountRejected}" style="width:100%"/></f:facet>
+                                        </p:cellEditor>
+                                    </p:column>
+                                    <p:column style="white-space:pre-line;" headerText="Change in Estimate">
+                                        <p:cellEditor>
+                                            <f:facet name="output"><h:outputText value="#{document.pobCountRejected}" /></f:facet>
+                                            <f:facet name="input"><p:inputText value="#{document.pobCountRejected}" style="width:100%"/></f:facet>
+                                        </p:cellEditor>
+                                    </p:column>
+
+
+                                </p:treeTable>
+                            </p:tab>
+
+                            <p:tab title="Costing Inputs">
+                                <p:treeTable value="#{treeSelectionView.root2}" editable="true" editMode="cell" var="document">
+                                    <f:facet name="header">
+                                        Performance Obligations
+                                    </f:facet>
+
+                                    <p:ajax event="cellEdit" listener="#{treeSelectionView.onCellEdit}" />
+
+                                    <p:column style="width: 300px;" headerText="Reporting Unit - Contract" sortBy="#{document.name}">
+                                        <h:outputText value="#{document.name}" />
+                                    </p:column>
+                                    <p:column style="white-space:pre-line;" headerText="Costs Incurred Locally / Received from Suppliers">
+                                        <p:cellEditor>
+                                            <f:facet name="output"><h:outputText value="#{document.pobCountRejected}" /></f:facet>
+                                            <f:facet name="input"><p:inputText value="#{document.pobCountRejected}" style="width:100%"/></f:facet>
+                                        </p:cellEditor>
+                                    </p:column>
+                                    <p:column style="white-space:pre-line;" headerText="Third Party Progress - Not Received">
+                                        <p:cellEditor>
+                                            <f:facet name="output"><h:outputText value="#{document.pobCountRejected}" /></f:facet>
+                                            <f:facet name="input"><p:inputText value="#{document.pobCountRejected}" style="width:100%"/></f:facet>
+                                        </p:cellEditor>
+                                    </p:column>
+                                    <p:column style="white-space:pre-line;" headerText="Inter-Company Progress - Not Received">
+                                        <p:cellEditor>
+                                            <f:facet name="output"><h:outputText value="#{document.pobCountRejected}" /></f:facet>
+                                            <f:facet name="input"><p:inputText value="#{document.pobCountRejected}" style="width:100%"/></f:facet>
+                                        </p:cellEditor>
+                                    </p:column>
+                                    <p:column style="white-space:pre-line;" headerText="Total ITD Costs">
+                                        <p:cellEditor>
+                                            <f:facet name="output"><h:outputText value="#{document.pobCountRejected}" /></f:facet>
+                                            <f:facet name="input"><p:inputText value="#{document.pobCountRejected}" style="width:100%"/></f:facet>
+                                        </p:cellEditor>
+                                    </p:column>
+                                </p:treeTable>
+                            </p:tab>
+
+                            <p:tab title="Billing Inputs">
+                                <p:treeTable value="#{treeSelectionView.root2}" editable="true" editMode="cell" var="document">
+                                    <f:facet name="header">
+                                        Performance Obligations
+                                    </f:facet>
+
+                                    <p:ajax event="cellEdit" listener="#{treeSelectionView.onCellEdit}" />
+
+                                    <p:column style="width: 300px;" headerText="Reporting Unit - Contract" sortBy="#{document.name}">
+                                        <h:outputText value="#{document.name}" />
+                                    </p:column>
+                                    <p:column style="white-space:pre-line;" headerText="Delivery Date">
+                                        <p:cellEditor>
+                                            <f:facet name="output"><h:outputText value="#{document.pobCountRejected}" /></f:facet>
+                                            <f:facet name="input"><p:inputText value="#{document.pobCountRejected}" style="width:100%"/></f:facet>
+                                        </p:cellEditor>
+
+                                    </p:column>
+                                    <p:column style="white-space:pre-line;" headerText="Period Billing">
+                                        <p:cellEditor>
+                                            <f:facet name="output"><h:outputText value="#{document.pobCountRejected}" /></f:facet>
+                                            <f:facet name="input"><p:inputText value="#{document.pobCountRejected}" style="width:100%"/></f:facet>
+                                        </p:cellEditor>
+
+                                    </p:column>
+                                    <p:column style="white-space:pre-line;" headerText="Cumulative Billings">
+                                        <p:cellEditor>
+                                            <f:facet name="output"><h:outputText value="#{document.pobCountRejected}" /></f:facet>
+                                            <f:facet name="input"><p:inputText value="#{document.pobCountRejected}" style="width:100%"/></f:facet>
+                                        </p:cellEditor>
+
+                                    </p:column>
+                                </p:treeTable>
+                            </p:tab>
+                        </p:tabView>
 
                         <p:toolbar>
                             <f:facet name="right">
                                 <p:menuButton value="Cancel Edits"/>
                                 <p:menuButton value="Save Inputs"/>
-                                <p:commandButton type="button" value="Proceed to Calculation Review" icon="ui-icon-check" ajax="false" action="pobCalculationReview"/>
+                                <p:commandButton value="Proceed to Calculation Review" icon="ui-icon-check" action="#{calcReviewController.reviewCalculations()}"/>
                             </f:facet>
                         </p:toolbar>
-
 
 
                     </div>

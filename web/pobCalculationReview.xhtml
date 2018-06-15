@@ -23,71 +23,169 @@
 
                 <div class="ui-g-12">
                     <div class="card card-w-title">
-                        <h1>Performance Obligation Calculation Review</h1>
+                        <h1><strong>MAY-18 Performance Obligation Inputs (4 Workdays Remaining)</strong></h1>
+                        <h4>Preparer:  Kelly Graves</h4>
+                        <h4>Status: Draft</h4>
+                        <h4>Input Set Version: 4</h4>
+                        <h4>Input Set Date: 18-MAY-2018 12:23 PM CST</h4>
+                        <h4>Input File:  1200_POCI_IMPORT_TEMPLATE_MAY-18_v1.xlsx</h4>
 
                         <p:tabView>
-                            <p:tab title="Calculation Summary 1">
+                            <p:tab title="Percent Complete / Revenue">
                                 <p:treeTable value="#{treeSelectionView.root2}" var="document">
+                                    <f:facet name="header">
+                                        Performance Obligations - % Complete / Revenue
+                                    </f:facet>
+
                                     <p:column style="width: 300px;" headerText="Reporting Unit - Contract" sortBy="#{document.name}">
                                         <h:outputText value="#{document.name}" />
                                     </p:column>
-                                    <p:column style="white-space:pre-line;" headerText="Rev Rec Method">
+                                    <p:column style="white-space:pre-line;" headerText="ITD Costs">
                                         <h:outputText value="#{document.pobCountRejected}" />
                                     </p:column>
-                                    <p:column style="white-space:pre-line;" headerText="Delivery Date">
+                                    <p:column style="white-space:pre-line;" headerText="EAC">
                                         <h:outputText value="#{document.pobCountRejected}" />
                                     </p:column>
-                                    <p:column style="white-space:pre-line;" headerText="Allocated Transaction Price">
+                                    <p:column style="white-space:pre-line;" headerText="% Complete">
                                         <h:outputText value="#{document.pobCountRejected}" />
                                     </p:column>
-                                    <p:column style="white-space:pre-line;" headerText="Estimate at Completion">
+                                    <p:column style="white-space:pre-line;" headerText="Transaction Price">
                                         <h:outputText value="#{document.pobCountRejected}" />
                                     </p:column>
-                                    <p:column style="white-space:pre-line;" headerText="Estimated Gross Profit" >
-                                        <h:outputText value="#{document.pobCountRejected}" title="Net Revenue - Adjusted Cost of Goods Sold"/>
-                                    </p:column>
-                                    <p:column style="white-space:pre-line;" headerText="Estimated Gross Margin">
+                                    <p:column style="white-space:pre-line;" headerText="Cummulative Revenue to Recognize" >
+                                        <f:facet name="header">
+                                            <h:outputText id="crr" value="Cummulative Revenue to Recognize" title="Net Revenue - Adjusted Cost of Goods Sold"/>
+                                            <p:tooltip for="crr" />
+                                            <i class="fa fa-calculator" title="Net Revenue - Adjusted Cost of Goods Sold"></i>
+                                        </f:facet>
                                         <h:outputText value="#{document.pobCountRejected}" />
                                     </p:column>
-                                    <p:column style="white-space:pre-line;" headerText="Prior Period Estimate-at-Completion">
+                                    <p:column style="white-space:pre-line;" headerText="Prior Period Cumulative Revenue to Recognize">
                                         <h:outputText value="#{document.pobCountRejected}" />
                                     </p:column>
-                                    <p:column style="white-space:pre-line;" headerText="Change in Estimate">
+                                    <p:column style="white-space:pre-line;" headerText="Period Revenue">
+                                        <h:outputText value="#{document.pobCountRejected}" />
+                                    </p:column>
+                                    <p:column style="white-space:pre-line;" headerText="Period Fx Rate">
+                                        <h:outputText value="#{document.pobCountRejected}" />
+                                    </p:column>
+                                    <p:column style="white-space:pre-line;" headerText="Period Revenue-Local Currency">
+                                        <h:outputText value="#{document.pobCountRejected}" />
+                                    </p:column>
+                                    <p:column style="white-space:pre-line;" headerText="Cumulative Revenue-Local Currency">
                                         <h:outputText value="#{document.pobCountRejected}" />
                                     </p:column>
                                 </p:treeTable>
                             </p:tab>
-                            <p:tab title="Calculation Summary 2">
+                            <p:tab title="Liquidated Damages">
                                 <p:treeTable value="#{treeSelectionView.root2}" var="document">
+                                    <f:facet name="header">
+                                        Performance Obligations - Liquidated Damages
+                                    </f:facet>
+
                                     <p:column style="width: 300px;" headerText="Reporting Unit - Contract" sortBy="#{document.name}">
                                         <h:outputText value="#{document.name}" />
                                     </p:column>
-                                    <p:column style="white-space:pre-line;" headerText="Costs Incurred Locally / Received from Suppliers">
+                                    <p:column style="white-space:pre-line;" headerText="Total Liquidated Damages">
                                         <f:facet name="output"><h:outputText value="#{document.pobCountRejected}" /></f:facet>
                                     </p:column>
-                                    <p:column style="white-space:pre-line;" headerText="Third Party Progress - Not Received">
+                                    <p:column style="white-space:pre-line;" headerText="Cumulative Liquidated Damages  To Recognize (CC)">
                                         <f:facet name="output"><h:outputText value="#{document.pobCountRejected}" /></f:facet>
                                     </p:column>
-                                    <p:column style="white-space:pre-line;" headerText="Inter-Company Progress - Not Received">
+                                    <p:column style="white-space:pre-line;" headerText="Liquidated Damages Recognized in Prior Period (CC)">
                                         <f:facet name="output"><h:outputText value="#{document.pobCountRejected}" /></f:facet>
                                     </p:column>
-                                    <p:column style="white-space:pre-line;" headerText="Total ITD Costs">
+                                    <p:column style="white-space:pre-line;" headerText="Liquidated Damages to Recognize in Current Period (CC)">
+                                        <f:facet name="output"><h:outputText value="#{document.pobCountRejected}" /></f:facet>
+                                    </p:column>
+                                    <p:column style="white-space:pre-line;" headerText="Period Fx Rate">
+                                        <f:facet name="output"><h:outputText value="#{document.pobCountRejected}" /></f:facet>
+                                    </p:column>
+                                    <p:column style="white-space:pre-line;" headerText="Liquidated Damages to Recognize in Current Period (LC)">
+                                        <f:facet name="output"><h:outputText value="#{document.pobCountRejected}" /></f:facet>
+                                    </p:column>
+                                    <p:column style="white-space:pre-line;" headerText="Net Period Sales (LC)">
                                         <f:facet name="output"><h:outputText value="#{document.pobCountRejected}" /></f:facet>
                                     </p:column>
                                 </p:treeTable>
                             </p:tab>
-                            <p:tab title="Billing Summary">
+                            <p:tab title="Backlog Revaluation">
+
                                 <p:treeTable value="#{treeSelectionView.root2}" var="document">
+                                    <f:facet name="header">
+                                        Performance Obligations - Backlog Revaluation
+                                    </f:facet>
+
                                     <p:column style="width: 300px;" headerText="Reporting Unit - Contract" sortBy="#{document.name}">
                                         <h:outputText value="#{document.name}" />
                                     </p:column>
-                                    <p:column style="white-space:pre-line;" headerText="Costs Incurred Locally / Received from Suppliers">
+                                    <p:column style="white-space:pre-line;" headerText="Transaction Price (CC)">
                                         <f:facet name="output"><h:outputText value="#{document.pobCountRejected}" /></f:facet>
                                     </p:column>
-                                    <p:column style="white-space:pre-line;" headerText="Period Billing">
+                                    <p:column style="white-space:pre-line;" headerText="Cumulative Revenue to Date (CC)">
                                         <f:facet name="output"><h:outputText value="#{document.pobCountRejected}" /></f:facet>
                                     </p:column>
-                                    <p:column style="white-space:pre-line;" headerText="Cumulative Billings">
+                                    <p:column style="white-space:pre-line;" headerText="Transaction Price in Backlog (CC)">
+                                        <f:facet name="output"><h:outputText value="#{document.pobCountRejected}" /></f:facet>
+                                    </p:column>
+                                    <p:column style="white-space:pre-line;" headerText="Backlog Revalued">
+                                        <f:facet name="output"><h:outputText value="#{document.pobCountRejected}" /></f:facet>
+                                    </p:column>
+                                    <p:column style="white-space:pre-line;" headerText="Cumulative Revenue Recognized (LC)">
+                                        <f:facet name="output"><h:outputText value="#{document.pobCountRejected}" /></f:facet>
+                                    </p:column>
+                                    <p:column style="white-space:pre-line;" headerText="Transaction Price Revalued">
+                                        <f:facet name="output"><h:outputText value="#{document.pobCountRejected}" /></f:facet>
+                                    </p:column>
+                                    <p:column style="white-space:pre-line;" headerText="Liquidated Damages Total (CC)">
+                                        <f:facet name="output"><h:outputText value="#{document.pobCountRejected}" /></f:facet>
+                                    </p:column>
+                                    <p:column style="white-space:pre-line;" headerText="Liquidated Damages Recognized to Date (CC)">
+                                        <f:facet name="output"><h:outputText value="#{document.pobCountRejected}" /></f:facet>
+                                    </p:column>
+                                    <p:column style="white-space:pre-line;" headerText="Liquidated Damages in Backlog">
+                                        <f:facet name="output"><h:outputText value="#{document.pobCountRejected}" /></f:facet>
+                                    </p:column>
+                                </p:treeTable>
+                            </p:tab>
+                            <p:tab title="Cost of Goods Sold">
+
+                                <p:treeTable value="#{treeSelectionView.root2}" var="document">
+                                    <f:facet name="header">
+                                        Performance Obligations - Cost of Goods Sold
+                                    </f:facet>
+
+                                    <p:column style="width: 300px;" headerText="Reporting Unit - Contract" sortBy="#{document.name}">
+                                        <h:outputText value="#{document.name}" />
+                                    </p:column>
+                                    <p:column style="white-space:pre-line;" headerText="Liquidated Damages in Backlog Revalued (LC)">
+                                        <f:facet name="output"><h:outputText value="#{document.pobCountRejected}" /></f:facet>
+                                    </p:column>
+                                    <p:column style="white-space:pre-line;" headerText="Liquidated Damages Recognized to Date (LC)">
+                                        <f:facet name="output"><h:outputText value="#{document.pobCountRejected}" /></f:facet>
+                                    </p:column>
+                                    <p:column style="white-space:pre-line;" headerText="Total Estimated Liquidated Damages (LC)">
+                                        <f:facet name="output"><h:outputText value="#{document.pobCountRejected}" /></f:facet>
+                                    </p:column>
+                                    <p:column style="white-space:pre-line;" headerText="Total Transaction Price Net of Liquidated Damages (LC)">
+                                        <f:facet name="output"><h:outputText value="#{document.pobCountRejected}" /></f:facet>
+                                    </p:column>
+                                    <p:column style="white-space:pre-line;" headerText="Cost of Goods Sold Backlog Revalued (LC)">
+                                        <f:facet name="output"><h:outputText value="#{document.pobCountRejected}" /></f:facet>
+                                    </p:column>
+                                    <p:column style="white-space:pre-line;" headerText="Remaining Estimate-to-Complete (LC)">
+                                        <f:facet name="output"><h:outputText value="#{document.pobCountRejected}" /></f:facet>
+                                    </p:column>
+                                    <p:column style="white-space:pre-line;" headerText="Projected Gain(Loss) (LC)">
+                                        <f:facet name="output"><h:outputText value="#{document.pobCountRejected}" /></f:facet>
+                                    </p:column>
+                                    <p:column style="white-space:pre-line;" headerText="ITD Standard Costs (COGS)">
+                                        <f:facet name="output"><h:outputText value="#{document.pobCountRejected}" /></f:facet>
+                                    </p:column>
+                                    <p:column style="white-space:pre-line;" headerText="Loss Contract Adjusted">
+                                        <f:facet name="output"><h:outputText value="#{document.pobCountRejected}" /></f:facet>
+                                    </p:column>
+                                    <p:column style="white-space:pre-line;" headerText="Total Cost of Goods Sold">
                                         <f:facet name="output"><h:outputText value="#{document.pobCountRejected}" /></f:facet>
                                     </p:column>
                                 </p:treeTable>
@@ -96,7 +194,7 @@
 
                         <p:toolbar>
                             <f:facet name="right">
-                                <p:menuButton value="Back to Inputs" />
+                                <p:commandButton value="Back to Inputs" icon="ui-icon-arrowthick-1-w" action="#{calcReviewController.returnToInputs}"/>
                                 <p:menuButton value="Submit for Approval" />
                             </f:facet>
                         </p:toolbar>
