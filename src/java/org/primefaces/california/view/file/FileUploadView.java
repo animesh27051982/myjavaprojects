@@ -15,6 +15,7 @@
  */
 package org.primefaces.california.view.file;
 
+import com.flowserve.system606.service.InputService;
 import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
 import javax.faces.context.FacesContext;
@@ -22,10 +23,15 @@ import javax.faces.context.FacesContext;
 import org.primefaces.event.FileUploadEvent;
 import org.primefaces.model.UploadedFile;
 
+import java.io.InputStream;
+import javax.ejb.EJB;
+
 @ManagedBean
 public class FileUploadView {
     
     private UploadedFile file;
+    @EJB
+    private InputService inputService;
 
     public UploadedFile getFile() {
         return file;
@@ -42,8 +48,11 @@ public class FileUploadView {
         }
     }
     
-    public void handleFileUpload(FileUploadEvent event) {
+    public void handleFileUpload(FileUploadEvent event) throws Exception {
+                // handle POI file read process here
 		FacesMessage msg = new FacesMessage("Succesful", event.getFile().getFileName() + " is uploaded.");
 		FacesContext.getCurrentInstance().addMessage(null, msg);
-	}
+                               
+                inputService.readFeed((InputStream)event.getFile().getInputstream());                       
+    }
 }
