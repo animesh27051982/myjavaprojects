@@ -21,6 +21,8 @@ public class InputType extends BaseEntity<Long> implements Serializable {
     @SequenceGenerator(name = "FLS_SEQ", sequenceName = "FLS_SEQ", allocationSize = 1)
     @Column(name = "INPUT_TYPE_ID")
     private Long id;
+    @Column(name = "INPUT_CLASS")
+    private String inputClass;
     @Column(name = "NAME")
     private String name;
     @Column(name = "EXCEL_SHEET")
@@ -112,5 +114,13 @@ public class InputType extends BaseEntity<Long> implements Serializable {
 
     public void setActive(boolean active) {
         this.active = active;
+    }
+
+    public String getInputClass() {
+        return inputClass;
+    }
+
+    public void setInputClass(String inputClass) {
+        this.inputClass = inputClass;
     }
 }
