@@ -23,6 +23,8 @@ public class InputType extends BaseEntity<Long> implements Serializable {
     @SequenceGenerator(name = "FLS_SEQ", sequenceName = "FLS_SEQ", allocationSize = 1)
     @Column(name = "INPUT_TYPE_ID")
     private Long id;
+    @Column(name = "OWNER_ENTITY_TYPE")
+    private String ownerEntityType;
     @Column(name = "INPUT_CLASS")
     private String inputClass;
     @Column(name = "NAME")
@@ -136,5 +138,13 @@ public class InputType extends BaseEntity<Long> implements Serializable {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public String getOwnerEntityType() {
+        return ownerEntityType;
+    }
+
+    public void setOwnerEntityType(String ownerEntityType) {
+        this.ownerEntityType = ownerEntityType;
     }
 }
