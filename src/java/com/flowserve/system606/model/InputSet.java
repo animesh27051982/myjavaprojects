@@ -13,6 +13,8 @@ import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import static javax.persistence.TemporalType.TIMESTAMP;
 
 @Entity
 @Table(name = "INPUT_SETS")
@@ -33,6 +35,7 @@ public class InputSet extends BaseEntity<Long> {
     @OneToOne
     @JoinColumn(name = "CREATED_BY_ID")
     private User createdBy;
+    @Temporal(TIMESTAMP)
     @Column(name = "CREATION_DATE")
     private LocalDateTime creationDate;
     @OneToOne
