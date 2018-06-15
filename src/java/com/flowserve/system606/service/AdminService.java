@@ -6,6 +6,7 @@
 package com.flowserve.system606.service;
 
 import com.flowserve.system606.model.BusinessUnit;
+import com.flowserve.system606.model.InputType;
 import com.flowserve.system606.model.User;
 import java.util.List;
 import javax.ejb.Stateless;
@@ -57,6 +58,16 @@ public class AdminService {
         query.setParameter("FLS_ID", adname.toUpperCase());
         return (List<User>) query.getResultList();
 
+    }
+
+    public List<InputType> findInputTypeByName(String name) {
+        Query query = em.createQuery("SELECT inputType FROM InputType inputType WHERE inputType.name = :NAME");
+        query.setParameter("NAME", name);
+        return (List<InputType>) query.getResultList();
+    }
+
+    public void persist(InputType inputType) throws Exception {
+        em.persist(inputType);
     }
 
     public void updater(User u) throws Exception {
