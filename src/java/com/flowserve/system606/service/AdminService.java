@@ -55,7 +55,7 @@ public class AdminService {
         return (List<InputType>) query.getResultList();
     }
 
-    public void update(InputType inputType) throws Exception {
+    public void persist(InputType inputType) throws Exception {
         em.persist(inputType);
     }
 
