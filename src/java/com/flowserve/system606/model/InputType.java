@@ -9,6 +9,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import static javax.persistence.TemporalType.DATE;
 
 @Entity
 @Table(name = "INPUT_TYPES")
@@ -25,6 +27,8 @@ public class InputType extends BaseEntity<Long> implements Serializable {
     private String inputClass;
     @Column(name = "NAME")
     private String name;
+    @Column(name = "DESCRIPTION")
+    private String description;
     @Column(name = "EXCEL_SHEET")
     private String excelSheet;  // for reading from xlsx
     @Column(name = "EXCEL_COL")
@@ -33,8 +37,10 @@ public class InputType extends BaseEntity<Long> implements Serializable {
     private String groupName;  // for grouping tabs in calc review screens
     @Column(name = "GROUP_POSITION")
     private int groupPosition;
+    @Temporal(DATE)
     @Column(name = "EFFECTIVE_FROM")
     private LocalDate effectiveFrom;
+    @Temporal(DATE)
     @Column(name = "EFFECTIVE_TO")
     private LocalDate effectiveTo;
     @Column(name = "IS_ACTIVE")
@@ -122,5 +128,13 @@ public class InputType extends BaseEntity<Long> implements Serializable {
 
     public void setInputClass(String inputClass) {
         this.inputClass = inputClass;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 }
