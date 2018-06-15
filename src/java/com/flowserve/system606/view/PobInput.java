@@ -16,7 +16,7 @@ public class PobInput implements Serializable {
     private StreamedContent file;
 
     public PobInput() {
-        InputStream stream = PobInput.class.getResourceAsStream("/excel_templates/Alonso_PIQ_POCI_IMPORT_TEMPLATE_v1.xlsx");
+        InputStream stream = PobInput.class.getResourceAsStream("/resources/excel_input_templates/Alonso_PIQ_POCI_IMPORT_TEMPLATE_v1.xlsx");
         file = new DefaultStreamedContent(stream, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "poci_input_template.xlsx");
     }
 
