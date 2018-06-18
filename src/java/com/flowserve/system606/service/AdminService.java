@@ -62,6 +62,10 @@ public class AdminService {
 
     }
 
+    public User findUserById(Long id) {
+        return em.find(User.class, id);
+    }
+
     public Country findCountryById(String id) {
         return em.find(Country.class, id);
     }
