@@ -14,10 +14,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.time.LocalDate;
 import java.util.Iterator;
+import java.util.List;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
@@ -137,27 +140,36 @@ public class CurrencyService {
                             //2nd column
                             name = cell.getStringCellValue().trim();
                         } else if (type.equalsIgnoreCase("")) {
-                            //2nd column
+                            //3rd column
                             type = cell.getStringCellValue().trim();
                         } else if (code.equalsIgnoreCase("")) {
-                            //2nd column
+                            //4th column
                             code = cell.getStringCellValue().trim();
                         } else {
 
-                            //random data, leave it
-                            //System.out.println("Random data::" + cell.getStringCellValue());
                         }
                         break;
                     case Cell.CELL_TYPE_NUMERIC:
-
+                        //5th column
                         usd = cell.getNumericCellValue();
-                    //usd = new BigDecimal(cell.getNumericCellValue());
                 }
             } //end of cell iterator
 
             bw.newLine();
             bw.write(name + "\t" + cnt_name + "\t" + type + "\t" + code + "\t" + usd);
         } //end of rows iterator
+
+    }
+
+    public List<ExchangeRate> findRatesByNextDate() throws Exception {
+        Query query = em.createQuery("SELECT er FROM ExchangeRate er WHERE er.effectiveDate <= :EFFECTIVE_DATE ");
+        LocalDate ld = LocalDate.now();
+        query.setParameter("EFFECTIVE_DATE", ld);
+        return (List<ExchangeRate>) query.getResultList();
+    }
+
+    public void deleteExchangeRate() throws Exception {
+        em.createQuery("DELETE FROM ExchangeRate e").executeUpdate();
 
     }
 

@@ -12,7 +12,10 @@ import java.util.Currency;
 import java.util.logging.Logger;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
 @Entity
@@ -22,6 +25,8 @@ public class ExchangeRate implements Serializable {
     private static final long serialVersionUID = -383220321690601009L;
     private static final Logger LOG = Logger.getLogger(ExchangeRate.class.getName());
     @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "FLS_SEQ")
+    @SequenceGenerator(name = "FLS_SEQ", sequenceName = "FLS_SEQ", allocationSize = 1)
     @Column(name = "EXCHANGE_RATE_ID")
     private Long id;
 

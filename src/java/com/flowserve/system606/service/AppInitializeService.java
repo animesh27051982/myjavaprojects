@@ -48,11 +48,11 @@ public class AppInitializeService {
         try {
             initUsers();
 
-            //initCurrencyConverter();
+            initCurrencyConverter();
             initInputTypes();
             initCountries();
-            //testUpdateCountry();
 
+            //testUpdateCountry();
         } catch (Exception ex) {
             Logger.getLogger(AppInitializeService.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -69,7 +69,7 @@ public class AppInitializeService {
         }
 
         if (adminService.findUserByFlsId("pkaranam").isEmpty()) {
-            BufferedReader reader = new BufferedReader(new InputStreamReader(AppInitializeService.class.getResourceAsStream("init_users.txt"), "UTF-8"));
+            BufferedReader reader = new BufferedReader(new InputStreamReader(AppInitializeService.class.getResourceAsStream("/resources/init_users/init_users.txt"), "UTF-8"));
 
             String line = null;
             while ((line = reader.readLine()) != null) {
@@ -97,50 +97,53 @@ public class AppInitializeService {
     }
 
     private void initCurrencyConverter() throws Exception {
-
-        // BufferedReader reader = new BufferedReader(new InputStreamReader(AppInitializeService.class.getResourceAsStream("/flat_file/currency.txt"), "UTF-8"));
-        BufferedReader reader = new BufferedReader(new InputStreamReader(AppInitializeService.class.getResourceAsStream("/flat_file/currency.txt"), "UTF-8"));
-        String line = null;
-        while ((line = reader.readLine()) != null) {
-            if (line.trim().length() == 0) {
-                continue;
-            }
-
-            String[] from = line.split("\\t");
-            if (!from[2].equalsIgnoreCase("")) {
-                BufferedReader reader2 = new BufferedReader(new InputStreamReader(AppInitializeService.class.getResourceAsStream("/flat_file/currency.txt"), "UTF-8"));
-
-                String innerLine = null;
-                while ((innerLine = reader2.readLine()) != null) {
-                    if (innerLine.trim().length() == 0) {
-                        continue;
-                    }
-
-                    String[] to = innerLine.split("\\t");
-                    if (!to[2].equalsIgnoreCase("")) {
-                        BigDecimal usdRate = new BigDecimal(1.0);
-                        BigDecimal sourceRate = new BigDecimal(from[4]);
-                        BigDecimal targetRate = new BigDecimal(to[4]);
-
-                        String type = from[2];
-                        Currency fromCurrency = Currency.getInstance(from[3]);
-                        Currency toCurrency = Currency.getInstance(to[3]);
-                        LocalDate effectiveDate = LocalDate.now();
-                        BigDecimal rate = usdRate.divide(sourceRate, 100, BigDecimal.ROUND_HALF_UP).multiply(targetRate);
-
-                        ExchangeRate exchangeRate = new ExchangeRate(type, fromCurrency, toCurrency, effectiveDate, rate);
-                        currService.updater(exchangeRate);
-                        //logger.info("From Country: " + effectiveDate + "  To Country: " + toCurrency + "   Rate" + rate);
-                    }
+        List<ExchangeRate> er = currService.findRatesByNextDate();
+        System.out.println("com" + er);
+        if (er.isEmpty()) {
+            BufferedReader reader = new BufferedReader(new InputStreamReader(AppInitializeService.class.getResourceAsStream("/resources/currency_rate_file/currency.txt"), "UTF-8"));
+            currService.deleteExchangeRate();
+            String line = null;
+            while ((line = reader.readLine()) != null) {
+                if (line.trim().length() == 0) {
+                    continue;
                 }
-                reader2.close();
+
+                String[] from = line.split("\\t");
+                if (!from[2].equalsIgnoreCase("")) {
+                    BufferedReader reader2 = new BufferedReader(new InputStreamReader(AppInitializeService.class.getResourceAsStream("/resources/currency_rate_file/currency.txt"), "UTF-8"));
+
+                    String innerLine = null;
+                    while ((innerLine = reader2.readLine()) != null) {
+                        if (innerLine.trim().length() == 0) {
+                            continue;
+                        }
+
+                        String[] to = innerLine.split("\\t");
+                        if (!to[2].equalsIgnoreCase("")) {
+                            BigDecimal usdRate = new BigDecimal(1.0);
+                            BigDecimal sourceRate = new BigDecimal(from[4]);
+                            BigDecimal targetRate = new BigDecimal(to[4]);
+
+                            String type = from[2];
+                            Currency fromCurrency = Currency.getInstance(from[3]);
+                            Currency toCurrency = Currency.getInstance(to[3]);
+                            LocalDate effectiveDate = LocalDate.now().plusDays(30);
+                            //Currency Conversion Formula
+                            BigDecimal rate = usdRate.divide(sourceRate, 100, BigDecimal.ROUND_HALF_UP).multiply(targetRate);
+
+                            ExchangeRate exchangeRate = new ExchangeRate(type, fromCurrency, toCurrency, effectiveDate, rate);
+                            currService.updater(exchangeRate);
+                            //logger.info("From Country: " + effectiveDate + "  To Country: " + toCurrency + "   Rate" + rate);
+                        }
+                    }
+                    reader2.close();
+                }
             }
+
+            reader.close();
+
+            logger.info("Finished initializing users.");
         }
-
-        reader.close();
-
-        logger.info("Finished initializing users.");
-
     }
 
     private void initInputTypes() throws Exception {
