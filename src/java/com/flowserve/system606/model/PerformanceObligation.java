@@ -6,6 +6,7 @@
 package com.flowserve.system606.model;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Logger;
@@ -17,11 +18,14 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.MapKey;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import static javax.persistence.TemporalType.TIMESTAMP;
 
 @Entity
 @Table(name = "PERFORMANCE_OBLIGATIONS")
-public class PerformanceObligation implements Comparable<PerformanceObligation>, Serializable {
+public class PerformanceObligation extends BaseEntity<Long> implements Comparable<PerformanceObligation>, Serializable {
 
     private static final long serialVersionUID = 4995349370717535419L;
     private static final Logger LOG = Logger.getLogger(PerformanceObligation.class.getName());
@@ -29,11 +33,22 @@ public class PerformanceObligation implements Comparable<PerformanceObligation>,
     @Id
     @Column(name = "POB_ID")
     private Long id;
-
     @Column(name = "NAME")
     private String name;
     @Column(name = "IS_ACTIVE")
     private boolean active;
+    @OneToOne
+    @JoinColumn(name = "CREATED_BY_ID")
+    private User createdBy;
+    @Temporal(TIMESTAMP)
+    @Column(name = "CREATION_DATE")
+    private LocalDateTime creationDate;
+    @OneToOne
+    @JoinColumn(name = "LAST_UPDATED_BY_ID")
+    private User lastUpdatedBy;
+    @Temporal(TIMESTAMP)
+    @Column(name = "LAST_UPDATE_DATE")
+    private LocalDateTime lastUpdateDate;
 
     //private String deactivationReason;  // create type class
     @OneToMany(fetch = FetchType.EAGER)
@@ -41,40 +56,20 @@ public class PerformanceObligation implements Comparable<PerformanceObligation>,
     @MapKey(name = "inputType.id")
     private Map<Long, Input> inputs = new HashMap<Long, Input>();
 
-//    @Column(name = "STANDALONE_SELLING_PRICE")
-//    private BigDecimal standaloneSellingPrice;
-//
-//    @Column(name = "SSP_DETERMINATION_METHOD_ID")
-//    private PriceDeterminationMethod sspDeterminationMethod;
-//
-//    @Column(name = "REVENUE_RECOGNITION_AMOUNT")
-//    private BigDecimal revenueRecognitionAmount;
-//
-//    @JoinColumn(name = "REVENUE_RECOGNITION_METHOD_ID")
-//    private RevenueRecognitionMethod revenueRecognitionMethod;
-//
-//    @Column(name = "EST_COST_AT_COMPLETION")
-//    private BigDecimal estimatedCostAtCompletion;
-//
-//    @Column(name = "REVENUE_START_DATE")
-//    private LocalDate revenueStartDate;
-//
-//    @Column(name = "REVENUE_END_DATE")
-//    private LocalDate revenueEndDate;
     public PerformanceObligation() {
+    }
+
+    public void putInput(Input input) {
+        inputs.put(input.getInputType().getId(), input);
+    }
+
+    public Input getInput(InputType inputType) {
+        return inputs.get(inputType.getId());
     }
 
     @Override
     public int compareTo(PerformanceObligation obj) {
         return this.id.compareTo(obj.getId());
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (obj instanceof PerformanceObligation) {
-            return this.id.equals(((PerformanceObligation) obj).getId());
-        }
-        return false;
     }
 
     public Long getId() {
@@ -101,7 +96,35 @@ public class PerformanceObligation implements Comparable<PerformanceObligation>,
         this.active = active;
     }
 
-    public Map<Long, Input> getInputs() {
-        return inputs;
+    public User getCreatedBy() {
+        return createdBy;
+    }
+
+    public void setCreatedBy(User createdBy) {
+        this.createdBy = createdBy;
+    }
+
+    public LocalDateTime getCreationDate() {
+        return creationDate;
+    }
+
+    public void setCreationDate(LocalDateTime creationDate) {
+        this.creationDate = creationDate;
+    }
+
+    public User getLastUpdatedBy() {
+        return lastUpdatedBy;
+    }
+
+    public void setLastUpdatedBy(User lastUpdatedBy) {
+        this.lastUpdatedBy = lastUpdatedBy;
+    }
+
+    public LocalDateTime getLastUpdateDate() {
+        return lastUpdateDate;
+    }
+
+    public void setLastUpdateDate(LocalDateTime lastUpdateDate) {
+        this.lastUpdateDate = lastUpdateDate;
     }
 }
