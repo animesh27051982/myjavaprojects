@@ -1,9 +1,12 @@
 package com.flowserve.system606.model;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -44,7 +47,7 @@ public class InputSet extends BaseEntity<Long> {
     @Column(name = "MOST_RECENT")
     private boolean mostRecent;
 
-    @OneToMany
+    @OneToMany( cascade = { CascadeType.ALL }, fetch = FetchType.EAGER )
     @JoinTable(name = "INPUT_SET_INPUTS", joinColumns = @JoinColumn(name = "INPUT_SET_ID"), inverseJoinColumns = @JoinColumn(name = "INPUT_ID"))
     private List<Input> inputs;
 
@@ -109,7 +112,12 @@ public class InputSet extends BaseEntity<Long> {
     }
 
     public List<Input> getInputs() {
-        return inputs;
+        //return inputs;
+        return inputs != null ? inputs : new ArrayList<>();
+    }
+    
+    public void setInputs(List<Input> inputList) {
+        inputs = new ArrayList<>(inputList);
     }
 
     public LocalDateTime getCreationDate() {
