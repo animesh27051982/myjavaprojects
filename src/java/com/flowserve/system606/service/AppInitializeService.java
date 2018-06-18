@@ -215,7 +215,7 @@ public class AppInitializeService {
                 pob.setId(new Long(values[count++]));
                 pob.setActive(true);
 
-                pobService.persist(pob, administrator);
+                pobService.persist(pob);
             }
 
             reader.close();
