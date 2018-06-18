@@ -6,6 +6,7 @@
 package com.flowserve.system606.service;
 
 import com.flowserve.system606.model.ExchangeRate;
+import com.flowserve.system606.model.FinancialPeriod;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
@@ -14,7 +15,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
-import java.time.LocalDate;
+import java.math.BigDecimal;
+import java.util.Currency;
 import java.util.Iterator;
 import java.util.List;
 import javax.ejb.Stateless;
@@ -161,21 +163,31 @@ public class CurrencyService {
 
     }
 
-    public List<ExchangeRate> findRatesByNextDate() throws Exception {
-        Query query = em.createQuery("SELECT er FROM ExchangeRate er WHERE er.effectiveDate <= :EFFECTIVE_DATE ");
-        LocalDate ld = LocalDate.now();
-        query.setParameter("EFFECTIVE_DATE", ld);
+    public List<ExchangeRate> findRatesByPeriod(FinancialPeriod period) throws Exception {
+        Query query = em.createQuery("SELECT er FROM ExchangeRate er WHERE er.financialPeriod = :PERIOD");
+        query.setParameter("PERIOD", period);
         return (List<ExchangeRate>) query.getResultList();
+    }
+
+    public ExchangeRate findRateByFromToPeriod(Currency fromCurrency, Currency toCurrency, FinancialPeriod period) throws Exception {
+        Query query = em.createQuery("SELECT er FROM ExchangeRate er WHERE er.financialPeriod = :PERIOD and er.fromCurrency = :FROM and er.toCurrency = :TO");
+        query.setParameter("PERIOD", period);
+        query.setParameter("FROM", fromCurrency);
+        query.setParameter("TO", toCurrency);
+
+        return (ExchangeRate) query.getSingleResult();  // use singleresult here since we always expect to find one and only one value.  anything otherwise is an exception.
     }
 
     public void deleteExchangeRate() throws Exception {
         em.createQuery("DELETE FROM ExchangeRate e").executeUpdate();
-
     }
 
-    public void updater(ExchangeRate eRate) throws Exception {
-
+    public void persist(ExchangeRate eRate) throws Exception {
         em.persist(eRate);
+    }
 
+    public BigDecimal convert(BigDecimal amount, Currency fromCurrency, Currency toCurrency, FinancialPeriod period) throws Exception {  // throw an application defined exception here instead of Exception
+        ExchangeRate er = findRateByFromToPeriod(fromCurrency, toCurrency, period);
+        return amount.multiply(er.getConversionRate()).setScale(14, BigDecimal.ROUND_HALF_UP);
     }
 }

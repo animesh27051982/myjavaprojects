@@ -7,13 +7,17 @@ package com.flowserve.system606.service;
 
 import com.flowserve.system606.model.Country;
 import com.flowserve.system606.model.ExchangeRate;
+import com.flowserve.system606.model.FinancialPeriod;
 import com.flowserve.system606.model.InputType;
 import com.flowserve.system606.model.PerformanceObligation;
+import com.flowserve.system606.model.PeriodStatus;
+import com.flowserve.system606.model.ReportingUnit;
 import com.flowserve.system606.model.User;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.Month;
 import java.util.Currency;
 import java.util.List;
 import java.util.Locale;
@@ -41,19 +45,21 @@ public class AppInitializeService {
     private AdminService adminService;
     @EJB
     private PerformanceObligationService pobService;
-
     @EJB
-    private CurrencyService currService;
+    private CurrencyService currencyService;
+    @EJB
+    private FinancialPeriodService financialPeriodService;
 
     @PostConstruct
     public void init() {
         logger.info("Initializing App Objects");
         try {
             initUsers();
-
+            initFinancialPeriods();
             initCurrencyConverter();
             initInputTypes();
             initCountries();
+            initReportingUnits();
             initPOBs();
         } catch (Exception ex) {
             Logger.getLogger(AppInitializeService.class.getName()).log(Level.SEVERE, null, ex);
@@ -99,12 +105,19 @@ public class AppInitializeService {
     }
 
     private void initCurrencyConverter() throws Exception {
-        List<ExchangeRate> er = currService.findRatesByNextDate();
-        System.out.println("com" + er);
+        FinancialPeriod period = financialPeriodService.findById("MAY-18");
+        List<ExchangeRate> er = currencyService.findRatesByPeriod(period);
+
+        final int SCALE = 14;
+        final int ROUNDING_METHOD = BigDecimal.ROUND_HALF_UP;
+
         if (er.isEmpty()) {
+            logger.info("Initializing exchange rates.");
+
             BufferedReader reader = new BufferedReader(new InputStreamReader(AppInitializeService.class.getResourceAsStream("/resources/currency_rate_file/currency.txt"), "UTF-8"));
-            currService.deleteExchangeRate();
+            currencyService.deleteExchangeRate();
             String line = null;
+
             while ((line = reader.readLine()) != null) {
                 if (line.trim().length() == 0) {
                     continue;
@@ -131,21 +144,21 @@ public class AppInitializeService {
                             Currency toCurrency = Currency.getInstance(to[3]);
                             LocalDate effectiveDate = LocalDate.now().plusDays(30);
                             //Currency Conversion Formula
-                            BigDecimal rate = usdRate.divide(sourceRate, 100, BigDecimal.ROUND_HALF_UP).multiply(targetRate);
+                            BigDecimal rate = usdRate.divide(sourceRate, SCALE, ROUNDING_METHOD).multiply(targetRate);
 
-                            ExchangeRate exchangeRate = new ExchangeRate(type, fromCurrency, toCurrency, effectiveDate, rate);
-                            currService.updater(exchangeRate);
+                            ExchangeRate exchangeRate = new ExchangeRate(type, fromCurrency, toCurrency, period, rate);
+                            currencyService.persist(exchangeRate);
                             //logger.info("From Country: " + effectiveDate + "  To Country: " + toCurrency + "   Rate" + rate);
                         }
                     }
                     reader2.close();
                 }
             }
-
             reader.close();
-
-            logger.info("Finished initializing users.");
+            logger.info("Finished initializing exchange rates.");
         }
+
+        logger.info("Testing conversion of 500 INR to EUR.  Should be 6.3440521593  result: " + currencyService.convert(new BigDecimal(500), Currency.getInstance("INR"), Currency.getInstance("EUR"), period));
     }
 
     private void initInputTypes() throws Exception {
@@ -224,6 +237,42 @@ public class AppInitializeService {
         }
     }
 
+    private void initReportingUnits() throws Exception {
+
+        User administrator = admin.get(0);
+
+        if (adminService.findReportingUnitByCode("0100") == null) {
+            logger.info("Initializing Reporting Units");
+            BufferedReader reader = new BufferedReader(new InputStreamReader(AppInitializeService.class.getResourceAsStream("/resources/app_data_init_files/reporting_units.txt"), "UTF-8"));
+
+            int count = 0;
+            String line = null;
+            while ((line = reader.readLine()) != null) {
+                if (line.trim().length() == 0) {
+                    continue;
+                }
+
+                count = 0;
+                String[] values = line.split("\\t");
+
+                ReportingUnit ru = new ReportingUnit();
+
+                ru.setCode(values[count++]);
+                ru.setName(values[count++]);
+                if (values.length > 2) {
+                    ru.setCountry(adminService.findCountryByCode(values[count++]));
+                }
+                ru.setActive(true);
+
+                adminService.persist(ru);
+            }
+
+            reader.close();
+
+            logger.info("Finished initializing Reporting Units.");
+        }
+    }
+
     private void initCountries() throws Exception {
         if (adminService.findCountryById("USA") == null) {
             logger.info("Initializing Countries");
@@ -236,7 +285,17 @@ public class AppInitializeService {
                 adminService.persist(country);
             }
 
-            logger.info("Finished initializing InputTypes.");
+            logger.info("Finished initializing Countries.");
         }
+    }
+
+    private void initFinancialPeriods() throws Exception {
+        if (financialPeriodService.findById("MAY-18") == null) {
+            logger.info("Initializing FinancialPeriods");
+            FinancialPeriod period = new FinancialPeriod("MAY-18", "MAY-18", LocalDate.of(2018, Month.MAY, 1), LocalDate.of(2018, Month.MAY, 31), 2018, 5, PeriodStatus.OPEN);
+            financialPeriodService.persist(period);
+            logger.info("Finished initializing FinancialPeriods.");
+        }
+
     }
 }

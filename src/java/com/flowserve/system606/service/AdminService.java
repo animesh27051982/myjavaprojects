@@ -66,8 +66,32 @@ public class AdminService {
         return em.find(User.class, id);
     }
 
+    public ReportingUnit findReportingUnitById(String id) {
+        return em.find(ReportingUnit.class, id);
+    }
+
     public Country findCountryById(String id) {
         return em.find(Country.class, id);
+    }
+
+    public ReportingUnit findReportingUnitByCode(String code) {
+        Query query = em.createQuery("SELECT reportingUnit FROM ReportingUnit reportingUnit WHERE reportingUnit.code = :CODE");
+        query.setParameter("CODE", code);
+        List<ReportingUnit> reportingUnits = query.getResultList();
+        if (reportingUnits.size() > 0) {
+            return reportingUnits.get(0);
+        }
+        return null;
+    }
+
+    public Country findCountryByCode(String code) {
+        Query query = em.createQuery("SELECT country FROM Country country WHERE country.code = :CODE");
+        query.setParameter("CODE", code);
+        List<Country> countries = query.getResultList();
+        if (countries.size() > 0) {
+            return countries.get(0);
+        }
+        return null;
     }
 
     public List<InputType> findInputTypeByName(String name) {
@@ -82,6 +106,10 @@ public class AdminService {
 
     public void persist(Country country) throws Exception {
         em.persist(country);
+    }
+
+    public void persist(ReportingUnit ru) throws Exception {
+        em.persist(ru);
     }
 
     public void updater(User u) throws Exception {
