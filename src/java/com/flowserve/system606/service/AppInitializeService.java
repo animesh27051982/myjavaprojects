@@ -7,6 +7,7 @@ package com.flowserve.system606.service;
 
 import com.flowserve.system606.model.Country;
 import com.flowserve.system606.model.InputType;
+import com.flowserve.system606.model.PerformanceObligation;
 import com.flowserve.system606.model.User;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -35,6 +36,8 @@ public class AppInitializeService {
 
     @EJB
     private AdminService adminService;
+    @EJB
+    private PerformanceObligationService pobService;
 
     @PostConstruct
     public void init() {
@@ -43,7 +46,7 @@ public class AppInitializeService {
             initUsers();
             initInputTypes();
             initCountries();
-            //testUpdateCountry();
+            initPOBs();
         } catch (Exception ex) {
             Logger.getLogger(AppInitializeService.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -129,6 +132,39 @@ public class AppInitializeService {
         }
     }
 
+    private void initPOBs() throws Exception {
+
+        User administrator = admin.get(0);
+
+        if (pobService.findById(10660L) == null) {
+            logger.info("Initializing POBs");
+            BufferedReader reader = new BufferedReader(new InputStreamReader(AppInitializeService.class.getResourceAsStream("/resources/app_data_init_files/pob_data.txt"), "UTF-8"));
+
+            int count = 0;
+            String line = null;
+            while ((line = reader.readLine()) != null) {
+                if (line.trim().length() == 0) {
+                    continue;
+                }
+
+                count = 0;
+                String[] values = line.split("\\t");
+
+                PerformanceObligation pob = new PerformanceObligation();
+
+                pob.setName(values[count++]);
+                pob.setId(new Long(values[count++]));
+                pob.setActive(true);
+
+                pobService.persist(pob, administrator);
+            }
+
+            reader.close();
+
+            logger.info("Finished initializing POBs.");
+        }
+    }
+
     private void initCountries() throws Exception {
         if (adminService.findCountryById("USA") == null) {
             logger.info("Initializing Countries");
@@ -143,10 +179,5 @@ public class AppInitializeService {
 
             logger.info("Finished initializing InputTypes.");
         }
-    }
-
-    private void testUpdateCountry() {
-        Country usa = adminService.findCountryById("USA");
-        usa.setCode("USAA");
     }
 }
