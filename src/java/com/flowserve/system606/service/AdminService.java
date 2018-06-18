@@ -8,6 +8,7 @@ package com.flowserve.system606.service;
 import com.flowserve.system606.model.BusinessUnit;
 import com.flowserve.system606.model.Country;
 import com.flowserve.system606.model.InputType;
+import com.flowserve.system606.model.ReportingUnit;
 import com.flowserve.system606.model.User;
 import java.util.List;
 import javax.ejb.Stateless;
@@ -82,4 +83,16 @@ public class AdminService {
     public void updater(User u) throws Exception {
         em.persist(u);
     }
+
+    public List<ReportingUnit> searchReportingUnits(String searchString) throws Exception {  // Need an application exception type defined.
+        if (searchString == null || searchString.trim().length() < 2) {
+            throw new Exception("Please supply a search string with at least 2 characters.");
+        }
+        System.out.println("Search" + searchString.toUpperCase());
+        TypedQuery<ReportingUnit> query = em.createQuery("SELECT ru  FROM ReportingUnit ru WHERE UPPER(ru.name) LIKE :NAME OR UPPER(ru.code) LIKE :NAME ORDER BY UPPER(ru.name)", ReportingUnit.class);
+        query.setParameter("NAME", "%" + searchString.toUpperCase() + "%");
+        System.out.println("com" + query);
+        return (List<ReportingUnit>) query.getResultList();
+    }
+
 }
