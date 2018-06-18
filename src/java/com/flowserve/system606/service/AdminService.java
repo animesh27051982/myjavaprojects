@@ -5,6 +5,7 @@
  */
 package com.flowserve.system606.service;
 
+import com.flowserve.system606.model.Country;
 import com.flowserve.system606.model.InputType;
 import com.flowserve.system606.model.User;
 import java.util.List;
@@ -49,6 +50,10 @@ public class AdminService {
 
     }
 
+    public Country findCountryById(String id) {
+        return em.find(Country.class, id);
+    }
+
     public List<InputType> findInputTypeByName(String name) {
         Query query = em.createQuery("SELECT inputType FROM InputType inputType WHERE inputType.name = :NAME");
         query.setParameter("NAME", name);
@@ -59,10 +64,11 @@ public class AdminService {
         em.persist(inputType);
     }
 
-    public void updater(User u) throws Exception {
-
-        em.persist(u);
-
+    public void persist(Country country) throws Exception {
+        em.persist(country);
     }
 
+    public void updater(User u) throws Exception {
+        em.persist(u);
+    }
 }
