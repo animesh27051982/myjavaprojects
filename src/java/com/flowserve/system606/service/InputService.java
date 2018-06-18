@@ -70,7 +70,6 @@ public class InputService {
         inputSet.setFilename( filename );
 
         List<Input> inputList = new ArrayList<>();
-        User admin = adminService.findUserByFlsId("admin").get(0);
 
         while (rowIterator.hasNext()) {
            row = (XSSFRow) rowIterator.next();
@@ -143,7 +142,7 @@ public class InputService {
 
            // update/save the pob
            logger.info("pobService.update POB ID:" + pob.getId() + " Name:" +pob.getName() + " \t\t ");
-           pobService.update(pob, admin);
+           pobService.update(pob);
         }
         fis.close();          
         inputSet.setInputs(inputList);
