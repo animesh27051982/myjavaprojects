@@ -51,6 +51,7 @@ public abstract class Input<T> extends BaseEntity<Long> {
 
     public abstract void setValue(T value);
 
+    @Override
     public Long getId() {
         return id;
     }
