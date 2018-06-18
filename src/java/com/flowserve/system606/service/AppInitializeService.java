@@ -5,12 +5,14 @@
  */
 package com.flowserve.system606.service;
 
+import com.flowserve.system606.model.Country;
 import com.flowserve.system606.model.InputType;
 import com.flowserve.system606.model.User;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Locale;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
@@ -40,6 +42,8 @@ public class AppInitializeService {
         try {
             initUsers();
             initInputTypes();
+            initCountries();
+            //testUpdateCountry();
         } catch (Exception ex) {
             Logger.getLogger(AppInitializeService.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -123,5 +127,26 @@ public class AppInitializeService {
 
             logger.info("Finished initializing InputTypes.");
         }
+    }
+
+    private void initCountries() throws Exception {
+        if (adminService.findCountryById("USA") == null) {
+            logger.info("Initializing Countries");
+
+            String[] countryCodes = Locale.getISOCountries();
+            for (String countryCode : countryCodes) {
+
+                Locale locale = new Locale("", countryCode);
+                Country country = new Country(locale.getISO3Country(), locale.getCountry(), locale.getDisplayCountry());
+                adminService.persist(country);
+            }
+
+            logger.info("Finished initializing InputTypes.");
+        }
+    }
+
+    private void testUpdateCountry() {
+        Country usa = adminService.findCountryById("USA");
+        usa.setCode("USAA");
     }
 }
