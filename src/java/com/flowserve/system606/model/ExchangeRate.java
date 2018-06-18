@@ -7,7 +7,6 @@ package com.flowserve.system606.model;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.util.Currency;
 import java.util.logging.Logger;
 import javax.persistence.Column;
@@ -15,6 +14,8 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
@@ -29,31 +30,27 @@ public class ExchangeRate implements Serializable {
     @SequenceGenerator(name = "FLS_SEQ", sequenceName = "FLS_SEQ", allocationSize = 1)
     @Column(name = "EXCHANGE_RATE_ID")
     private Long id;
-
     @Column(name = "TYPE")
     private String type;
-
     @Column(name = "FROM_CURRENCY")
     private Currency fromCurrency;
-
     @Column(name = "TO_CURRENCY")
     private Currency toCurrency;
-
-    @Column(name = "EFFECTIVE_DATE")
-    private LocalDate effectiveDate;
-
-    @Column(name = "RATE")
-    private BigDecimal rate;
+    @OneToOne
+    @JoinColumn(name = "FINANCIAL_PERIOD_ID")
+    private FinancialPeriod financialPeriod;
+    @Column(name = "CONVERSION_RATE", precision = 38, scale = 14)
+    private BigDecimal conversionRate;
 
     public ExchangeRate() {
     }
 
-    public ExchangeRate(String type, Currency fromCurrency, Currency toCurrency, LocalDate effectiveDate, BigDecimal rate) {
+    public ExchangeRate(String type, Currency fromCurrency, Currency toCurrency, FinancialPeriod financialPeriod, BigDecimal rate) {
         this.type = type;
         this.fromCurrency = fromCurrency;
         this.toCurrency = toCurrency;
-        this.effectiveDate = effectiveDate;
-        this.rate = rate;
+        this.financialPeriod = financialPeriod;
+        this.conversionRate = rate;
     }
 
     @Override
@@ -96,20 +93,20 @@ public class ExchangeRate implements Serializable {
         this.toCurrency = toCurrency;
     }
 
-    public LocalDate getEffectiveDate() {
-        return effectiveDate;
+    public BigDecimal getConversionRate() {
+        return conversionRate;
     }
 
-    public void setEffectiveDate(LocalDate effectiveDate) {
-        this.effectiveDate = effectiveDate;
+    public void setConversionRate(BigDecimal conversionRate) {
+        this.conversionRate = conversionRate;
     }
 
-    public BigDecimal getRate() {
-        return rate;
+    public FinancialPeriod getFinancialPeriod() {
+        return financialPeriod;
     }
 
-    public void setRate(BigDecimal rate) {
-        this.rate = rate;
+    public void setFinancialPeriod(FinancialPeriod financialPeriod) {
+        this.financialPeriod = financialPeriod;
     }
 
 }
