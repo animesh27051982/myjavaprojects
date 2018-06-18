@@ -5,8 +5,8 @@
  */
 package com.flowserve.system606.service;
 
-import com.flowserve.system606.model.Country;
 import com.flowserve.system606.model.BusinessUnit;
+import com.flowserve.system606.model.Country;
 import com.flowserve.system606.model.InputType;
 import com.flowserve.system606.model.User;
 import java.util.List;
@@ -38,14 +38,14 @@ public class AdminService {
 
     public List<BusinessUnit> findBusinessUnits() throws Exception {  // Need an application exception type defined.
         System.out.println("findBusinessUnits");
-        TypedQuery<BusinessUnit> query = em.createQuery("SELECT b FROM BusinessUnit b", BusinessUnit.class);       
+        TypedQuery<BusinessUnit> query = em.createQuery("SELECT b FROM BusinessUnit b", BusinessUnit.class);
         return (List<BusinessUnit>) query.getResultList();
     }
-        
+
     public void updateUser(User u) throws Exception {
         em.merge(u);
     }
-    
+
     public void updateBusinessUnit(BusinessUnit u) throws Exception {
         em.merge(u);
     }
