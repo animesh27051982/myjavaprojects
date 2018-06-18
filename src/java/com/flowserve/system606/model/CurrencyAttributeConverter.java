@@ -9,6 +9,9 @@ public class CurrencyAttributeConverter implements AttributeConverter<Currency, 
 
     @Override
     public String convertToDatabaseColumn(Currency currency) {
+        if (currency == null) {
+            return null;
+        }
         return currency.getCurrencyCode();
     }
 
