@@ -1,0 +1,71 @@
+United Arab	UAE dirham	(Dirham)	AED	3.6728
+Angola	MANUAL LOOKUP	(Kwanza)	AOA	239.0
+Argentina	Argentina peso	(Peso)	ARS	24.941
+Australia	Australian dollar	(Dollar)	AUD	1.3215276860050218
+Bangladesh	Bangladesh Taka	Taka	BDT	84.0
+Bulgaria	MANUAL LOOKUP	(Bulgarian Leva)	BGN	1.6723
+Bahrain	Bahrain dinar	(Dinar)	BHD	0.3775
+Brunei	Bruneian Dollar	(Dollar)	BND	1.3251
+Bolivian	Bolivia Boliviano	(Boliviano)	BOB	6.85
+Brazil	Brazil real	(Real)	BRL	3.7225
+Canada	Canada dollar	(Dollar)	CAD	1.2956
+Switzerland	Switzerland franc	(Franc)	CHF	0.9857
+Chile	Chile peso	(Peso)	CLP	630.39
+China	China yuan	(Renminbi)	CNY	6.4096
+Colombia	Colombia peso	(Peso)	COP	2889.7
+Costa Rica	Costa Rica Colon	Colon	CRC	564.95
+Czech Republic	Czech Rep. koruna**	(Koruna)	CZK	22.079
+Denmark	Denmark krone	(Krone)	DKK	6.3642
+Algeria	MANUAL LOOKUP	(Algerian Dinar)	DZD	116.162
+Egypt	Egypt pound	(Egyptian Pound)	EGP	17.86
+Euro	Euro area euro	(Euro)	EUR	0.8554319931565441
+Fiji	Fiji FJD	(Dollar)	FJD	2.1110407430863414
+U.K.	UK pound	(Pound)	GBP	0.7519927808693037
+Ghana	MANUAL LOOKUP	(Ghanaian Cedi)	GHS	4.7173
+Hong Kong	Hong Kong dollar	(Dollar)	HKD	7.8431
+Croatia	MANUAL LOOKUP	(Kuna)	HRK	6.3161
+Hungary	Hungary forint	(Forint)	HUF	273.23
+Indonesia	Indonesia rupiah	(Rupiah)	IDR	13890.0
+Israel	Israel shekel	shekel	ILS	3.5585
+India	India rupee	(Rupee)	INR	67.42
+Iraqi	Iraqi Dinar	Dinar	IQD	1186.43
+Jordan	Jordan dinar	(Jordanian Dinar)	JOD	0.709
+Japan	Japan yen	(Yen)	JPY	108.81
+Kenya	Kenya shilling	(Kenya Shilling)	KES	101.2
+South Korea	South Korea won	(Won)	KRW	1079.59
+Kuwait	Kuwait dinar	(Dinar)	KWD	0.302
+Kazakhstan	Kazakhstan Tenge	(Tenge)	KZT	329.41
+Lebanese	Lebanese Pound	Pound	LBP	1505.0
+Lybia	MANUAL LOOKUP	Lybian Dinar	LYD	1.36
+Morroco	MANUAL LOOKUP	(Dirham)	MAD	9.4855
+Madagascar	MANUAL LOOKUP	(Malagasy Ariary)	MGA	3320.0
+Mexico	Mexico peso*	(Peso)	MXN	19.908
+Malaysia	Malaysia ringgit	(Ringitt)-b	MYR	3.978
+Nigeria	MANUAL LOOKUP	(Naira)	NGN	305.7
+Norway	Norway krone	(Krone)	NOK	8.1772
+New Zealand	New Zealand dollar	(Dollar)	NZD	1.4291839359725598
+Oman	MANUAL LOOKUP	(Rial Omani)	OMR	0.38496
+Peru	Peru new sol	(new Sol)	PEN	3.271
+Philippines	Philippines peso	(Peso)	PHP	52.541
+Pakistan	Pakistan rupee	(Rupee)	PKR	115.55
+Poland	Poland zloty	(Zloty)	PLN	3.6913
+Paraguay	Paraguayan Guarani	(Guarani)	PYG	5720.0
+Qatar	MANUAL LOOKUP	(Qatari Riyal)	QAR	3.64
+Romania	Romania leu	(Leu)	RON	3.9838
+Serbia	MANUAL LOOKUP	(Dinar)	RSD	100.8
+Russia	Russia ruble	(Ruble)-a	RUB	62.3496
+Saudi Arabia	Saudi Arabia riyal	(Riyal)	SAR	3.7502
+Sweden	Sweden krona	(Krona)	SEK	8.8123
+Singapore	Singapore dollar	(Dollar)	SGD	1.3374
+Thailand	Thailand baht	(Baht)	THB	32.05
+Tunisia	MANUAL LOOKUP	Tunisai Dinar	TND	2.596
+Turkey	Turkey lira	(Turkish Lira	TRY	4.5235
+Trinidad	MANUAL LOOKUP	(Dollar)	TTD	6.65
+Taiwan	Taiwan dollar	(Dollar)	TWD	29.973
+USA	United States	(Dollar)	USD	1.0
+Uruguayan Peso	Uruguay	(Peso)	UYU	30.96
+Venezuela	Venezuela b. fuerte	(Bolivar Fuerte)	VEF	80000.0
+Vietnam	Vietnam dong	(Dong)	VND	22804.0
+Senegal	MANUAL LOOKUP	(West African CFA franc)	XOF	576.66
+South Africa	South Africa rand	(Rand)	ZAR	12.695
+Zimbabwe	MANUAL LOOKUP	Zimbabwe Dollar	ZWD	378.0

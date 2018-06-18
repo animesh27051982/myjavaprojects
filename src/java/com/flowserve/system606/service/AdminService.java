@@ -6,7 +6,9 @@
 package com.flowserve.system606.service;
 
 import com.flowserve.system606.model.BusinessUnit;
+import com.flowserve.system606.model.Country;
 import com.flowserve.system606.model.InputType;
+import com.flowserve.system606.model.ReportingUnit;
 import com.flowserve.system606.model.User;
 import java.util.List;
 import javax.ejb.Stateless;
@@ -37,14 +39,14 @@ public class AdminService {
 
     public List<BusinessUnit> findBusinessUnits() throws Exception {  // Need an application exception type defined.
         System.out.println("findBusinessUnits");
-        TypedQuery<BusinessUnit> query = em.createQuery("SELECT b FROM BusinessUnit b", BusinessUnit.class);       
+        TypedQuery<BusinessUnit> query = em.createQuery("SELECT b FROM BusinessUnit b", BusinessUnit.class);
         return (List<BusinessUnit>) query.getResultList();
     }
-        
+
     public void updateUser(User u) throws Exception {
         em.merge(u);
     }
-    
+
     public void updateBusinessUnit(BusinessUnit u) throws Exception {
         em.merge(u);
     }
@@ -60,6 +62,10 @@ public class AdminService {
 
     }
 
+    public Country findCountryById(String id) {
+        return em.find(Country.class, id);
+    }
+
     public List<InputType> findInputTypeByName(String name) {
         Query query = em.createQuery("SELECT inputType FROM InputType inputType WHERE inputType.name = :NAME");
         query.setParameter("NAME", name);
@@ -70,10 +76,23 @@ public class AdminService {
         em.persist(inputType);
     }
 
+    public void persist(Country country) throws Exception {
+        em.persist(country);
+    }
+
     public void updater(User u) throws Exception {
-
         em.persist(u);
+    }
 
+    public List<ReportingUnit> searchReportingUnits(String searchString) throws Exception {  // Need an application exception type defined.
+        if (searchString == null || searchString.trim().length() < 2) {
+            throw new Exception("Please supply a search string with at least 2 characters.");
+        }
+        System.out.println("Search" + searchString.toUpperCase());
+        TypedQuery<ReportingUnit> query = em.createQuery("SELECT ru  FROM ReportingUnit ru WHERE UPPER(ru.name) LIKE :NAME OR UPPER(ru.code) LIKE :NAME ORDER BY UPPER(ru.name)", ReportingUnit.class);
+        query.setParameter("NAME", "%" + searchString.toUpperCase() + "%");
+        System.out.println("com" + query);
+        return (List<ReportingUnit>) query.getResultList();
     }
 
 }
