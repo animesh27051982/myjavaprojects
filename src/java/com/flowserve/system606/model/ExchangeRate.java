@@ -43,6 +43,14 @@ public class ExchangeRate implements Serializable {
     public ExchangeRate() {
     }
 
+    public ExchangeRate(String type, Currency fromCurrency, Currency toCurrency, LocalDate effectiveDate, BigDecimal rate) {
+        this.type = type;
+        this.fromCurrency = fromCurrency;
+        this.toCurrency = toCurrency;
+        this.effectiveDate = effectiveDate;
+        this.rate = rate;
+    }
+
     @Override
     public boolean equals(Object obj) {
         if (obj instanceof ExchangeRate) {
