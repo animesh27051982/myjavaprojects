@@ -6,50 +6,58 @@
 package com.flowserve.system606.model;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Currency;
+import java.util.List;
 import java.util.logging.Logger;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 @Entity
 @Table(name = "REPORTING_UNITS")
-public class ReportingUnit implements Comparable<ReportingUnit>, Serializable {
+public class ReportingUnit extends BaseEntity<Long> implements Comparable<ReportingUnit>, Serializable {
 
     private static final long serialVersionUID = 8757812203684986897L;
     private static final Logger LOG = Logger.getLogger(ReportingUnit.class.getName());
     @Id
     @Column(name = "REPORTING_UNIT_ID")
     private Long id;
-
     @Column(name = "REPORTING_UNIT_NAME")
     private String name;
+    @Column(name = "REPORTING_UNIT_CODE")
+    private String code;
     @Column(name = "REPORTING_UNIT_NUMBER")
     private String number;
     @OneToOne
-    @JoinColumn(name = "BUSINESS_PLATFORM_ID")
-    private BusinessPlatform businessPlatform;
-
+    @JoinColumn(name = "BUSINESS_UNIT_ID")
+    private BusinessUnit businessUnit;
+    @OneToOne
+    @JoinColumn(name = "COUNTRY_ID")
+    private Country country;
     @Column(name = "FUNCTIONAL_CURRENCY")
     private Currency functionalCurrency;
+    @OneToMany(fetch = FetchType.EAGER)
+    @JoinTable(name = "REPORTING_UNIT_PREPARERS", joinColumns = @JoinColumn(name = "REPORTING_UNIT_ID"), inverseJoinColumns = @JoinColumn(name = "USER_ID"))
+    private List<User> preparers = new ArrayList<User>();
+    @OneToMany(fetch = FetchType.EAGER)
+    @JoinTable(name = "REPORTING_UNIT_APPROVERS", joinColumns = @JoinColumn(name = "REPORTING_UNIT_ID"), inverseJoinColumns = @JoinColumn(name = "USER_ID"))
+    private List<User> approvers = new ArrayList<User>();
+    @Column(name = "IS_ACTIVE")
+    private boolean active;
 
     public ReportingUnit() {
     }
 
     @Override
     public int compareTo(ReportingUnit obj) {
-        return this.name.compareTo(obj.getName());
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (obj instanceof ReportingUnit) {
-            return this.id.equals(((ReportingUnit) obj).getId());
-        }
-        return false;
+        return this.code.compareTo(obj.getCode());
     }
 
     public Long getId() {
@@ -76,20 +84,52 @@ public class ReportingUnit implements Comparable<ReportingUnit>, Serializable {
         this.number = number;
     }
 
-    public BusinessPlatform getBusinessPlatform() {
-        return businessPlatform;
-    }
-
-    public void setBusinessPlatform(BusinessPlatform businessPlatform) {
-        this.businessPlatform = businessPlatform;
-    }
-
     public Currency getFunctionalCurrency() {
         return functionalCurrency;
     }
 
     public void setFunctionalCurrency(Currency functionalCurrency) {
         this.functionalCurrency = functionalCurrency;
+    }
+
+    public Country getCountry() {
+        return country;
+    }
+
+    public void setCountry(Country country) {
+        this.country = country;
+    }
+
+    public List<User> getApprovers() {
+        return approvers;
+    }
+
+    public boolean isActive() {
+        return active;
+    }
+
+    public void setActive(boolean active) {
+        this.active = active;
+    }
+
+    public List<User> getPreparers() {
+        return preparers;
+    }
+
+    public String getCode() {
+        return code;
+    }
+
+    public void setCode(String code) {
+        this.code = code;
+    }
+
+    public BusinessUnit getBusinessUnit() {
+        return businessUnit;
+    }
+
+    public void setBusinessUnit(BusinessUnit businessUnit) {
+        this.businessUnit = businessUnit;
     }
 
 }
