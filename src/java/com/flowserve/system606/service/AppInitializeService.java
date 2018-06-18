@@ -13,6 +13,7 @@ import com.flowserve.system606.model.PerformanceObligation;
 import com.flowserve.system606.model.PeriodStatus;
 import com.flowserve.system606.model.ReportingUnit;
 import com.flowserve.system606.model.User;
+import com.flowserve.system606.service.CurrencyService;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.math.BigDecimal;
