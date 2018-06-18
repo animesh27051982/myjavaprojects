@@ -1,0 +1,943 @@
+﻿CODE	NAME	COUNTRY_COUNTRY_ID
+8130	FPD ENG'D Colombia	CO
+8145	France Intl	FR
+7854	Sterling Fluid Systems Holding GmbH (SIHI)	DE
+8905	Japan, Niigata	JP
+8225	Netherlands, Etten Leur	NL
+1715	USA, Cleveland, OH	US
+1370	USA, Innomag - Chicago, IL	US
+1020	USA, Scranton - PMC, PA	US
+0000	Default (not organization specific)	
+0102	Flowserve Corporation Corporate	US
+0104	Flowserve International Inc (Cor	US
+0105	Flowserve International LLC	
+0107	Flowserve Holdings Inc	US
+0110	Flowserve Finance BV-Corp	NL
+0115	Flowserve Management Co. Royalties	US
+0119	IFC Purchase Books	US
+0120	Flowserve US Inc-Corporate	US
+0123	Flowcom Insurance Co-Corporate	US
+0124	Fls Mexico Holdings LLC-Corp	US
+0128	Corporate International Adjustme	
+0130	Fls Holdings II LLC-Corp	US
+0133	Flowserve Italy, LLC	IT
+0134	Fls Latin Am Hldgs LLC-Corp	CA
+0160	Flowserve Netherlands LLC	NL
+0170	Flowserve Venezula LLC	CA
+0180	Flowserve Singapore LLC	CA
+0190	Flowserve Europe CV	NL
+0200	Flowcom Insurance Company	
+0220	Flowserve CV Holding LLC	NL
+0230	Flowserve Dutch III C.V.	NL
+0240	Flowserve Dutch IV C.V.	NL
+0243	Flowserve Holding CV	NL
+0245	Floswserve Netherlands VIII C.V.	NL
+0249	Flowserve Netherlands IX C.V.	NL
+0250	Flowserve CV5 Holding LLC	NL
+0253	Flowserve Dutch Canada LLC	NL
+0255	Flowserve Canada International LLC	CA
+0260	Flowserve EMA V C.V.	NL
+0270	Flowserve Holding VI C.V	NL
+0280	Flowserve Dutch VII C.V.	NL
+0282	Flowserve Canada Cooperatief W.A.	NL
+0284	Flowserve Canada International LLC	CA
+0286	Flowserve International Holdings Cooperatief W.A.	NL
+0288	Flowserve Coop Holdings LLC	CA
+0290	Flowserve Belgium Holdings LLC	NL
+0310	Flowserve SPI LLC	NL
+1000	Moosic-Vernon FPD	US
+1005	Moosic-Chesapeake FPD	US
+1010	Moosic-Taneytown FPD	
+1035	ISG NA Learning Center	
+1205	Vernon, CA NPO	US
+1210	Albuquerque, NM FPD	US
+1215	Santa Fe, NM FPD	US
+1305	Statesville, NC FPD	US
+1310	Phillipsburg, NJ Navy	US
+1315	Phillipsburg, NJ Non Navy	US
+1320	SIHI Pumps Inc.	
+1326	Sterling Fluid Systems (Americas) Inc.	
+1360	FLS Lawrence Pumps - Purchase Price Adjustments	US
+1371	Innovative Mag-Drive Chicago Purchase Accounting	US
+1500	Industrial Americas Admin (BU Admin)	
+1505	Memphis, TN FPD	US
+1510	Springboro, OH FPD	US
+1630	Wilmington, NC Engineered	US
+1640	Pump Integration	
+1645	Pump Restructuring	
+1650	Closed sites history only - Baan	US
+1655	IDP Corporate	US
+1660	Closed sites history only - Epic	US
+1665	FPD US SRG	US
+1730	Bridgeville, PA (End dated 13-MAR-2015)	
+1731	Pump Investments	US
+1732	Alternate Energy Mascoma	US
+1735	Clarks Summit, PA(End dated 13-MAR-2015)	
+1737	Pump Service Corporate Allocations	US
+1738	Plainview, TX FPD	US
+1740	Chico, CA FPD	US
+1800	FSG Engineered World Headquarters	US
+1805	FSG Engineered World Headquarters - North America	US
+1810	FSG Engineered EMA Headquarters	US
+1815	FSG Engineered World Headquarters - Latin America	US
+1820	FSG Engineered APAC Headquarters	US
+1825	FSG Industrial World Headquarters	US
+1830	FSG Engineering R&D	US
+1835	FSG Industrial R&D	US
+1845	FSG Service & Solutions HQ	US
+1850	FSG IPO HQ	US
+1905	FPD Purchase Accounting	
+1910	FPD Division Selling Exp	US
+1915	FPD Division Marketing	US
+1917	FPD Industrial Adjustments	US
+1920	FPD RED Corp	US
+1925	RED Restructure Domestic	
+1926	RED Restructure International	
+1930	FPD Domestic Restructure	
+1934	IDP Purchase Domestic Intangibles	US
+1935	IDP Domestic Purchase Acctg	US
+1936	IDP Purchase International	
+1938	FPD Purchase Adjustment Intangibles	US
+1940	IDP_WW_IRADJ	US
+1965	India - Bangalore FPD	
+1973	RUFSG ISO Global HQ	US
+3018	Lanxess Orange	
+3060	Charlotte, SC Seal	
+3068	Corpus Christi, TX	US
+3105	Puerto Rico Seal	
+3110	Richmond, VA Seal	
+3200	Florence, SC	
+3210	Mobil BMT Partner	
+3212	1999 Restructuring A	
+3215	Marathon Texas City	
+3225	GE Silicones NY	
+3228	Giant Refining	
+3235	Marathon Robinson	
+3240	Air Products	
+3245	Mobile Torrance	
+3255	Marathon Canton	
+3260	Marathon St Paul	
+3275	Dow Midland	
+3280	Louisiana Pigment	
+3290	Exxon Baytown	
+3295	DSM Baton Rouge	
+3300	DSM Addis	
+3310	DSM Augusta	
+3315	Exxon Mobil Joliet	
+3325	DOW Texas City	
+3330	Union Carbide 2	
+3340	Hercules Brunswick 1	
+3345	Hercules Brunswick 2	
+3346	Texas Petrochemicals	
+3355	Gas Seal	US
+3365	Seal US General Operations	
+3900	Learning Resource Center	US
+3905	FSD Division HQ	US
+8070	Canada - Brantford	CA
+3911	FSG SEALS HQ	US
+7947	Sterling Fluid Services Ltd	
+7950	Sterling Fluid Systems (UKGroup) Limited	
+7953	SPP International Limited	
+7956	LaBour Ltd., U.K.	
+8001	Argentina - FSG Regional Expense	AR
+8012	Argentina - Emcomet	AR
+8014	Australia - FCD Melbourne	
+8015	Australia - Control Valves	AU
+8016	Australia - Control Valves - Perth	
+8027	Austria - Flowserve Compression Systems	
+8031	Austria - Flowserve/Schmidt	AT
+8033	Netherlands - FFC Netherlands	NL
+8036	Belgium - FLS Finance BVBA	BE
+8040	Belgium - Antwerp SRG Valve	
+8041	Belgium - Corporate (CACP)	BE
+8050	Belgium - Lokeren SRG Valve - Flowserve NV	
+8055	Belgium - Petit-Rechain FPD Ind'l	
+8057	Seal Bolivia	BO
+8059	S & S Bolivia	
+8061	Brazil - IFC Worcester	BR
+8063	BRAZIL REGIONAL EXPENSES	BR
+8068	Canada - Corporate	CA
+8077	Canada - Ft McMurray	CA
+8078	Canada - St. Thomas	
+8079	Canada - Edmonton	CA
+8081	Seal Canada - Calgary	CA
+8082	Canada - Consignment	
+8091	Canada - Holding Company	CA
+8092	Canada - Nova Scotia	CA
+8105	Canada - Woodbridge Control Valves	CA
+8111	Canada - Flowserve Limited Partnership	CA
+8118	Canada - Scarborough Worcester Controls	CA
+8122	Chile -  FSG  Regional Expense	CL
+8126	Colombia - FSG Regional Expense	CO
+8127	China - FFC China	CN
+8131	Finland - IFC Naval OY	FI
+8133	France - Corporate	FR
+8136	France - BTR Valve	FR
+8137	France - Worcester	
+8140	Seal France - Martigues	
+8143	France - FFC Automax, Nanterre	
+8150	France - Fribourg FPD WW SA	
+8175	France - Sereg Vannes Control Valves	FR
+8179	Germany - IFC Argus, Ettlingen	DE
+8180	Germany - Berlin FPD Ind'l Deutsche	DE
+8181	Germany - Flowserve Germany GmbH	DE
+8182	Germany - Corp Essen	DE
+8183	Germany - Flowserve Germany Verwaltungs GmbH&Co	DE
+8185	Germany - Berlin FPD Ind'l Dresser	DE
+8187	Germany - Bremen	DE
+8188	Germany - Deutsche IDP	DE
+8189	TBD - UNASSIGNED	
+8192	Germany - Dortmund Corp	DE
+8193	Germany - Horneburg	
+8194	Germany - Verwaltung	DE
+8196	Germany - EMA Administration	DE
+8197	Germany - LRC Essen	DE
+8198	Germany - Seal Essen Admin	DE
+8201	Germany - Systems Germany	DE
+8202	Germany - Gohren QRC	DE
+8215	Germany - Limburg Auto Valves	
+8217	Germany - Neuss PMV GmbH	
+8218	Germany - IFC P&W Service NORBO	
+8220	Germany - Wehrheim SRG Online	
+8223	Holland - Corporate	NL
+8224	Flowserve Netherlands CV	NL
+8226	Flowserve Netherlands Management BV	NL
+8228	Holland - FSD EMA Headquarters	NL
+8230	Holland, - Etten Leur SRG Pump	
+8231	Holland, LCA_DOW Terneuzen	
+8232	Holland, LCA_DSM Geleen	
+8233	Holland, LCA_Total Vlissingen	
+8234	Holland, LCA_Shell Moerdijk	
+8238	Holland, Flowserve International - BV	NL
+8239	Holland, Flowserve Germany Holdings BV	NL
+8240	Holland - Hellevoetsluis SRG Valve	NL
+8248	Holland - FLS Dutch LLC	NL
+8249	Holland - FLS Netherlands Cooperative	NL
+8258	Holland - FLS Finance SARL	IE
+8259	Flowserve Holdings Cooperatief WA	NL
+8260	India - Bangalore Control Valves	
+8262	India -  Controls Pvt Ltd HQ	IN
+8263	India - Valve	
+8264	India - FCD Engineering Center, Bangalore	IN
+8267	India - FCD Bangalore - Limitorque	IN
+8269	India - Flowserve Gestra	IN
+8271	India - Audco 100% owned	IN
+8273	India - Lawrence Pumps Private Ltd.	IN
+8274	India Vadodara QRC	
+8276	India - Hubli FPD Ind'l Non Controlling Interest	IN
+8277	FPD Bangalore Selling	IN
+8278	FLS India FCD Chemical QRC - Trading	
+8279	IPO Coimbatore India	IN
+8281	India - Hubli Non Controlling Interest	IN
+8283	Indonesia - FCD CTL	
+8286	Ireland - Durco	
+8287	Italy - Corporate	IT
+8293	Italy - FLS Valbart	IT
+8295	Italy - Auto Valves	IT
+8309	FPD ENG'D DESIO ITALY NON-CTRLNG INT	IT
+8311	Italy - IFC	
+8317	Pump EBJ Investment	US
+8319	Japan - Pump	
+8322	Korea - Seal Master Investment	
+8324	Luxembourg - FLS  Holdings SARL	LU
+8326	Malaysia - FCD QRC	
+8327	Mauritius	TH
+8332	Latin America Pumps - LCS	MX
+8336	Mexico - FCD of Flowserve S.A. DE C.V	MX
+8343	Flowserve LA Holdings S.de R.L. de C.V.	MX
+8345	Mexico - Seal MTO	MX
+8348	Seal Norway QRC (NOK)	NO
+8352	Portugal - IFC	PT
+8353	Poland - IFC	PL
+8356	Saudi Arabia - FCD - Joint Venture	SA
+8357	Dubai, QRC FCD Jebel Ali	AE
+8362	Singapore - Limitorque China	
+8366	Singapore - FCD Taiwan	
+8367	FCD China Process	CN
+8368	FCD China Power	CN
+8372	Singapore - Lawrence Pumps Asia Rpt Post Sing Merger	SG
+8373	Saudi Arabia - Pump Al-Rushaid Non Controlling Interest	SA
+8374	Singapore - FCD Oil & Gas	SG
+8376	Singapore - FSG Asia Sell	SG
+8379	Singapore - FCD Limitorque Selling	SG
+8382	Singapore - FSD China	
+8383	China FCD Division Expense	
+8310	Italy, Desio	IT
+8320	Seal Japan - Tokyo	JP
+8377	QRC Cheonan Korea	KR
+8325	Seal Malaysia - Selangor	MY
+zzzz	MEXICO, INTRA REGION BUSINESS	MX
+8245	Netherlands, Hengelo	NL
+8227	Seal Moerdijk - QRC	NL
+8237	Terneuzen QRC	NL
+8941	Flowserve Peru Pumps	PE
+8329	QRC Cavite Philippines	PH
+8360	SRG Saudi Motor Repair Shop	SA
+8358	Flowserve AL Rushaid Company LTD	SA
+8395	Spain, Arganda	ES
+8024	Switzerland, Calder	AT
+8425	Switzerland, Oensingen	CH
+8435	QRC Rayong Thailand	TH
+8460	Seal UK -  Manchester	GB
+8455	FPD ENG'D Newcastle UK	GB
+8452	Seal UK Teeside QRC	GB
+1705	USA, Baton Rouge, LA Pump	US
+1605	USA, Benicia - Service, CA	US
+3040	Tulsa	US
+1225	USA, Charlotte, NC	US
+1900	USA, Div Selling - IT	US
+1900	USA, Div Selling - Supply Chain	US
+1720	SRG Pump Fairfield NJ (IDP)	US
+3075	USA, Florence, SC	US
+1700	USA, Greer, SC	US
+1710	USA, Houston - SRG, TX	US
+1970	FPD NA Integrated Solutions Operations	US
+1350	USA, Lawrence Pump US	US
+1025	USA, Pittsburgh - PMC, PA	US
+1625	USA, Tampa, FL	US
+3100	Seal US - PAC Seal	US
+8482	Venezuela - FPD	VE
+0100	Corporate, Irving	US
+3912	1999 Restructuring A	
+3915	Saudi Joint Venture	
+3922	FSD QRC Dubai Gulf FZE	
+3925	Celanese Pasadenda	
+3930	Dow Seadrift	
+3935	Firestone	
+3940	Port Authur, TX	
+3945	Goodyear, Beaumont	
+3950	Albemarle, Orangeburg	
+3951	Albemarle Bayport, TX	
+3952	Albemarle Pasadena, TX	
+3955	Motiva Convent	
+3960	Sunoco	
+3965	Shell Norco	
+3970	Motiva Norco	
+3975	Shell Geismar	
+3978	Citgo - Corpus Christi, TX	
+3979	Sinclair, WY	
+3980	Exxon Mobil Baton Rouge	
+3981	Invista Victoria, TX	
+3982	Dow Pittsburg, CA	
+3983	Westlake Geismar, LA	
+3984	SI Group Freeport, TX	
+3986	Tesoro Wilmington, CA	
+3987	Chevron El Segundo, CA	
+3988	Holly Refining, Tulsa, OK	
+3989	Invista Orange, TX	
+3990	Firestone Orange	
+3991	BASF Geismar	
+3992	Arkema Clear Lake	
+3993	Motiva Port Arthur, TX	
+3994	Cherrypoint, Blaine, WA	
+3995	Oxy Chemical Geismar	
+3996	Shell Yabucoa PR	
+3997	Shell Anacortes	
+3998	BP Whiting, IN	
+3999	Suncor Denver	
+5002	FCD Springville Oil & Gas	US
+5005	Accord, UT Valve	US
+5010	Provo, UT Valve	
+5011	Springville US Outside Sales	US
+5015	Orem, UT Valve	
+5020	Houston, TX Valve	US
+5023	Flowserve Valbart US Operation	
+5025	Business Development	US
+5035	Beaumont, TX Valve	US
+5040	Corpus Christi, TX Valve	
+5041	Corpus Christi QRC	US
+5042	Chicago QRC	US
+5045	Baton Rouge, LA Valve	US
+5051	India Valtek Controls (Trading)	
+5052	India - Bangalore Mfg of HD Actuator	IN
+5053	India Engineering Center FCD Allocation	
+5055	Latin America Valve	
+5062	US Valbart Operation	US
+5063	FLS VALBART US OPERATIONS	US
+5065	Far East Valve	
+5068	Flowserve FCD Oil and Gas Shell EFA Organization	US
+5075	Kammer US	US
+5080	Advanced Products	
+5085	Philadelphia, PA Valve	US
+5090	SRD	
+5095	Flowserver	
+5100	Control Valve	
+5105	Industrial Valve	
+5110	Automation	
+5116	MVCVD Intangibles	US
+5125	USA, Dayton - Steel Foundry, OH	US
+5130	USA, Dayton -Titanium Foundry, OH	US
+5140	Williamsport, PA Valve	
+5145	Milford, CT Valve	
+5150	Walpole, MA Valve	
+5200	Raleigh, NC IFC Edward Valves	US
+5201	Woodlands, TX PMV	US
+5205	Jeffersonville, IN IFC VOGT	US
+5206	Sulphur Springs US Outside Sales	US
+5207	Raleigh US outside sales	US
+XXXX	Do Not Use	US
+5210	Marlborough, MA IFC Worcester	US
+5215	Sulphur Springs, TX IFC Nordstrom	US
+5221	Limitorque Intangibles	US
+5230	IFC -  PMV US	
+5235	IFC  - Americas US HQ	
+5900	FCD Division HQ	US
+5901	FCD Corporate R & D	US
+5905	FCD O&G Sector Expenses	US
+5908	FCD US Chemical Sector Expenses	US
+5909	FCD Power Sector Expenses	US
+5910	FCD O&G Sector Expenses	US
+5911	GSG Non-purchased Balances	US
+5912	FCD GI Sector Expenses	US
+7200	Rancho Dominguez, CA R&C Valves	
+7201	Invatec Corp	
+7205	Baton Rouge, LA SRD FCD	
+7210	SRD FCD SRD - VBU Corporate	
+7215	Seattle, WA Steam	
+7220	Benecia, CA Steam	
+7225	Long Beach, CA (RD)	
+7230	Puget, WA Steam	
+7235	Portland, OR Steam	
+7240	Anchorage, AK Steam	
+7245	Denver, CO Steam	
+7255	Saraland, AL Valve (SVS)	
+7260	Beaumont, TX Valve	
+7265	Sulphur, LA Plant Specialties Valve	
+7275	Harley-Gonzales	
+7276	Longview	
+7280	Norfolk, VA Valve Repair	
+7285	Columbia, SC Valve Repair	
+7290	Charleston, SC Valve Repair	
+7295	NAPRI	
+7300	Jacksonville, FL Valve Repair	
+7305	Southern	
+7315	Broken Arrow, OK Valve Repair	
+7320	Batavia, IL CFM Tesco	
+7325	Louisville, KY	
+7335	Waverly, WV Varco	
+7340	Cartersville, GA Valve Repair	
+7345	Lakeland, FL Valve Repair	
+7350	Tampa, FL Valve Repair	
+7351	Ash Tool	
+7352	Gould Machine	
+7353	ISG Valve Services Group Expenses	
+7400	Rancho Dominguez, CA Online Service	
+7405	Concord, CA Online (Berecia)	
+7410	Vancouver, WA Online	
+7415	Mesa, AZ Online	
+7420	Denver, CO Online	
+7425	Downers Grove, IL Online	
+7426	Downers Grove, IL Online Corporate	
+7430	Orlando, FL Online	
+7435	Paulsboro, NJ Online	
+7440	Charlotte, NC Online	
+7445	Houston, TX (Dixie Drive) Online Manufacturing	
+7450	Bakersfield, CA Online	
+7460	Corporate Online	
+7465	Rancho Dominguez, CA  Online Manufacturing	
+7470	Muskogee, OK   Online Manufacturing	
+7500	Muskogee, OK Online Service	
+7505	Arnold, MO Online	
+7510	Frankfort, IL Online	
+7515	Corpus Christi, TX Online	
+7520	Decatur, IL Online	
+7525	Hurricane, WV Online	
+7527	Darwins Holdings Ltd	
+7529	Sterling Fluid Systems (UK) Ltd	
+7531	Sterling SIHI GmbH	
+7533	Halberg Maschinenbau GmbH (SIHI)	
+7535	Sterling Fluid Systems Holding GmbH	
+7537	Sterling Industry Consult GmbH	
+7539	Sterling Fluid Systems (Poland) Sp.zo.o	
+7541	Sterling Fluid Systems (Czech Republic) S.R.O.	
+7547	Sterling Fluid Systems (Romania) S.R.L.	
+7549	Sterling Fluid Systems (Hungaria) Kft.	
+7553	Sterling Fluid Systems (IP) B.V.	
+7555	Sterling SIHI (Spain) S.L.	ES
+7557	Sterling Fluid Systems (Italy) S.p.A.	
+7559	Sterling SIHI (France) S.A.S.	FR
+7561	Sterling Fluid Systems (Schweiz) AG	
+7583	FLS US Legal Structure	
+7600	Houston, TX (Dixie Drive) Online Service	
+7605	Beaumont, TX Online	
+7610	Baton Rouge, LA Online	
+7615	El Dorado, AR Online	
+7620	Pensacola, FL Online	
+7700	Leland, NC Online	
+7705	Richmond, VA Online	
+7710	Columbia, SC Online	
+7715	Baxley, GA Online	
+7716	Koppl - Kansas (history only)	
+7717	Koppl - Moreno (history only)	
+7718	Koppl - Las Vegas (history only)	
+7719	ISG Online Group Expenses	
+7723	ISG Distributors Group Expenses	
+7800	SIHI Pumps Colombia S.A.S.	CO
+7803	SIHI Pumps Limited, (Canada)	CA
+7806	IAS Canada New	
+7809	SIHI Pumps (Taiwan) Co., Ltd.	TW
+7818	SIHI Pumps (Malaysia) Sdn. Bhd.	MY
+7824	Thailand Process Business	
+7827	Asia Regional Office (EUR)	
+7830	SIHI Pumps (Shanghai) Co.Ltd.	CN
+7833	SFS China (cny)	
+7836	China division of Singapore(euro)	
+7842	IPCOIT new	
+7845	Ludwigshafen G&A	
+7848	Service Large Pumps	DE
+7860	German In House Service	DE
+7863	SATCHEM new	DE
+7866	Liquid Ring Vacuum Pumps	DE
+7875	Sterling Industry Consult GmbH (SIHI)	DE
+7878	SFS France (new)	
+7881	Side Channel Business Unit	
+7884	IAS France Pension New	
+7887	Sterling SIHI (Netherlands) BV	NL
+7890	Volute Casing Business Unit	ES
+7893	MIBSA marketing new	
+7899	Flowserve SIHI (Schweiz) GmbH	CH
+7902	IAS Switz Pension New	
+7905	Sterling Fluid Systems (Italy) S.r. (SIHI)	IT
+7914	Sterling Fluid Systems (Austria) GmbH (SIHI)	AT
+7917	Sterling Fluid Systems Limited (SIHI)	GB
+7920	Darwins Holdings Ltd plus dormant subs	
+7923	Sterling Fluid Systems Hungaria Fkt (SIHI)	HU
+7926	Sterling Fluid Systems (Romania) SRL (SIHI)	RO
+7929	Sterling SIHI Bulgaria EOOD	BG
+7932	Sterling Fluid Systems (Polska) SP.ZO.O. (SIHI)	PL
+7935	Sterling Fluid Systems (Czech Republic) s.r.o. (SIHI)	CZ
+7941	Corporate Views on European Process	
+8389	Seal South Africa - Johannesburg	ZA
+8000	Argentina - Mendoza - FPD	AR
+8002	Argentina - Ind	AR
+8020	Australia, Sydney	AU
+8910	Australia, TKL	AU
+8025	Austria, Brunn	AT
+n/a	Austria, Linde JV	AT
+8035	SRG Pump Antwerp Belgium	BE
+8060	Brazil - Rio - FPD	BR
+8065	FSD Brazil - San Paulo	BR
+8062	Brazil - Industrial	BR
+8100	Canada, Calgary	CA
+8100	Canada, Edmonton	CA
+8102	Canada, Kitchner Foundry	CA
+8100b	Canada, Montreal	CA
+8095	SRG Pump Sarnia Canada	CA
+8125	FSD Chile - Santiago	CL
+8707	China, Changsha	CN
+8712	China, Huizhou (closed)	CN
+8708	FPD China QRC - Shenzhen (closed)	CN
+8713	Seal Suzhou	CN
+8132	Colombia - Industrial	CO
+8129	FSD Colombia	CO
+8510	Dubai - FSD	AE
+8359	FSD Dubai Gulf Fze - QRC	AE
+8520	Ecuador Seal Operations	EC
+8134	Ecuador - Service and Solutions	EC
+8128	Seal Finland - QRC	FI
+8142	France - FSD	FR
+8135	France, Arnage	FR
+8165	France, Orleans	FR
+8199	Germany, Dortmund	DE
+8205	Seal Germany - Leipzig	DE
+8195	Germany, Hamburg	DE
+8255	Seal Holland, Roosendaal	NL
+8266	India, Bangalore - BEC	IN
+8270	FSD India - Chennai	IN
+8265	India, Coimbatore	IN
+8275	India, Hubli	IN
+8285	FSD Indonesia - Jakarta	ID
+8328	QRC Kuantan Malaysia	MY
+8335b	Mexico, CLP	MX
+8333	Mexico, Industrial	MX
+8330	Mexico, Santa Clara	MX
+8335	SRG Pump Santa Clara Mexico	MX
+8257	Netherlands, Dutchco	NL
+8236	Netherlands, Etten PMC	NL
+8247	FPD EMA Integrated Operations	NL
+8350	New Zealand, Auckland	NZ
+8347	Norway	NO
+8500	FPD Russia - Moscow	RU
+8501	Russia, Seal	RU
+8405	Spain, Coslada	ES
+8421	Switzerland, Egliswil	CH
+8381	Taiwan, FSD	TW
+8450	SRG Pump Ellesmere Port UK	GB
+8455_b	UK, Gateshead	GB
+8470	UK, Newark	GB
+8454	SRD Pump Teeside UK	GB
+3015	Baton Rouge	US
+1600	USA, Beaumont, TX	US
+3030	USA, Benicia - QRC, CA	US
+1620	USA, Boothwyn, PA	US
+3035	USA, Bridgeport, NJ	US
+1405	USA, Chesapeake, VA	US
+3065	USA, Cincinnati, OH	US
+3000	USA, Corpus Christi, TX	US
+1739	USA, Dayton Foundry, OH	US
+1300	USA, Div Engineering 	US
+1900	USA, Div Selling	US
+1900	USA, Div Selling - Aftermarket	US
+1900	USA, Div Selling - Finance	US
+1900	USA, Div Selling - HR	US
+1900	USA, Div Selling - Manufacturing	US
+1900	USA, Div Selling - Marketing	US
+1300	USA, Div - Engineering	US
+1900	USA, Div Selling - Selling	US
+1972	FSG FEDD Wireless	US
+3080	Angleton	US
+1105	USA, Hastings, NE	US
+3360	USA, Houston - Seals	US
+1975	USA, ISO Investment	US
+1975	USA, ISO (TechAdvantage)	US
+1736	SRG Pump Kingsport TN (EASTMAN)	US
+1015	USA, Moosic - PMC, PA	US
+3100_1	USA, Pac Seal	US
+3100_2	USA, Pac Seal	US
+3020	Port Arthur	US
+1100	USA, Taneytown, MD	US
+3115	USA, Temecula, CA	US
+1725	SRG Pump Vancouver WA (IDP)	US
+1200	USA, Vernon, CA	US
+3095	USA,, Midland, MI	US
+8492	Venezuela - FSD	VE
+1945	FPD International Adjustments	
+3070	El Dorado, AR Seal	
+3205	Mobil Chem Partner	
+3220	Dow Plaquemine	
+3230	Marathon Detroit	
+3250	Marathon Garyville	
+3270	Dow Freeport	
+3285	Pharmacia & Upjohn	
+3305	Westlake	
+3320	DSM Bayer	
+3335	Union Carbide 3	
+3350	Albermarle Magnolia	
+3910	FSD Shared Services	
+8280	India - Hubli Manual Valves	IN
+8291	Italy - FCD Limitorque Fluid Power System	IT
+8321	Japan - Niigata Wothington Co	JP
+8331	Mexico - FSG Regional Expense	MX
+8342	Mexico - FSD Mexico Intra Region Business	MX
+8364	Singapore - FFC Limitorque	SG
+8371	Singapore - FPD Taiwan	
+8378	Singapore _ Lawrence Pumps Asia PTE Ltd.	SG
+1635	SRD Pump US Administration	US
+3085	Pasadena	US
+3000	Eldroado	US
+3120	USA, Broomfield, CO	US
+3050	USA, Rancho Dominguez - QRC, CA	US
+3025	USA, Bellingham, WA	US
+3010	USA, Homer, AK	US
+3005	USA, Ashland, KY	US
+3055	USA, Dunbar, WV	US
+8380	Seal Singapore - Kolamayer	SG
+8718	China FSG QRC Ning Bo - Seal	CN
+8714	FPD China QRC - Dailian	CN
+8503	Flowserve Kazakhstan LLP	KZ
+8355	Seal Saudi JV- AL Khobar	SA
+8191	Seal ESSEN - QRC	DE
+8045	Seal Belgium - Antwerp 	BE
+8315	Seal Italy - Milano	IT
+8141	Seal Madagascar (FR)	FR
+8290	SRG Pump Augusta Italy	IT
+CP4547	AMSS - Pump South Europe	
+8415	SRG Pump Tarragona Spain	ES
+CP454	AMSS - Pump Middle East	
+8361	FPD Dubai UAE	AE
+1733	Gulf Coast Regional Field Service 	US
+8222	Debrecen, Hungary	HU
+CP452	WW ISO Operations 	
+4213	Shared Service Center	HU
+8681	FLS Morocco QRC	
+7851	Process Pump Business Unit	DE
+7869	Dry Vacuum	DE
+7872	Special Vacuum	DE
+5220	Lynchburg, VA IFC Limitorque	US
+8292	Italy - FLS Valbart China Joint Venture (67%)	CN
+5203	Edward Intangibles	US
+7326	Gestra U.S. (Louisville, Ky)	US
+8453	United Kingdom - Gestra Valves UK (FCD-Power)	GB
+5050	India Valve	IN
+8272	India - Audco Purchase Price Accounting	IN
+8459	United Kingdom - IFC Flow Control UK	
+8701	FCD Suzhou Control	CN
+8811	FCD Suzhou - Springville	CN
+8821	FCD Suzhou - Cookeville	CN
+8833	FCD Suzhou - Raleigh	CN
+8704	FCD Suzhou	CN
+5030	Tennessee Valve (Kingsport?)	US
+5070	Los Angeles, CA Valve	US
+8075	Canada - Edmonton Control Valves	CA
+8268	India - FCD Bangalore - Chemical QRC	IN
+8951	VALBART JOINT VENTURE	AT
+5907	FCD Chemical Sector Expenses	US
+5115	Cookeville, TN Valve	US
+8284	FLS Brunei OGS	BN
+5216	Nordstrom Intangibles	US
+8399	Singapore - FCD  Sales for Chemical	SG
+8439	Taiwan _ FCD Chemical	SG
+6102	R & D Project 2	US
+1734	Midwest Regional Field Service	US
+1727	USA, Corpus Christi, TX	US
+CP4676	AMSS	
+CP4524	AMSS Americas 	
+CP4555	AMSS APAC 	
+CP4543	AMSS EMA 	
+RU_2 TEMP 	TEMP2 Site (CP4515)	
+CP4542	AMSS - Seal LA	
+1846	AMSS Global Support	US
+8337	SEAL MEX PACSEAL	MX
+8354	Seal Czech Republic	CZ
+8190	Germany - Dortmund Seal PW	DE
+3041	USA, Tulsa Systems Mfg, OK	US
+8100a	Canada, Scarborough	CA
+8080	Canada - Scarborough	CA
+8385	SRG Pump Singapore	SG
+8370	FPD ENG'D Dresser Singapore 	SG
+8749	FSD Shanghai	CN
+8711	FSG China Shanghai - Seal	CN
+8384	China Shared Services Exp	CN
+8386	Singapore - FCD Process	SG
+8387	Singapore - FCD Power	SG
+8388	Flowserve Technology (Shanghai) Co., Ltd.	CN
+8390	South Africa - Control Valves	ZA
+8391	South Africa - FFC, Pty	
+8392	Spain - IFC Gestra Espanola	ES
+8396	Singapore - FCD Gest	SG
+8397	Singapore - FCD Sales Oil & GAS	SG
+8398	FSG IPO Singapore	SG
+8400	Spain - Auto Valves	ES
+8411	Spain - Huelva Seal	
+8412	Spain - Madrid IDP	
+8413	Spain - Tenerife Seal	
+8414	Spain - British Petroleum Alliance Seals	
+8416	Sweden - IFC NAF Ab	SE
+8417	Spain - IDP PL	
+8418	Sweden - Palmstiernas Instrument AB	SE
+8419	Sweden - Valtek AB	SE
+8420	Switzerland - Control Valves Kammer	CH
+8422	Switzerland - Corporate Sales Org	
+8423	Switzerland - Europe Sales Org	CH
+8430	Switzerland - FPD Eng'd	
+8431	Switzerland - IDP SA	
+8432	Switzerland - IDP WPAG	
+8436	Seal Thailand 	TH
+8438	Taiwan - FCD QRC	SG
+8440	Seal Taiwan	SG
+8441	Taiwan - FCD Sales Chemical	SG
+8447	Flowserve PTE Ltd., Taiwan	
+8448	Taiwan - FCD Sales Oil & Gas	SG
+8449	Seal Turkey QRC	TR
+8451	United Kingdom - Ellesmere Port SRG Valve	
+8456	United Kingdom - FCD EMA Headquarters	
+8458	United Kingdom - Serck Audco Valves	
+8461	United Kingdom - FFC Audco	
+8466	United Kingdom - FCD Limitorque UK	
+8475	United Kingdom - Scunthorpe SRG Online	
+8481	Venezuela - FCD USD	VE
+8487	Venezuela - Maracaibo SRG Online Service	
+8488	Venezuela - Maracaibo SRG Pump - USD	VE
+8494	Seal_S Vietnam	VN
+8495	Corp Europe Coordination Center	
+8505	Russia - St. Petersburg FCD QRC	RU
+8520	Flowserve Seals Operations Ecuador	EC
+8525	Ecuador Service and Solutions	EC
+8606	Seal International Adjustment	
+8702	FCD Suzhou Process	CN
+8703	FCD Suzhou Power	CN
+8705	FSD Suzhou LCS	
+8706	FSD Suzhou AUX	
+8710	FCD Suzhou General Industrial Sector	
+8715	FSG IPO Suzhou	CN
+8717	FSG China QRC Qing DAO - Seal	CN
+8721	China FLS Shanghai Co. Ltd. (Shared Service)	CN
+8722	China FLS Lawrence Pumps (Shanghai) Co. Ltd.	CN
+8723	China Suzhou General Industrial Sector	CN
+8726	China FCD Selling Control	CN
+8728	China FCD Shared Service Lmtrq	CN
+8731	China FCD Shared Service PWR	CN
+8733	China FCD Shared Service PRO	CN
+8760	Flowserve Seal Division - Adjustment	
+8785	Kammer Purchase Books	US
+8786	Eliminations for Location	
+8787	Sereg Purchase Books	US
+8789	FCG Adj	
+8790	Durco Corporation	US
+8791	CV Adj	
+8792	FCD Adj	
+8800	SRD US Corporate	US
+8805	SRD - Adjustment	
+8810	Valtek Purchase Books	US
+8812	FCD Suzhou - Schmidt	CN
+8822	FCD Suzhou - Ahaus	CN
+8823	FCD Suzhou - Fls Flow Control UK	CN
+8824	FCD Suzhou - HDA Bangalore	CN
+8826	FCD Suzhou - Argus	CN
+8830	Germany - Ahaus Atomac	DE
+8841	FCD Suzhou - Automation	
+8851	FCD Suzhou - NAF AB	CN
+8852	Flowserve FCD - Suzhou � Essen	CN
+8923	Arabian Seals Investment	
+8926	Flowserve Canada Assets Corp	CA
+8929	FPD E CALDER PLANT FINANCIAL DATA	CH
+8933	FFC AUDCO INDIA	IN
+8935	To Be Determined	
+8937	SEAL ITALY SYSTEMS	IT
+8943	FLOWSERVE HAMBURG THRUSTER	DE
+8945	FPD HAMBURG GEO-THERM	DE
+8947	FFC VILLACH - OIL AND GAS	AT
+8949	FLS INTERNATIONAL ME VALVES LLC	SA
+8955	FLOWSERVE FRANCE SAS	FR
+8957	To Be Determined	
+8961	FLOWSERVE DUTCH CANADA HOLDINGS LP	CA
+8965	FLOWSERVE FRANCE HOLDING SNC	FR
+8971	FPD CHANGSHA CHINA JV (OLD)	CN
+9092	Flowserve Parent of Guarantor/Non-Guarantor Adjustments	
+9093	Flowserve Guarantor Adjustments	
+9094	Flowserve Non- Guarantor Adjustments	
+9802	FSG ENG'D - NORTH AMERICA ALLOCATIONS	
+9803	FSG ENG'D - EMA ALLOCATIONS	
+9804	FSG ENG'D - LATIN AMERICA ALLOCATIONS	
+9806	FSG INDUSTRIAL - ALLOCATIONS	
+9807	ALLOCATE FSG CORPEXP	
+9820	FLS COMPRESSION SYS-AUSR NON-CTRLNG INT	AT
+9821	SRG SAUDI MOTOR REPAIR SHOP NON-CTRL INT	SA
+9822	FSD SAUDI JV - AL KHOBAR NON-CTRLNG INT	SA
+9823	FSD MALASYA MELAKA NON-CONTROLLING INT	MY
+9825	MINORITY INTEREST IN SAUDI JV	SA
+9826	FFC GESTRA BREMEN NON-CONTROLING INT	DE
+9853	Flowserve Limited	
+9854	Flowserve Spa	IT
+9864	Purchase Accounting	
+9870	PURCHASE ACCOUNTING ENTITY FOR EMCOMET	AR
+9871	FLS VALBART PURCHASE PRICE ADJ	IT
+9902	Flowserve Corporation	
+9903	CFM VR Tesco Inc	
+9904	Flowserve International Inc	
+9905	Flowserve International LLC	
+9906	Ingersoll-Dresser Pump Company	
+9908	BW/IP New Mexico Inc	
+9909	Flowserve Europe Holdings ApS (EURO)	
+9910	Flowserve Finance BV (EURO)	
+9912	PMV Inc	
+9913	Flowserve BV - Purchase Books IDP	NL
+9914	FLOWSERVE DORTMUND PURCHASE BKS	DE
+9916	Corporate International Adjustment	
+9917	Flowserve Netherlands CV II	
+9920	Flowserve US Inc	
+9921	SRD US Corp	
+9922	Flowserve RED	
+9923	FLOWSERVE INSURANCE COMPANY	
+9924	Flowserve Receivable Corp	
+9925	Flowserve Holdings II LLC	
+9930	Flowserve Finance ApS	
+9933	Flowserve Italy LLC	
+9934	Flowserve Latin America Holdings	
+yyyy	Pac Seal	
+7908	Sterling Fluid Systems (Belgium) NV	BE
+CP4515	AMSS Global Manufacturing Hubs 	
+CP4516	AMSS - NA Parts Group	
+CP4519	AMSS - Manufacturing - LA	
+RU_1 TEMP 	TEMP1 Site (CP4515)	
+CP4518	AMSS - Seal Manufacturing - EMA	
+CP4621	AMSS - Seal Manufacturing - NA	US
+CP4538	FSG ALT Foundry Division	
+7	Hubs_7	
+CP4540	AMSS - PUMP LA	
+8282	FSG Pump ARC - Jakarta	ID
+8375	FSG Taiwan Pump QRC Kaohsiung	TW
+CP4530	AMSS - PUMP NA QRC North	
+CP4531	Pump NA QRC West	
+CP4527	AMSS Pump NA QRCS	
+RU_1 	TEMP1 Site (CP4524)	
+RU_2 	TEMP2 Site (CP4524)	
+RU_01	TEMP1 Site (CP4555)	
+CP4556	AMSS - Seal APAC QRCS	
+CP4559	AMSS - Pump SE Asia QRC	
+003	APAC_3	
+CP4557	AMSS - SE Assia QRCS	
+CP4560	AMSS - North Asia QRCS	
+01	EMA_1 TEMP (4543)	
+CP4546	AMSS - Pump North Europe	
+CP4550	AMSS - Seal QRCS EMA	
+02	EMA_2 TEMP (4543)	
+CP454	AMSS - Pump UK Scandinavia	
+1030	USA, Houston - PMC, TX	US
+8334	Mexico - Flowserve Latin America Parts Group	MX
+8340	 Mexico - LCS Tlaxcala	MX
+8341	EMCOMET Operation in Tlaxcala Mexico	MX
+3090	Seal US - Kalamozoo	US
+8005	Seal Argentina - Mendoza	AR
+8351	FSD Peru - Lima	PE
+8490	FSD Venezuela F- Maracaibo	VE
+8480	FPD ENG'D Venezuela F	VE
+8485	SRG Pump Maracaibo Venezuela F	VE
+8120	FDP ENG'D Chile - Santiago	CL
+8010	SRG Pump Mendoza Argentina	AR
+8067	SRG Pump Rio De Janeiro Brazil	BR
+1615	SRG Pump W. Chicago IL (ELGIN)	US
+1610	SRG Pump Rancho Dominguez CA	US
+8407	FLOWSERVE SINGAPORE R&D	SG
+EPOA	EPO Americas	
+7911	IAS Belgium Pension New	
+7938	IPCORD	
+8030	Austria, Sieghartskirchen	AT
+8709	China, Suzhou - FPD	CN
+8210	SRG Pump Leipzig Germany	DE
+8229	Netherlands, Moerdijk Systems	NL
+3045	USA, Burr Ridge, IL	US
+0100	USA, GTTC_IRV	US
+1220	USA, Phillipsburg, NJ	US
+8939	Seal Europe Cost Center	NL
+8953	SUFA JOINT VENTURE	CN
+8963	FLOWSERVE DUTCH CANADA HOLDINGS ULC	CA
+9801	FSG ENG'D - ALLOCTIONS	
+9805	FSG ENG'D - ASIA PACIFIC ALLOCATIONS	
+9824	FCD VALBART CN NCI	CN
+9856	Flowserve S.A.S.	FR
+9901	Flowserve Management Company	
+9907	Flowserve Holdings Inc	
+9911	Flowserve Global Lending BV (EURO)	NL
+1900	USA, Div Selling - Operations	US
+0275	Flowserve CV6 Holdings LLC	NL
+1380	FSG Industrial SIHI Integration	US
+1840	FSG EPO HQ	US
+1937	FPD Purchase Adjustment	US
+3265	Marathon Cattlettsburg	
+8115	Canada, Woodbridge	CA
+8034	Belgium - FFC Belgium	BE
+8083	Canada - Montreal	
+8170	France - Sarl FPD WW	US
+8200	Germany - Kammer Control Valves	DE
+8261	India - Valtek Controls - Oil and Gas	IN
+8323	Korea - Hyosung Ebara (5%)	
+8369	FCD China Control	CN
+3920	Pump Abu Dhabi Investment	US
+3985	Total Petrochem	
+5000	Springville, UT Valve	US
+5060	Middle East Valve	
+5120	Freeport, TX Valve (Angleton, TX (Davco Flwsrv)	
+5202	Dallas, TX PMV	
+5903	FCD Division Selling	US
+7250	Tacoma, WA Steam	
+7330	Portage, IN Valve Repair	
+7455	International Online	
+7543	Sterling Fluid Systems Gesellschaft mbH	
+7815	SIHI Pumps (ASIA) Pte Ltd.	
+7896	G&A Costs Spain	
+8090	SRG Pump Leduc Canada	CA
+cccc	Germany, Hamburg Geo	DE
+8410	Seal Spain - Madrid	ES
+3000	USA, El Dorado, AR	US
+8393	Spain - Corporate	ES
+8424	Switzerland - Calder IP	CH
+8479	Venezuela - Maracaibo Valve	VE
+8719	China FPD Selling	CN
+8793	Auto Adj	
+8832	FCD Suzhou - Limitorque	CN
+9091	Flowserve Guarantor/Non-Guarantor Eliminations	
+9915	Flowserve Purchase Books - IFC	
+7857	Itzehoe (Sales & Marketing)	
+7821	SIHI Pumps And Services (Thailand) Ltd.	TH
+8365	Singapore - Control Valves	SG
