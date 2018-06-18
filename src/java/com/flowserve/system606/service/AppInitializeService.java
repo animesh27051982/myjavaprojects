@@ -5,7 +5,9 @@
  */
 package com.flowserve.system606.service;
 
+import com.flowserve.system606.model.Country;
 import com.flowserve.system606.model.ExchangeRate;
+import com.flowserve.system606.model.InputType;
 import com.flowserve.system606.model.User;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -13,6 +15,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Currency;
 import java.util.List;
+import java.util.Locale;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
@@ -34,7 +37,7 @@ public class AppInitializeService {
     User ad;
 
     @EJB
-    private AdminService qs;
+    private AdminService adminService;
 
     @EJB
     private CurrencyService currService;
@@ -44,7 +47,12 @@ public class AppInitializeService {
         logger.info("Initializing App Objects");
         try {
             initUsers();
+
             //initCurrencyConverter();
+            initInputTypes();
+            initCountries();
+            //testUpdateCountry();
+
         } catch (Exception ex) {
             Logger.getLogger(AppInitializeService.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -53,15 +61,15 @@ public class AppInitializeService {
     }
 
     private void initUsers() throws Exception {
-        admin = qs.findUserByFlsId("admin");
+        admin = adminService.findUserByFlsId("admin");
         if (admin.isEmpty()) {
             logger.info("Creating admin user");
             ad = new User("admin", "Administrator", "admin@gmail.com");
-            qs.updater(ad);
+            adminService.updater(ad);
         }
 
-        if (qs.findUserByFlsId("pkaranam").isEmpty()) {
-            BufferedReader reader = new BufferedReader(new InputStreamReader(AppInitializeService.class.getResourceAsStream("/init_file/init_users.txt"), "UTF-8"));
+        if (adminService.findUserByFlsId("pkaranam").isEmpty()) {
+            BufferedReader reader = new BufferedReader(new InputStreamReader(AppInitializeService.class.getResourceAsStream("init_users.txt"), "UTF-8"));
 
             String line = null;
             while ((line = reader.readLine()) != null) {
@@ -79,7 +87,7 @@ public class AppInitializeService {
 
                 logger.info("Creating user: " + name);
 
-                qs.updater(user);
+                adminService.updater(user);
             }
 
             reader.close();
@@ -132,6 +140,71 @@ public class AppInitializeService {
         reader.close();
 
         logger.info("Finished initializing users.");
+
+    }
+
+    private void initInputTypes() throws Exception {
+
+        admin = adminService.findUserByFlsId("admin");
+
+        if (adminService.findInputTypeByName("Estimated Cost at Completion").isEmpty()) {
+            logger.info("Initializing InputTypes");
+            BufferedReader reader = new BufferedReader(new InputStreamReader(AppInitializeService.class.getResourceAsStream("/resources/app_data_init_files/init_input_types.txt"), "UTF-8"));
+
+            int count = 0;
+            String line = null;
+            while ((line = reader.readLine()) != null) {
+                if (line.trim().length() == 0) {
+                    continue;
+                }
+
+                count = 0;
+                String[] values = line.split("\\|");
+
+                InputType inputType = new InputType();
+                inputType.setOwnerEntityType(values[count++]);
+                inputType.setInputClass(values[count++]);
+                inputType.setName(values[count++]);
+                inputType.setDescription(values[count++]);
+                inputType.setExcelSheet(values[count++]);
+                inputType.setExcelCol(values[count++]);
+                inputType.setGroupName(values[count++]);
+                inputType.setGroupPosition(Integer.parseInt(values[count++]));
+                inputType.setEffectiveFrom(LocalDate.now());
+                //inputType.setEffectiveTo(LocalDate.now());
+                inputType.setActive(true);
+
+                logger.info("Creating InputType: " + inputType.getName());
+
+                adminService.persist(inputType);
+
+            }
+
+            reader.close();
+
+            logger.info("Finished initializing InputTypes.");
+        }
+    }
+
+    private void initCountries() throws Exception {
+        if (adminService.findCountryById("USA") == null) {
+            logger.info("Initializing Countries");
+
+            String[] countryCodes = Locale.getISOCountries();
+            for (String countryCode : countryCodes) {
+
+                Locale locale = new Locale("", countryCode);
+                Country country = new Country(locale.getISO3Country(), locale.getCountry(), locale.getDisplayCountry());
+                adminService.persist(country);
+            }
+
+            logger.info("Finished initializing InputTypes.");
+        }
+    }
+
+    private void testUpdateCountry() {
+        Country usa = adminService.findCountryById("USA");
+        usa.setCode("USAA");
 
     }
 }

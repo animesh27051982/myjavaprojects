@@ -1,0 +1,71 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                template="/WEB-INF/template.xhtml">
+
+    <ui:define name="head">
+        <style type="text/css">
+
+        </style>
+    </ui:define>
+
+    <ui:define name="title">Business Units</ui:define>
+
+    <ui:define name="viewname">Business Units</ui:define>
+
+    <ui:define name="content">
+        <div style="min-height: calc(100vh - 235px);">
+            <h:form id="mainForm">
+                <p:growl id="messages" showDetail="true" />
+
+                <div class="ui-g">
+
+                    <div class="ui-g-12">
+                        <div class="card card-w-title">
+                            <h1>Business Units</h1>
+                            <p:focus for="searchString" />
+
+                            <p:inputText id="searchString" value="#{userSearch.searchString}"/>
+
+                            <p:commandButton id="search" value="Search" ajax="true" icon="ui-icon-arrowrefresh-1-w" actionListener="#{userSearch.search}" update="mainForm:userTable" style="margin-left:10px" />
+                            <p:ajaxStatus style="width:20px;height:20px;">
+                                <f:facet name="start">
+                                    <h:graphicImage value="images/loader.gif" style="width: 20px;"/>
+                                </f:facet>
+                                <f:facet name="complete">
+                                    <h:outputText value="" />
+                                </f:facet>
+                            </p:ajaxStatus>
+                            <p:defaultCommand target="search" />
+                            <p:dataTable id="userTable" var="businessUnit" value="#{businessUnitSearch.businessUnits}"  paginator="true" rows="30">
+
+                                <p:column filterBy="#{businessUnit.name}" headerText="Name" sortBy="#{businessUnit.name}" filterMatchMode="contains">
+                                    <h:outputText value="#{businessUnit.name}" />
+                                </p:column>
+
+                                <p:column filterBy="#{businessUnit.name}" headerText="Type" sortBy="#{businessUnit.type}" filterMatchMode="contains">
+                                    <h:outputText value="#{businessUnit.type}" />
+                                </p:column>
+                                
+                                <p:column filterBy="#{businessUnit.code}" headerText="Code" sortBy="#{businessUnit.type}" filterMatchMode="contains">
+                                    <h:outputText value="#{businessUnit.code}" />
+                                </p:column>
+                                
+                                <p:column filterBy="#{businessUnit.code}" headerText="Description" sortBy="#{businessUnit.description}" filterMatchMode="contains">
+                                    <h:outputText value="#{businessUnit.description}" />
+                                </p:column>
+
+                                <p:column  headerText="Option" >
+                                    <h:commandLink value="Edit Business Unit" action="#{adminController.editBusinessUnit(businessUnit)}"></h:commandLink>
+                                </p:column>
+                            </p:dataTable>
+                        </div>
+                    </div>
+                </div>
+            </h:form>
+        </div>
+    </ui:define>
+
+</ui:composition>

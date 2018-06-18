@@ -1,0 +1,12 @@
+POB|com.flowserve.system606.model.StringInput|Revenue Recognition Method|This input means something|POC POB Inputs|H|Group1|1
+POB|com.flowserve.system606.model.DecimalInput|Transaction Price|This input means something|POC POB Inputs|O|Group1|2
+POB|com.flowserve.system606.model.DecimalInput|Estimated Cost at Completion|This input means something|POC POB Inputs|Q|Group1|3
+POB|com.flowserve.system606.model.DecimalInput|Cumulative Cost Incurred /Received Local Curr|This input means something|POC POB Inputs|S|Group1|4
+POB|com.flowserve.system606.model.DecimalInput|Interco Progress (Not Received)Local Curr|This input means something|POC POB Inputs|T|Group1|5
+POB|com.flowserve.system606.model.DecimalInput|3rd Party Progress (Not Received)Local Curr|This input means something|POC POB Inputs|U|Group1|6
+POB|com.flowserve.system606.model.DateInput|Actual Shipment / Delivery Date (if complete)|This input means something|POC POB Inputs|W|Group1|7
+POB|com.flowserve.system606.model.DecimalInput|If partial POB shipped: Enter  Cumulative COGS|This input means something|POC POB Inputs|X|Group1|8
+POB|com.flowserve.system606.model.DecimalInput|Billing Amount Contract Curr|This input means something|POC POB Inputs|Z|Group1|9
+POB|com.flowserve.system606.model.DecimalInput|Billing Amount Local Curr|This input means something|POC POB Inputs|AA|Group1|10
+POB|com.flowserve.system606.model.DateInput|Billing Date|This input means something|POC POB Inputs|AB|Group1|11
+POB|com.flowserve.system606.model.StringInput|Billing Invoice Number|This input means something|POC POB Inputs|AC|Group1|12

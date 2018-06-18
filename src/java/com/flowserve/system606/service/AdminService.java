@@ -5,6 +5,9 @@
  */
 package com.flowserve.system606.service;
 
+import com.flowserve.system606.model.Country;
+import com.flowserve.system606.model.BusinessUnit;
+import com.flowserve.system606.model.InputType;
 import com.flowserve.system606.model.User;
 import java.util.List;
 import javax.ejb.Stateless;
@@ -33,7 +36,17 @@ public class AdminService {
         return (List<User>) query.getResultList();
     }
 
+    public List<BusinessUnit> findBusinessUnits() throws Exception {  // Need an application exception type defined.
+        System.out.println("findBusinessUnits");
+        TypedQuery<BusinessUnit> query = em.createQuery("SELECT b FROM BusinessUnit b", BusinessUnit.class);       
+        return (List<BusinessUnit>) query.getResultList();
+    }
+        
     public void updateUser(User u) throws Exception {
+        em.merge(u);
+    }
+    
+    public void updateBusinessUnit(BusinessUnit u) throws Exception {
         em.merge(u);
     }
 
@@ -48,10 +61,25 @@ public class AdminService {
 
     }
 
-    public void updater(User u) throws Exception {
-
-        em.persist(u);
-
+    public Country findCountryById(String id) {
+        return em.find(Country.class, id);
     }
 
+    public List<InputType> findInputTypeByName(String name) {
+        Query query = em.createQuery("SELECT inputType FROM InputType inputType WHERE inputType.name = :NAME");
+        query.setParameter("NAME", name);
+        return (List<InputType>) query.getResultList();
+    }
+
+    public void persist(InputType inputType) throws Exception {
+        em.persist(inputType);
+    }
+
+    public void persist(Country country) throws Exception {
+        em.persist(country);
+    }
+
+    public void updater(User u) throws Exception {
+        em.persist(u);
+    }
 }

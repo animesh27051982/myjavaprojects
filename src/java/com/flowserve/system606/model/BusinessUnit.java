@@ -26,6 +26,15 @@ public class BusinessUnit implements Comparable<BusinessUnit>, Serializable {
 
     @Column(name = "NAME")
     private String name;
+    
+    @Column(name = "TYPE")
+    private String type;
+
+    @Column(name = "CODE")
+    private String code;
+
+    @Column(name = "DESCRIPTION")
+    private String description;
 
     public BusinessUnit() {
     }
@@ -57,5 +66,29 @@ public class BusinessUnit implements Comparable<BusinessUnit>, Serializable {
 
     public void setName(String name) {
         this.name = name;
+    }
+    
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }    
+    
+    public String getCode() {
+        return code;
+    }
+
+    public void setCode(String code) {
+        this.code = code;
+    }
+   
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 }
