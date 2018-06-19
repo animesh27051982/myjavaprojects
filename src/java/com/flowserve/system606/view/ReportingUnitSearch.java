@@ -13,7 +13,7 @@ import java.util.Collections;
 import java.util.List;
 import javax.ejb.EJB;
 import javax.faces.bean.ManagedBean;
-import javax.faces.view.ViewScoped;
+import javax.faces.bean.ViewScoped;
 
 /**
  *
@@ -36,6 +36,7 @@ public class ReportingUnitSearch implements Serializable {
     public void search() throws Exception {
 
         reportingUnits = adminService.searchReportingUnits(searchString);
+        System.out.println("com" + reportingUnits);
         Collections.sort(reportingUnits);
     }
 

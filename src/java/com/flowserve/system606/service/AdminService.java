@@ -123,7 +123,7 @@ public class AdminService {
         System.out.println("Search" + searchString.toUpperCase());
         TypedQuery<ReportingUnit> query = em.createQuery("SELECT ru  FROM ReportingUnit ru WHERE UPPER(ru.name) LIKE :NAME OR UPPER(ru.code) LIKE :NAME ORDER BY UPPER(ru.name)", ReportingUnit.class);
         query.setParameter("NAME", "%" + searchString.toUpperCase() + "%");
-        System.out.println("com" + query);
+        //System.out.println("com" + query);
         return (List<ReportingUnit>) query.getResultList();
     }
 
