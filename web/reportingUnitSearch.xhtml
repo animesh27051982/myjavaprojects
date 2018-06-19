@@ -25,12 +25,12 @@
                     <div class="card card-w-title">
                         <p:messages showDetail="true" />
                         <h1>Reporting Unit</h1>
-                        <h:form id="mainForm">
+                        <h:form id="reportForm">
                             <p:focus for="searchString" />
 
                             <p:inputText id="searchString" value="#{reportingUnitSearch.searchString}"/>
 
-                            <p:commandButton id="search" value="Search" ajax="true" icon="ui-icon-arrowrefresh-1-w" actionListener="#{reportingUnitSearch.search}" update="mainForm:reportTable" style="margin-left:10px" />
+                            <p:commandButton id="search" value="Search" ajax="true" icon="ui-icon-arrowrefresh-1-w" actionListener="#{reportingUnitSearch.search}" update="reportForm:reportTable" style="margin-left:10px" />
                             <p:ajaxStatus style="width:20px;height:20px;">
                                 <f:facet name="start">
                                     <h:graphicImage value="images/loader.gif" style="width: 20px;"/>
@@ -48,12 +48,12 @@
                                     <h:outputText value="#{reportingUnit.name}" />
                                 </p:column>
 
-                                <p:column filterBy="#{reportingUnit.number}" headerText="Number" sortBy="#{reportingUnit.number}" filterMatchMode="contains">
-                                    <h:outputText value="#{reportingUnit.number}" />
+                                <p:column filterBy="#{reportingUnit.code}" headerText="Code" sortBy="#{reportingUnit.Code}" filterMatchMode="contains">
+                                    <h:outputText value="#{reportingUnit.code}" />
                                 </p:column>
 
-                                <p:column filterBy="#{reportingUnit.code}" headerText="Code" sortBy="#{reportingUnit.code}" filterMatchMode="contains">
-                                    <h:outputText value="#{reportingUnit.code}" />
+                                <p:column filterBy="#{reportingUnit.functionalCurrency}" headerText="Currency" sortBy="#{reportingUnit.functionalCurrency}" filterMatchMode="contains">
+                                    <h:outputText value="#{reportingUnit.functionalCurrency}" />
                                 </p:column>
 
                                 <p:column headerText="Is Active" style="text-align: center;">
@@ -62,7 +62,7 @@
                                 </p:column>
 
                                 <p:column  headerText="Option" >
-                                    <h:commandLink value="Edit" action="#}"></h:commandLink>
+                                    <h:commandLink value="Edit Reporting Unit" action="#{adminController.editReportingUnit(reporting)}"></h:commandLink>
                                 </p:column>
 
                             </p:dataTable>

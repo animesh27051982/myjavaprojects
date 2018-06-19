@@ -6,8 +6,10 @@
 package com.flowserve.system606.controller;
 
 import com.flowserve.system606.model.BusinessUnit;
+import com.flowserve.system606.model.ReportingUnit;
 import com.flowserve.system606.service.AdminService;
 import com.flowserve.system606.web.BusinessUnitSession;
+import com.flowserve.system606.web.ReportingUnitSession;
 import java.io.Serializable;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -35,6 +37,9 @@ public class AdminController implements Serializable {
 
     @ManagedProperty(value = "#{businessUnitSession}")
     private BusinessUnitSession businessUnitSession;
+
+    @ManagedProperty(value = "#{reportingUnitSession}")
+    private ReportingUnitSession reportingUnitSession;
 
     public AdminController() {
     }
@@ -69,6 +74,20 @@ public class AdminController implements Serializable {
 
     public void setBusinessUnitSession(BusinessUnitSession businessUnitSession) {
         this.businessUnitSession = businessUnitSession;
+    }
+
+    public String editReportingUnit(ReportingUnit u) throws Exception {
+
+        reportingUnitSession.setEditReportingUnit(u);
+        return "reportingUnitEdit";
+    }
+
+    public ReportingUnitSession getReportingUnitSession() {
+        return reportingUnitSession;
+    }
+
+    public void setReportingUnitSession(ReportingUnitSession reportingUnitSession) {
+        this.reportingUnitSession = reportingUnitSession;
     }
 
 }

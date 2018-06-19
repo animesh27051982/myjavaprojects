@@ -42,4 +42,8 @@ public class PerformanceObligationService {
         pob.setLastUpdateDate(LocalDateTime.now());
         return em.merge(pob);
     }
+
+    public void persist1(Object object) {
+        em.persist(object);
+    }
 }
