@@ -94,12 +94,6 @@ public class AdminService {
         return null;
     }
 
-    public List<InputType> findInputTypeByName(String name) {
-        Query query = em.createQuery("SELECT inputType FROM InputType inputType WHERE inputType.name = :NAME");
-        query.setParameter("NAME", name);
-        return (List<InputType>) query.getResultList();
-    }
-
     public void persist(InputType inputType) throws Exception {
         em.persist(inputType);
     }

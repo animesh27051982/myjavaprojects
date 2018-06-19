@@ -9,11 +9,11 @@ import com.flowserve.system606.model.Country;
 import com.flowserve.system606.model.ExchangeRate;
 import com.flowserve.system606.model.FinancialPeriod;
 import com.flowserve.system606.model.InputType;
+import com.flowserve.system606.model.InputTypeId;
 import com.flowserve.system606.model.PerformanceObligation;
 import com.flowserve.system606.model.PeriodStatus;
 import com.flowserve.system606.model.ReportingUnit;
 import com.flowserve.system606.model.User;
-import com.flowserve.system606.service.CurrencyService;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.math.BigDecimal;
@@ -50,6 +50,8 @@ public class AppInitializeService {
     private CurrencyService currencyService;
     @EJB
     private FinancialPeriodService financialPeriodService;
+    @EJB
+    private InputService inputService;
 
     @PostConstruct
     public void init() {
@@ -166,7 +168,7 @@ public class AppInitializeService {
 
         admin = adminService.findUserByFlsId("admin");
 
-        if (adminService.findInputTypeByName("Estimated Cost at Completion").isEmpty()) {
+        if (inputService.findInputTypes().isEmpty()) {
             logger.info("Initializing InputTypes");
             BufferedReader reader = new BufferedReader(new InputStreamReader(AppInitializeService.class.getResourceAsStream("/resources/app_data_init_files/init_input_types.txt"), "UTF-8"));
 
@@ -178,9 +180,11 @@ public class AppInitializeService {
                 }
 
                 count = 0;
+                logger.info(line);
                 String[] values = line.split("\\|");
 
                 InputType inputType = new InputType();
+                inputType.setId(values[count++]);
                 inputType.setOwnerEntityType(values[count++]);
                 inputType.setInputClass(values[count++]);
                 inputType.setName(values[count++]);
@@ -203,6 +207,8 @@ public class AppInitializeService {
 
             logger.info("Finished initializing InputTypes.");
         }
+
+        logger.info("Input type name for " + InputTypeId.TRANSACTION_PRICE + " = " + inputService.findInputTypeById(InputTypeId.TRANSACTION_PRICE).getName());
     }
 
     private void initPOBs() throws Exception {
