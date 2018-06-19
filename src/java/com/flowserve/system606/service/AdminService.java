@@ -12,6 +12,7 @@ import com.flowserve.system606.model.ReportingUnit;
 import com.flowserve.system606.model.User;
 import java.util.List;
 import javax.ejb.Stateless;
+import javax.inject.Named;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
@@ -21,6 +22,7 @@ import javax.persistence.TypedQuery;
  *
  * @author shubhamv
  */
+@Named
 @Stateless
 public class AdminService {
 
