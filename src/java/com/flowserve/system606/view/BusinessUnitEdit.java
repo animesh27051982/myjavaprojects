@@ -19,7 +19,7 @@ import javax.inject.Named;
  *
  * @author span
  */
-@ManagedBean(name = "businessUnitEdit")
+@Named
 @ViewScoped
 public class BusinessUnitEdit implements Serializable {
 

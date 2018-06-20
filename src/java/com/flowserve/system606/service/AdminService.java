@@ -150,7 +150,7 @@ public class AdminService {
         return (List<BusinessUnit>)query.getResultList();
     }
 
-
+    
     public List<Country> AllCountry() throws Exception {
         TypedQuery<Country> query = em.createQuery("SELECT c  FROM Country c ORDER BY UPPER(c.name)", Country.class);
 
