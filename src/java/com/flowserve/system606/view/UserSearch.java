@@ -6,8 +6,8 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import javax.ejb.EJB;
 import javax.faces.view.ViewScoped;
+import javax.inject.Inject;
 import javax.inject.Named;
 
 @Named
@@ -16,7 +16,7 @@ public class UserSearch implements Serializable {
 
     private static final long serialVersionUID = -1438027991420003830L;
     List<User> users = new ArrayList<User>();
-    @EJB
+    @Inject
     private AdminService adminService;
     private String searchString = "";
 
