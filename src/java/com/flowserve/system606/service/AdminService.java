@@ -117,8 +117,25 @@ public class AdminService {
         System.out.println("Search" + searchString.toUpperCase());
         TypedQuery<ReportingUnit> query = em.createQuery("SELECT ru  FROM ReportingUnit ru WHERE UPPER(ru.name) LIKE :NAME OR UPPER(ru.code) LIKE :NAME ORDER BY UPPER(ru.name)", ReportingUnit.class);
         query.setParameter("NAME", "%" + searchString.toUpperCase() + "%");
-        //System.out.println("com" + query);
+
         return (List<ReportingUnit>) query.getResultList();
     }
 
+    public List<Country> AllCountry() throws Exception {
+        TypedQuery<Country> query = em.createQuery("SELECT c  FROM Country c ORDER BY UPPER(c.name)", Country.class);
+
+        return (List<Country>) query.getResultList();
+    }
+
+    public List<User> findByStartsWithLastName(String searchname) {
+        TypedQuery<User> query = em.createQuery("SELECT u FROM User u WHERE UPPER(u.name) LIKE :NAME OR UPPER(u.flsId) LIKE :NAME ORDER BY UPPER(u.name)", User.class);
+        query.setParameter("NAME", "%" + searchname.toUpperCase() + "%");
+        return (List<User>) query.getResultList();
+    }
+
+    public ReportingUnit update(ReportingUnit ru) throws Exception {
+
+        return em.merge(ru);
+
+    }
 }
