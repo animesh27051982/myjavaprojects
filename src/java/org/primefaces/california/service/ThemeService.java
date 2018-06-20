@@ -15,10 +15,13 @@
  */
 package org.primefaces.california.service;
 
+import com.flowserve.system606.model.BusinessUnit;
+import com.flowserve.system606.service.AdminService;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
+import javax.ejb.EJB;
 import javax.faces.bean.ApplicationScoped;
 import javax.faces.bean.ManagedBean;
 
@@ -28,6 +31,8 @@ import org.primefaces.california.domain.Theme;
 @ApplicationScoped
 public class ThemeService {
     
+    @EJB
+    private AdminService adminService;
     private List<Theme> themes;
     
     @PostConstruct
@@ -76,4 +81,15 @@ public class ThemeService {
     public List<Theme> getThemes() {
         return themes;
     } 
+    
+    
+    public List<BusinessUnit> getBusinessUnit(String searchString) throws Exception {  // Need an application exception type defined.
+        if (searchString == null || searchString.trim().length() < 2) {
+            throw new Exception("Please supply a search string with at least 2 characters.");
+        }
+        System.out.println("Search" + searchString.toUpperCase());
+        
+        return adminService.getBusinessUnit(searchString);
+    }
+
 }
