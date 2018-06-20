@@ -10,6 +10,7 @@ import java.util.logging.Logger;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.Table;
 
 @Entity
@@ -35,6 +36,9 @@ public class BusinessUnit implements Comparable<BusinessUnit>, Serializable {
 
     @Column(name = "DESCRIPTION")
     private String description;
+    
+    @JoinColumn(name = "PARENT_ID")
+    private BusinessUnit parent;
 
     public BusinessUnit() {
     }
@@ -90,5 +94,12 @@ public class BusinessUnit implements Comparable<BusinessUnit>, Serializable {
 
     public void setDescription(String description) {
         this.description = description;
+    }   
+    public BusinessUnit getParent() {
+        return parent;
+    }
+
+    public void setParent(BusinessUnit parent) {
+        this.parent = parent;
     }
 }
