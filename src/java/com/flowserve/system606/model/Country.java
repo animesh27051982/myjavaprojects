@@ -1,5 +1,6 @@
 package com.flowserve.system606.model;
 
+import java.io.Serializable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -7,7 +8,7 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name = "COUNTRIES")
-public class Country extends BaseEntity<String> implements Comparable<Country> {
+public class Country extends BaseEntity<String> implements Comparable<Country>, Serializable {
 
     @Id
     @Column(name = "COUNTRY_ID")

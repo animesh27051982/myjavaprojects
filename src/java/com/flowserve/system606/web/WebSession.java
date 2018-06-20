@@ -1,6 +1,7 @@
 package com.flowserve.system606.web;
 
 import com.flowserve.system606.model.BusinessUnit;
+import com.flowserve.system606.model.Country;
 import com.flowserve.system606.model.ReportingUnit;
 import com.flowserve.system606.model.User;
 import java.io.Serializable;
@@ -17,6 +18,7 @@ public class WebSession implements Serializable {
     private BusinessUnit editBusinessUnit;
     private ReportingUnit editReportingUnit;
     private User editUser;
+    private Country country;
 
     public BusinessUnit getEditBusinessUnit() {
         return editBusinessUnit;
@@ -40,5 +42,13 @@ public class WebSession implements Serializable {
 
     public void setEditUser(User editUser) {
         this.editUser = editUser;
+    }
+
+    public Country getCountry() {
+        return country;
+    }
+
+    public void setCountry(Country country) {
+        this.country = country;
     }
 }

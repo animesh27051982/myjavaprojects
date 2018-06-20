@@ -29,6 +29,7 @@ public class ReportingUnitSearch implements Serializable {
     public ReportingUnitSearch() {
     }
     List<ReportingUnit> reportingUnits = new ArrayList<ReportingUnit>();
+    //List<Country> country = new ArrayList<Country>();
     @EJB
     private AdminService adminService;
     private String searchString = "";
@@ -38,6 +39,7 @@ public class ReportingUnitSearch implements Serializable {
         reportingUnits = adminService.searchReportingUnits(searchString);
         System.out.println("com" + reportingUnits);
         Collections.sort(reportingUnits);
+
     }
 
     public String getSearchString() {
