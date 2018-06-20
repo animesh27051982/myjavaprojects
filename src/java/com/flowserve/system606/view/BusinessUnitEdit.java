@@ -8,9 +8,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
-import javax.ejb.EJB;
 import javax.faces.bean.ManagedBean;
-import javax.faces.bean.ManagedProperty;
 import javax.faces.bean.ViewScoped;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
@@ -21,7 +19,7 @@ import javax.inject.Named;
  *
  * @author span
  */
-@Named
+@ManagedBean(name = "businessUnitEdit")
 @ViewScoped
 public class BusinessUnitEdit implements Serializable {
 
@@ -40,8 +38,8 @@ public class BusinessUnitEdit implements Serializable {
     @PostConstruct
     public void init() {
         businessUnit = webSession.getEditBusinessUnit();
-    }
-
+    }  
+    
     public BusinessUnit getBusinessUnit() {
         return businessUnit;
     }
