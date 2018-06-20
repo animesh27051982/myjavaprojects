@@ -18,12 +18,11 @@
     <ui:define name="content">
         <div style="min-height: calc(100vh - 235px);">
             <h:form id="mainForm">
-                <p:growl id="messages" showDetail="true" />
-
                 <div class="ui-g">
 
                     <div class="ui-g-12">
                         <div class="card card-w-title">
+                            <p:messages showDetail="true"/>
                             <h1>Users</h1>
                             <p:focus for="searchString" />
 
@@ -41,19 +40,19 @@
                             <p:defaultCommand target="search" />
                             <p:dataTable id="userTable" var="user" value="#{userSearch.users}"  paginator="true" rows="30">
 
-                                <p:column filterBy="#{user.name}" headerText="Name" sortBy="#{user.name}" filterMatchMode="contains">
+                                <p:column headerText="Name" sortBy="#{user.name}">
                                     <h:outputText value="#{user.name}" />
                                 </p:column>
 
-                                <p:column filterBy="#{user.flsId}" headerText="ID" sortBy="#{user.flsId}" filterMatchMode="contains">
+                                <p:column headerText="ID" sortBy="#{user.flsId}">
                                     <h:outputText value="#{user.flsId}" />
                                 </p:column>
 
-                                <p:column filterBy="#{user.emailAddress}" headerText="Email" sortBy="#{user.emailAddress}" filterMatchMode="contains">
+                                <p:column headerText="Email" sortBy="#{user.emailAddress}">
                                     <h:outputText value="#{user.emailAddress}" />
                                 </p:column>
                                 <p:column  headerText="Option" >
-                                    <h:commandLink value="Edit User" action="#{userController.edit(user)}"></h:commandLink>
+                                    <h:commandLink value="Edit User" action="#{adminController.editUser(user)}"></h:commandLink>
                                 </p:column>
                             </p:dataTable>
                         </div>

@@ -13,11 +13,14 @@ import java.util.logging.Logger;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
 @Entity
@@ -27,14 +30,14 @@ public class ReportingUnit extends BaseEntity<Long> implements Comparable<Report
     private static final long serialVersionUID = 8757812203684986897L;
     private static final Logger LOG = Logger.getLogger(ReportingUnit.class.getName());
     @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "FLS_SEQ")
+    @SequenceGenerator(name = "FLS_SEQ", sequenceName = "FLS_SEQ", allocationSize = 1)
     @Column(name = "REPORTING_UNIT_ID")
     private Long id;
-    @Column(name = "REPORTING_UNIT_NAME")
+    @Column(name = "NAME")
     private String name;
-    @Column(name = "REPORTING_UNIT_CODE")
+    @Column(name = "CODE")
     private String code;
-    @Column(name = "REPORTING_UNIT_NUMBER")
-    private String number;
     @OneToOne
     @JoinColumn(name = "BUSINESS_UNIT_ID")
     private BusinessUnit businessUnit;
@@ -60,28 +63,12 @@ public class ReportingUnit extends BaseEntity<Long> implements Comparable<Report
         return this.code.compareTo(obj.getCode());
     }
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
     public String getName() {
         return name;
     }
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public String getNumber() {
-        return number;
-    }
-
-    public void setNumber(String number) {
-        this.number = number;
     }
 
     public Currency getFunctionalCurrency() {
@@ -130,6 +117,14 @@ public class ReportingUnit extends BaseEntity<Long> implements Comparable<Report
 
     public void setBusinessUnit(BusinessUnit businessUnit) {
         this.businessUnit = businessUnit;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
 }

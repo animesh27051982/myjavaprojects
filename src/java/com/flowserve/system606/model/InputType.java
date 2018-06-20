@@ -4,25 +4,20 @@ import java.io.Serializable;
 import java.time.LocalDate;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import static javax.persistence.TemporalType.DATE;
 
 @Entity
 @Table(name = "INPUT_TYPES")
-public class InputType extends BaseEntity<Long> implements Serializable {
+public class InputType extends BaseEntity<String> implements Serializable {
 
     private static final long serialVersionUID = -8382719960002472187L;
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "FLS_SEQ")
-    @SequenceGenerator(name = "FLS_SEQ", sequenceName = "FLS_SEQ", allocationSize = 1)
     @Column(name = "INPUT_TYPE_ID")
-    private Long id;
+    private String id;
     @Column(name = "OWNER_ENTITY_TYPE")
     private String ownerEntityType;
     @Column(name = "INPUT_CLASS")
@@ -52,11 +47,11 @@ public class InputType extends BaseEntity<Long> implements Serializable {
     }
 
     @Override
-    public Long getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(String id) {
         this.id = id;
     }
 

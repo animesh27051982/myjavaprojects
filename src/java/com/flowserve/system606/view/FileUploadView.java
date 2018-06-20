@@ -30,7 +30,7 @@ public class FileUploadView {
 
     @EJB
     private InputService inputService;
-    
+
     public UploadedFile getFile() {
         return file;
     }
@@ -57,12 +57,12 @@ public class FileUploadView {
         FacesMessage msg = new FacesMessage("Succesful", event.getFile().getFileName() + " is uploaded.");
         FacesContext.getCurrentInstance().addMessage(null, msg);
     }
-    
+
     public void handlePobFileUpload(FileUploadEvent event) throws Exception {
-                // handle POI file read process here
-		FacesMessage msg = new FacesMessage("Succesful", event.getFile().getFileName() + " is uploaded.");
-		FacesContext.getCurrentInstance().addMessage(null, msg);
-                               
-                inputService.readFeed((InputStream)event.getFile().getInputstream(), event.getFile().getFileName());                       
-    }    
+        // handle POI file read process here
+        FacesMessage msg = new FacesMessage("Succesful", event.getFile().getFileName() + " is uploaded.");
+        FacesContext.getCurrentInstance().addMessage(null, msg);
+
+        inputService.readFeed((InputStream) event.getFile().getInputstream(), event.getFile().getFileName());
+    }
 }

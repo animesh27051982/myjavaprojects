@@ -1,0 +1,56 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                template="/WEB-INF/template.xhtml">
+
+    <ui:define name="head">
+        <style type="text/css">
+
+        </style>
+    </ui:define>
+
+    <ui:define name="title">Edit User</ui:define>
+
+    <ui:define name="viewname">Edit User</ui:define>
+
+    <ui:define name="content">
+        <div style="min-height: calc(100vh - 235px);">
+            <h:form>
+                <div class="ui-fluid">
+                    <div class="ui-g">
+                        <div class="ui-g-12 ui-md-12 ui-lg-6">
+                            <!--
+                            Setting to 12, 12, 6.  This will cause input area to switch to full width (12 cols) when screen size is small.  Large screen half-size (6 cols)
+                            ui-lg => number of columns for a large screen (screen width > 1024px)
+                            ui-md => number of columns for a medium screen (screen width < 1024px )
+                            ui-g = > number of columns by default (or screen width < 425px if lg and md columns are define)-->
+                            <div class="card card-w-title">
+                                <h1>Edit User</h1>
+                                <!--  Only two cols, so only two col columnClasses.  I had to use 6 and 6 to get this layout properly-->
+                                <p:panelGrid columns="2" columnClasses="ui-grid-col-6,ui-grid-col-6" layout="grid" styleClass="ui-panelgrid-blank form-group" style="border:0px none; background-color:transparent;">
+                                    <p:outputLabel for="name" value="Name"/>
+                                    <p:inputText id="name" value="#{userEdit.editUser.name}"/>
+                                    <p:outputLabel for="id" value="ID"/>
+                                    <p:inputText id="id" value="#{userEdit.editUser.flsId}"/>
+                                    <p:outputLabel for="email" value="Email ID"/>
+                                    <p:inputText id="email" value="#{userEdit.editUser.emailAddress}"/>
+                                    <!-- Use p:toolbar for nicely stlyed command button area -->
+                                    <f:facet name="footer">
+                                        <p:toolbar>
+                                            <f:facet name="right">
+                                                <p:commandButton id="btn" value="Update" icon="ui-icon-edit" action="#{adminController.updateUser(userEdit.editUser)}" style="max-width:150px;"/>
+                                            </f:facet>
+                                        </p:toolbar>
+                                    </f:facet>
+                                </p:panelGrid>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </h:form>
+        </div>
+    </ui:define>
+
+</ui:composition>

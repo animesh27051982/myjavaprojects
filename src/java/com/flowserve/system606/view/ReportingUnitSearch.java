@@ -13,7 +13,7 @@ import java.util.Collections;
 import java.util.List;
 import javax.ejb.EJB;
 import javax.faces.bean.ManagedBean;
-import javax.faces.view.ViewScoped;
+import javax.faces.bean.ViewScoped;
 
 /**
  *
@@ -29,6 +29,7 @@ public class ReportingUnitSearch implements Serializable {
     public ReportingUnitSearch() {
     }
     List<ReportingUnit> reportingUnits = new ArrayList<ReportingUnit>();
+    //List<Country> country = new ArrayList<Country>();
     @EJB
     private AdminService adminService;
     private String searchString = "";
@@ -36,7 +37,9 @@ public class ReportingUnitSearch implements Serializable {
     public void search() throws Exception {
 
         reportingUnits = adminService.searchReportingUnits(searchString);
+        System.out.println("com" + reportingUnits);
         Collections.sort(reportingUnits);
+
     }
 
     public String getSearchString() {

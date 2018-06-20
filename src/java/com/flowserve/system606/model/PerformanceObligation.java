@@ -54,7 +54,7 @@ public class PerformanceObligation extends BaseEntity<Long> implements Comparabl
     @OneToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "POB_INPUTS", joinColumns = @JoinColumn(name = "POB_ID"), inverseJoinColumns = @JoinColumn(name = "INPUT_ID"))
     @MapKey(name = "inputType.id")
-    private Map<Long, Input> inputs = new HashMap<Long, Input>();
+    private Map<String, Input> inputs = new HashMap<String, Input>();
 
     public PerformanceObligation() {
     }
@@ -63,8 +63,8 @@ public class PerformanceObligation extends BaseEntity<Long> implements Comparabl
         inputs.put(input.getInputType().getId(), input);
     }
 
-    public Input getInput(InputType inputType) {
-        return inputs.get(inputType.getId());
+    public Input getInput(String inputTypeId) {
+        return inputs.get(inputTypeId);
     }
 
     @Override
