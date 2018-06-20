@@ -7,10 +7,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import javax.ejb.EJB;
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.ViewScoped;
+import javax.faces.view.ViewScoped;
+import javax.inject.Named;
 
-@ManagedBean(name = "userSearch")
+@Named
 @ViewScoped
 public class UserSearch implements Serializable {
 

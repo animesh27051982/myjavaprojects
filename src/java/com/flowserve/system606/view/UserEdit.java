@@ -6,50 +6,35 @@
 package com.flowserve.system606.view;
 
 import com.flowserve.system606.model.User;
-import com.flowserve.system606.web.UserSession;
+import com.flowserve.system606.web.WebSession;
 import java.io.Serializable;
 import javax.annotation.PostConstruct;
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.ManagedProperty;
-import javax.faces.bean.ViewScoped;
+import javax.faces.view.ViewScoped;
+import javax.inject.Inject;
+import javax.inject.Named;
 
 /**
  *
  * @author shubhamv
  */
-@ManagedBean(name = "userEdit")
+@Named
 @ViewScoped
 public class UserEdit implements Serializable {
 
-    @ManagedProperty(value = "#{userSession}")
-    private UserSession userSession;
-    private User user = new User();
+    User editUser = new User();
 
-    /**
-     * Creates a new instance of UserEdit
-     */
+    @Inject
+    private WebSession webSession;
+
     public UserEdit() {
     }
 
     @PostConstruct
     public void init() {
-        user = userSession.getEditUser();
+        editUser = webSession.getEditUser();
     }
 
-    public UserSession getUserSession() {
-        return userSession;
+    public User getEditUser() {
+        return editUser;
     }
-
-    public void setUserSession(UserSession userSession) {
-        this.userSession = userSession;
-    }
-
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
-    }
-
 }

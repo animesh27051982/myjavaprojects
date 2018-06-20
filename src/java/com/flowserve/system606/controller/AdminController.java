@@ -7,48 +7,42 @@ package com.flowserve.system606.controller;
 
 import com.flowserve.system606.model.BusinessUnit;
 import com.flowserve.system606.model.ReportingUnit;
+import com.flowserve.system606.model.User;
 import com.flowserve.system606.service.AdminService;
-import com.flowserve.system606.web.BusinessUnitSession;
-import com.flowserve.system606.web.ReportingUnitSession;
+import com.flowserve.system606.web.WebSession;
 import java.io.Serializable;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.ejb.EJB;
 import javax.enterprise.context.RequestScoped;
 import javax.faces.application.FacesMessage;
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.ManagedProperty;
 import javax.faces.context.FacesContext;
+import javax.inject.Inject;
+import javax.inject.Named;
 
 /**
  *
  * @author span
  */
-@ManagedBean(name = "adminController")
+@Named
 @RequestScoped
 public class AdminController implements Serializable {
 
-    /**
-     * Creates a new instance of AdminController
-     */
     private static Logger logger = Logger.getLogger("com.flowserve.system606");
-    @EJB
+    @Inject
     private AdminService adminService;
+    @Inject
+    private WebSession webSession;
 
-    @ManagedProperty(value = "#{businessUnitSession}")
-    private BusinessUnitSession businessUnitSession;
-
-    @ManagedProperty(value = "#{reportingUnitSession}")
-    private ReportingUnitSession reportingUnitSession;
-
+//    @Inject
+//    private BusinessUnitSession businessUnitSession;
+//    @ManagedProperty(value = "#{reportingUnitSession}")
+//    private ReportingUnitSession reportingUnitSession;
     public AdminController() {
     }
 
     public String editBusinessUnit(BusinessUnit u) throws Exception {
-        System.out.println("businessUnitSession:" + businessUnitSession);
-        System.out.println("BusinessUnit:" + u);
 
-        businessUnitSession.setEditBusinessUnit(u);
+        webSession.setEditBusinessUnit(u);
         return "businessUnitEdit";
     }
 
@@ -68,26 +62,32 @@ public class AdminController implements Serializable {
         return "businessUnitList";
     }
 
-    public BusinessUnitSession getBusinessUnitSession() {
-        return businessUnitSession;
-    }
-
-    public void setBusinessUnitSession(BusinessUnitSession businessUnitSession) {
-        this.businessUnitSession = businessUnitSession;
-    }
-
     public String editReportingUnit(ReportingUnit u) throws Exception {
 
-        reportingUnitSession.setEditReportingUnit(u);
+        webSession.setEditReportingUnit(u);
         return "reportingUnitEdit";
     }
 
-    public ReportingUnitSession getReportingUnitSession() {
-        return reportingUnitSession;
+    public String editUser(User u) throws Exception {
+        webSession.setEditUser(u);
+
+        return "userEdit";
     }
 
-    public void setReportingUnitSession(ReportingUnitSession reportingUnitSession) {
-        this.reportingUnitSession = reportingUnitSession;
+    public String updateUser(User u) {
+        FacesContext context = FacesContext.getCurrentInstance();
+
+        try {
+            adminService.updateUser(u);
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, e.getMessage(), e);
+            context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Error saving", e.getMessage()));
+            return null;
+        }
+
+        context.addMessage(null, new FacesMessage("Successful", "User saved"));
+
+        return "userSearch";
     }
 
 }

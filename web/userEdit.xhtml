@@ -31,16 +31,16 @@
                                 <!--  Only two cols, so only two col columnClasses.  I had to use 6 and 6 to get this layout properly-->
                                 <p:panelGrid columns="2" columnClasses="ui-grid-col-6,ui-grid-col-6" layout="grid" styleClass="ui-panelgrid-blank form-group" style="border:0px none; background-color:transparent;">
                                     <p:outputLabel for="name" value="Name"/>
-                                    <p:inputText id="name" value="#{userEdit.user.name}"/>
+                                    <p:inputText id="name" value="#{userEdit.editUser.name}"/>
                                     <p:outputLabel for="id" value="ID"/>
-                                    <p:inputText id="id" value="#{userEdit.user.flsId}"/>
+                                    <p:inputText id="id" value="#{userEdit.editUser.flsId}"/>
                                     <p:outputLabel for="email" value="Email ID"/>
-                                    <p:inputText id="email" value="#{userEdit.user.emailAddress}"/>
+                                    <p:inputText id="email" value="#{userEdit.editUser.emailAddress}"/>
                                     <!-- Use p:toolbar for nicely stlyed command button area -->
                                     <f:facet name="footer">
                                         <p:toolbar>
                                             <f:facet name="right">
-                                                <p:commandButton id="btn" value="Update" icon="ui-icon-edit" action="#{userController.update(userEdit.user)}" style="max-width:150px;"/>
+                                                <p:commandButton id="btn" value="Update" icon="ui-icon-edit" action="#{adminController.updateUser(userEdit.editUser)}" style="max-width:150px;"/>
                                             </f:facet>
                                         </p:toolbar>
                                     </f:facet>

@@ -1,55 +1,35 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.flowserve.system606.view;
 
 import com.flowserve.system606.model.BusinessUnit;
-import com.flowserve.system606.web.BusinessUnitSession;
+import com.flowserve.system606.web.WebSession;
 import java.io.Serializable;
 import javax.annotation.PostConstruct;
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.ManagedProperty;
-import javax.faces.bean.ViewScoped;
+import javax.faces.view.ViewScoped;
+import javax.inject.Inject;
+import javax.inject.Named;
 
 /**
  *
  * @author span
  */
-@ManagedBean(name = "businessUnitEdit")
+@Named
 @ViewScoped
 public class BusinessUnitEdit implements Serializable {
 
-    @ManagedProperty(value = "#{businessUnitSession}")
-    private BusinessUnitSession businessUnitSession;
     private BusinessUnit businessUnit = new BusinessUnit();
 
-    /**
-     * Creates a new instance of UserEdit
-     */
+    @Inject
+    private WebSession webSession;
+
     public BusinessUnitEdit() {
     }
 
     @PostConstruct
     public void init() {
-        businessUnit = businessUnitSession.getEditBusinessUnit();
-    }
-
-    public BusinessUnitSession getBusinessUnitSession() {
-        return businessUnitSession;
-    }
-
-    public void setBusinessUnitSession(BusinessUnitSession businessUnitSession) {
-        this.businessUnitSession = businessUnitSession;
+        businessUnit = webSession.getEditBusinessUnit();
     }
 
     public BusinessUnit getBusinessUnit() {
         return businessUnit;
     }
-
-    public void setBusinessUnit(BusinessUnit businessUnit) {
-        this.businessUnit = businessUnit;
-    }
-
 }

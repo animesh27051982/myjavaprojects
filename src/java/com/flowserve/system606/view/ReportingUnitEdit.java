@@ -6,51 +6,34 @@
 package com.flowserve.system606.view;
 
 import com.flowserve.system606.model.ReportingUnit;
-import com.flowserve.system606.web.ReportingUnitSession;
+import com.flowserve.system606.web.WebSession;
 import java.io.Serializable;
 import javax.annotation.PostConstruct;
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.ManagedProperty;
-import javax.faces.bean.ViewScoped;
+import javax.faces.view.ViewScoped;
+import javax.inject.Inject;
+import javax.inject.Named;
 
 /**
  *
  * @author shubhamv
  */
-@ManagedBean(name = "reportingUnitEdit")
+@Named
 @ViewScoped
 public class ReportingUnitEdit implements Serializable {
 
-    /**
-     * Creates a new instance of ReportingUnitEdit
-     */
-    @ManagedProperty(value = "#{reportingUnitSession}")
-    private ReportingUnitSession reportingUnitSession;
     private ReportingUnit reporintgUnit = new ReportingUnit();
+    @Inject
+    private WebSession webSession;
 
     public ReportingUnitEdit() {
     }
 
     @PostConstruct
     public void init() {
-        reporintgUnit = reportingUnitSession.getEditReportingUnit();
-        System.out.println("com." + reporintgUnit);
+        reporintgUnit = webSession.getEditReportingUnit();
     }
 
     public ReportingUnit getReporintgUnit() {
         return reporintgUnit;
     }
-
-    public void setReporintgUnit(ReportingUnit reporintgUnit) {
-        this.reporintgUnit = reporintgUnit;
-    }
-
-    public ReportingUnitSession getReportingUnitSession() {
-        return reportingUnitSession;
-    }
-
-    public void setReportingUnitSession(ReportingUnitSession reportingUnitSession) {
-        this.reportingUnitSession = reportingUnitSession;
-    }
-
 }
