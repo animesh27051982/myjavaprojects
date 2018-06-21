@@ -5,7 +5,11 @@
  */
 package com.flowserve.system606.controller;
 
-import com.flowserve.system606.model.User;
+/**
+ *
+ * @author shubhamv
+ */
+import com.flowserve.system606.model.Country;
 import com.flowserve.system606.service.AdminService;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -17,12 +21,8 @@ import javax.inject.Inject;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 
-/**
- *
- * @author shubhamv
- */
-@FacesConverter(value = "userConverter")
-public class UserConverter implements Converter {
+@FacesConverter(value = "countryConverter")
+public class CountryConverter implements Converter {
 
     @Inject
     private AdminService adminService;
@@ -40,7 +40,7 @@ public class UserConverter implements Converter {
         } catch (NamingException ex) {
             Logger.getLogger(UserConverter.class.getName()).log(Level.SEVERE, null, ex);
         }
-        return adminService.findUserById(new Long(value));
+        return adminService.findCountryById(value);
     }
 
     @Override
@@ -49,6 +49,7 @@ public class UserConverter implements Converter {
         if (value instanceof String) {
             return null;
         }
-        return ((User) value).getId().toString();
+        return ((Country) value).getId().toString();
     }
+
 }

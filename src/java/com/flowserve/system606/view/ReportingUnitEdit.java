@@ -34,7 +34,8 @@ public class ReportingUnitEdit implements Serializable {
     private ReportingUnit editReporintgUnit = new ReportingUnit();
     private Country country = new Country();
     List<Country> countries = new ArrayList<Country>();
-    User completedUser;
+    private User completedUser;
+    private User completedPUser;
     @Inject
     private WebSession webSession;
     @Inject
@@ -46,6 +47,7 @@ public class ReportingUnitEdit implements Serializable {
     @PostConstruct
     public void init() {
         editReporintgUnit = webSession.getEditReportingUnit();
+
         try {
             countries = adminService.AllCountry();
         } catch (Exception ex) {
@@ -55,7 +57,6 @@ public class ReportingUnitEdit implements Serializable {
     }
 
     public void addApprover(User approver) {
-        System.out.println("hii()" + approver);
         try {
             if (approver == null || editReporintgUnit.getApprovers().contains(approver)) {
                 return;
@@ -74,6 +75,34 @@ public class ReportingUnitEdit implements Serializable {
 
         try {
             editReporintgUnit.getApprovers().remove(approver);
+            editReporintgUnit = adminService.update(editReporintgUnit);
+        } catch (Exception e) {
+            FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", "Site save error " + e.getMessage());
+            FacesContext.getCurrentInstance().addMessage(null, msg);
+            logger.log(Level.SEVERE, "Error site save.", e);
+        }
+    }
+
+    public void addPreparer(User preparer) {
+
+        try {
+            if (preparer == null || editReporintgUnit.getPreparers().contains(preparer)) {
+                return;
+            }
+            editReporintgUnit.getPreparers().add(preparer);
+            editReporintgUnit = adminService.update(editReporintgUnit);
+            completedPUser = null;
+        } catch (Exception e) {
+            FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", "Site save error " + e.getMessage());
+            FacesContext.getCurrentInstance().addMessage(null, msg);
+            logger.log(Level.SEVERE, "Error site save.", e);
+        }
+    }
+
+    public void removePreparer(User preparer) {
+
+        try {
+            editReporintgUnit.getPreparers().remove(preparer);
             editReporintgUnit = adminService.update(editReporintgUnit);
         } catch (Exception e) {
             FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", "Site save error " + e.getMessage());
@@ -108,6 +137,14 @@ public class ReportingUnitEdit implements Serializable {
 
     public void setCompletedUser(User completedUser) {
         this.completedUser = completedUser;
+    }
+
+    public User getCompletedPUser() {
+        return completedPUser;
+    }
+
+    public void setCompletedPUser(User completedPUser) {
+        this.completedPUser = completedPUser;
     }
 
 }
