@@ -9,7 +9,6 @@ public class CurrencyAttributeConverter implements AttributeConverter<Currency, 
 
     @Override
     public String convertToDatabaseColumn(Currency currency) {
-        System.out.println("currency()" + currency);
         if (currency == null) {
             return null;
         }
@@ -18,7 +17,6 @@ public class CurrencyAttributeConverter implements AttributeConverter<Currency, 
 
     @Override
     public Currency convertToEntityAttribute(String currencyCode) {
-        System.out.println("Attribute()" + currencyCode);
         if (currencyCode == null) {
             return null;
         }
