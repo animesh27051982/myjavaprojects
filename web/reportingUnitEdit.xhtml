@@ -34,16 +34,44 @@
                                     <p:inputText id="name" value="#{reportingUnitEdit.editReporintgUnit.name}"/>
                                     <p:outputLabel for="code" value="Code"/>
                                     <p:inputText id="code" value="#{reportingUnitEdit.editReporintgUnit.code}"/>
-                                    <p:outputLabel for="currency" value="Currency"/>
-                                    <p:inputText id="currency" value="#{reportingUnitEdit.editReporintgUnit.functionalCurrency}"/>
+
+                                    <p:outputLabel for="active" value="Currency"/>
+                                    <p:selectBooleanCheckbox id="active" value="#{reportingUnitEdit.editReporintgUnit.active}" />
                                     <p:outputLabel for="console" value="Country" />
                                     <p:selectOneMenu id="console" value="#{reportingUnitEdit.editReporintgUnit.country}" panelStyle="width:180px"
-                                                     effect="fade" var="t" style="width:160px">
-                                        <f:selectItems value="#{reportingUnitEdit.countries}" var="cnt" itemLabel="#{cnt.name}" itemValue="#{country}" />
+                                                     effect="fade" var="t" style="width:160px" converter="countryConverter">
+                                        <f:selectItems value="#{reportingUnitEdit.countries}" var="cnt" itemLabel="#{cnt.name}" itemValue="#{cnt}" />
                                         <p:column>
                                             <h:outputText value="#{t.name}" />
                                         </p:column>
                                     </p:selectOneMenu>
+                                    <p:outputLabel for="preparers" value="Preparers" />
+                                    <p:panelGrid id="preparers" columns="1">
+                                        <p:dataTable id="preparersTable" style="margin-bottom: 10px;" var="preparer" value="#{reportingUnitEdit.editReporintgUnit.preparers}" >
+                                            <p:column headerText="Preparer Name">
+                                                <h:outputText value="#{preparer.name}" />
+                                            </p:column>
+                                            <p:column>
+                                                <p:commandLink title="Remove" ajax="true" actionListener="#{reportingUnitEdit.removePreparer(preparer)}" style="color: blue;" update=":mainForm:preparers" process="@this">
+                                                    <h:outputText value="Remove" />
+                                                </p:commandLink>
+                                            </p:column>
+                                        </p:dataTable>
+                                        <p:autoComplete
+                                            id="preparerField"
+                                            var="user"
+                                            maxResults="10"
+                                            required="#{false}"
+                                            forceSelection="#{true}"
+                                            value="#{reportingUnitEdit.completedPUser}"
+                                            completeMethod="#{viewSupport.completeUser}"
+                                            itemLabel="#{user.name}"
+                                            itemValue="#{user}"
+                                            converter="userConverter">
+                                            <h:outputText value="Begin typing last name to find a user"/>
+                                        </p:autoComplete>
+                                        <p:commandButton value="Add Preparer" style="vertical-align:middle;" ajax="true" actionListener="#{reportingUnitEdit.addPreparer(reportingUnitEdit.completedPUser)}" update=":mainForm:preparers" process="@this, :mainForm:preparerField" />
+                                    </p:panelGrid>
                                     <p:outputLabel for="approvers" value="Approvers" />
                                     <p:panelGrid id="approvers" columns="1">
                                         <p:dataTable id="approversTable" style="margin-bottom: 10px;" var="approver" value="#{reportingUnitEdit.editReporintgUnit.approvers}" >
@@ -51,7 +79,7 @@
                                                 <h:outputText value="#{approver.name}" />
                                             </p:column>
                                             <p:column>
-                                                <p:commandLink title="Remove" ajax="true" actionListener="#{reportingUnitEdit.removeApprover(approver)}" style="color: blue;" update=":mainForm:approvers,:mainForm:growl" process="@this">
+                                                <p:commandLink title="Remove" ajax="true" actionListener="#{reportingUnitEdit.removeApprover(approver)}" style="color: blue;" update=":mainForm:approvers" process="@this">
                                                     <h:outputText value="Remove" />
                                                 </p:commandLink>
                                             </p:column>
@@ -65,7 +93,8 @@
                                             value="#{reportingUnitEdit.completedUser}"
                                             completeMethod="#{viewSupport.completeUser}"
                                             itemLabel="#{user.name}"
-                                            itemValue="#{user}">
+                                            itemValue="#{user}"
+                                            converter="userConverter">
                                             <h:outputText value="Begin typing last name to find a user"/>
                                         </p:autoComplete>
                                         <p:commandButton value="Add Approver" style="vertical-align:middle;" ajax="true" actionListener="#{reportingUnitEdit.addApprover(reportingUnitEdit.completedUser)}" update=":mainForm:approvers" process="@this, :mainForm:approverField" />
@@ -73,7 +102,7 @@
                                     <f:facet name="footer">
                                         <p:toolbar>
                                             <f:facet name="right">
-                                                <p:commandButton id="btn" value="Update" icon="ui-icon-edit" action="#" style="max-width:150px;"/>
+                                                <p:commandButton id="btnReport" value="Update" ajax="false" icon="ui-icon-edit" action="#{adminController.updateReportingUnit(reportingUnitEdit.editReporintgUnit)}" style="max-width:150px;" process="@this"/>
                                             </f:facet>
                                         </p:toolbar>
                                     </f:facet>
