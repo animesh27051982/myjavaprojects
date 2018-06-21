@@ -33,6 +33,22 @@
                                     <p:outputLabel for="description" value="Description"/>
                                     <p:inputText id="description" value="#{businessUnitEdit.businessUnit.description}"/>
 
+                                    <p:outputLabel for="description" value="Parent"/>
+                                    <p:autoComplete  
+                                        id="parentSiteField"
+                                        var="site" 
+                                        maxResults="10"
+                                        required="#{false}" 
+                                        forceSelection="#{true}"
+                                        value="#{businessUnitEdit.businessUnit.parent}" 
+                                        completeMethod="#{businessUnitEdit.completeSite}" 
+                                        itemLabel="#{site.name}"
+                                        itemValue="#{site}"
+                                        converter="businessUnitConverter"
+                                        >
+                                        <h:outputText value="Begin typing site name"/>    
+                                    </p:autoComplete>
+
                                     <p:outputLabel for="btn" value="" />
                                     <p:commandButton id="btn" value="Update" icon="ui-icon-edit" action="#{adminController.updateBusinessUnit(businessUnitEdit.businessUnit)}" style="max-width:150px;"/>
                                 </p:panelGrid>

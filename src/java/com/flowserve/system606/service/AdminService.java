@@ -11,7 +11,9 @@ import com.flowserve.system606.model.InputType;
 import com.flowserve.system606.model.ReportingUnit;
 import com.flowserve.system606.model.User;
 import java.util.List;
+import java.util.logging.Logger;
 import javax.ejb.Stateless;
+import javax.inject.Named;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
@@ -21,11 +23,14 @@ import javax.persistence.TypedQuery;
  *
  * @author shubhamv
  */
+@Named
 @Stateless
 public class AdminService {
 
     @PersistenceContext(unitName = "FlowServePU")
     private EntityManager em;
+    
+    private static Logger logger = Logger.getLogger("com.flowserve.system606");
 
     public List<User> searchUsers(String searchString) throws Exception {  // Need an application exception type defined.
         if (searchString == null || searchString.trim().length() < 2) {
@@ -39,6 +44,16 @@ public class AdminService {
     public List<BusinessUnit> findBusinessUnits() throws Exception {  // Need an application exception type defined.
 
         TypedQuery<BusinessUnit> query = em.createQuery("SELECT b FROM BusinessUnit b", BusinessUnit.class);
+        return (List<BusinessUnit>) query.getResultList();
+    }
+    
+    public List<BusinessUnit> getBusinessUnit(String searchString) throws Exception {  // Need an application exception type defined.
+        if (searchString == null || searchString.trim().length() < 2) {
+            throw new Exception("Please supply a search string with at least 2 characters.");
+        }
+        System.out.println("Search" + searchString.toUpperCase());
+        TypedQuery<BusinessUnit> query = em.createQuery("SELECT u FROM BusinessUnit u WHERE UPPER(u.name) LIKE :NAME ORDER BY UPPER(u.name)", BusinessUnit.class);
+        query.setParameter("NAME", "%" + searchString.toUpperCase() + "%");
         return (List<BusinessUnit>) query.getResultList();
     }
 
@@ -119,7 +134,22 @@ public class AdminService {
 
         return (List<ReportingUnit>) query.getResultList();
     }
+    
+    public List<BusinessUnit> searchSites(String searchString) throws Exception {
+        if (searchString == null || searchString.trim().length() < 2) {
+            throw new Exception("Please supply a search string with at least 2 characters.");
+        }
+        
+        TypedQuery<BusinessUnit> query = em.createQuery(
+                "SELECT s FROM BusinessUnit s WHERE UPPER(s.name) LIKE :NAME order by UPPER(s.name)", BusinessUnit.class);
+        // query.setParameter("DOM", domain);
+        query.setParameter("NAME", "%" + searchString.toUpperCase() + "%");
+        // System.out.println("searchSites:" + query);
+        logger.info("searchSites:" + query.toString());
+        return (List<BusinessUnit>)query.getResultList();
+    }
 
+    
     public List<Country> AllCountry() throws Exception {
         TypedQuery<Country> query = em.createQuery("SELECT c  FROM Country c ORDER BY UPPER(c.name)", Country.class);
 
