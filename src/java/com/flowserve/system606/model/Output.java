@@ -30,7 +30,7 @@ public abstract class Output<T> extends BaseEntity<Long> {
 
     @OneToOne
     @JoinColumn(name = "OUTPUT_TYPE_ID")
-    private InputType inputType;
+    private InputType outputType;
     @Column(name = "CURRENCY_CODE")
     private String currencyCode;  // Consider JavaMoney, etc.,  java.util.Currency.. or our own Currency class.
     @OneToOne
@@ -76,12 +76,12 @@ public abstract class Output<T> extends BaseEntity<Long> {
         this.createdBy = createdBy;
     }
 
-    public InputType getInputType() {
-        return inputType;
+    public InputType getOutputType() {
+        return outputType;
     }
 
-    public void setInputType(InputType inputType) {
-        this.inputType = inputType;
+    public void setOutputType(InputType outputType) {
+        this.outputType = outputType;
     }
 
     public LocalDateTime getCreationDate() {

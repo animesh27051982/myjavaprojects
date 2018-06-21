@@ -72,6 +72,14 @@ public class PerformanceObligation extends BaseEntity<Long> implements Comparabl
         return inputs.get(inputTypeId);
     }
 
+    public void putOutput(Output output) {
+        outputs.put(output.getOutputType().getId(), output);
+    }
+
+    public Output getOutput(String outputTypeId) {
+        return outputs.get(outputTypeId);
+    }
+
     @Override
     public int compareTo(PerformanceObligation obj) {
         return this.id.compareTo(obj.getId());
