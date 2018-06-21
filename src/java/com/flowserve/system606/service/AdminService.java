@@ -31,14 +31,13 @@ public class AdminService {
         if (searchString == null || searchString.trim().length() < 2) {
             throw new Exception("Please supply a search string with at least 2 characters.");
         }
-        System.out.println("Search" + searchString.toUpperCase());
         TypedQuery<User> query = em.createQuery("SELECT u FROM User u WHERE UPPER(u.name) LIKE :NAME OR UPPER(u.flsId) LIKE :NAME ORDER BY UPPER(u.name)", User.class);
         query.setParameter("NAME", "%" + searchString.toUpperCase() + "%");
         return (List<User>) query.getResultList();
     }
 
     public List<BusinessUnit> findBusinessUnits() throws Exception {  // Need an application exception type defined.
-        System.out.println("findBusinessUnits");
+
         TypedQuery<BusinessUnit> query = em.createQuery("SELECT b FROM BusinessUnit b", BusinessUnit.class);
         return (List<BusinessUnit>) query.getResultList();
     }
@@ -63,6 +62,7 @@ public class AdminService {
     }
 
     public User findUserById(Long id) {
+
         return em.find(User.class, id);
     }
 
@@ -114,7 +114,6 @@ public class AdminService {
         if (searchString == null || searchString.trim().length() < 2) {
             throw new Exception("Please supply a search string with at least 2 characters.");
         }
-        System.out.println("Search" + searchString.toUpperCase());
         TypedQuery<ReportingUnit> query = em.createQuery("SELECT ru  FROM ReportingUnit ru WHERE UPPER(ru.name) LIKE :NAME OR UPPER(ru.code) LIKE :NAME ORDER BY UPPER(ru.name)", ReportingUnit.class);
         query.setParameter("NAME", "%" + searchString.toUpperCase() + "%");
 

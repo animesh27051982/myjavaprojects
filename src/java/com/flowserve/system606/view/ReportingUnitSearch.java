@@ -37,7 +37,6 @@ public class ReportingUnitSearch implements Serializable {
     public void search() throws Exception {
 
         reportingUnits = adminService.searchReportingUnits(searchString);
-        System.out.println("com" + reportingUnits);
         Collections.sort(reportingUnits);
 
     }

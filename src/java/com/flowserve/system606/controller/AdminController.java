@@ -68,6 +68,22 @@ public class AdminController implements Serializable {
         return "reportingUnitEdit";
     }
 
+    public String updateReportingUnit(ReportingUnit u) throws Exception {
+        FacesContext context = FacesContext.getCurrentInstance();
+
+        try {
+            adminService.update(u);
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, e.getMessage(), e);
+            context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Error saving", e.getMessage()));
+            return null;
+        }
+
+        context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Reporting Unit saved", ""));
+
+        return "reportingUnitSearch";
+    }
+
     public String editUser(User u) throws Exception {
         webSession.setEditUser(u);
 
