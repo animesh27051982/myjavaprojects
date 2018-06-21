@@ -17,4 +17,6 @@ public final class InputTypeId {
     public static final String BILLING_AMOUNT_LOCAL_CURRENCY = "BILLING_AMOUNT_LOCAL_CURRENCY";
     public static final String BILLING_DATE = "BILLING_DATE";
     public static final String BILLING_INVOICE_NUMBER = "BILLING_INVOICE_NUMBER";
+    public static final String REVENUE_START_DATE = "REVENUE_START_DATE";
+    public static final String REVENUE_END_DATE = "REVENUE_END_DATE";
 }
