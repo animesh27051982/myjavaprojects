@@ -1,0 +1,165 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:p="http://primefaces.org/ui" template="/WEB-INF/template.xhtml">
+
+    <ui:define name="title">Dashboard</ui:define>
+
+    <ui:define name="viewname">Dashboard</ui:define>
+
+    <ui:define name="head">
+        <script type="text/javascript">
+            //<![CDATA[
+            function skinChart() {
+                this.cfg.shadow = false;
+                this.cfg.title = '';
+                this.cfg.seriesColors = ['#00acac', '#3e96e7'];
+                this.cfg.grid = {
+                    background: '#ffffff',
+                    borderColor: '#ffffff',
+                    gridLineColor: '#EEEEEE',
+                    shadow: false
+                };
+                this.cfg.axesDefaults = {
+                    rendererOptions: {
+                        textColor: '#212121'
+                    }
+                };
+                this.cfg.seriesDefaults = {
+                    shadow: false,
+                    lineWidth: 1,
+                    markerOptions: {
+                        shadow: false,
+                        size: 7,
+                        style: 'circle'
+                    }
+                }
+            }
+            //]]>
+        </script>
+        <style type="text/css">
+            .main-content {
+                padding: 0;
+            }
+        </style>
+    </ui:define>
+
+    <ui:define name="content">
+        <h:form id="form">
+            <div class="dashboard">
+                <div class="ui-g">
+                    <div class="ui-g-12 ui-md-12 ui-lg-4">
+                        <div class="overview-box monthly-sales">
+                            <div class="overview-title">CONTRACTS</div>
+                            <i class="fa fa-arrow-circle-up" />
+                            <div class="overview-numbers">
+                                <strong>$ 122,650,233</strong>
+                            </div>
+                            <div class="overview-ratios">16% more than previous month</div>
+                            <p:graphicImage name="images/icon-sales.png" library="california-layout" />
+                        </div>
+                    </div>
+                    <div class="ui-g-12 ui-md-12 ui-lg-4">
+                        <div class="overview-box monthly-views">
+                            <div class="overview-title">PERFORMANCE
+                                <i class="fa fa-arrow-circle-down" />
+                            </div>
+                            <div class="overview-numbers">
+                                <strong>$ 22,650</strong></div>
+                            <div class="overview-ratios">2% less than previous month</div>
+                            <p:graphicImage name="images/icon-views.png" library="california-layout" />
+                        </div>
+                    </div>
+                    <div class="ui-g-12 ui-md-12 ui-lg-4">
+                        <div class="overview-box monthly-users">
+                            <div class="overview-title">LOSS
+                                <i class="fa fa-arrow-circle-up" />
+                            </div>
+                            <div class="overview-numbers">
+                                <strong>$ 2,000</strong></div>
+                            <div class="overview-ratios">9% more than previous month </div>
+                            <p:graphicImage name="images/icon-users.png" library="california-layout" />
+                        </div>
+                    </div>
+
+                    <div class="ui-g-12 ui-md-6 ui-lg-3">
+                        <div class="stats">
+                            <div class="stats-icon">
+                                <p:graphicImage name="images/icon-doc.png" library="california-layout" styleClass="doc-icon" />
+                            </div>
+                            <div class="stats-numbers">15</div>
+                            <div class="stats-title">Total Contracts</div>
+                            <div class="stats-subtitle"><span>21%</span> more than previous period</div>
+                        </div>
+                    </div>
+                    <div class="ui-g-12 ui-md-6 ui-lg-3">
+                        <div class="stats">
+                            <div class="stats-icon">
+                                <p:graphicImage name="images/icon-doc.png" library="california-layout" styleClass="doc-icon" />
+                            </div>
+                            <div class="stats-numbers">5</div>
+                            <div class="stats-title">Contracts Needing Action</div>
+                            <div class="stats-subtitle">
+                                <span>21%</span> more than last period</div>
+                        </div>
+                    </div>
+                    <div class="ui-g-12 ui-md-6 ui-lg-3">
+                        <div class="stats">
+                            <div class="stats-icon">
+                                <p:graphicImage name="images/icon-mark.png" library="california-layout" styleClass="mark-icon" />
+                            </div>
+                            <div class="stats-numbers">132</div>
+                            <div class="stats-title">Total POBs</div>
+                            <div class="stats-subtitle">
+                                <span>12%</span> less than yesterday</div>
+                        </div>
+                    </div>
+                    <div class="ui-g-12 ui-md-6 ui-lg-3">
+                        <div class="stats">
+                            <div class="stats-icon">
+                                <p:graphicImage name="images/icon-profile.png" library="california-layout" styleClass="profile-icon" />
+                            </div>
+                            <div class="stats-numbers">100</div>
+                            <div class="stats-title">POBs Needing Action</div>
+                            <div class="stats-subtitle">
+                                <span>21%</span> less than last period</div>
+                        </div>
+                    </div>
+
+                    <div class="ui-g-12">
+                        <div class="card card-w-title">
+                            <h1>Reporting Units Needing Action (4 Workdays Remaining)</h1>
+                            <p:treeTable value="#{treeSelectionView.root2}" var="document" >
+                                <f:facet name="header">
+                                    Reporting Units
+                                </f:facet>
+                                <p:column headerText="Reporting Unit / Contract" sortBy="#{document.name}">
+                                    <h:outputText value="#{document.name}" />
+                                </p:column>
+                                <p:column headerText="Platform">
+                                    <h:outputText value="#{document.platform}" />
+                                </p:column>
+                                <p:column headerText="POB Input Required Count">
+                                    <h:outputText value="#{document.pobCountInputRequired}" />
+                                </p:column>
+                                <p:column headerText="POB Invalid Count">
+                                    <h:outputText value="#{document.pobCountInvalid}" />
+                                </p:column>
+                                <p:column headerText="POB Rejected Count">
+                                    <h:outputText value="#{document.pobCountRejected}" />
+                                </p:column>
+                            </p:treeTable>
+
+                            <p:toolbar>
+                                <f:facet name="right">
+                                    <p:commandButton value="Online Input Entry" icon="ui-icon-check" action="#{inputController.proceedToOnlineEntry()}"/>
+                                    <p:commandButton value="Download Input Template" icon="ui-icon-check" action="#{inputController.proceedToInputDownload()}"/>
+                                </f:facet>
+                            </p:toolbar>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </h:form>
+    </ui:define>
+
+</ui:composition>

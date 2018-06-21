@@ -1,0 +1,68 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                template="/WEB-INF/template.xhtml">
+
+    <ui:define name="head">
+        <style type="text/css">
+
+        </style>
+    </ui:define>
+
+    <ui:define name="title">Download Input Template</ui:define>
+    <ui:define name="viewname">Download Input Template</ui:define>
+
+    <ui:define name="content">
+        <h:form id="form">
+
+            <div class="ui-g">
+
+                <div class="ui-g-12">
+                    <div class="card card-w-title">
+                        <p:messages showDetail="true" />
+
+                        <h1><strong>Download MAY-18 Input Template</strong></h1>
+                        <h4>Instructions here... all checked will be downloaded...</h4>
+
+                        <p:treeTable value="#{inputTemplateDownload.reportingUnits}" var="document" selectionMode="checkbox" selection="#{inputTemplateDownload.selectedNodes}">
+                            <f:facet name="header">
+                                Reporting Units
+                            </f:facet>
+                            <p:column headerText="Reporting Unit">
+                                <h:outputText value="#{document.name}" />
+                            </p:column>
+                            <p:column headerText="Platform">
+                                <h:outputText value="#{document.platform}" />
+                            </p:column>
+                            <p:column headerText="Contract Count">
+                                <h:outputText value="#{document.pobCountInputRequired}" />
+                            </p:column>
+                            <p:column headerText="POB Count">
+                                <h:outputText value="#{document.pobCountRejected}" />
+                            </p:column>
+                            <p:column headerText="POB Input Required Count">
+                                <h:outputText value="#{document.pobCountInputRequired}" />
+                            </p:column>
+                            <p:column headerText="POB Invalid Count">
+                                <h:outputText value="#{document.pobCountInvalid}" />
+                            </p:column>
+                        </p:treeTable>
+
+                        <p:toolbar>
+                            <f:facet name="right">
+                                <p:commandButton value="Cancel" icon="ui-icon-cancel" action="#{inputController.inputDashboard()}"/>
+                                <p:commandButton value="Download May Template" ajax="false" style="width:auto;" icon="ui-icon-arrowthick-1-s">
+                                    <p:fileDownload value="#{inputTemplateDownload.file}" />
+                                </p:commandButton>
+                                <p:commandButton value="Proceed to Upload Processing" icon="ui-icon-check" action="#{inputController.proceedToInputUpload()}"/>
+                            </f:facet>
+                        </p:toolbar>
+                    </div>
+                </div>
+            </div>
+        </h:form>
+    </ui:define>
+
+</ui:composition>

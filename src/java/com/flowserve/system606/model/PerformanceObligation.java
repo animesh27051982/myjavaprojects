@@ -56,6 +56,11 @@ public class PerformanceObligation extends BaseEntity<Long> implements Comparabl
     @MapKey(name = "inputType.id")
     private Map<String, Input> inputs = new HashMap<String, Input>();
 
+    @OneToMany(fetch = FetchType.EAGER)
+    @JoinTable(name = "POB_OUTPUTS", joinColumns = @JoinColumn(name = "POB_ID"), inverseJoinColumns = @JoinColumn(name = "OUTPUT_ID"))
+    @MapKey(name = "outputType.id")
+    private Map<String, Output> outputs = new HashMap<String, Output>();
+
     public PerformanceObligation() {
     }
 

@@ -138,7 +138,7 @@ public class AppInitializeService {
 
                         String[] to = innerLine.split("\\t");
                         if (!to[2].equalsIgnoreCase("")) {
-                            BigDecimal usdRate = new BigDecimal(1.0);
+                            BigDecimal usdRate = new BigDecimal("1.0");
                             BigDecimal sourceRate = new BigDecimal(from[4]);
                             BigDecimal targetRate = new BigDecimal(to[4]);
 
