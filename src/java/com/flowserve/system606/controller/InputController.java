@@ -19,6 +19,10 @@ public class InputController implements Serializable {
         return "inputDashboard";
     }
 
+    public String saveInputs() {
+        return "inputOnlineEntry";
+    }
+
     public String proceedToInputDownload() {
         return "inputTemplateDownload";
     }

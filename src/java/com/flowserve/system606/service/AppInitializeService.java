@@ -52,6 +52,8 @@ public class AppInitializeService {
     private FinancialPeriodService financialPeriodService;
     @EJB
     private InputService inputService;
+    @EJB
+    private BusinessRuleService businessRuleService;
 
     @PostConstruct
     public void init() {
@@ -64,6 +66,11 @@ public class AppInitializeService {
             initCountries();
             initReportingUnits();
             initPOBs();
+            initBusinessRules();
+            initBusinessRulesEngine();
+
+            // businessRuleService.executePOBCalculations(pob);// TODO - Remove
+            //DroolsTest.execute();
         } catch (Exception ex) {
             Logger.getLogger(AppInitializeService.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -304,5 +311,13 @@ public class AppInitializeService {
             logger.info("Finished initializing FinancialPeriods.");
         }
 
+    }
+
+    private void initBusinessRules() throws Exception {
+        businessRuleService.initBusinessRules();
+    }
+
+    private void initBusinessRulesEngine() throws Exception {
+        businessRuleService.initBusinessRulesEngine();
     }
 }

@@ -1,0 +1,23 @@
+dialect "mvel"
+
+import com.flowserve.system606.model.PerformanceObligation
+
+rule "Calculate Percent Complete"
+    when
+        // Pull input values needed for calculation
+        pob : PerformanceObligation(cumulativeCostIncurred : getInputValue("CUMULATIVE_COSTS_INCURRED"), estimatedCostAtCompletion : getInputValue("ESTIMATED_COST_AT_COMPLETION"))
+    then
+        // Execute calculation, set output
+        pob.putOutput("PERCENT_COMPLETE", cumulativeCostIncurred / estimatedCostAtCompletion);
+end
+
+rule "Calculate Revenue Earned to Date"
+    when
+        // Pull input values needed for calculation, one of which is an output from the previous calc.
+        pob : PerformanceObligation(percentComplete : getOutputValue("PERCENT_COMPLETE"), transactionPrice : getInputValue("TRANSACTION_PRICE"))
+    then
+        // Execute calculation, set output
+        pob.putOutput("REVENUE_EARNED_TO_DATE", percentComplete * transactionPrice);
+end
+
+

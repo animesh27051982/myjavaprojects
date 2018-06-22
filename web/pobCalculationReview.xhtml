@@ -195,15 +195,12 @@
                         <p:toolbar>
                             <f:facet name="right">
                                 <p:commandButton value="Back to Inputs" icon="ui-icon-arrowthick-1-w" action="#{calcReviewController.returnToInputs}"/>
-                                <p:menuButton value="Submit for Approval" />
+                                <p:commandButton value="Submit for Approval" icon="inputOnlineEntry" action="#{calcReviewController.returnToInputs}"/>
                             </f:facet>
                         </p:toolbar>
-
                     </div>
                 </div>
             </div>
         </h:form>
-
     </ui:define>
-
 </ui:composition>

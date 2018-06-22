@@ -17,37 +17,17 @@
 
     <ui:define name="content">
         <h:form id="form">
-            <p:growl id="messages" showDetail="true" />
 
             <div class="ui-g">
 
-                <div class="ui-g-12 ui-md-12 ui-lg-6">
-                    <div class="card card-w-title">
-                        <h1>Download MAY-18 POB Input Template</h1>
-                        <p:commandButton value="Download May Template" ajax="false" style="width:auto;" icon="ui-icon-arrowthick-1-s">
-                            <p:fileDownload value="#{pobInput.file}" />
-                        </p:commandButton>
-                    </div>
-                </div>
-
-                <div class="ui-g-12 ui-md-12 ui-lg-6">
-                    <div class="card card-w-title">
-                        <h1>Upload Completed MAY-18 POB Template</h1>
-                        <p:fileUpload fileUploadListener="#{fileUploadView.handlePobFileUpload}" auto="true" dragDropSupport="true" label="Upload May Template"
-                                      multiple="false" update="messages" sizeLimit="10000000" allowTypes="/(\.|\/)(xlsx)$/" style="width:25%" />
-                    </div>
-                </div>
-
                 <div class="ui-g-12">
                     <div class="card card-w-title">
+                        <p:messages showDetail="true"/>
                         <h1><strong>MAY-18 Performance Obligation Inputs (4 Workdays Remaining)</strong></h1>
                         <h4>Preparer:  Kelly Graves</h4>
                         <h4>Status: Draft</h4>
                         <h4>Input Set Version: 4</h4>
                         <h4>Input Set Date: 18-MAY-2018 12:23 PM CST</h4>
-                        <h4>Input File:  1200_POCI_IMPORT_TEMPLATE_MAY-18_v1.xlsx</h4>
-
-
 
                         <p:tabView>
                             <p:tab title="EAC Inputs (need better title from Mark)">
@@ -192,20 +172,14 @@
 
                         <p:toolbar>
                             <f:facet name="right">
-                                <p:menuButton value="Cancel Edits"/>
-                                <p:menuButton value="Save Inputs"/>
-                                <p:commandButton value="Proceed to Calculation Review" icon="ui-icon-check" action="#{calcReviewController.reviewCalculations()}"/>
+                                <p:commandButton value="Cancel Edits" icon="ui-icon-cancel" action="#{inputController.inputDashboard()}"/>
+                                <p:commandButton value="Save Inputs" icon="ui-icon-disk" action="#{inputController.saveInputs()}"/>
+                                <p:commandButton value="Proceed to Calculation Review" icon="ui-icon-arrowthick-1-e" action="#{calcReviewController.reviewCalculations()}"/>
                             </f:facet>
                         </p:toolbar>
-
-
                     </div>
                 </div>
-
-
             </div>
         </h:form>
-
     </ui:define>
-
 </ui:composition>

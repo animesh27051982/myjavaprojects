@@ -25,7 +25,7 @@ public abstract class Output<T> extends BaseEntity<Long> {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "FLS_SEQ")
     @SequenceGenerator(name = "FLS_SEQ", sequenceName = "FLS_SEQ", allocationSize = 1)
-    @Column(name = "INPUT_ID")
+    @Column(name = "OUTPUT_ID")
     private Long id;
 
     @OneToOne
