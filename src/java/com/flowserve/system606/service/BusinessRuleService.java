@@ -97,7 +97,7 @@ public class BusinessRuleService {
         LOG.info("Finished initBusinessRulesEngine");
     }
 
-    public void executePOBCalculations(PerformanceObligation pob) throws Exception {
+    public void executeBusinessRules(PerformanceObligation pob) throws Exception {
         LOG.info("Firing all business rules");
         kSession.execute(pob);
         //kSession.fireAllRules();

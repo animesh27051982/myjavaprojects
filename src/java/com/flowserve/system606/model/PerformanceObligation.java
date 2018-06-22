@@ -10,8 +10,10 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -53,12 +55,12 @@ public class PerformanceObligation extends BaseEntity<Long> implements Comparabl
     private LocalDateTime lastUpdateDate;
 
     //private String deactivationReason;  // create type class
-    @OneToMany(fetch = FetchType.EAGER)
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinTable(name = "POB_INPUTS", joinColumns = @JoinColumn(name = "POB_ID"), inverseJoinColumns = @JoinColumn(name = "INPUT_ID"))
     @MapKey(name = "inputType.id")
     private Map<String, Input> inputs = new HashMap<String, Input>();
 
-    @OneToMany(fetch = FetchType.EAGER)
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinTable(name = "POB_OUTPUTS", joinColumns = @JoinColumn(name = "POB_ID"), inverseJoinColumns = @JoinColumn(name = "OUTPUT_ID"))
     @MapKey(name = "outputType.id")
     private Map<String, Output> outputs = new HashMap<String, Output>();
@@ -74,14 +76,42 @@ public class PerformanceObligation extends BaseEntity<Long> implements Comparabl
         return inputs.get(inputTypeId);
     }
 
+    public BigDecimal getDecimalInput(String inputTypeId) {
+        return ((DecimalInput) inputs.get(inputTypeId)).getValue();
+    }
+
+    public void initializeOutputs(List<OutputType> outputTypes) throws Exception {
+        for (OutputType outputType : outputTypes) {
+            initializeOutput(outputType);
+        }
+    }
+
+    public void initializeOutput(OutputType outputType) throws Exception {
+        Class<?> clazz = Class.forName(outputType.getOutputClass());
+        Output output = (Output) clazz.newInstance();
+        outputs.put(outputType.getId(), output);
+    }
+
     public void putOutput(Output output) {
         outputs.put(output.getOutputType().getId(), output);
+    }
+
+    public void putDecimalOutput(String outputTypeId, BigDecimal value) {
+        LOG.info("class: " + value.getClass());
+        outputs.get(outputTypeId).setValue(value);
     }
 
     public Output getOutput(String outputTypeId) {
         return outputs.get(outputTypeId);
     }
 
+    public BigDecimal getDecimalOutput(String outputTypeId) {
+        return ((DecimalOutput) outputs.get(outputTypeId)).getValue();
+    }
+
+//    public void putDecimalOutput(String outputTypeId, BigDecimal value) {
+//        outputs.put(output.getOutputType().getId(), output);
+//    }
     @Override
     public int compareTo(PerformanceObligation obj) {
         return this.id.compareTo(obj.getId());
@@ -142,13 +172,13 @@ public class PerformanceObligation extends BaseEntity<Long> implements Comparabl
     public void setLastUpdateDate(LocalDateTime lastUpdateDate) {
         this.lastUpdateDate = lastUpdateDate;
     }
-    
+
     public BigDecimal getDecimalValue(String inputTypeId) {
-       return ((DecimalInput) inputs.get(inputTypeId)).getValue();
-    }    
-    
+        return ((DecimalInput) inputs.get(inputTypeId)).getValue();
+    }
+
     public LocalDate getDateValue(String inputTypeId) {
-       return ((DateInput) inputs.get(inputTypeId)).getValue();
-    }    
-    
+        return ((DateInput) inputs.get(inputTypeId)).getValue();
+    }
+
 }

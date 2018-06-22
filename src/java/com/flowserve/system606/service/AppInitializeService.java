@@ -10,6 +10,7 @@ import com.flowserve.system606.model.ExchangeRate;
 import com.flowserve.system606.model.FinancialPeriod;
 import com.flowserve.system606.model.InputType;
 import com.flowserve.system606.model.InputTypeId;
+import com.flowserve.system606.model.OutputType;
 import com.flowserve.system606.model.PerformanceObligation;
 import com.flowserve.system606.model.PeriodStatus;
 import com.flowserve.system606.model.ReportingUnit;
@@ -53,6 +54,8 @@ public class AppInitializeService {
     @EJB
     private InputService inputService;
     @EJB
+    private OutputService outputService;
+    @EJB
     private BusinessRuleService businessRuleService;
 
     @PostConstruct
@@ -63,6 +66,7 @@ public class AppInitializeService {
             initFinancialPeriods();
             initCurrencyConverter();
             initInputTypes();
+            initOutputTypes();
             initCountries();
             initReportingUnits();
             initPOBs();
@@ -216,6 +220,53 @@ public class AppInitializeService {
         }
 
         logger.info("Input type name for " + InputTypeId.TRANSACTION_PRICE + " = " + inputService.findInputTypeById(InputTypeId.TRANSACTION_PRICE).getName());
+    }
+
+    private void initOutputTypes() throws Exception {
+
+        admin = adminService.findUserByFlsId("admin");
+
+        if (outputService.findOutputTypes().isEmpty()) {
+            logger.info("Initializing OutputTypes");
+            BufferedReader reader = new BufferedReader(new InputStreamReader(AppInitializeService.class.getResourceAsStream("/resources/app_data_init_files/init_output_types.txt"), "UTF-8"));
+
+            int count = 0;
+            String line = null;
+            while ((line = reader.readLine()) != null) {
+                if (line.trim().length() == 0) {
+                    continue;
+                }
+
+                count = 0;
+                logger.info(line);
+                String[] values = line.split("\\|");
+
+                OutputType outputType = new OutputType();
+                outputType.setId(values[count++]);
+                outputType.setOwnerEntityType(values[count++]);
+                outputType.setOutputClass(values[count++]);
+                outputType.setName(values[count++]);
+                outputType.setDescription(values[count++]);
+                outputType.setExcelSheet(values[count++]);
+                outputType.setExcelCol(values[count++]);
+                outputType.setGroupName(values[count++]);
+                outputType.setGroupPosition(Integer.parseInt(values[count++]));
+                outputType.setEffectiveFrom(LocalDate.now());
+                //inputType.setEffectiveTo(LocalDate.now());
+                outputType.setActive(true);
+
+                logger.info("Creating OutputType: " + outputType.getName());
+
+                adminService.persist(outputType);
+
+            }
+
+            reader.close();
+
+            logger.info("Finished initializing OutputTypes.");
+        }
+
+        //logger.info("Input type name for " + InputTypeId.TRANSACTION_PRICE + " = " + inputService.findInputTypeById(InputTypeId.TRANSACTION_PRICE).getName());
     }
 
     private void initPOBs() throws Exception {

@@ -6,6 +6,8 @@ package com.flowserve.system606.model;
 public final class OutputTypeId {
 
     public static final String PERCENT_COMPLETE = "PERCENT_COMPLETE";
+    public static final String REVENUE_EARNED_TO_DATE = "REVENUE_EARNED_TO_DATE";
+
 //    public static final String ESTIMATED_COST_AT_COMPLETION = "ESTIMATED_COST_AT_COMPLETION";
 //    public static final String TRANSACTION_PRICE = "TRANSACTION_PRICE";
 //    public static final String CUMULATIVE_COST_INCURRED = "CUMULATIVE_COST_INCURRED";

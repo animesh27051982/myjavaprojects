@@ -23,6 +23,12 @@ public class PerformanceObligationService {
     private SessionContext sessionContext;
     @EJB
     private AdminService adminService;
+    @EJB
+    private OutputService outputService;
+
+    public void initializeOutputs(PerformanceObligation pob) throws Exception {
+        pob.initializeOutputs(outputService.findActiveOutputTypes());
+    }
 
     public PerformanceObligation findById(Long id) {
         return em.find(PerformanceObligation.class, id);

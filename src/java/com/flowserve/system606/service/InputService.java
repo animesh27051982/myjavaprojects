@@ -8,6 +8,7 @@ package com.flowserve.system606.service;
 import com.flowserve.system606.model.Input;
 import com.flowserve.system606.model.InputSet;
 import com.flowserve.system606.model.InputType;
+import com.flowserve.system606.model.OutputTypeId;
 import com.flowserve.system606.model.PerformanceObligation;
 import java.io.InputStream;
 import java.math.BigDecimal;
@@ -17,6 +18,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
@@ -48,6 +50,8 @@ public class InputService {
     private PerformanceObligationService pobService;
     @EJB
     private AdminService adminService;
+    @EJB
+    private BusinessRuleService businessRuleService;
 
     private static Logger logger = Logger.getLogger("com.flowserve.system606");
 
@@ -143,7 +147,11 @@ public class InputService {
 
             // update/save the pob
             logger.info("pobService.update POB ID:" + pob.getId() + " Name:" + pob.getName() + " \t\t ");
-            pobService.update(pob);
+            pob = pobService.update(pob);
+            pobService.initializeOutputs(pob);
+            businessRuleService.executeBusinessRules(pob);
+            logger.log(Level.INFO, "pob.PERCENT_COMPLETE: " + pob.getOutput(OutputTypeId.PERCENT_COMPLETE).getValue().toString());
+            logger.log(Level.INFO, "pob.REVENUE_EARNED_TO_DATE: " + pob.getOutput(OutputTypeId.REVENUE_EARNED_TO_DATE).getValue().toString());
         }
         fis.close();
         inputSet.setInputs(inputList);
