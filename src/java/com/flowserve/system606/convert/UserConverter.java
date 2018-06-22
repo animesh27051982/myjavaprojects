@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.flowserve.system606.controller;
+package com.flowserve.system606.convert;
 
 import com.flowserve.system606.model.User;
 import com.flowserve.system606.service.AdminService;

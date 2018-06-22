@@ -5,6 +5,7 @@
  */
 package com.flowserve.system606.view;
 
+import com.flowserve.system606.controller.AdminController;
 import com.flowserve.system606.model.Country;
 import com.flowserve.system606.model.ReportingUnit;
 import com.flowserve.system606.model.User;
@@ -40,6 +41,8 @@ public class ReportingUnitEdit implements Serializable {
     private WebSession webSession;
     @Inject
     private AdminService adminService;
+    @Inject
+    private AdminController adminController;
 
     public ReportingUnitEdit() {
     }
@@ -109,6 +112,10 @@ public class ReportingUnitEdit implements Serializable {
             FacesContext.getCurrentInstance().addMessage(null, msg);
             logger.log(Level.SEVERE, "Error site save.", e);
         }
+    }
+
+    public String addUpdateCondition() throws Exception {
+        return this.editReporintgUnit.getId() == null ? adminController.addReportingUnit(this.editReporintgUnit) : adminController.updateReportingUnit(this.editReporintgUnit);
     }
 
     public ReportingUnit getEditReporintgUnit() {

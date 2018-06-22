@@ -11,6 +11,8 @@ import com.flowserve.system606.model.User;
 import com.flowserve.system606.service.AdminService;
 import com.flowserve.system606.web.WebSession;
 import java.io.Serializable;
+import java.util.Currency;
+import java.util.Locale;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.enterprise.context.RequestScoped;
@@ -68,11 +70,37 @@ public class AdminController implements Serializable {
         return "reportingUnitEdit";
     }
 
+    public String newReportingUnit(ReportingUnit u) throws Exception {
+
+        webSession.setEditReportingUnit(new ReportingUnit());
+        return "reportingUnitEdit";
+    }
+
     public String updateReportingUnit(ReportingUnit u) throws Exception {
+
         FacesContext context = FacesContext.getCurrentInstance();
 
         try {
+            u.setFunctionalCurrency(Currency.getInstance(new Locale("en", u.getCountry().getCode())));
             adminService.update(u);
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, e.getMessage(), e);
+            context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Error saving", e.getMessage()));
+            return null;
+        }
+
+        context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Reporting Unit saved", ""));
+
+        return "reportingUnitSearch";
+    }
+
+    public String addReportingUnit(ReportingUnit u) throws Exception {
+        System.out.println("addReportingUnit()");
+        FacesContext context = FacesContext.getCurrentInstance();
+
+        try {
+            u.setFunctionalCurrency(Currency.getInstance(new Locale("en", u.getCountry().getCode())));
+            adminService.persist(u);
         } catch (Exception e) {
             logger.log(Level.SEVERE, e.getMessage(), e);
             context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Error saving", e.getMessage()));
