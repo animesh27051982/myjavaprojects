@@ -29,7 +29,7 @@ public class AdminService {
 
     @PersistenceContext(unitName = "FlowServePU")
     private EntityManager em;
-    
+
     private static Logger logger = Logger.getLogger("com.flowserve.system606");
 
     public List<User> searchUsers(String searchString) throws Exception {  // Need an application exception type defined.
@@ -46,7 +46,7 @@ public class AdminService {
         TypedQuery<BusinessUnit> query = em.createQuery("SELECT b FROM BusinessUnit b", BusinessUnit.class);
         return (List<BusinessUnit>) query.getResultList();
     }
-    
+
     public List<BusinessUnit> getBusinessUnit(String searchString) throws Exception {  // Need an application exception type defined.
         if (searchString == null || searchString.trim().length() < 2) {
             throw new Exception("Please supply a search string with at least 2 characters.");
@@ -121,6 +121,12 @@ public class AdminService {
         em.persist(ru);
     }
 
+    public ReportingUnit update(ReportingUnit ru) throws Exception {
+
+        return em.merge(ru);
+
+    }
+
     public void updater(User u) throws Exception {
         em.persist(u);
     }
@@ -134,22 +140,21 @@ public class AdminService {
 
         return (List<ReportingUnit>) query.getResultList();
     }
-    
+
     public List<BusinessUnit> searchSites(String searchString) throws Exception {
         if (searchString == null || searchString.trim().length() < 2) {
             throw new Exception("Please supply a search string with at least 2 characters.");
         }
-        
+
         TypedQuery<BusinessUnit> query = em.createQuery(
                 "SELECT s FROM BusinessUnit s WHERE UPPER(s.name) LIKE :NAME order by UPPER(s.name)", BusinessUnit.class);
         // query.setParameter("DOM", domain);
         query.setParameter("NAME", "%" + searchString.toUpperCase() + "%");
         // System.out.println("searchSites:" + query);
         logger.info("searchSites:" + query.toString());
-        return (List<BusinessUnit>)query.getResultList();
+        return (List<BusinessUnit>) query.getResultList();
     }
 
-    
     public List<Country> AllCountry() throws Exception {
         TypedQuery<Country> query = em.createQuery("SELECT c  FROM Country c ORDER BY UPPER(c.name)", Country.class);
 
@@ -162,9 +167,4 @@ public class AdminService {
         return (List<User>) query.getResultList();
     }
 
-    public ReportingUnit update(ReportingUnit ru) throws Exception {
-
-        return em.merge(ru);
-
-    }
 }

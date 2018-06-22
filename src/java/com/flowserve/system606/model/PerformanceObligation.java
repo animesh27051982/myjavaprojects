@@ -6,6 +6,8 @@
 package com.flowserve.system606.model;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
@@ -140,4 +142,13 @@ public class PerformanceObligation extends BaseEntity<Long> implements Comparabl
     public void setLastUpdateDate(LocalDateTime lastUpdateDate) {
         this.lastUpdateDate = lastUpdateDate;
     }
+    
+    public BigDecimal getDecimalValue(String inputTypeId) {
+       return ((DecimalInput) inputs.get(inputTypeId)).getValue();
+    }    
+    
+    public LocalDate getDateValue(String inputTypeId) {
+       return ((DateInput) inputs.get(inputTypeId)).getValue();
+    }    
+    
 }

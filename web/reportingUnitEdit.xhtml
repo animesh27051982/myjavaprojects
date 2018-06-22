@@ -11,9 +11,9 @@
         </style>
     </ui:define>
 
-    <ui:define name="title">Edit Reporting Unit</ui:define>
+    <ui:define name="title">#{reportingUnitEdit.editReporintgUnit.getId() == null ? "New" : "Edit" } Reporting Unit</ui:define>
 
-    <ui:define name="viewname">Edit Reporting Unit</ui:define>
+    <ui:define name="viewname">#{reportingUnitEdit.editReporintgUnit.getId() == null ? "New" : "Edit" } Reporting Unit</ui:define>
 
     <ui:define name="content">
         <div style="min-height: calc(100vh - 235px);">
@@ -27,7 +27,7 @@
                             ui-md => number of columns for a medium screen (screen width < 1024px )
                             ui-g = > number of columns by default (or screen width < 425px if lg and md columns are define)-->
                             <div class="card card-w-title">
-                                <h1>Edit Reporting Unit</h1>
+                                <h1>#{reportingUnitEdit.editReporintgUnit.getId() == null ? "New" : "Edit" } Reporting Unit</h1>
                                 <!--  Only two cols, so only two col columnClasses.  I had to use 6 and 6 to get this layout properly-->
                                 <p:panelGrid columns="2" columnClasses="ui-grid-col-6,ui-grid-col-6" layout="grid" styleClass="ui-panelgrid-blank form-group" style="border:0px none; background-color:transparent;">
                                     <p:outputLabel for="name" value="Name"/>
@@ -102,7 +102,7 @@
                                     <f:facet name="footer">
                                         <p:toolbar>
                                             <f:facet name="right">
-                                                <p:commandButton id="btnReport" value="Update" ajax="false" icon="ui-icon-edit" action="#{adminController.updateReportingUnit(reportingUnitEdit.editReporintgUnit)}" style="max-width:150px;" process="@this"/>
+                                                <p:commandButton id="btnReport" value="#{reportingUnitEdit.editReporintgUnit.getId() == null ? 'Add' : 'Update' }" ajax="false" icon="ui-icon-edit" action="#{reportingUnitEdit.addUpdateCondition()}" style="max-width:150px;" process="@this"/>
                                             </f:facet>
                                         </p:toolbar>
                                     </f:facet>
