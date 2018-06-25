@@ -31,7 +31,7 @@
                             <p:inputText id="searchString" value="#{reportingUnitSearch.searchString}"/>
 
                             <p:commandButton id="search" value="Search" ajax="true" icon="ui-icon-arrowrefresh-1-w" actionListener="#{reportingUnitSearch.search}" update="reportForm:reportTable" style="margin-left:10px" />
-                            <p:commandButton icon="ui-icon-edit" value="New Reporting Unit" action="#{adminController.newReportingUnit(reportingUnit)}"></p:commandButton>
+                            <p:commandButton icon="ui-icon-contact fa fa-plus" value="New Reporting Unit" action="#{adminController.newReportingUnit(reportingUnit)}"></p:commandButton>
                             <p:ajaxStatus style="width:20px;height:20px;">
                                 <f:facet name="start">
                                     <h:graphicImage value="images/loader.gif" style="width: 20px;"/>
