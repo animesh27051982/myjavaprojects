@@ -10,7 +10,10 @@ import com.flowserve.system606.model.Country;
 import com.flowserve.system606.model.InputType;
 import com.flowserve.system606.model.ReportingUnit;
 import com.flowserve.system606.model.User;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 import java.util.List;
+import java.util.Locale;
 import java.util.logging.Logger;
 import javax.ejb.Stateless;
 import javax.inject.Named;
@@ -55,6 +58,11 @@ public class AdminService {
         TypedQuery<BusinessUnit> query = em.createQuery("SELECT u FROM BusinessUnit u WHERE UPPER(u.name) LIKE :NAME ORDER BY UPPER(u.name)", BusinessUnit.class);
         query.setParameter("NAME", "%" + searchString.toUpperCase() + "%");
         return (List<BusinessUnit>) query.getResultList();
+    }
+
+    public BusinessUnit findBusinessUnitById(Long id) {
+
+        return em.find(BusinessUnit.class, id);
     }
 
     public void updateUser(User u) throws Exception {
@@ -165,6 +173,94 @@ public class AdminService {
         TypedQuery<User> query = em.createQuery("SELECT u FROM User u WHERE UPPER(u.name) LIKE :NAME OR UPPER(u.flsId) LIKE :NAME ORDER BY UPPER(u.name)", User.class);
         query.setParameter("NAME", "%" + searchname.toUpperCase() + "%");
         return (List<User>) query.getResultList();
+    }
+
+    public void initUsers() throws Exception {
+        List<User> admin = findUserByFlsId("admin");
+        User ad;
+
+        if (admin.isEmpty()) {
+            logger.info("Creating admin user");
+            ad = new User("admin", "Administrator", "admin@gmail.com");
+            updater(ad);
+        }
+
+        if (findUserByFlsId("pkaranam").isEmpty()) {
+            BufferedReader reader = new BufferedReader(new InputStreamReader(AppInitializeService.class.getResourceAsStream("/resources/init_users/init_users.txt"), "UTF-8"));
+
+            String line = null;
+            while ((line = reader.readLine()) != null) {
+                if (line.trim().length() == 0) {
+                    continue;
+                }
+
+                String[] values = line.split("\\t");
+
+                String name = values[0];
+                String flsId = values[3];
+                String email = values[4];
+
+                User user = new User(flsId, name, email);
+
+                logger.info("Creating user: " + name);
+
+                updater(user);
+            }
+
+            reader.close();
+
+            logger.info("Finished initializing users.");
+        }
+    }
+
+    public void initReportingUnits() throws Exception {
+
+        if (findReportingUnitByCode("0100") == null) {
+            logger.info("Initializing Reporting Units");
+            BufferedReader reader = new BufferedReader(new InputStreamReader(AppInitializeService.class.getResourceAsStream("/resources/app_data_init_files/reporting_units.txt"), "UTF-8"));
+
+            int count = 0;
+            String line = null;
+            while ((line = reader.readLine()) != null) {
+                if (line.trim().length() == 0) {
+                    continue;
+                }
+
+                count = 0;
+                String[] values = line.split("\\t");
+
+                ReportingUnit ru = new ReportingUnit();
+
+                ru.setCode(values[count++]);
+                ru.setName(values[count++]);
+                if (values.length > 2) {
+                    ru.setCountry(findCountryByCode(values[count++]));
+                }
+                ru.setActive(true);
+
+                persist(ru);
+            }
+
+            reader.close();
+
+            logger.info("Finished initializing Reporting Units.");
+        }
+    }
+
+    public void initCountries() throws Exception {
+        if (findCountryById("USA") == null) {
+            logger.info("Initializing Countries");
+
+            String[] countryCodes = Locale.getISOCountries();
+            for (String countryCode : countryCodes) {
+
+                Locale locale = new Locale("", countryCode);
+                Country country = new Country(locale.getISO3Country(), locale.getCountry(), locale.getDisplayCountry());
+                persist(country);
+            }
+
+            logger.info("Finished initializing Countries.");
+        }
     }
 
 }

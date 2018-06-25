@@ -32,11 +32,13 @@
                                 <p:panelGrid columns="2" columnClasses="ui-grid-col-6,ui-grid-col-6" layout="grid" styleClass="ui-panelgrid-blank form-group" style="border:0px none; background-color:transparent;">
                                     <p:outputLabel for="name" value="Name"/>
                                     <p:inputText id="name" value="#{reportingUnitEdit.editReporintgUnit.name}"/>
+
                                     <p:outputLabel for="code" value="Code"/>
                                     <p:inputText id="code" value="#{reportingUnitEdit.editReporintgUnit.code}"/>
 
-                                    <p:outputLabel for="active" value="Currency"/>
+                                    <p:outputLabel for="active" value="Active"/>
                                     <p:selectBooleanCheckbox id="active" value="#{reportingUnitEdit.editReporintgUnit.active}" />
+
                                     <p:outputLabel for="console" value="Country" />
                                     <p:selectOneMenu id="console" value="#{reportingUnitEdit.editReporintgUnit.country}" panelStyle="width:180px"
                                                      effect="fade" var="t" style="width:160px" converter="countryConverter">
@@ -45,6 +47,16 @@
                                             <h:outputText value="#{t.name}" />
                                         </p:column>
                                     </p:selectOneMenu>
+
+                                    <p:outputLabel for="localCurrency" value="Local Currency" />
+                                    <p:selectOneMenu id="localCurrency" value="#{reportingUnitEdit.editReporintgUnit.localCurrency}" panelStyle="width:180px"
+                                                     effect="fade" style="width:160px" converter="currencyConverter">
+                                        <f:selectItems value="#{viewSupport.allCurrencies}" var="cur" itemLabel="#{cur.currencyCode}" itemValue="#{cur}" />
+                                        <p:column>
+                                            <h:outputText value="#{cur.currencyCode}" />
+                                        </p:column>
+                                    </p:selectOneMenu>
+
                                     <p:outputLabel for="preparers" value="Preparers" />
                                     <p:panelGrid id="preparers" columns="1">
                                         <p:dataTable id="preparersTable" style="margin-bottom: 10px;" var="preparer" value="#{reportingUnitEdit.editReporintgUnit.preparers}" >
@@ -72,6 +84,7 @@
                                         </p:autoComplete>
                                         <p:commandButton value="Add Preparer" style="vertical-align:middle;" ajax="true" actionListener="#{reportingUnitEdit.addPreparer(reportingUnitEdit.completedPUser)}" update=":mainForm:preparers" process="@this, :mainForm:preparerField" />
                                     </p:panelGrid>
+
                                     <p:outputLabel for="approvers" value="Approvers" />
                                     <p:panelGrid id="approvers" columns="1">
                                         <p:dataTable id="approversTable" style="margin-bottom: 10px;" var="approver" value="#{reportingUnitEdit.editReporintgUnit.approvers}" >
@@ -102,7 +115,7 @@
                                     <f:facet name="footer">
                                         <p:toolbar>
                                             <f:facet name="right">
-                                                <p:commandButton id="btnReport" value="#{reportingUnitEdit.editReporintgUnit.getId() == null ? 'Add' : 'Update' }" ajax="false" icon="ui-icon-edit" action="#{reportingUnitEdit.addUpdateCondition()}" style="max-width:150px;" process="@this"/>
+                                                <p:commandButton id="btnReport" value="#{reportingUnitEdit.editReporintgUnit.getId() == null ? 'Add' : 'Update' }" ajax="false" icon="ui-icon-disk" action="#{reportingUnitEdit.addUpdateCondition()}" style="max-width:150px;" process="@this"/>
                                             </f:facet>
                                         </p:toolbar>
                                     </f:facet>

@@ -76,8 +76,8 @@ public class PerformanceObligation extends BaseEntity<Long> implements Comparabl
         return inputs.get(inputTypeId);
     }
 
-    public BigDecimal getDecimalInput(String inputTypeId) {
-        return ((DecimalInput) inputs.get(inputTypeId)).getValue();
+    public BigDecimal getCurrencyInput(String inputTypeId) {
+        return ((CurrencyInput) inputs.get(inputTypeId)).getValue();
     }
 
     public void initializeOutputs(List<OutputType> outputTypes) throws Exception {
@@ -96,7 +96,7 @@ public class PerformanceObligation extends BaseEntity<Long> implements Comparabl
         outputs.put(output.getOutputType().getId(), output);
     }
 
-    public void putDecimalOutput(String outputTypeId, BigDecimal value) {
+    public void putCurrencyOutput(String outputTypeId, BigDecimal value) {
         LOG.info("class: " + value.getClass());
         outputs.get(outputTypeId).setValue(value);
     }
@@ -105,8 +105,8 @@ public class PerformanceObligation extends BaseEntity<Long> implements Comparabl
         return outputs.get(outputTypeId);
     }
 
-    public BigDecimal getDecimalOutput(String outputTypeId) {
-        return ((DecimalOutput) outputs.get(outputTypeId)).getValue();
+    public BigDecimal getCurrencyOutput(String outputTypeId) {
+        return ((CurrencyOutput) outputs.get(outputTypeId)).getValue();
     }
 
 //    public void putDecimalOutput(String outputTypeId, BigDecimal value) {

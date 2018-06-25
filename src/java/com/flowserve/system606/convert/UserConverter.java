@@ -13,7 +13,6 @@ import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
-import javax.inject.Inject;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 
@@ -21,11 +20,13 @@ import javax.naming.NamingException;
  *
  * @author shubhamv
  */
-@FacesConverter(value = "userConverter")
+@FacesConverter(value = "userConverter", managed = true)
 public class UserConverter implements Converter {
 
-    @Inject
     private AdminService adminService;
+
+    public UserConverter() {
+    }
 
     @Override
     public Object getAsObject(FacesContext ctx, UIComponent component, String value) {
@@ -40,6 +41,7 @@ public class UserConverter implements Converter {
         } catch (NamingException ex) {
             Logger.getLogger(UserConverter.class.getName()).log(Level.SEVERE, null, ex);
         }
+
         return adminService.findUserById(new Long(value));
     }
 

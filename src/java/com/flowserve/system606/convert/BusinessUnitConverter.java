@@ -17,48 +17,44 @@ package com.flowserve.system606.convert;
 
 import com.flowserve.system606.model.BusinessUnit;
 import com.flowserve.system606.service.AdminService;
-import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.faces.application.FacesMessage;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
-import javax.faces.convert.ConverterException;
 import javax.faces.convert.FacesConverter;
 import javax.naming.InitialContext;
+import javax.naming.NamingException;
 
-@FacesConverter("businessUnitConverter")
+@FacesConverter(value = "businessUnitConverter", managed = true)
 public class BusinessUnitConverter implements Converter {
-    
-    public Object getAsObject(FacesContext fc, UIComponent uic, String value) {
-        if(value != null && value.trim().length() > 0) {
-            try {
 
-                InitialContext ic = new InitialContext();
-                AdminService service = (AdminService) ic.lookup("java:global/FlowServe/AdminService"); //this works
+    AdminService adminService;
 
-                Logger.getLogger(BusinessUnitConverter.class.getName()).log(Level.INFO, "service:", service);
-
-                List<BusinessUnit> businessUnits = service.getBusinessUnit(value);
-                return businessUnits.get(0);
-
-            } catch (Exception ex) {               
-                Logger.getLogger(BusinessUnitConverter.class.getName()).log(Level.SEVERE, null, ex);
-                throw new ConverterException(new FacesMessage(FacesMessage.SEVERITY_ERROR, "Conversion Error", "Not a valid Business Unit."));
-            }
-        }
-        else {
-            return null;
-        }
+    public BusinessUnitConverter() {
     }
 
-    public String getAsString(FacesContext fc, UIComponent uic, Object object) {
-        if(object != null) {
-            return String.valueOf(((BusinessUnit) object).getName());
-        }
-        else {
+    public Object getAsObject(FacesContext fc, UIComponent uic, String value) {
+        if (value == null || "".equals(value)) {
             return null;
         }
-    }   
+
+        try {
+            InitialContext ic = new InitialContext();
+            adminService = (AdminService) ic.lookup("java:global/FlowServe/AdminService");
+        } catch (NamingException ex) {
+            Logger.getLogger(UserConverter.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        return adminService.findBusinessUnitById(new Long(value));
+
+    }
+
+    public String getAsString(FacesContext fc, UIComponent uic, Object value) {
+        if (value instanceof String) {
+            return null;
+        }
+
+        return ((BusinessUnit) value).getId().toString();
+    }
 }

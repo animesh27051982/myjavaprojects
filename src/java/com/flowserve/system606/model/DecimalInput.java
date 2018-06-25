@@ -12,11 +12,6 @@ import javax.persistence.Entity;
 public class DecimalInput extends Input<BigDecimal> {
 
     private BigDecimal value;
-//    private Currency localCurrency;
-//    private BigDecimal localCurrencyValue;
-//
-//    private Currency contractCurrency;
-//    private Currency reportingCurrency;
 
     public DecimalInput() {
     }

@@ -17,10 +17,7 @@
 
     <ui:define name="content" >
         <div style="min-height: calc(100vh - 235px);">
-            <p:growl id="messages" showDetail="true" />
-
             <div class="ui-g">
-
                 <div class="ui-g-12">
                     <div class="card card-w-title">
                         <p:messages showDetail="true" />
@@ -45,16 +42,16 @@
 
                             <p:dataTable id="reportTable" var="reportingUnit" value="#{reportingUnitSearch.reportingUnits}"  paginator="true" rows="30">
 
-                                <p:column filterBy="#{reportingUnit.name}" headerText="Name" sortBy="#{reportingUnit.name}" filterMatchMode="contains">
-                                    <h:outputText value="#{reportingUnit.name}" />
+                                <p:column headerText="Name" sortBy="#{reportingUnit.name}">
+                                    <h:commandLink value="#{reportingUnit.name}" action="#{adminController.editReportingUnit(reportingUnit)}"></h:commandLink>
                                 </p:column>
 
-                                <p:column filterBy="#{reportingUnit.code}" headerText="Code" sortBy="#{reportingUnit.Code}" filterMatchMode="contains">
+                                <p:column headerText="Code" sortBy="#{reportingUnit.Code}">
                                     <h:outputText value="#{reportingUnit.code}" />
                                 </p:column>
 
-                                <p:column filterBy="#{reportingUnit.functionalCurrency}" headerText="Currency" sortBy="#{reportingUnit.functionalCurrency}" filterMatchMode="contains">
-                                    <h:outputText value="#{reportingUnit.functionalCurrency}" />
+                                <p:column headerText="Currency" sortBy="#{reportingUnit.localCurrency}">
+                                    <h:outputText value="#{reportingUnit.localCurrency}" />
                                 </p:column>
 
                                 <p:column headerText="Is Active" style="text-align: center;">
@@ -62,7 +59,7 @@
                                     <p:selectBooleanCheckbox value="#{reportingUnit.active}" disabled="true" />
                                 </p:column>
 
-                                <p:column  headerText="Option" >
+                                <p:column  headerText="Edit" >
                                     <h:commandLink value="Edit Reporting Unit" action="#{adminController.editReportingUnit(reportingUnit)}"></h:commandLink>
                                 </p:column>
 

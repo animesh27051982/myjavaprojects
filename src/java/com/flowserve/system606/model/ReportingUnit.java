@@ -44,8 +44,8 @@ public class ReportingUnit extends BaseEntity<Long> implements Comparable<Report
     @OneToOne
     @JoinColumn(name = "COUNTRY_ID")
     private Country country;
-    @Column(name = "FUNCTIONAL_CURRENCY")
-    private Currency functionalCurrency;
+    @Column(name = "LOCAL_CURRENCY")
+    private Currency localCurrency;
     @OneToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "REPORTING_UNIT_PREPARERS", joinColumns = @JoinColumn(name = "REPORTING_UNIT_ID"), inverseJoinColumns = @JoinColumn(name = "USER_ID"))
     private List<User> preparers = new ArrayList<User>();
@@ -71,12 +71,12 @@ public class ReportingUnit extends BaseEntity<Long> implements Comparable<Report
         this.name = name;
     }
 
-    public Currency getFunctionalCurrency() {
-        return functionalCurrency;
+    public Currency getLocalCurrency() {
+        return localCurrency;
     }
 
-    public void setFunctionalCurrency(Currency functionalCurrency) {
-        this.functionalCurrency = functionalCurrency;
+    public void setLocalCurrency(Currency localCurrency) {
+        this.localCurrency = localCurrency;
     }
 
     public Country getCountry() {

@@ -1,7 +1,10 @@
 package com.flowserve.system606.service;
 
 import com.flowserve.system606.model.PerformanceObligation;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 import java.time.LocalDateTime;
+import java.util.logging.Logger;
 import javax.annotation.Resource;
 import javax.ejb.EJB;
 import javax.ejb.SessionContext;
@@ -15,6 +18,8 @@ import javax.persistence.PersistenceContext;
  */
 @Stateless
 public class PerformanceObligationService {
+
+    private static final Logger logger = Logger.getLogger(PerformanceObligationService.class.getName());
 
     @PersistenceContext(unitName = "FlowServePU")
     private EntityManager em;
@@ -51,5 +56,36 @@ public class PerformanceObligationService {
 
     public void persist1(Object object) {
         em.persist(object);
+    }
+
+    public void initPOBs() throws Exception {
+
+        if (findById(10660L) == null) {
+            logger.info("Initializing POBs");
+            BufferedReader reader = new BufferedReader(new InputStreamReader(AppInitializeService.class.getResourceAsStream("/resources/app_data_init_files/pob_data.txt"), "UTF-8"));
+
+            int count = 0;
+            String line = null;
+            while ((line = reader.readLine()) != null) {
+                if (line.trim().length() == 0) {
+                    continue;
+                }
+
+                count = 0;
+                String[] values = line.split("\\t");
+
+                PerformanceObligation pob = new PerformanceObligation();
+
+                pob.setName(values[count++]);
+                pob.setId(new Long(values[count++]));
+                pob.setActive(true);
+
+                persist(pob);
+            }
+
+            reader.close();
+
+            logger.info("Finished initializing POBs.");
+        }
     }
 }

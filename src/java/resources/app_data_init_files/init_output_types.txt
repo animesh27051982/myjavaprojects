@@ -1,2 +1,2 @@
-PERCENT_COMPLETE|POB|com.flowserve.system606.model.DecimalOutput|Percent Complete|Percent Complete|POC POB Outputs|H|Group1|1
-REVENUE_EARNED_TO_DATE|POB|com.flowserve.system606.model.DecimalOutput|Revenue Earned to Date|Revenue Earned to Date|POC POB Outputs|O|Group1|2
+PERCENT_COMPLETE|POB|com.flowserve.system606.model.CurrencyOutput|Percent Complete|Percent Complete|POC POB Outputs|H|Group1|1
+REVENUE_EARNED_TO_DATE|POB|com.flowserve.system606.model.CurrencyOutput|Revenue Earned to Date|Revenue Earned to Date|POC POB Outputs|O|Group1|2
