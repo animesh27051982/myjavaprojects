@@ -62,10 +62,22 @@ public class User implements Comparable<User>, Serializable {
     @Column(name = "ORG_LEVEL")
     private int orgLevel;
 
-    public User(String flsId, String name, String emailAddress) {
+    public User(String flsId, String name, String displayName, String emailAddress) {
         this.flsId = flsId;
         this.name = name;
+        this.displayName = displayName;
         this.emailAddress = emailAddress;
+    }
+
+    public User(String flsId, String displayName, String commonNameLDAP, String emailAddress, String officeName, String title, int orgLevel) {
+        this.flsId = flsId;
+        this.name = displayName;
+        this.displayName = displayName;
+        this.emailAddress = emailAddress;
+        this.officeName = officeName;
+        this.commonNameLDAP = commonNameLDAP;
+        this.title = title;
+        this.orgLevel = orgLevel;
     }
 
     @Override

@@ -84,6 +84,18 @@ public class AdminService {
 
     }
 
+    public User findUserByFlsIdType(String adname) {
+        Query query = em.createQuery("SELECT u FROM User u WHERE UPPER(u.flsId) = :FLS_ID ORDER BY UPPER(u.id)");
+        query.setParameter("FLS_ID", adname.toUpperCase());
+
+        List<User> user = query.getResultList();
+        if (user.size() > 0) {
+            return user.get(0);
+        }
+        return null;
+
+    }
+
     public User findUserById(Long id) {
 
         return em.find(User.class, id);
@@ -176,17 +188,16 @@ public class AdminService {
     }
 
     public void initUsers() throws Exception {
-        List<User> admin = findUserByFlsId("admin");
+        List<User> admin = findUserByFlsId("bga_admin");
         User ad;
-
         if (admin.isEmpty()) {
             logger.info("Creating admin user");
-            ad = new User("admin", "Administrator", "admin@gmail.com");
+            ad = new User("bga_admin", "M, Padmini", "M, Padmini", "bga_admin@flowserve.com");
             updater(ad);
         }
 
-        if (findUserByFlsId("pkaranam").isEmpty()) {
-            BufferedReader reader = new BufferedReader(new InputStreamReader(AppInitializeService.class.getResourceAsStream("/resources/init_users/init_users.txt"), "UTF-8"));
+        if (findUserByFlsId("aloeffler").isEmpty()) {
+            BufferedReader reader = new BufferedReader(new InputStreamReader(AppInitializeService.class.getResourceAsStream("/resources/app_data_init_files/fls_user_init.txt"), "UTF-8"));
 
             String line = null;
             while ((line = reader.readLine()) != null) {
@@ -195,16 +206,18 @@ public class AdminService {
                 }
 
                 String[] values = line.split("\\t");
+                if (values.length == 7 && !values[6].equalsIgnoreCase("ORG_LEVEL")) {
+                    String flsId = values[0];
+                    String displayName = values[1];
+                    String commonNameLDAP = values[2];
+                    String emailAddress = values[3];
+                    String officeName = values[4];
+                    String title = values[5];
+                    int orgLevel = Integer.parseInt(values[6]);
+                    User user = new User(flsId, displayName, commonNameLDAP, emailAddress, officeName, title, orgLevel);
 
-                String name = values[0];
-                String flsId = values[3];
-                String email = values[4];
-
-                User user = new User(flsId, name, email);
-
-                logger.info("Creating user: " + name);
-
-                updater(user);
+                    updater(user);
+                }
             }
 
             reader.close();
