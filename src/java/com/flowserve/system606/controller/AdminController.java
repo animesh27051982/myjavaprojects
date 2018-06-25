@@ -81,7 +81,7 @@ public class AdminController implements Serializable {
         FacesContext context = FacesContext.getCurrentInstance();
 
         try {
-            u.setFunctionalCurrency(Currency.getInstance(new Locale("en", u.getCountry().getCode())));
+            u.setLocalCurrency(Currency.getInstance(new Locale("en", u.getCountry().getCode())));
             adminService.update(u);
         } catch (Exception e) {
             logger.log(Level.SEVERE, e.getMessage(), e);
@@ -99,7 +99,7 @@ public class AdminController implements Serializable {
         FacesContext context = FacesContext.getCurrentInstance();
 
         try {
-            u.setFunctionalCurrency(Currency.getInstance(new Locale("en", u.getCountry().getCode())));
+            u.setLocalCurrency(Currency.getInstance(new Locale("en", u.getCountry().getCode())));
             adminService.persist(u);
         } catch (Exception e) {
             logger.log(Level.SEVERE, e.getMessage(), e);

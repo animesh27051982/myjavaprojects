@@ -20,6 +20,7 @@ import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
+import javax.persistence.ManyToOne;
 import javax.persistence.MapKey;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
@@ -39,6 +40,9 @@ public class PerformanceObligation extends BaseEntity<Long> implements Comparabl
     private Long id;
     @Column(name = "NAME")
     private String name;
+    @ManyToOne
+    @JoinColumn(name = "CONTRACT_ID")
+    private Contract contract;
     @Column(name = "IS_ACTIVE")
     private boolean active;
     @OneToOne
@@ -76,8 +80,8 @@ public class PerformanceObligation extends BaseEntity<Long> implements Comparabl
         return inputs.get(inputTypeId);
     }
 
-    public BigDecimal getDecimalInput(String inputTypeId) {
-        return ((DecimalInput) inputs.get(inputTypeId)).getValue();
+    public BigDecimal getCurrencyInput(String inputTypeId) {
+        return ((CurrencyInput) inputs.get(inputTypeId)).getValue();
     }
 
     public void initializeOutputs(List<OutputType> outputTypes) throws Exception {
@@ -96,7 +100,7 @@ public class PerformanceObligation extends BaseEntity<Long> implements Comparabl
         outputs.put(output.getOutputType().getId(), output);
     }
 
-    public void putDecimalOutput(String outputTypeId, BigDecimal value) {
+    public void putCurrencyOutput(String outputTypeId, BigDecimal value) {
         LOG.info("class: " + value.getClass());
         outputs.get(outputTypeId).setValue(value);
     }
@@ -105,8 +109,8 @@ public class PerformanceObligation extends BaseEntity<Long> implements Comparabl
         return outputs.get(outputTypeId);
     }
 
-    public BigDecimal getDecimalOutput(String outputTypeId) {
-        return ((DecimalOutput) outputs.get(outputTypeId)).getValue();
+    public BigDecimal getCurrencyOutput(String outputTypeId) {
+        return ((CurrencyOutput) outputs.get(outputTypeId)).getValue();
     }
 
 //    public void putDecimalOutput(String outputTypeId, BigDecimal value) {
@@ -179,6 +183,14 @@ public class PerformanceObligation extends BaseEntity<Long> implements Comparabl
 
     public LocalDate getDateValue(String inputTypeId) {
         return ((DateInput) inputs.get(inputTypeId)).getValue();
+    }
+
+    public Contract getContract() {
+        return contract;
+    }
+
+    public void setContract(Contract contract) {
+        this.contract = contract;
     }
 
 }

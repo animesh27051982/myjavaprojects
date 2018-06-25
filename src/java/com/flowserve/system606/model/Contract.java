@@ -12,19 +12,20 @@ import java.util.ArrayList;
 import java.util.Currency;
 import java.util.List;
 import java.util.logging.Logger;
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 @Entity
 @Table(name = "CONTRACTS")
-public class Contract implements Comparable<Contract>, Serializable {
+public class Contract extends BaseEntity<Long> implements Comparable<Contract>, Serializable {
 
     private static final long serialVersionUID = -1990764230607265489L;
     private static final Logger LOG = Logger.getLogger(Contract.class.getName());
@@ -42,7 +43,7 @@ public class Contract implements Comparable<Contract>, Serializable {
     @JoinColumn(name = "PREPARER_USER_ID")
     private User preparer;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "REPORTING_UNIT_ID")
     private ReportingUnit reportingUnit;
 
@@ -110,9 +111,9 @@ public class Contract implements Comparable<Contract>, Serializable {
     @JoinColumn(name = "SALES_DESTINATION_COUNTRY_ID")
     //private Country salesDestinationCountry;
 
-    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)  // TODO - Need to decide whether to use OneToMany or ManyToOne on the child side
-    //@JoinColumn(name = "CONTRACT_ID")
-    private List<PerformanceObligation> exchanges = new ArrayList<PerformanceObligation>();
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "contract")
+    @JoinTable(name = "CONTRACT_POBS", joinColumns = @JoinColumn(name = "CONTRACT_ID"), inverseJoinColumns = @JoinColumn(name = "POB_ID"))
+    private List<PerformanceObligation> pobs = new ArrayList<PerformanceObligation>();
 
     public Contract() {
     }
@@ -120,14 +121,6 @@ public class Contract implements Comparable<Contract>, Serializable {
     @Override
     public int compareTo(Contract obj) {
         return this.id.compareTo(obj.getId());
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (obj instanceof Contract) {
-            return this.id.equals(((Contract) obj).getId());
-        }
-        return false;
     }
 
     public Long getId() {

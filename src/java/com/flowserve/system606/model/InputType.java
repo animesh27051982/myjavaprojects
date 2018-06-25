@@ -26,6 +26,8 @@ public class InputType extends BaseEntity<String> implements Serializable {
     private String name;
     @Column(name = "DESCRIPTION")
     private String description;
+    @Column(name = "INPUT_CURRENCY_TYPE")
+    private CurrencyType inputCurrencyType;
     @Column(name = "EXCEL_SHEET")
     private String excelSheet;  // for reading from xlsx
     @Column(name = "EXCEL_COL")
@@ -141,5 +143,13 @@ public class InputType extends BaseEntity<String> implements Serializable {
 
     public void setOwnerEntityType(String ownerEntityType) {
         this.ownerEntityType = ownerEntityType;
+    }
+
+    public CurrencyType getInputCurrencyType() {
+        return inputCurrencyType;
+    }
+
+    public void setInputCurrencyType(CurrencyType inputCurrencyType) {
+        this.inputCurrencyType = inputCurrencyType;
     }
 }

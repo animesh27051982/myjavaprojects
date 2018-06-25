@@ -9,12 +9,12 @@ package com.flowserve.system606.model;
  *
  * @author kgraves
  */
-public enum PeriodStatus {
-    OPENED("O"), USER_FROZEN("UF"), CLOSED("C");
+public enum CurrencyType {
+    LOCAL("LC"), CONTRACT("CC"), REPORTING("RC");
 
     private String shortName;
 
-    private PeriodStatus(String shortName) {
+    private CurrencyType(String shortName) {
         this.shortName = shortName;
     }
 
@@ -22,16 +22,16 @@ public enum PeriodStatus {
         return shortName;
     }
 
-    public static PeriodStatus fromShortName(String shortName) {
+    public static CurrencyType fromShortName(String shortName) {
         switch (shortName) {
-            case "O":
-                return PeriodStatus.OPENED;
+            case "LC":
+                return CurrencyType.LOCAL;
 
-            case "C":
-                return PeriodStatus.CLOSED;
+            case "CC":
+                return CurrencyType.CONTRACT;
 
-            case "UF":
-                return PeriodStatus.USER_FROZEN;
+            case "RC":
+                return CurrencyType.REPORTING;
 
             default:
                 throw new IllegalArgumentException("ShortName [" + shortName + "] not supported.");

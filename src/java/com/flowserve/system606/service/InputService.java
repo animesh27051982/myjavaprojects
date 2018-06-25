@@ -5,13 +5,18 @@
  */
 package com.flowserve.system606.service;
 
+import com.flowserve.system606.model.CurrencyType;
 import com.flowserve.system606.model.Input;
 import com.flowserve.system606.model.InputSet;
 import com.flowserve.system606.model.InputType;
+import com.flowserve.system606.model.InputTypeId;
 import com.flowserve.system606.model.OutputTypeId;
 import com.flowserve.system606.model.PerformanceObligation;
+import java.io.BufferedReader;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Date;
@@ -150,6 +155,7 @@ public class InputService {
             pob = pobService.update(pob);
             pobService.initializeOutputs(pob);
             businessRuleService.executeBusinessRules(pob);
+            pob = pobService.update(pob);
             logger.log(Level.INFO, "pob.PERCENT_COMPLETE: " + pob.getOutput(OutputTypeId.PERCENT_COMPLETE).getValue().toString());
             logger.log(Level.INFO, "pob.REVENUE_EARNED_TO_DATE: " + pob.getOutput(OutputTypeId.REVENUE_EARNED_TO_DATE).getValue().toString());
         }
@@ -176,5 +182,53 @@ public class InputService {
 
     public InputType findInputTypeById(String id) {
         return em.find(InputType.class, id);
+    }
+
+    public void initInputTypes() throws Exception {
+
+        //admin = adminService.findUserByFlsId("admin");
+        if (findInputTypes().isEmpty()) {
+            logger.info("Initializing InputTypes");
+            BufferedReader reader = new BufferedReader(new InputStreamReader(AppInitializeService.class.getResourceAsStream("/resources/app_data_init_files/init_input_types.txt"), "UTF-8"));
+            String inputCurrencyType = null;
+            int count = 0;
+            String line = null;
+            while ((line = reader.readLine()) != null) {
+                if (line.trim().length() == 0) {
+                    continue;
+                }
+
+                count = 0;
+                logger.info(line);
+                String[] values = line.split("\\|");
+
+                InputType inputType = new InputType();
+                inputType.setId(values[count++]);
+                inputType.setOwnerEntityType(values[count++]);
+                inputType.setInputClass(values[count++]);
+                inputCurrencyType = values[count++];
+                inputType.setInputCurrencyType(inputCurrencyType == null || "".equals(inputCurrencyType) ? null : CurrencyType.fromShortName(inputCurrencyType));
+                inputType.setName(values[count++]);
+                inputType.setDescription(values[count++]);
+                inputType.setExcelSheet(values[count++]);
+                inputType.setExcelCol(values[count++]);
+                inputType.setGroupName(values[count++]);
+                inputType.setGroupPosition(Integer.parseInt(values[count++]));
+                inputType.setEffectiveFrom(LocalDate.now());
+                //inputType.setEffectiveTo(LocalDate.now());
+                inputType.setActive(true);
+
+                logger.info("Creating InputType: " + inputType.getName());
+
+                adminService.persist(inputType);
+
+            }
+
+            reader.close();
+
+            logger.info("Finished initializing InputTypes.");
+        }
+
+        logger.info("Input type name for " + InputTypeId.TRANSACTION_PRICE + " = " + findInputTypeById(InputTypeId.TRANSACTION_PRICE).getName());
     }
 }
