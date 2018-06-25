@@ -11,7 +11,9 @@ import com.flowserve.system606.model.InputType;
 import com.flowserve.system606.model.OutputTypeId;
 import com.flowserve.system606.model.PerformanceObligation;
 import com.flowserve.system606.model.Contract;
+import java.io.BufferedReader;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.math.BigDecimal;
 import java.time.ZoneId;
 import java.util.ArrayList;
@@ -42,7 +44,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
  * @author span
  */
 @Stateless
-public class InputService {
+public class ContractService {
 
     @PersistenceContext(unitName = "FlowServePU")
     private EntityManager em;
@@ -56,7 +58,9 @@ public class InputService {
 
     private static Logger logger = Logger.getLogger("com.flowserve.system606");
 
-    public boolean readFeed(InputStream fis, String filename) throws Exception {  // Need an application exception type defined.
+    public boolean initContracts() throws Exception {  // Need an application exception type defined.
+        String filename = "POCI_Template_DRAFT_v2 (version 1).xlsb - Copy - Copy";
+        InputStream fis = AppInitializeService.class.getResourceAsStream("/resources/excel_input_templates/POCI_Template_DRAFT_v2 (version 1).xlsb - Copy - Copy");
 
         logger.info("readFeed:" + fis.toString());
 
@@ -74,10 +78,8 @@ public class InputService {
         inputSet.setFilename(filename);
 
         List<Input> inputList = new ArrayList<>();
-        // when do we call contract.setExchange - when we save a new contract or we see a new C-ID and customer name
-        List<PerformanceObligation> exchange = null;
+
         Contract contract = null;
-        
         while (rowIterator.hasNext()) {
             row = (XSSFRow) rowIterator.next();
             // skip first row as header
@@ -90,7 +92,7 @@ public class InputService {
 
             PerformanceObligation pob = null;
             String reportingUnit = null;
-            long contractId = -1;
+            String contractId = null;
             String customerName = null;
             String salesOrderNum = null;
             BigDecimal totalTransactionPrice = null;        
@@ -129,11 +131,9 @@ public class InputService {
                             if (!bDate) {
                                 BigDecimal bd = BigDecimal.valueOf(cell.getNumericCellValue());
                                 input.setValue(bd);
-                                if(input.getInputType().getOwnerEntityType().equalsIgnoreCase("Contract")) {                                  
+                                if(input.getInputType().getOwnerEntityType().equalsIgnoreCase("Contract")) {
+                                    
                                     switch (input.getInputType().getId()) {
-                                        case "C_ID":
-                                            contractId = (long) cell.getNumericCellValue();
-                                            break;
                                         case "TOTAL_TRANS_PRICE_CONTRACT_CURR": 
                                             totalTransactionPrice = (BigDecimal)input.getValue();
                                             break;
@@ -149,18 +149,24 @@ public class InputService {
                             if (!cell.getStringCellValue().trim().isEmpty()) {
                                 input.setValue(cell.getStringCellValue());
                                 if(input.getInputType().getOwnerEntityType().equalsIgnoreCase("Contract")) {
-
+//                                    if(contract == null) {
+//                                        contract = new Contract();
+//                                    }
+                                    
                                     switch (input.getInputType().getId()) {
                                         case "REPORTING_UNIT": 
                                             reportingUnit = (String)input.getValue();
+                                            break;
+                                        case "C_ID":
+                                            contractId = (String)input.getValue();
                                             break;
                                         case "CUSTOMER_NAME":
                                             customerName = (String)input.getValue();
                                             break;
                                         case "SALES_ORDER_NUMBER":
                                             salesOrderNum = (String)input.getValue();
-                                            break;
-                                    }                                   
+                                    }
+                                    
                                     
                                 } else {
                                     inputList.add(input);
@@ -187,31 +193,16 @@ public class InputService {
             pob = pobService.update(pob);
             pobService.initializeOutputs(pob);
             businessRuleService.executeBusinessRules(pob);
-            //this indicates are are in a new contract, or use C-ID and Customer Name to check
-            if(totalTransactionPrice != null) { 
-                // if there are existing old contract, save exchange list to it and finish the existing old contract
-                if(contract != null) {
-                    contract.setExchanges(exchange);
-                    //em.merge( contract );
-                    persist(contract);
-                }
-                //now create a new contract for the new pob and add its pob
-                contract = createContract(reportingUnit, contractId, customerName, salesOrderNum, totalTransactionPrice); 
-                exchange = contract.getExchanges();
-                exchange.add( pob );
-            } else {
-                // we are in existing contract with a new pob, add pob to existing contract
-                exchange.add( pob );
+            if(totalTransactionPrice != null) {
+                saveContract(reportingUnit, contractId, customerName, salesOrderNum, totalTransactionPrice);
             }
-            
             logger.log(Level.INFO, "pob.PERCENT_COMPLETE: " + pob.getOutput(OutputTypeId.PERCENT_COMPLETE).getValue().toString());
             logger.log(Level.INFO, "pob.REVENUE_EARNED_TO_DATE: " + pob.getOutput(OutputTypeId.REVENUE_EARNED_TO_DATE).getValue().toString());
         }
         fis.close();
         inputSet.setInputs(inputList);
         persist(inputSet);
-        // need commit last contract
-        persist(contract);
+
         return true;
     }
 
@@ -233,18 +224,13 @@ public class InputService {
         return em.find(InputType.class, id);
     }
     
-    private Contract createContract(String reportingUnit, long contractId, String customerName, String salesOrderNum, BigDecimal totalTransactionPrice) {
+    private void saveContract(String reportingUnit, String contractId, String customerName, String salesOrderNum, BigDecimal totalTransactionPrice) {
         Contract contract = new Contract();
-        contract.setId(contractId);
         contract.setName( customerName + "-" + contractId );
         // contract.setReportingUnit(reportingUnit);
         contract.setSalesOrderNumber(salesOrderNum);
-        contract.setTotalTransactionPrice(totalTransactionPrice);      
-        return contract;
-    }
-    
-    public void persist(Contract contract) throws Exception {
-        em.persist(contract);
+//        contract.setTotalTransactionPrice(totalTransactionPrice);
+        em.merge( contract );
     }
 }
 

@@ -57,6 +57,8 @@ public class AppInitializeService {
     private OutputService outputService;
     @EJB
     private BusinessRuleService businessRuleService;
+    @EJB
+    private ContractService contractService;
 
     @PostConstruct
     public void init() {
@@ -72,6 +74,7 @@ public class AppInitializeService {
             initPOBs();
             initBusinessRules();
             initBusinessRulesEngine();
+            // initContracts();
 
             // businessRuleService.executePOBCalculations(pob);// TODO - Remove
             //DroolsTest.execute();
@@ -370,5 +373,9 @@ public class AppInitializeService {
 
     private void initBusinessRulesEngine() throws Exception {
         businessRuleService.initBusinessRulesEngine();
+    }
+    
+    private void initContracts () throws Exception {
+        contractService.initContracts();
     }
 }

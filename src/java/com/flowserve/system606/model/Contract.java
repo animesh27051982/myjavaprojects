@@ -178,4 +178,27 @@ public class Contract implements Comparable<Contract>, Serializable {
         this.customerPurchaseOrderNumber = customerPurchaseOrderNumber;
     }
 
+    public String getSalesOrderNumber() {
+        return salesOrderNumber;
+    }
+
+    public void setSalesOrderNumber(String salesOrderNumber) {
+        this.salesOrderNumber = salesOrderNumber;
+    }
+    
+    public BigDecimal getTotalTransactionPrice() {
+        return totalTransactionPrice;
+    }
+    public void setTotalTransactionPrice(BigDecimal totalTransactionPrice) {
+        this.totalTransactionPrice = totalTransactionPrice;
+    }
+    
+    public List<PerformanceObligation> getExchanges() {
+        //return inputs;
+        return exchanges != null ? exchanges : new ArrayList<>();
+    }
+    
+    public void setExchanges(List<PerformanceObligation> exchanges) {
+        this.exchanges = new ArrayList<>(exchanges);
+    }
 }
