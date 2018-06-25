@@ -55,6 +55,10 @@ public class ReportingUnit extends BaseEntity<Long> implements Comparable<Report
     @Column(name = "IS_ACTIVE")
     private boolean active;
 
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "reportingUnit")
+    @JoinTable(name = "R_UNIT_CONTRACTS", joinColumns = @JoinColumn(name = "REPORTING_UNIT_ID"), inverseJoinColumns = @JoinColumn(name = "CONTRACT_ID"))
+    private List<Contract> contract = new ArrayList<Contract>();
+
     public ReportingUnit() {
     }
 
@@ -125,6 +129,14 @@ public class ReportingUnit extends BaseEntity<Long> implements Comparable<Report
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public List<Contract> getContract() {
+        return contract;
+    }
+
+    public void setContract(List<Contract> contract) {
+        this.contract = contract;
     }
 
 }
