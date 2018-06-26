@@ -1,20 +1,21 @@
-REVENUE_RECOGNITION_METHOD|POB|com.flowserve.system606.model.StringInput|Revenue Recognition Method|Revenue Recognition Method|POC POB Inputs|H|Group1|1
-TRANSACTION_PRICE|POB|com.flowserve.system606.model.DecimalInput|Transaction Price|Transaction Price|POC POB Inputs|O|Group1|2
-ESTIMATED_COST_AT_COMPLETION|POB|com.flowserve.system606.model.DecimalInput|Estimated Cost at Completion|Estimated Cost at Completion|POC POB Inputs|Q|Group1|3
-CUMULATIVE_COST_INCURRED|POB|com.flowserve.system606.model.DecimalInput|Cumulative Cost Incurred / Received Local Curr|Cumulative Cost Incurred / Received Local Curr|POC POB Inputs|S|Group1|4
-INTERCOMPANY_PROGRESS|POB|com.flowserve.system606.model.DecimalInput|Interco Progress (Not Received) Local Curr|Interco Progress (Not Received) Local Curr|POC POB Inputs|T|Group1|5
-THIRD_PARTY_PROGRESS|POB|com.flowserve.system606.model.DecimalInput|3rd Party Progress (Not Received) Local Curr|3rd Party Progress (Not Received) Local Curr|POC POB Inputs|U|Group1|6
-DELIVERY_DATE|POB|com.flowserve.system606.model.DateInput|Actual Shipment / Delivery Date (if complete)|Actual Shipment / Delivery Date (if complete)|POC POB Inputs|W|Group1|7
-CUMULATIVE_COST_OF_GOODS_SOLD|POB|com.flowserve.system606.model.DecimalInput|If partial POB shipped: Enter Cumulative COGS|If partial POB shipped: Enter Cumulative COGS|POC POB Inputs|X|Group1|8
-BILLING_AMOUNT_CONTRACT_CURRENCY|POB|com.flowserve.system606.model.DecimalInput|Billing Amount Contract Currency|Billing Amount Contract Currency|POC POB Inputs|Z|Group1|9
-BILLING_AMOUNT_LOCAL_CURRENCY|POB|com.flowserve.system606.model.DecimalInput|Billing Amount Local Curr|Billing Amount Local Curr|POC POB Inputs|AA|Group1|10
-BILLING_DATE|POB|com.flowserve.system606.model.DateInput|Billing Date|Billing Date|POC POB Inputs|AB|Group1|11
-BILLING_INVOICE_NUMBER|POB|com.flowserve.system606.model.StringInput|Billing Invoice Number|Billing Invoice Number|POC POB Inputs|AC|Group1|12
-REPORTING_UNIT|Contract|com.flowserve.system606.model.StringInput|Reporting Unit|Reporting Unit|POC POB Inputs|B|Group1|13
-C_ID|Contract|com.flowserve.system606.model.DecimalInput|C-ID|C-ID|POC POB Inputs|C|Group1|14
-CUSTOMER_NAME|Contract|com.flowserve.system606.model.StringInput|Customer Name|Customer Name|POC POB Inputs|D|Group1|15
-SALES_ORDER_NUMBER|Contract|com.flowserve.system606.model.StringInput|Sales Order #|Sales Order #|POC POB Inputs|E|Group1|16
-CONTRACT_CURRENCY|Contract|com.flowserve.system606.model.StringInput|Contract Currency|Contract Currency|POC POB Inputs|I|Group1|17
-TOTAL_TRANS_PRICE_CONTRACT_CURR|Contract|com.flowserve.system606.model.DecimalInput|Total Trans Price Contract Curr|Total Trans Price Contract Curr|POC POB Inputs|J|Group1|18
-BOOKING_DATE|Contract|com.flowserve.system606.model.DateInput|Booking Date (LoA)|Booking Date (LoA)|POC POB Inputs|L|Group1|19
-ESTIMATED_COMPLETION_DATE|Contract|com.flowserve.system606.model.DateInput|Estimated Completion Date|Estimated Completion Date|POC POB Inputs|M|Group1|20
+REVENUE_RECOGNITION_METHOD|POB|com.flowserve.system606.model.StringInput||Revenue Recognition Method|Revenue Recognition Method|POC POB Inputs|H|Group1|1
+TRANSACTION_PRICE|POB|com.flowserve.system606.model.CurrencyInput|CC|Transaction Price|Transaction Price|POC POB Inputs|O|Group1|2
+LIQUIDATED_DAMAGES|POB|com.flowserve.system606.model.CurrencyInput|CC|Liquidated Damages|Liquidated Damages|POC POB Inputs|P|Group1|2
+ESTIMATED_COST_AT_COMPLETION|POB|com.flowserve.system606.model.CurrencyInput|LC|Estimated Cost at Completion|Estimated Cost at Completion|POC POB Inputs|Q|Group1|3
+CUMULATIVE_COST_INCURRED|POB|com.flowserve.system606.model.CurrencyInput|LC|Cumulative Cost Incurred / Received Local Curr|Cumulative Cost Incurred / Received Local Curr|POC POB Inputs|S|Group1|4
+INTERCOMPANY_PROGRESS|POB|com.flowserve.system606.model.CurrencyInput|LC|Interco Progress (Not Received) Local Curr|Interco Progress (Not Received) Local Curr|POC POB Inputs|T|Group1|5
+THIRD_PARTY_PROGRESS|POB|com.flowserve.system606.model.CurrencyInput|LC|3rd Party Progress (Not Received) Local Curr|3rd Party Progress (Not Received) Local Curr|POC POB Inputs|U|Group1|6
+DELIVERY_DATE|POB|com.flowserve.system606.model.DateInput||Actual Shipment / Delivery Date (if complete)|Actual Shipment / Delivery Date (if complete)|POC POB Inputs|W|Group1|7
+CUMULATIVE_COST_OF_GOODS_SOLD|POB|com.flowserve.system606.model.CurrencyInput|LC|If partial POB shipped: Enter Cumulative COGS|If partial POB shipped: Enter Cumulative COGS|POC POB Inputs|X|Group1|8
+BILLING_AMOUNT_CC|POB|com.flowserve.system606.model.CurrencyInput|CC|Billing Amount Contract Currency|Billing Amount Contract Currency|POC POB Inputs|Z|Group1|9
+BILLING_AMOUNT_LC_CURRENCY|POB|com.flowserve.system606.model.CurrencyInput|LC|Billing Amount Local Curr|Billing Amount Local Curr|POC POB Inputs|AA|Group1|10
+BILLING_DATE|POB|com.flowserve.system606.model.DateInput||Billing Date|Billing Date|POC POB Inputs|AB|Group1|11
+BILLING_INVOICE_NUMBER|POB|com.flowserve.system606.model.StringInput||Billing Invoice Number|Billing Invoice Number|POC POB Inputs|AC|Group1|12
+REPORTING_UNIT|Contract|com.flowserve.system606.model.StringInput||Reporting Unit|Reporting Unit|POC POB Inputs|B|Group1|13
+C_ID|Contract|com.flowserve.system606.model.DecimalInput||C-ID|C-ID|POC POB Inputs|C|Group1|14
+CUSTOMER_NAME|Contract|com.flowserve.system606.model.StringInput||Customer Name|Customer Name|POC POB Inputs|D|Group1|15
+SALES_ORDER_NUMBER|Contract|com.flowserve.system606.model.StringInput||Sales Order #|Sales Order #|POC POB Inputs|E|Group1|16
+CONTRACT_CURRENCY|Contract|com.flowserve.system606.model.StringInput||Contract Currency|Contract Currency|POC POB Inputs|I|Group1|17
+TOTAL_TRANS_PRICE_CONTRACT_CURR|Contract|com.flowserve.system606.model.DecimalInput||Total Trans Price Contract Curr|Total Trans Price Contract Curr|POC POB Inputs|J|Group1|18
+BOOKING_DATE|Contract|com.flowserve.system606.model.DateInput||Booking Date (LoA)|Booking Date (LoA)|POC POB Inputs|L|Group1|19
+ESTIMATED_COMPLETION_DATE|Contract|com.flowserve.system606.model.DateInput||Estimated Completion Date|Estimated Completion Date|POC POB Inputs|M|Group1|20

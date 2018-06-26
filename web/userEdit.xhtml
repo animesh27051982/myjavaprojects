@@ -31,11 +31,33 @@
                                 <!--  Only two cols, so only two col columnClasses.  I had to use 6 and 6 to get this layout properly-->
                                 <p:panelGrid columns="2" columnClasses="ui-grid-col-6,ui-grid-col-6" layout="grid" styleClass="ui-panelgrid-blank form-group" style="border:0px none; background-color:transparent;">
                                     <p:outputLabel for="name" value="Name"/>
-                                    <p:inputText id="name" value="#{userEdit.editUser.name}"/>
+                                    <p:inputText id="name" value="#{userEdit.editUser.displayName}"/>
                                     <p:outputLabel for="id" value="ID"/>
                                     <p:inputText id="id" value="#{userEdit.editUser.flsId}"/>
                                     <p:outputLabel for="email" value="Email ID"/>
                                     <p:inputText id="email" value="#{userEdit.editUser.emailAddress}"/>
+                                    <p:outputLabel for="common" value="Comman Name LDAP"/>
+                                    <p:inputText id="common" value="#{userEdit.editUser.commonNameLDAP}"/>
+                                    <p:outputLabel for="office" value="Office Name"/>
+                                    <p:inputText id="office" value="#{userEdit.editUser.officeName}"/>
+                                    <p:outputLabel for="title" value="Title"/>
+                                    <p:inputText id="title" value="#{userEdit.editUser.title}"/>
+                                    <p:outputLabel for="orglevel" value="Organization Level"/>
+                                    <p:inputText id="orglevel" value="#{userEdit.editUser.orgLevel}"/>
+                                    <p:outputLabel for="supervisor" value="Supervisor"/>
+                                    <p:autoComplete
+                                        id="supervisor"
+                                        var="user"
+                                        maxResults="10"
+                                        required="#{false}"
+                                        forceSelection="#{true}"
+                                        value="#{userEdit.editUser.supervisor}"
+                                        completeMethod="#{viewSupport.completeUser}"
+                                        itemLabel="#{user.name}"
+                                        itemValue="#{user}"
+                                        converter="userConverter">
+                                        <h:outputText value="Begin typing last name to find a user"/>
+                                    </p:autoComplete>
                                     <!-- Use p:toolbar for nicely stlyed command button area -->
                                     <f:facet name="footer">
                                         <p:toolbar>

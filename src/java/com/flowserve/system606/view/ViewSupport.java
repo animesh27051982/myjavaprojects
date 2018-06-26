@@ -7,8 +7,11 @@ package com.flowserve.system606.view;
 
 import com.flowserve.system606.model.User;
 import com.flowserve.system606.service.AdminService;
+import com.flowserve.system606.service.CurrencyService;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Currency;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -30,6 +33,8 @@ public class ViewSupport implements Serializable {
     List<User> users = new ArrayList<User>();
     @Inject
     private AdminService adminService;
+    @Inject
+    private CurrencyService currencyService;
     private String searchString = "";
 
     /**
@@ -67,6 +72,14 @@ public class ViewSupport implements Serializable {
 
     public void setSearchString(String searchString) {
         this.searchString = searchString;
+    }
+
+    public List<Currency> getAllCurrencies() {
+        List<Currency> currencyList = new ArrayList<Currency>();
+        currencyList.addAll(Currency.getAvailableCurrencies());
+        Collections.sort(currencyList, (c1, c2) -> c1.getCurrencyCode().compareTo(c2.getCurrencyCode()));
+
+        return currencyList;
     }
 
 }

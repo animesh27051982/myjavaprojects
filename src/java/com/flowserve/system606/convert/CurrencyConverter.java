@@ -9,23 +9,16 @@ package com.flowserve.system606.convert;
  *
  * @author shubhamv
  */
-import com.flowserve.system606.model.Country;
-import com.flowserve.system606.service.AdminService;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.Currency;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
-import javax.naming.InitialContext;
-import javax.naming.NamingException;
 
-@FacesConverter(value = "countryConverter", managed = true)
-public class CountryConverter implements Converter {
+@FacesConverter(value = "currencyConverter", managed = true)
+public class CurrencyConverter implements Converter {
 
-    private AdminService adminService;
-
-    public CountryConverter() {
+    public CurrencyConverter() {
     }
 
     @Override
@@ -35,14 +28,7 @@ public class CountryConverter implements Converter {
             return null;
         }
 
-        try {
-            InitialContext ic = new InitialContext();
-            adminService = (AdminService) ic.lookup("java:global/FlowServe/AdminService");
-        } catch (NamingException ex) {
-            Logger.getLogger(UserConverter.class.getName()).log(Level.SEVERE, null, ex);
-        }
-
-        return adminService.findCountryById(value);
+        return Currency.getInstance(value);
     }
 
     @Override
@@ -51,7 +37,7 @@ public class CountryConverter implements Converter {
         if (value instanceof String) {
             return null;
         }
-        return ((Country) value).getId().toString();
+        return ((Currency) value).getCurrencyCode();
     }
 
 }

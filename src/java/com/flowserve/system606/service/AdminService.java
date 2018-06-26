@@ -10,7 +10,10 @@ import com.flowserve.system606.model.Country;
 import com.flowserve.system606.model.InputType;
 import com.flowserve.system606.model.ReportingUnit;
 import com.flowserve.system606.model.User;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 import java.util.List;
+import java.util.Locale;
 import java.util.logging.Logger;
 import javax.ejb.Stateless;
 import javax.inject.Named;
@@ -57,6 +60,11 @@ public class AdminService {
         return (List<BusinessUnit>) query.getResultList();
     }
 
+    public BusinessUnit findBusinessUnitById(Long id) {
+
+        return em.find(BusinessUnit.class, id);
+    }
+
     public void updateUser(User u) throws Exception {
         em.merge(u);
     }
@@ -73,6 +81,18 @@ public class AdminService {
         Query query = em.createQuery("SELECT u FROM User u WHERE UPPER(u.flsId) = :FLS_ID ORDER BY UPPER(u.id)");
         query.setParameter("FLS_ID", adname.toUpperCase());
         return (List<User>) query.getResultList();
+
+    }
+
+    public User findUserByFlsIdType(String adname) {
+        Query query = em.createQuery("SELECT u FROM User u WHERE UPPER(u.flsId) = :FLS_ID ORDER BY UPPER(u.id)");
+        query.setParameter("FLS_ID", adname.toUpperCase());
+
+        List<User> user = query.getResultList();
+        if (user.size() > 0) {
+            return user.get(0);
+        }
+        return null;
 
     }
 
@@ -165,6 +185,95 @@ public class AdminService {
         TypedQuery<User> query = em.createQuery("SELECT u FROM User u WHERE UPPER(u.name) LIKE :NAME OR UPPER(u.flsId) LIKE :NAME ORDER BY UPPER(u.name)", User.class);
         query.setParameter("NAME", "%" + searchname.toUpperCase() + "%");
         return (List<User>) query.getResultList();
+    }
+
+    public void initUsers() throws Exception {
+        List<User> admin = findUserByFlsId("bga_admin");
+        User ad;
+        if (admin.isEmpty()) {
+            logger.info("Creating admin user");
+            ad = new User("bga_admin", "M, Padmini", "M, Padmini", "bga_admin@flowserve.com");
+            updater(ad);
+        }
+
+        if (findUserByFlsId("aloeffler").isEmpty()) {
+            BufferedReader reader = new BufferedReader(new InputStreamReader(AppInitializeService.class.getResourceAsStream("/resources/app_data_init_files/fls_user_init.txt"), "UTF-8"));
+
+            String line = null;
+            while ((line = reader.readLine()) != null) {
+                if (line.trim().length() == 0) {
+                    continue;
+                }
+
+                String[] values = line.split("\\t");
+                if (values.length == 7 && !values[6].equalsIgnoreCase("ORG_LEVEL")) {
+                    String flsId = values[0];
+                    String displayName = values[1];
+                    String commonNameLDAP = values[2];
+                    String emailAddress = values[3];
+                    String officeName = values[4];
+                    String title = values[5];
+                    int orgLevel = Integer.parseInt(values[6]);
+                    User user = new User(flsId, displayName, commonNameLDAP, emailAddress, officeName, title, orgLevel);
+
+                    updater(user);
+                }
+            }
+
+            reader.close();
+
+            logger.info("Finished initializing users.");
+        }
+    }
+
+    public void initReportingUnits() throws Exception {
+
+        if (findReportingUnitByCode("0100") == null) {
+            logger.info("Initializing Reporting Units");
+            BufferedReader reader = new BufferedReader(new InputStreamReader(AppInitializeService.class.getResourceAsStream("/resources/app_data_init_files/reporting_units.txt"), "UTF-8"));
+
+            int count = 0;
+            String line = null;
+            while ((line = reader.readLine()) != null) {
+                if (line.trim().length() == 0) {
+                    continue;
+                }
+
+                count = 0;
+                String[] values = line.split("\\t");
+
+                ReportingUnit ru = new ReportingUnit();
+
+                ru.setCode(values[count++]);
+                ru.setName(values[count++]);
+                if (values.length > 2) {
+                    ru.setCountry(findCountryByCode(values[count++]));
+                }
+                ru.setActive(true);
+
+                persist(ru);
+            }
+
+            reader.close();
+
+            logger.info("Finished initializing Reporting Units.");
+        }
+    }
+
+    public void initCountries() throws Exception {
+        if (findCountryById("USA") == null) {
+            logger.info("Initializing Countries");
+
+            String[] countryCodes = Locale.getISOCountries();
+            for (String countryCode : countryCodes) {
+
+                Locale locale = new Locale("", countryCode);
+                Country country = new Country(locale.getISO3Country(), locale.getCountry(), locale.getDisplayCountry());
+                persist(country);
+            }
+
+            logger.info("Finished initializing Countries.");
+        }
     }
 
 }

@@ -7,18 +7,23 @@ package com.flowserve.system606.service;
 
 import com.flowserve.system606.model.ExchangeRate;
 import com.flowserve.system606.model.FinancialPeriod;
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.Currency;
 import java.util.List;
+import java.util.logging.Logger;
 import javax.ejb.Stateless;
+import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
@@ -33,8 +38,12 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 @Stateless
 public class CurrencyService {
 
+    private static final Logger logger = Logger.getLogger(CurrencyService.class.getName());
+
     @PersistenceContext(unitName = "FlowServePU")
     private EntityManager em;
+    @Inject
+    FinancialPeriodService financialPeriodService;
 
     public void persist1(Object object) {
         em.persist(object);
@@ -178,6 +187,63 @@ public class CurrencyService {
     public BigDecimal convert(BigDecimal amount, Currency fromCurrency, Currency toCurrency, FinancialPeriod period) throws Exception {  // throw an application defined exception here instead of Exception
         ExchangeRate er = findRateByFromToPeriod(fromCurrency, toCurrency, period);
         return amount.multiply(er.getConversionRate()).setScale(14, BigDecimal.ROUND_HALF_UP);
+    }
+
+    public void initCurrencyConverter() throws Exception {
+        FinancialPeriod period = financialPeriodService.findById("MAY-18");
+        List<ExchangeRate> er = findRatesByPeriod(period);
+
+        final int SCALE = 14;
+        final int ROUNDING_METHOD = BigDecimal.ROUND_HALF_UP;
+
+        if (er.isEmpty()) {
+            logger.info("Initializing exchange rates.");
+
+            BufferedReader reader = new BufferedReader(new InputStreamReader(AppInitializeService.class.getResourceAsStream("/resources/currency_rate_file/currency.txt"), "UTF-8"));
+            deleteExchangeRate();
+            String line = null;
+
+            while ((line = reader.readLine()) != null) {
+                if (line.trim().length() == 0) {
+                    continue;
+                }
+
+                String[] from = line.split("\\t");
+                if (!from[2].equalsIgnoreCase("")) {
+                    BufferedReader reader2 = new BufferedReader(new InputStreamReader(AppInitializeService.class.getResourceAsStream("/resources/currency_rate_file/currency.txt"), "UTF-8"));
+
+                    String innerLine = null;
+                    while ((innerLine = reader2.readLine()) != null) {
+                        if (innerLine.trim().length() == 0) {
+                            continue;
+                        }
+
+                        String[] to = innerLine.split("\\t");
+                        if (!to[2].equalsIgnoreCase("")) {
+                            BigDecimal usdRate = new BigDecimal("1.0");
+                            BigDecimal sourceRate = new BigDecimal(from[4]);
+                            BigDecimal targetRate = new BigDecimal(to[4]);
+
+                            String type = from[2];
+                            Currency fromCurrency = Currency.getInstance(from[3]);
+                            Currency toCurrency = Currency.getInstance(to[3]);
+                            LocalDate effectiveDate = LocalDate.now().plusDays(30);
+                            //Currency Conversion Formula
+                            BigDecimal rate = usdRate.divide(sourceRate, SCALE, ROUNDING_METHOD).multiply(targetRate);
+
+                            ExchangeRate exchangeRate = new ExchangeRate(type, fromCurrency, toCurrency, period, rate);
+                            persist(exchangeRate);
+                            //logger.info("From Country: " + effectiveDate + "  To Country: " + toCurrency + "   Rate" + rate);
+                        }
+                    }
+                    reader2.close();
+                }
+            }
+            reader.close();
+            logger.info("Finished initializing exchange rates.");
+        }
+
+        logger.info("Testing conversion of 500 INR to EUR.  Should be 6.3440521593  result: " + convert(new BigDecimal(500), Currency.getInstance("INR"), Currency.getInstance("EUR"), period));
     }
 
 }
