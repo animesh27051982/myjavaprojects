@@ -221,9 +221,30 @@ public class AdminService {
             }
 
             reader.close();
-
+            this.initSupervisor();
             logger.info("Finished initializing users.");
         }
+    }
+
+    public void initSupervisor() throws Exception {
+        System.out.println("call");
+        BufferedReader breader = new BufferedReader(new InputStreamReader(AppInitializeService.class.getResourceAsStream("/resources/app_data_init_files/fls_supervisor_init.txt"), "UTF-8"));
+
+        String line = null;
+        while ((line = breader.readLine()) != null) {
+            if (line.trim().length() == 0) {
+                continue;
+            }
+
+            String[] values = line.split("\\t");
+            User us = findUserByFlsIdType(values[0]);
+            if (us != null) {
+                us.setSupervisor(findUserByFlsIdType(values[1]));
+                updateUser(us);
+            }
+
+        }
+        breader.close();
     }
 
     public void initReportingUnits() throws Exception {
