@@ -13,6 +13,7 @@ import com.flowserve.system606.model.PerformanceObligation;
 import com.flowserve.system606.model.Contract;
 import com.flowserve.system606.model.CurrencyType;
 import com.flowserve.system606.model.InputTypeId;
+import com.flowserve.system606.model.ReportingUnit;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -60,8 +61,57 @@ public class ContractService {
     private BusinessRuleService businessRuleService;
 
     private static Logger logger = Logger.getLogger("com.flowserve.system606");
+    
+    public void initContracts() throws Exception {
 
-    public boolean initContracts() throws Exception {  // Need an application exception type defined.
+        if (findContractById( 1015 ) == null) {
+            logger.info("Initializing Contracts");
+            BufferedReader reader = new BufferedReader(new InputStreamReader(AppInitializeService.class.getResourceAsStream("/resources/app_data_init_files/contract_data.txt"), "UTF-8"));
+
+            int count = 0;
+            String line = null;
+            while ((line = reader.readLine()) != null) {
+                if (line.trim().length() == 0) {
+                    continue;
+                }
+
+                count = 0;
+                String[] values = line.split("\\t");
+
+                Contract contract = new Contract();
+                String ru = values[count++];
+                long contractId = Long.valueOf(values[count++]);
+                String customerName = values[count++];
+                String salesOrderNumber = values[count++];
+                                
+                contract.setId(contractId);
+                contract.setName( customerName + '-' + contractId );
+                contract.setSalesOrderNumber(salesOrderNumber);  
+                // if (findReportingUnitByCode( ru ) == null) {
+                // contract.setReportingUnit(reportingUnit);
+                // persist(contract);
+                update(contract);
+            }
+
+            reader.close();
+
+            logger.info("Finished initializing Contracts.");
+        }
+    }
+
+    
+    public Contract findContractById(long contractId) {
+        Query query = em.createQuery("SELECT contract FROM Contract contract WHERE contract.id = :CONTRACT_ID");
+        query.setParameter("CONTRACT_ID", contractId);
+        List<Contract> contracts = query.getResultList();
+        if (contracts.size() > 0) {
+            return contracts.get(0);
+        }
+        return null;
+    }
+
+
+    public boolean initContractsFromExcel() throws Exception {  // Need an application exception type defined.
         String filename = "POCI_Template_DRAFT_v2 (version 1).xlsb - Copy - Copy";
         InputStream fis = AppInitializeService.class.getResourceAsStream("/resources/excel_input_templates/POCI_Template_DRAFT_v2.xlsb.xlsx");
 
