@@ -198,4 +198,9 @@ public class Contract extends BaseEntity<Long> implements Comparable<Contract>, 
     public List<PerformanceObligation> getPerformanceObligations() {
         return performanceObligations;
     }
+
+    // TODO - KJG - Remove.  Temp code for calc pages.
+    public BigDecimal getPobCountRejected() {
+        return new BigDecimal("10.0");
+    }
 }

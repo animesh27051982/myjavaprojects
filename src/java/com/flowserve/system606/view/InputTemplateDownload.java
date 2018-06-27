@@ -56,6 +56,9 @@ public class InputTemplateDownload implements Serializable {
     }
 
     public StreamedContent getFile() {
+
+        // lots of code here...
+        // .....
         return file;
     }
 

@@ -32,7 +32,7 @@ public class ExchangeRateSearch implements Serializable {
     public void search() throws Exception {
         exchangeRates = adminService.searchExchangeRates(searchString);
         Collections.sort(exchangeRates);
-        System.out.println("search()" + exchangeRates.get(0).getFinancialPeriod().getStartDate());
+        //System.out.println("search()" + exchangeRates.get(0).getFinancialPeriod().getStartDate());
     }
 
     public List<ExchangeRate> getExchangeRates() {
