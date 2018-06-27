@@ -87,8 +87,12 @@ public class ContractService {
                 contract.setId(contractId);
                 contract.setName( customerName + '-' + contractId );
                 contract.setSalesOrderNumber(salesOrderNumber);  
-                // if (findReportingUnitByCode( ru ) == null) {
-                // contract.setReportingUnit(reportingUnit);
+                ReportingUnit reportingUnit = adminService.findReportingUnitByCode( ru );
+                if (reportingUnit == null) {
+                    reportingUnit = new ReportingUnit();
+                    reportingUnit.setName( ru );                   
+                }
+                contract.setReportingUnit(reportingUnit);
                 // persist(contract);
                 update(contract);
             }
