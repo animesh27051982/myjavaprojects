@@ -21,7 +21,7 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name = "EXCHANGE_RATES")
-public class ExchangeRate implements Serializable {
+public class ExchangeRate implements Serializable, Comparable<ExchangeRate> {
 
     private static final long serialVersionUID = -383220321690601009L;
     private static final Logger LOG = Logger.getLogger(ExchangeRate.class.getName());
@@ -107,6 +107,11 @@ public class ExchangeRate implements Serializable {
 
     public void setFinancialPeriod(FinancialPeriod financialPeriod) {
         this.financialPeriod = financialPeriod;
+    }
+
+    @Override
+    public int compareTo(ExchangeRate o) {
+        return this.type.compareTo(o.getType());
     }
 
 }
