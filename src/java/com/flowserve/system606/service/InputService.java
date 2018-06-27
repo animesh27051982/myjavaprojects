@@ -222,7 +222,8 @@ public class InputService {
                 exchange.add(pob);
             }
             pob = pobService.update(pob);
-            pobService.initializeOutputs(pob);
+//            pobService.initializeInputs(pob);
+//            pobService.initializeOutputs(pob);
             businessRuleService.executeBusinessRules(pob);
             logger.log(Level.INFO, "pob.PERCENT_COMPLETE: " + pob.getOutput(OutputTypeId.PERCENT_COMPLETE).getValue().toString());
             logger.log(Level.INFO, "pob.REVENUE_EARNED_TO_DATE: " + pob.getOutput(OutputTypeId.REVENUE_EARNED_TO_DATE).getValue().toString());

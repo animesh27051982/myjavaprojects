@@ -32,6 +32,8 @@ public class PerformanceObligationService {
     private OutputService outputService;
     @EJB
     private InputService inputService;
+    @EJB
+    private PerformanceObligationService performanceObligationService;
 
     public void initializeInputs(PerformanceObligation pob) throws Exception {
         pob.initializeInputs(inputService.findActiveInputTypes());
@@ -66,6 +68,7 @@ public class PerformanceObligationService {
 
     public void initPOBs() throws Exception {
 
+        //read init_contract_pob_data.txt a second time
         if (findById(10660L) == null) {
             logger.info("Initializing POBs");
             BufferedReader reader = new BufferedReader(new InputStreamReader(AppInitializeService.class.getResourceAsStream("/resources/app_data_init_files/pob_data.txt"), "UTF-8"));
@@ -85,6 +88,8 @@ public class PerformanceObligationService {
                 pob.setName(values[count++]);
                 pob.setId(new Long(values[count++]));
                 pob.setActive(true);
+                performanceObligationService.initializeInputs(pob);
+                performanceObligationService.initializeOutputs(pob);
 
                 persist(pob);
             }
