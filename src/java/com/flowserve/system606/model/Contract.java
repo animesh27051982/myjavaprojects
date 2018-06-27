@@ -184,20 +184,15 @@ public class Contract extends BaseEntity<Long> implements Comparable<Contract>, 
     public void setTotalTransactionPrice(BigDecimal totalTransactionPrice) {
         this.totalTransactionPrice = totalTransactionPrice;
     }
-
-    public List<PerformanceObligation> getExchanges() {
-        //return inputs;
+    
+    public List<PerformanceObligation> getPerformanceObligations() {
         return performanceObligations != null ? performanceObligations : new ArrayList<>();
     }
-
-    public void setExchanges(List<PerformanceObligation> exchanges) {
-        this.performanceObligations = new ArrayList<>(exchanges);
+   
+    public void setPerformanceObligations(List<PerformanceObligation> pobs) {
+        this.performanceObligations = new ArrayList<>(pobs);
     }
-
-    public List<PerformanceObligation> getPerformanceObligations() {
-        return performanceObligations;
-    }
-
+    
     // TODO - KJG - Remove.  Temp code for calc pages.
     public BigDecimal getPobCountRejected() {
         return new BigDecimal("10.0");

@@ -204,16 +204,16 @@ public class InputService {
             if ((contract != null && contractId != contract.getId()) || totalTransactionPrice != null) {
                 // if there are existing old contract, save exchange list to it and finish the existing old contract
                 if (contract != null) {
-                    contract.setExchanges(exchange);
+                    contract.setPerformanceObligations(exchange);
                     //em.merge( contract );
                     //persist(contract);
-                    logger.log(Level.INFO, "contract.getExchanges().size(): " + contract.getExchanges().size());
-                    logger.log(Level.INFO, "contract.getExchanges().get(0).getId(): " + contract.getExchanges().get(0).getId());
+                    logger.log(Level.INFO, "contract.getExchanges().size(): " + contract.getPerformanceObligations().size());
+                    logger.log(Level.INFO, "contract.getExchanges().get(0).getId(): " + contract.getPerformanceObligations().get(0).getId());
                     contract = update(contract);
                 }
                 //now create a new contract for the new pob and add its pob
                 contract = createContract(reportingUnit, contractId, customerName, salesOrderNum, totalTransactionPrice);
-                exchange = contract.getExchanges();
+                exchange = contract.getPerformanceObligations();
                 pob.setContract(contract);
                 exchange.add(pob);
             } else {
@@ -234,9 +234,9 @@ public class InputService {
         persist(inputSet);
         // need commit last contract
         // persist(contract);
-        contract.setExchanges(exchange);
-        logger.log(Level.INFO, "contract.getExchanges().size(): " + contract.getExchanges().size());
-        logger.log(Level.INFO, "contract.getExchanges().get(0).getId(): " + contract.getExchanges().get(0).getId());
+        contract.setPerformanceObligations(exchange);
+        logger.log(Level.INFO, "contract.getExchanges().size(): " + contract.getPerformanceObligations().size());
+        logger.log(Level.INFO, "contract.getExchanges().get(0).getId(): " + contract.getPerformanceObligations().get(0).getId());
         contract = update(contract);
         return true;
     }
