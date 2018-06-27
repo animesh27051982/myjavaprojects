@@ -12,12 +12,11 @@ import java.util.ArrayList;
 import java.util.Currency;
 import java.util.List;
 import java.util.logging.Logger;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
@@ -111,8 +110,8 @@ public class Contract extends BaseEntity<Long> implements Comparable<Contract>, 
     @JoinColumn(name = "SALES_DESTINATION_COUNTRY_ID")
     //private Country salesDestinationCountry;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "contract")
-    @JoinTable(name = "CONTRACT_POBS", joinColumns = @JoinColumn(name = "CONTRACT_ID"), inverseJoinColumns = @JoinColumn(name = "POB_ID"))
+    @OneToMany(mappedBy = "contract", cascade = CascadeType.PERSIST)
+//    @JoinTable(name = "CONTRACT_POBS", joinColumns = @JoinColumn(name = "CONTRACT_ID"), inverseJoinColumns = @JoinColumn(name = "POB_ID"))
     private List<PerformanceObligation> performanceObligations = new ArrayList<PerformanceObligation>();
 
     public Contract() {
@@ -171,12 +170,32 @@ public class Contract extends BaseEntity<Long> implements Comparable<Contract>, 
         this.customerPurchaseOrderNumber = customerPurchaseOrderNumber;
     }
 
+    public String getSalesOrderNumber() {
+        return salesOrderNumber;
+    }
+
+    public void setSalesOrderNumber(String salesOrderNumber) {
+        this.salesOrderNumber = salesOrderNumber;
+    }
+
+    public BigDecimal getTotalTransactionPrice() {
+        return totalTransactionPrice;
+    }
+
+    public void setTotalTransactionPrice(BigDecimal totalTransactionPrice) {
+        this.totalTransactionPrice = totalTransactionPrice;
+    }
+
+    public List<PerformanceObligation> getExchanges() {
+        //return inputs;
+        return performanceObligations != null ? performanceObligations : new ArrayList<>();
+    }
+
+    public void setExchanges(List<PerformanceObligation> exchanges) {
+        this.performanceObligations = new ArrayList<>(exchanges);
+    }
+
     public List<PerformanceObligation> getPerformanceObligations() {
         return performanceObligations;
     }
-
-    public BigDecimal getPobCountRejected() {
-        return new BigDecimal("10.0");
-    }
-
 }

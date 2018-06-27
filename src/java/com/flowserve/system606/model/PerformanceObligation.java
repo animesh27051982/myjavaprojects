@@ -12,6 +12,7 @@ import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -91,7 +92,7 @@ public class PerformanceObligation extends BaseEntity<Long> implements Comparabl
     }
 
     public BigDecimal getCurrencyInput(String inputTypeId) {
-        LOG.info("POB.getCurrencyInput inputTypeId: " + inputTypeId);
+        LOG.log(Level.FINE, "POB.getCurrencyInput inputTypeId: " + inputTypeId);
         return ((CurrencyInput) inputs.get(inputTypeId)).getValue();
     }
 

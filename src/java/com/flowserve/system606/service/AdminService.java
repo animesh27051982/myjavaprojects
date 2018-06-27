@@ -7,11 +7,13 @@ package com.flowserve.system606.service;
 
 import com.flowserve.system606.model.BusinessUnit;
 import com.flowserve.system606.model.Country;
+import com.flowserve.system606.model.ExchangeRate;
 import com.flowserve.system606.model.InputType;
 import com.flowserve.system606.model.ReportingUnit;
 import com.flowserve.system606.model.User;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.util.Currency;
 import java.util.List;
 import java.util.Locale;
 import java.util.logging.Logger;
@@ -81,6 +83,18 @@ public class AdminService {
         Query query = em.createQuery("SELECT u FROM User u WHERE UPPER(u.flsId) = :FLS_ID ORDER BY UPPER(u.id)");
         query.setParameter("FLS_ID", adname.toUpperCase());
         return (List<User>) query.getResultList();
+
+    }
+
+    public User findUserByFlsIdType(String adname) {
+        Query query = em.createQuery("SELECT u FROM User u WHERE UPPER(u.flsId) = :FLS_ID ORDER BY UPPER(u.id)");
+        query.setParameter("FLS_ID", adname.toUpperCase());
+
+        List<User> user = query.getResultList();
+        if (user.size() > 0) {
+            return user.get(0);
+        }
+        return null;
 
     }
 
@@ -181,17 +195,16 @@ public class AdminService {
     }
 
     public void initUsers() throws Exception {
-        List<User> admin = findUserByFlsId("admin");
+        List<User> admin = findUserByFlsId("bga_admin");
         User ad;
-
         if (admin.isEmpty()) {
             logger.info("Creating admin user");
-            ad = new User("admin", "Administrator", "admin@gmail.com");
+            ad = new User("bga_admin", "M, Padmini", "M, Padmini", "bga_admin@flowserve.com");
             updater(ad);
         }
 
-        if (findUserByFlsId("pkaranam").isEmpty()) {
-            BufferedReader reader = new BufferedReader(new InputStreamReader(AppInitializeService.class.getResourceAsStream("/resources/init_users/init_users.txt"), "UTF-8"));
+        if (findUserByFlsId("aloeffler").isEmpty()) {
+            BufferedReader reader = new BufferedReader(new InputStreamReader(AppInitializeService.class.getResourceAsStream("/resources/app_data_init_files/fls_user_init.txt"), "UTF-8"));
 
             String line = null;
             while ((line = reader.readLine()) != null) {
@@ -200,22 +213,45 @@ public class AdminService {
                 }
 
                 String[] values = line.split("\\t");
+                if (values.length == 7 && !values[6].equalsIgnoreCase("ORG_LEVEL")) {
+                    String flsId = values[0];
+                    String displayName = values[1];
+                    String commonNameLDAP = values[2];
+                    String emailAddress = values[3];
+                    String officeName = values[4];
+                    String title = values[5];
+                    int orgLevel = Integer.parseInt(values[6]);
+                    User user = new User(flsId, displayName, commonNameLDAP, emailAddress, officeName, title, orgLevel);
 
-                String name = values[0];
-                String flsId = values[3];
-                String email = values[4];
-
-                User user = new User(flsId, name, email);
-
-                logger.info("Creating user: " + name);
-
-                updater(user);
+                    updater(user);
+                }
             }
 
             reader.close();
-
+            //this.initSupervisor();
             logger.info("Finished initializing users.");
         }
+    }
+
+    public void initSupervisor() throws Exception {
+        System.out.println("call");
+        BufferedReader breader = new BufferedReader(new InputStreamReader(AppInitializeService.class.getResourceAsStream("/resources/app_data_init_files/fls_supervisor_init.txt"), "UTF-8"));
+
+        String line = null;
+        while ((line = breader.readLine()) != null) {
+            if (line.trim().length() == 0) {
+                continue;
+            }
+
+            String[] values = line.split("\\t");
+            User us = findUserByFlsIdType(values[0]);
+            if (us != null) {
+                us.setSupervisor(findUserByFlsIdType(values[1]));
+                updateUser(us);
+            }
+
+        }
+        breader.close();
     }
 
     public void initReportingUnits() throws Exception {
@@ -233,17 +269,18 @@ public class AdminService {
 
                 count = 0;
                 String[] values = line.split("\\t");
-
-                ReportingUnit ru = new ReportingUnit();
-
-                ru.setCode(values[count++]);
-                ru.setName(values[count++]);
-                if (values.length > 2) {
-                    ru.setCountry(findCountryByCode(values[count++]));
+                if (!values[1].equalsIgnoreCase("NAME")) {
+                    ReportingUnit ru = new ReportingUnit();
+                    ru.setCode(values[count++]);
+                    ru.setName(values[count++]);
+                    if (values.length > 2) {
+                        ru.setLocalCurrency(Currency.getInstance(new Locale("en", values[count])));
+                        ru.setCountry(findCountryByCode(values[count++]));
+                    }
+                    ru.setActive(true);
+                    persist(ru);
                 }
-                ru.setActive(true);
 
-                persist(ru);
             }
 
             reader.close();
@@ -268,4 +305,12 @@ public class AdminService {
         }
     }
 
+    public List<ExchangeRate> searchExchangeRates(String searchString) throws Exception {  // Need an application exception type defined.
+        if (searchString == null || searchString.trim().length() < 2) {
+            throw new Exception("Please supply a search string with at least 2 characters.");
+        }
+        TypedQuery<ExchangeRate> query = em.createQuery("SELECT er FROM ExchangeRate er WHERE UPPER(er.fromCurrency) LIKE :Currency OR UPPER(er.toCurrency) LIKE :Currency", ExchangeRate.class);
+        query.setParameter("Currency", "%" + searchString.toUpperCase() + "%");
+        return (List<ExchangeRate>) query.getResultList();
+    }
 }

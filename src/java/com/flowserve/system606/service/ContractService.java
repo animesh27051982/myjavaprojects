@@ -5,15 +5,15 @@
  */
 package com.flowserve.system606.service;
 
-import com.flowserve.system606.model.Contract;
-import com.flowserve.system606.model.CurrencyType;
 import com.flowserve.system606.model.Input;
 import com.flowserve.system606.model.InputSet;
 import com.flowserve.system606.model.InputType;
-import com.flowserve.system606.model.InputTypeId;
-import com.flowserve.system606.model.OutputType;
 import com.flowserve.system606.model.OutputTypeId;
 import com.flowserve.system606.model.PerformanceObligation;
+import com.flowserve.system606.model.Contract;
+import com.flowserve.system606.model.CurrencyType;
+import com.flowserve.system606.model.InputTypeId;
+import com.flowserve.system606.model.ReportingUnit;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -32,7 +32,6 @@ import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
-import javax.persistence.TypedQuery;
 import javax.transaction.Transactional;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
@@ -49,7 +48,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
  * @author span
  */
 @Stateless
-public class InputService {
+public class ContractService {
 
     @PersistenceContext(unitName = "FlowServePU")
     private EntityManager em;
@@ -62,13 +61,59 @@ public class InputService {
     private BusinessRuleService businessRuleService;
 
     private static Logger logger = Logger.getLogger("com.flowserve.system606");
+    
+    public void initContracts() throws Exception {
 
-    public List<InputType> findActiveInputTypes() {
-        Query query = em.createQuery("SELECT it FROM InputType it WHERE it.active = TRUE");
-        return (List<InputType>) query.getResultList();
+        if (findContractById( 1015 ) == null) {
+            logger.info("Initializing Contracts");
+            BufferedReader reader = new BufferedReader(new InputStreamReader(AppInitializeService.class.getResourceAsStream("/resources/app_data_init_files/contract_data.txt"), "UTF-8"));
+
+            int count = 0;
+            String line = null;
+            while ((line = reader.readLine()) != null) {
+                if (line.trim().length() == 0) {
+                    continue;
+                }
+
+                count = 0;
+                String[] values = line.split("\\t");
+
+                Contract contract = new Contract();
+                String ru = values[count++];
+                long contractId = Long.valueOf(values[count++]);
+                String customerName = values[count++];
+                String salesOrderNumber = values[count++];
+                                
+                contract.setId(contractId);
+                contract.setName( customerName + '-' + contractId );
+                contract.setSalesOrderNumber(salesOrderNumber);  
+                // if (findReportingUnitByCode( ru ) == null) {
+                // contract.setReportingUnit(reportingUnit);
+                // persist(contract);
+                update(contract);
+            }
+
+            reader.close();
+
+            logger.info("Finished initializing Contracts.");
+        }
     }
 
-    public boolean readFeed(InputStream fis, String filename) throws Exception {  // Need an application exception type defined.
+    
+    public Contract findContractById(long contractId) {
+        Query query = em.createQuery("SELECT contract FROM Contract contract WHERE contract.id = :CONTRACT_ID");
+        query.setParameter("CONTRACT_ID", contractId);
+        List<Contract> contracts = query.getResultList();
+        if (contracts.size() > 0) {
+            return contracts.get(0);
+        }
+        return null;
+    }
+
+
+    public boolean initContractsFromExcel() throws Exception {  // Need an application exception type defined.
+        String filename = "POCI_Template_DRAFT_v2 (version 1).xlsb - Copy - Copy";
+        InputStream fis = AppInitializeService.class.getResourceAsStream("/resources/excel_input_templates/POCI_Template_DRAFT_v2.xlsb.xlsx");
 
         logger.info("readFeed:" + fis.toString());
 
@@ -89,7 +134,7 @@ public class InputService {
         // when do we call contract.setExchange - when we save a new contract or we see a new C-ID and customer name
         List<PerformanceObligation> exchange = null;
         Contract contract = null;
-
+        
         while (rowIterator.hasNext()) {
             row = (XSSFRow) rowIterator.next();
             // skip first row as header
@@ -105,7 +150,7 @@ public class InputService {
             long contractId = -1;
             String customerName = null;
             String salesOrderNum = null;
-            BigDecimal totalTransactionPrice = null;
+            BigDecimal totalTransactionPrice = null;        
 
             Long pobID = null;
             Iterator< Cell> cellIterator = row.cellIterator();
@@ -141,15 +186,15 @@ public class InputService {
                             if (!bDate) {
                                 BigDecimal bd = BigDecimal.valueOf(cell.getNumericCellValue());
                                 input.setValue(bd);
-                                if (input.getInputType().getOwnerEntityType().equalsIgnoreCase("Contract")) {
+                                if(input.getInputType().getOwnerEntityType().equalsIgnoreCase("Contract")) {                                  
                                     switch (input.getInputType().getId()) {
                                         case "C_ID":
                                             contractId = (long) cell.getNumericCellValue();
                                             break;
-                                        case "TOTAL_TRANS_PRICE_CONTRACT_CURR":
-                                            totalTransactionPrice = (BigDecimal) input.getValue();
+                                        case "TOTAL_TRANS_PRICE_CONTRACT_CURR": 
+                                            totalTransactionPrice = (BigDecimal)input.getValue();
                                             break;
-                                    }
+                                    }                                    
                                 } else {
                                     inputList.add(input);
                                     pob.putInput(input);
@@ -160,20 +205,20 @@ public class InputService {
                         case Cell.CELL_TYPE_STRING:
                             if (!cell.getStringCellValue().trim().isEmpty()) {
                                 input.setValue(cell.getStringCellValue());
-                                if (input.getInputType().getOwnerEntityType().equalsIgnoreCase("Contract")) {
+                                if(input.getInputType().getOwnerEntityType().equalsIgnoreCase("Contract")) {
 
                                     switch (input.getInputType().getId()) {
-                                        case "REPORTING_UNIT":
-                                            reportingUnit = (String) input.getValue();
+                                        case "REPORTING_UNIT": 
+                                            reportingUnit = (String)input.getValue();
                                             break;
                                         case "CUSTOMER_NAME":
-                                            customerName = (String) input.getValue();
+                                            customerName = (String)input.getValue();
                                             break;
                                         case "SALES_ORDER_NUMBER":
-                                            salesOrderNum = (String) input.getValue();
+                                            salesOrderNum = (String)input.getValue();
                                             break;
-                                    }
-
+                                    }                                   
+                                    
                                 } else {
                                     inputList.add(input);
                                     pob.putInput(input);
@@ -194,49 +239,41 @@ public class InputService {
                 }
             }
 
-            // update/save the pob
             logger.info("pobService.update POB ID:" + pob.getId() + " Name:" + pob.getName() + " \t\t ");
-            //comment these out see if contract will update pob
-//            pob = pobService.update(pob);
-//            pobService.initializeOutputs(pob);
-//            businessRuleService.executeBusinessRules(pob);
             //this indicates are are in a new contract, or use C-ID and Customer Name to check
-            if ((contract != null && contractId != contract.getId()) || totalTransactionPrice != null) {
+            if( (contract != null && contractId != contract.getId()) || totalTransactionPrice != null) { 
                 // if there are existing old contract, save exchange list to it and finish the existing old contract
-                if (contract != null) {
+                if(contract != null) {
                     contract.setExchanges(exchange);
                     //em.merge( contract );
                     //persist(contract);
                     logger.log(Level.INFO, "contract.getExchanges().size(): " + contract.getExchanges().size());
-                    logger.log(Level.INFO, "contract.getExchanges().get(0).getId(): " + contract.getExchanges().get(0).getId());
+                    logger.log(Level.INFO, "contract.getExchanges().get(0).getId(): " + contract.getExchanges().get(0).getId());                    
                     contract = update(contract);
                 }
                 //now create a new contract for the new pob and add its pob
-                contract = createContract(reportingUnit, contractId, customerName, salesOrderNum, totalTransactionPrice);
+                contract = createContract(reportingUnit, contractId, customerName, salesOrderNum, totalTransactionPrice); 
                 exchange = contract.getExchanges();
                 pob.setContract(contract);
-                exchange.add(pob);
+                exchange.add( pob );
             } else {
                 // we are in existing contract with a new pob, add pob to existing contract
                 pob.setContract(contract);
-                exchange.add(pob);
+                exchange.add( pob );
             }
             pob = pobService.update(pob);
             pobService.initializeOutputs(pob);
-            businessRuleService.executeBusinessRules(pob);
+            businessRuleService.executeBusinessRules(pob);            
             logger.log(Level.INFO, "pob.PERCENT_COMPLETE: " + pob.getOutput(OutputTypeId.PERCENT_COMPLETE).getValue().toString());
             logger.log(Level.INFO, "pob.REVENUE_EARNED_TO_DATE: " + pob.getOutput(OutputTypeId.REVENUE_EARNED_TO_DATE).getValue().toString());
-            logger.log(Level.INFO, "pob.ESTIMATED_GROSS_PROFIT: " + pob.getOutput(OutputTypeId.ESTIMATED_GROSS_PROFIT).getValue().toString());
-            logger.log(Level.INFO, "pob.ESTIMATED_GROSS_MARGIN: " + pob.getOutput(OutputTypeId.ESTIMATED_GROSS_MARGIN).getValue().toString());
         }
         fis.close();
         inputSet.setInputs(inputList);
         persist(inputSet);
         // need commit last contract
-        // persist(contract);
         contract.setExchanges(exchange);
         logger.log(Level.INFO, "contract.getExchanges().size(): " + contract.getExchanges().size());
-        logger.log(Level.INFO, "contract.getExchanges().get(0).getId(): " + contract.getExchanges().get(0).getId());
+        logger.log(Level.INFO, "contract.getExchanges().get(0).getId(): " + contract.getExchanges().get(0).getId());             
         contract = update(contract);
         return true;
     }
@@ -258,26 +295,26 @@ public class InputService {
     public InputType findInputTypeById(String id) {
         return em.find(InputType.class, id);
     }
-
+    
     private Contract createContract(String reportingUnit, long contractId, String customerName, String salesOrderNum, BigDecimal totalTransactionPrice) {
         Contract contract = new Contract();
         contract.setId(contractId);
-        contract.setName(customerName + "-" + contractId);
+        contract.setName( customerName + "-" + contractId );
         // contract.setReportingUnit(reportingUnit);
         contract.setSalesOrderNumber(salesOrderNum);
-        contract.setTotalTransactionPrice(totalTransactionPrice);
+        contract.setTotalTransactionPrice(totalTransactionPrice);      
         return contract;
     }
-
+    
     public void persist(Contract contract) throws Exception {
         em.persist(contract);
     }
-
+    
     public Contract update(Contract contract) throws Exception {
         // contract.setLastUpdateDate(LocalDateTime.now());
         return em.merge(contract);
     }
-
+    
     public void initInputTypes() throws Exception {
 
         //admin = adminService.findUserByFlsId("admin");
@@ -325,17 +362,4 @@ public class InputService {
 
         logger.info("Input type name for " + InputTypeId.TRANSACTION_PRICE + " = " + findInputTypeById(InputTypeId.TRANSACTION_PRICE).getName());
     }
-
-    public List<InputType> findInputType() throws Exception {  // Need an application exception type defined.
-
-        TypedQuery<InputType> query = em.createQuery("SELECT b FROM InputType b", InputType.class);
-        return (List<InputType>) query.getResultList();
-    }
-
-    public List<OutputType> findOutputType() throws Exception {  // Need an application exception type defined.
-
-        TypedQuery<OutputType> query = em.createQuery("SELECT b FROM OutputType b", OutputType.class);
-        return (List<OutputType>) query.getResultList();
-    }
-
 }

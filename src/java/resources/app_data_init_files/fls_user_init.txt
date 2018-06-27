@@ -38,9 +38,9 @@ jaanstoot	Aanstoot, Jordy	CN=Jordy Aanstoot/OU=Europe/O=Flowserve	jaanstoot@flow
 paarssen	Aarssen, Peter	CN=Peter Aarssen/OU=Europe/O=Flowserve	paarssen@flowserve.com	NL_Etten-Leur_ETL	LO_31_62_Production Planner_Specialist	62
 10138137	Aart van, Werner	CN=Werner Aart Van/OU=Europe/O=Flowserve	waartvan@flowserve.com	NL_Roosendaal_RSL	LO_20_76_Purchasing Clerk_Level 3	76
 haarten	Aarten, Herman	CN=Herman Aarten/OU=Europe/O=Flowserve	haarten@flowserve.com	NL_Hengelo_HEN	OP_70_77_Inspector_Level 2	77
-vabaci	Abaci, Vedat	CN=Vedat Abaci/OU=Europe/O=Flowserve	vabaci@flowserve.com	CH_Egliswil_CLD		
+vabaci	Abaci, Vedat	CN=Vedat Abaci/OU=Europe/O=Flowserve	vabaci@flowserve.com	CH_Egliswil_CLD			
 10149018	Abad, Maria Jose		mabad@flowserve.com	ES_Madrid_PDA	OT_99_99_Pensionist_	99
-rabarca	Abarca, Ricardo	CN=Ricardo Abarca/OU=South America/O=Flowserve	rabarca@flowserve.com	CL_SantiagoChile_026	OP_80_68_Field Service Rep_Associate	68
+rabarca	Abarca, Ricardo	CN=Ricardo	Abarca/OU=South America/O=Flowserve	rabarca@flowserve.com	CL_SantiagoChile_026	OP_80_68_Field Service Rep_Associate	68
 10151990	Abba, Josefina	CN=Josefina Abba/OU=South America/O=Flowserve	jabba@flowserve.com	AR_BuenosAires_BNS	OT_91_99_Temporary Employee Admin_	99
 10152722	Abbas, Mufaddal Bhiwandiwala	CN=Mohammad Abbas/OU=North America/O=Flowserve	mabbas@flowserve.com	US_DeerPark_DPT	OT_90_99_Co-op/Intern_	99
 50050049	Abbate, Federica		fabbate@flowserve.com	IT_Desio_DES	OT_91_99_Temporary Employee_	99

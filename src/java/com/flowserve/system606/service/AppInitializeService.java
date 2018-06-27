@@ -41,10 +41,16 @@ public class AppInitializeService {
     private OutputService outputService;
     @EJB
     private BusinessRuleService businessRuleService;
+    @EJB
+    private ContractService contractService;
 
     @PostConstruct
     public void init() {
         logger.info("Initializing App Objects");
+        logger.log(Level.FINE, "Testing FINE logging");
+
+        Logger.getLogger(AppInitializeService.class.getName()).log(Level.FINE, "message");
+
         try {
             adminService.initUsers();
             financialPeriodService.initFinancialPeriods();
@@ -56,6 +62,7 @@ public class AppInitializeService {
             pobService.initPOBs();
             businessRuleService.initBusinessRules();
             businessRuleService.initBusinessRulesEngine();
+            contractService.initContracts();
 
             // businessRuleService.executePOBCalculations(pob);// TODO - Remove
             //DroolsTest.execute();
@@ -65,4 +72,5 @@ public class AppInitializeService {
 
         logger.info("Initializing App Objects Done");
     }
+
 }

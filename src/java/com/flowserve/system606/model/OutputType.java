@@ -11,7 +11,7 @@ import static javax.persistence.TemporalType.DATE;
 
 @Entity
 @Table(name = "OUTPUT_TYPES")
-public class OutputType extends BaseEntity<String> implements Serializable {
+public class OutputType extends BaseEntity<String> implements Serializable, Comparable<OutputType> {
 
     private static final long serialVersionUID = -8382719960102472187L;
 
@@ -141,5 +141,10 @@ public class OutputType extends BaseEntity<String> implements Serializable {
 
     public void setOutputClass(String outputClass) {
         this.outputClass = outputClass;
+    }
+
+    @Override
+    public int compareTo(OutputType o) {
+        return this.name.compareTo(o.name);
     }
 }
