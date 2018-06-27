@@ -7,11 +7,13 @@ package com.flowserve.system606.service;
 
 import com.flowserve.system606.model.BusinessUnit;
 import com.flowserve.system606.model.Country;
+import com.flowserve.system606.model.ExchangeRate;
 import com.flowserve.system606.model.InputType;
 import com.flowserve.system606.model.ReportingUnit;
 import com.flowserve.system606.model.User;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.util.Currency;
 import java.util.List;
 import java.util.Locale;
 import java.util.logging.Logger;
@@ -221,7 +223,7 @@ public class AdminService {
             }
 
             reader.close();
-            this.initSupervisor();
+            //this.initSupervisor();
             logger.info("Finished initializing users.");
         }
     }
@@ -262,17 +264,18 @@ public class AdminService {
 
                 count = 0;
                 String[] values = line.split("\\t");
-
-                ReportingUnit ru = new ReportingUnit();
-
-                ru.setCode(values[count++]);
-                ru.setName(values[count++]);
-                if (values.length > 2) {
-                    ru.setCountry(findCountryByCode(values[count++]));
+                if (!values[1].equalsIgnoreCase("NAME")) {
+                    ReportingUnit ru = new ReportingUnit();
+                    ru.setCode(values[count++]);
+                    ru.setName(values[count++]);
+                    if (values.length > 2) {
+                        ru.setLocalCurrency(Currency.getInstance(new Locale("en", values[count])));
+                        ru.setCountry(findCountryByCode(values[count++]));
+                    }
+                    ru.setActive(true);
+                    persist(ru);
                 }
-                ru.setActive(true);
 
-                persist(ru);
             }
 
             reader.close();
@@ -297,4 +300,12 @@ public class AdminService {
         }
     }
 
+    public List<ExchangeRate> searchExchangeRates(String searchString) throws Exception {  // Need an application exception type defined.
+        if (searchString == null || searchString.trim().length() < 2) {
+            throw new Exception("Please supply a search string with at least 2 characters.");
+        }
+        TypedQuery<ExchangeRate> query = em.createQuery("SELECT er FROM ExchangeRate er WHERE UPPER(er.fromCurrency) LIKE :Currency OR UPPER(er.toCurrency) LIKE :Currency", ExchangeRate.class);
+        query.setParameter("Currency", "%" + searchString.toUpperCase() + "%");
+        return (List<ExchangeRate>) query.getResultList();
+    }
 }

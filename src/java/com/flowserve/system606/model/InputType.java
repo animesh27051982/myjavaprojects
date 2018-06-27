@@ -11,7 +11,7 @@ import static javax.persistence.TemporalType.DATE;
 
 @Entity
 @Table(name = "INPUT_TYPES")
-public class InputType extends BaseEntity<String> implements Serializable {
+public class InputType extends BaseEntity<String> implements Comparable<InputType>, Serializable {
 
     private static final long serialVersionUID = -8382719960002472187L;
 
@@ -151,5 +151,18 @@ public class InputType extends BaseEntity<String> implements Serializable {
 
     public void setInputCurrencyType(CurrencyType inputCurrencyType) {
         this.inputCurrencyType = inputCurrencyType;
+    }
+
+    @Override
+    public int compareTo(InputType o) {
+        return this.name.compareTo(o.name);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof InputType) {
+            return this.name.equals(((InputType) obj).getName());
+        }
+        return false;
     }
 }
