@@ -16,7 +16,7 @@ public class CalcReviewController implements Serializable {
     }
 
     public String returnToInputs() {
-        return "pobInput";
+        return "inputOnlineEntry";
     }
 
     public String reviewCalculations() {

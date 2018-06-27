@@ -12,6 +12,7 @@ import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -40,6 +41,8 @@ public class PerformanceObligation extends BaseEntity<Long> implements Comparabl
     private Long id;
     @Column(name = "NAME")
     private String name;
+    @Column(name = "REV_REC_METHOD")
+    private String revRecMethod;
     @ManyToOne
     @JoinColumn(name = "CONTRACT_ID")
     private Contract contract;
@@ -80,8 +83,21 @@ public class PerformanceObligation extends BaseEntity<Long> implements Comparabl
         return inputs.get(inputTypeId);
     }
 
+    public String getStringInput(String inputTypeId) {
+        return ((StringInput) inputs.get(inputTypeId)).getValue();
+    }
+
+    public LocalDate getDateInput(String inputTypeId) {
+        return ((DateInput) inputs.get(inputTypeId)).getValue();
+    }
+
     public BigDecimal getCurrencyInput(String inputTypeId) {
+        LOG.log(Level.FINE, "POB.getCurrencyInput inputTypeId: " + inputTypeId);
         return ((CurrencyInput) inputs.get(inputTypeId)).getValue();
+    }
+
+    public CurrencyInput getCurrencyInp(String inputTypeId) {
+        return (CurrencyInput) inputs.get(inputTypeId);
     }
 
     public void initializeOutputs(List<OutputType> outputTypes) throws Exception {
@@ -96,12 +112,28 @@ public class PerformanceObligation extends BaseEntity<Long> implements Comparabl
         outputs.put(outputType.getId(), output);
     }
 
+    public void initializeInputs(List<InputType> inputTypes) throws Exception {
+        for (InputType inputType : inputTypes) {
+            initializeInput(inputType);
+        }
+    }
+
+    public void initializeInput(InputType inputType) throws Exception {
+        Class<?> clazz = Class.forName(inputType.getInputClass());
+        Input input = (Input) clazz.newInstance();
+        inputs.put(inputType.getId(), input);
+    }
+
     public void putOutput(Output output) {
         outputs.put(output.getOutputType().getId(), output);
     }
 
+    public void putOutputMessage(String outputTypeId, String message) {
+        outputs.get(outputTypeId).setMessage(message);
+    }
+
     public void putCurrencyOutput(String outputTypeId, BigDecimal value) {
-        LOG.info("class: " + value.getClass());
+        LOG.info("Adding outut to POB.  Output datatype: " + value.getClass());
         outputs.get(outputTypeId).setValue(value);
     }
 
@@ -193,4 +225,16 @@ public class PerformanceObligation extends BaseEntity<Long> implements Comparabl
         this.contract = contract;
     }
 
+    public String getRevRecMethod() {
+        return revRecMethod;
+    }
+
+    public void setRevRecMethod(String revRecMethod) {
+        this.revRecMethod = revRecMethod;
+    }
+
+    // TODO - Temp code remove.  This is to support temp code from the JSF UI until we finish the calculations.
+    public BigDecimal getPobCountRejected() {
+        return new BigDecimal("10.0");
+    }
 }

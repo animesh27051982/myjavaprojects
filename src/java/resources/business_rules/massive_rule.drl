@@ -2,21 +2,50 @@ dialect "mvel"
 
 import com.flowserve.system606.model.PerformanceObligation
 
-rule "Calculate Percent Complete"
+rule "Calculate Estimated Gross Profit"
     when
         // Pull input values needed for calculation
-        pob : PerformanceObligation(cumulativeCostIncurred : getCurrencyInput("CUMULATIVE_COST_INCURRED"), estimatedCostAtCompletion : getCurrencyInput("ESTIMATED_COST_AT_COMPLETION"))
+        pob : PerformanceObligation(transactionPrice : getCurrencyInput("TRANSACTION_PRICE") != null, estimatedCostAtCompletion : getCurrencyInput("ESTIMATED_COST_AT_COMPLETION") != null)
     then
-        // Execute calculation, set output
+        // Execute calculation, set output.  Can pull from previous outputs.
+        pob.putCurrencyOutput("ESTIMATED_GROSS_PROFIT", transactionPrice - estimatedCostAtCompletion);
+end
+
+rule "Tell User This is Good"
+    when
+        pob : PerformanceObligation(estimatedGrossProfit : getCurrencyOutput("ESTIMATED_GROSS_PROFIT"))
+        eval(estimatedGrossProfit < 100.0B)
+    then
+        pob.putOutputMessage("ESTIMATED_GROSS_PROFIT", "Yea probably good.");
+end
+
+rule "Tell User They Lied"
+    when
+        pob : PerformanceObligation(estimatedGrossProfit : getCurrencyOutput("ESTIMATED_GROSS_PROFIT"))
+        eval(estimatedGrossProfit > 500.0B)
+    then
+        pob.putOutputMessage("ESTIMATED_GROSS_PROFIT", "Sorry but you probably lied.");
+end
+
+
+rule "Calculate Estimated Gross Margin"
+    when
+        pob : PerformanceObligation(estimatedGrossProfit : getCurrencyOutput("ESTIMATED_GROSS_PROFIT"), transactionPrice : getCurrencyInput("TRANSACTION_PRICE") != null)
+    then
+        pob.putCurrencyOutput("ESTIMATED_GROSS_MARGIN", estimatedGrossProfit / transactionPrice);
+end
+
+rule "Calculate Percent Complete"
+    when
+        pob : PerformanceObligation(cumulativeCostIncurred : getCurrencyInput("CUMULATIVE_COST_INCURRED") != null, estimatedCostAtCompletion : getCurrencyInput("ESTIMATED_COST_AT_COMPLETION") != null)
+    then
         pob.putCurrencyOutput("PERCENT_COMPLETE", cumulativeCostIncurred / estimatedCostAtCompletion);
 end
 
 rule "Calculate Revenue Earned to Date"
     when
-        // Pull input values needed for calculation, one of which is an output from the previous calc.
-        pob : PerformanceObligation(percentComplete : getCurrencyOutput("PERCENT_COMPLETE"), transactionPrice : getCurrencyInput("TRANSACTION_PRICE"))
+        pob : PerformanceObligation(percentComplete : getCurrencyOutput("PERCENT_COMPLETE") != null, transactionPrice : getCurrencyInput("TRANSACTION_PRICE") != null)
     then
-        // Execute calculation, set output
         pob.putCurrencyOutput("REVENUE_EARNED_TO_DATE", percentComplete * transactionPrice);
 end
 

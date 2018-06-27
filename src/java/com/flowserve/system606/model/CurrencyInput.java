@@ -2,6 +2,7 @@ package com.flowserve.system606.model;
 
 import java.math.BigDecimal;
 import java.util.Currency;
+import java.util.logging.Logger;
 import javax.persistence.AttributeOverride;
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
@@ -11,6 +12,8 @@ import javax.persistence.Entity;
 @DiscriminatorValue("DECIMAL")
 @AttributeOverride(name = "value", column = @Column(name = "DECIMAL_VALUE", precision = 38, scale = 14))
 public class CurrencyInput extends Input<BigDecimal> {
+
+    private static final Logger logger = Logger.getLogger(CurrencyInput.class.getName());
 
     private BigDecimal value;
     @Column(name = "INPUT_CURRENCY_CODE")
@@ -36,6 +39,9 @@ public class CurrencyInput extends Input<BigDecimal> {
     }
 
     public void setValue(BigDecimal value) {
+        if (value != null) {
+            logger.info("setting value: " + value.toString());
+        }
         this.value = value;
     }
 

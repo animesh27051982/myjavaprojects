@@ -6,6 +6,7 @@
 package com.flowserve.system606.model;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Currency;
 import java.util.List;
@@ -137,6 +138,10 @@ public class ReportingUnit extends BaseEntity<Long> implements Comparable<Report
 
     public void setContract(List<Contract> contract) {
         this.contract = contract;
+    }
+
+    public BigDecimal getPobCountRejected() {
+        return new BigDecimal("10.0");
     }
 
 }

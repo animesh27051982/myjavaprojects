@@ -85,9 +85,8 @@
                             <div class="stats-icon">
                                 <p:graphicImage name="images/icon-doc.png" library="california-layout" styleClass="doc-icon" />
                             </div>
-                            <div class="stats-numbers">15</div>
-                            <div class="stats-title">Total Contracts</div>
-                            <div class="stats-subtitle"><span>21%</span> more than previous period</div>
+                            <div class="stats-numbers">2</div>
+                            <div class="stats-title">Total Reporting Units</div>
                         </div>
                     </div>
                     <div class="ui-g-12 ui-md-6 ui-lg-3">
@@ -95,10 +94,8 @@
                             <div class="stats-icon">
                                 <p:graphicImage name="images/icon-doc.png" library="california-layout" styleClass="doc-icon" />
                             </div>
-                            <div class="stats-numbers">5</div>
-                            <div class="stats-title">Contracts Needing Action</div>
-                            <div class="stats-subtitle">
-                                <span>21%</span> more than last period</div>
+                            <div class="stats-numbers">2</div>
+                            <div class="stats-title">Total Contracts</div>
                         </div>
                     </div>
                     <div class="ui-g-12 ui-md-6 ui-lg-3">
@@ -106,10 +103,8 @@
                             <div class="stats-icon">
                                 <p:graphicImage name="images/icon-mark.png" library="california-layout" styleClass="mark-icon" />
                             </div>
-                            <div class="stats-numbers">132</div>
+                            <div class="stats-numbers">4</div>
                             <div class="stats-title">Total POBs</div>
-                            <div class="stats-subtitle">
-                                <span>12%</span> less than yesterday</div>
                         </div>
                     </div>
                     <div class="ui-g-12 ui-md-6 ui-lg-3">
@@ -117,10 +112,8 @@
                             <div class="stats-icon">
                                 <p:graphicImage name="images/icon-profile.png" library="california-layout" styleClass="profile-icon" />
                             </div>
-                            <div class="stats-numbers">100</div>
+                            <div class="stats-numbers">4</div>
                             <div class="stats-title">POBs Needing Action</div>
-                            <div class="stats-subtitle">
-                                <span>21%</span> less than last period</div>
                         </div>
                     </div>
 
@@ -137,21 +130,21 @@
                                 <p:column headerText="Platform">
                                     <h:outputText value="#{document.platform}" />
                                 </p:column>
-                                <p:column headerText="POB Input Required Count">
+                                <p:column headerText="Total POB Count">
                                     <h:outputText value="#{document.pobCountInputRequired}" />
                                 </p:column>
-                                <p:column headerText="POB Invalid Count">
+                                <p:column headerText="POB Input Required Count">
                                     <h:outputText value="#{document.pobCountInvalid}" />
                                 </p:column>
-                                <p:column headerText="POB Rejected Count">
+                                <p:column headerText="POB Invalid Count">
                                     <h:outputText value="#{document.pobCountRejected}" />
                                 </p:column>
                             </p:treeTable>
 
                             <p:toolbar>
                                 <f:facet name="right">
-                                    <p:commandButton value="Online Input Entry" icon="ui-icon-check" action="#{inputController.proceedToOnlineEntry()}"/>
-                                    <p:commandButton value="Download Input Template" icon="ui-icon-check" action="#{inputController.proceedToInputDownload()}"/>
+                                    <p:commandButton value="Proceed via Online Input Entry" icon="ui-icon-arrowthick-1-e" action="#{inputController.proceedToOnlineEntry()}"/>
+                                    <p:commandButton value="Proceed via Download Upload Excel" icon="ui-icon-arrowthick-1-e" action="#{inputController.proceedToInputDownload()}"/>
                                 </f:facet>
                             </p:toolbar>
 

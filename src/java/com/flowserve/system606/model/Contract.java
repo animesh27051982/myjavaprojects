@@ -15,10 +15,8 @@ import java.util.logging.Logger;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
@@ -114,7 +112,7 @@ public class Contract extends BaseEntity<Long> implements Comparable<Contract>, 
 
     @OneToMany(mappedBy = "contract", cascade = CascadeType.PERSIST)
 //    @JoinTable(name = "CONTRACT_POBS", joinColumns = @JoinColumn(name = "CONTRACT_ID"), inverseJoinColumns = @JoinColumn(name = "POB_ID"))
-    private List<PerformanceObligation> pobs = new ArrayList<PerformanceObligation>();
+    private List<PerformanceObligation> performanceObligations = new ArrayList<PerformanceObligation>();
 
     public Contract() {
     }
@@ -179,20 +177,25 @@ public class Contract extends BaseEntity<Long> implements Comparable<Contract>, 
     public void setSalesOrderNumber(String salesOrderNumber) {
         this.salesOrderNumber = salesOrderNumber;
     }
-    
+
     public BigDecimal getTotalTransactionPrice() {
         return totalTransactionPrice;
     }
+
     public void setTotalTransactionPrice(BigDecimal totalTransactionPrice) {
         this.totalTransactionPrice = totalTransactionPrice;
     }
     
     public List<PerformanceObligation> getPerformanceObligations() {
-        //return inputs;
-        return pobs != null ? pobs : new ArrayList<>();
+        return performanceObligations != null ? performanceObligations : new ArrayList<>();
+    }
+   
+    public void setPerformanceObligations(List<PerformanceObligation> pobs) {
+        this.performanceObligations = new ArrayList<>(pobs);
     }
     
-    public void setPerformanceObligations(List<PerformanceObligation> exchanges) {
-        this.pobs = new ArrayList<>(exchanges);
+    // TODO - KJG - Remove.  Temp code for calc pages.
+    public BigDecimal getPobCountRejected() {
+        return new BigDecimal("10.0");
     }
 }

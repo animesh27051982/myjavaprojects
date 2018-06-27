@@ -24,29 +24,26 @@
                         <p:messages showDetail="true" />
 
                         <h1><strong>Download MAY-18 Input Template</strong></h1>
-                        <h4>Instructions here... all checked will be downloaded...</h4>
+                        <h4>Instructions here... all checked will be downloaded... user can modify template to remove... missing will not be updated.. zeros will be updated.... display this info here and upload screen.</h4>
 
-                        <p:treeTable value="#{inputTemplateDownload.reportingUnits}" var="document" selectionMode="checkbox" selection="#{inputTemplateDownload.selectedNodes}">
+                        <p:treeTable value="#{inputTemplateDownload.reportingUnits}" var="reportingUnit" selectionMode="checkbox" selection="#{inputTemplateDownload.selectedNodes}">
                             <f:facet name="header">
                                 Reporting Units
                             </f:facet>
                             <p:column headerText="Reporting Unit">
-                                <h:outputText value="#{document.name}" />
-                            </p:column>
-                            <p:column headerText="Platform">
-                                <h:outputText value="#{document.platform}" />
+                                <h:outputText value="#{reportingUnit.name}" />
                             </p:column>
                             <p:column headerText="Contract Count">
-                                <h:outputText value="#{document.pobCountInputRequired}" />
+                                <h:outputText value="4" />
                             </p:column>
                             <p:column headerText="POB Count">
-                                <h:outputText value="#{document.pobCountRejected}" />
+                                <h:outputText value="7" />
                             </p:column>
                             <p:column headerText="POB Input Required Count">
-                                <h:outputText value="#{document.pobCountInputRequired}" />
+                                <h:outputText value="28" />
                             </p:column>
                             <p:column headerText="POB Invalid Count">
-                                <h:outputText value="#{document.pobCountInvalid}" />
+                                <h:outputText value="0" />
                             </p:column>
                         </p:treeTable>
 

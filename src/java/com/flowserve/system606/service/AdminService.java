@@ -111,6 +111,11 @@ public class AdminService {
         return em.find(Country.class, id);
     }
 
+    public List<ReportingUnit> findAllReportingUnits() {
+        Query query = em.createQuery("SELECT ru FROM ReportingUnit ru ORDER BY ru.code");
+        return (List<ReportingUnit>) query.getResultList();
+    }
+
     public ReportingUnit findReportingUnitByCode(String code) {
         Query query = em.createQuery("SELECT reportingUnit FROM ReportingUnit reportingUnit WHERE reportingUnit.code = :CODE");
         query.setParameter("CODE", code);

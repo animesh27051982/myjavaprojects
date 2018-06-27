@@ -47,6 +47,10 @@ public class AppInitializeService {
     @PostConstruct
     public void init() {
         logger.info("Initializing App Objects");
+        logger.log(Level.FINE, "Testing FINE logging");
+
+        Logger.getLogger(AppInitializeService.class.getName()).log(Level.FINE, "message");
+
         try {
             adminService.initUsers();
             financialPeriodService.initFinancialPeriods();
@@ -68,5 +72,5 @@ public class AppInitializeService {
 
         logger.info("Initializing App Objects Done");
     }
-    
+
 }

@@ -63,6 +63,11 @@ public class InputService {
 
     private static Logger logger = Logger.getLogger("com.flowserve.system606");
 
+    public List<InputType> findActiveInputTypes() {
+        Query query = em.createQuery("SELECT it FROM InputType it WHERE it.active = TRUE");
+        return (List<InputType>) query.getResultList();
+    }
+
     public boolean readFeed(InputStream fis, String filename) throws Exception {  // Need an application exception type defined.
 
         logger.info("readFeed:" + fis.toString());
@@ -221,6 +226,8 @@ public class InputService {
             businessRuleService.executeBusinessRules(pob);
             logger.log(Level.INFO, "pob.PERCENT_COMPLETE: " + pob.getOutput(OutputTypeId.PERCENT_COMPLETE).getValue().toString());
             logger.log(Level.INFO, "pob.REVENUE_EARNED_TO_DATE: " + pob.getOutput(OutputTypeId.REVENUE_EARNED_TO_DATE).getValue().toString());
+            logger.log(Level.INFO, "pob.ESTIMATED_GROSS_PROFIT: " + pob.getOutput(OutputTypeId.ESTIMATED_GROSS_PROFIT).getValue().toString());
+            logger.log(Level.INFO, "pob.ESTIMATED_GROSS_MARGIN: " + pob.getOutput(OutputTypeId.ESTIMATED_GROSS_MARGIN).getValue().toString());
         }
         fis.close();
         inputSet.setInputs(inputList);
