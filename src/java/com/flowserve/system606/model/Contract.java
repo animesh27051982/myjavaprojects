@@ -187,12 +187,12 @@ public class Contract extends BaseEntity<Long> implements Comparable<Contract>, 
         this.totalTransactionPrice = totalTransactionPrice;
     }
     
-    public List<PerformanceObligation> getExchanges() {
+    public List<PerformanceObligation> getPerformanceObligations() {
         //return inputs;
         return pobs != null ? pobs : new ArrayList<>();
     }
     
-    public void setExchanges(List<PerformanceObligation> exchanges) {
+    public void setPerformanceObligations(List<PerformanceObligation> exchanges) {
         this.pobs = new ArrayList<>(exchanges);
     }
 }
