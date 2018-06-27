@@ -272,7 +272,7 @@ public class AdminService {
                 if (!values[1].equalsIgnoreCase("NAME")) {
                     ReportingUnit ru = new ReportingUnit();
                     ru.setCode(values[count++]);
-                    ru.setName(values[count++]);
+                    ru.setName(ru.getCode() + " " + values[count++]);
                     if (values.length > 2) {
                         ru.setLocalCurrency(Currency.getInstance(new Locale("en", values[count])));
                         ru.setCountry(findCountryByCode(values[count++]));

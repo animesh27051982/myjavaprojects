@@ -111,7 +111,6 @@ public class Contract extends BaseEntity<Long> implements Comparable<Contract>, 
     //private Country salesDestinationCountry;
 
     @OneToMany(mappedBy = "contract", cascade = CascadeType.PERSIST)
-//    @JoinTable(name = "CONTRACT_POBS", joinColumns = @JoinColumn(name = "CONTRACT_ID"), inverseJoinColumns = @JoinColumn(name = "POB_ID"))
     private List<PerformanceObligation> performanceObligations = new ArrayList<PerformanceObligation>();
 
     public Contract() {
