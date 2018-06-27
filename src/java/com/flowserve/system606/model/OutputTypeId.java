@@ -7,6 +7,8 @@ public final class OutputTypeId {
 
     public static final String PERCENT_COMPLETE = "PERCENT_COMPLETE";
     public static final String REVENUE_EARNED_TO_DATE = "REVENUE_EARNED_TO_DATE";
+    public static final String ESTIMATED_GROSS_PROFIT = "ESTIMATED_GROSS_PROFIT";
+    public static final String ESTIMATED_GROSS_MARGIN = "ESTIMATED_GROSS_MARGIN";
 
 //    public static final String ESTIMATED_COST_AT_COMPLETION = "ESTIMATED_COST_AT_COMPLETION";
 //    public static final String TRANSACTION_PRICE = "TRANSACTION_PRICE";

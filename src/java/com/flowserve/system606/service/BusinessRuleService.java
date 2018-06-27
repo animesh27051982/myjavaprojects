@@ -6,11 +6,13 @@
 package com.flowserve.system606.service;
 
 import com.flowserve.system606.model.BusinessRule;
+import com.flowserve.system606.model.InputTypeId;
 import com.flowserve.system606.model.PerformanceObligation;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.logging.Logger;
+import javax.annotation.PostConstruct;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -34,6 +36,35 @@ public class BusinessRuleService {
     @PersistenceContext(unitName = "FlowServePU")
     private EntityManager em;
     StatelessKieSession kSession = null;
+
+    @PostConstruct
+    public void initBusinessRulesEngine() {
+        LOG.info("initBusinessRulesEngine");
+
+        try {
+            KieServices ks = KieServices.Factory.get();
+            KieRepository kr = ks.getRepository();
+            KieFileSystem kfs = ks.newKieFileSystem();
+
+            //kfs.write("src/main/resources/DroolsTest.drl", "");
+            for (BusinessRule rule : findAllBusinessRules()) {
+                String drl = rule.getContent();
+                kfs.write("src/main/resources/" + rule.getRuleKey() + ".drl", drl);
+            }
+
+            KieBuilder kb = ks.newKieBuilder(kfs).buildAll();
+
+            if (kb.getResults().hasMessages(Message.Level.ERROR)) {
+                throw new RuntimeException("Business Rule Build Errors:\n" + kb.getResults().toString());
+            }
+
+            kSession = ks.newKieContainer(ks.getRepository().getDefaultReleaseId()).newStatelessKieSession();
+        } catch (Exception exception) {
+            throw new IllegalStateException(exception);
+        }
+
+        LOG.info("Finished initBusinessRulesEngine");
+    }
 
     public BusinessRule findByRuleKey(String ruleKey) {
         Query query = em.createQuery("SELECT bu FROM BusinessRule bu WHERE bu.ruleKey = :RULE_KEY");
@@ -74,31 +105,13 @@ public class BusinessRuleService {
         LOG.info("Finished initBusinessRules");
     }
 
-    public void initBusinessRulesEngine() throws Exception {
-        LOG.info("initBusinessRulesEngine");
-        KieServices ks = KieServices.Factory.get();
-        KieRepository kr = ks.getRepository();
-        KieFileSystem kfs = ks.newKieFileSystem();
-
-        //kfs.write("src/main/resources/DroolsTest.drl", "");
-        for (BusinessRule rule : findAllBusinessRules()) {
-            String drl = rule.getContent();
-            kfs.write("src/main/resources/" + rule.getRuleKey() + ".drl", drl);
-        }
-
-        KieBuilder kb = ks.newKieBuilder(kfs).buildAll();
-
-        if (kb.getResults().hasMessages(Message.Level.ERROR)) {
-            throw new RuntimeException("Business Rule Build Errors:\n" + kb.getResults().toString());
-        }
-
-        kSession = ks.newKieContainer(ks.getRepository().getDefaultReleaseId()).newStatelessKieSession();
-
-        LOG.info("Finished initBusinessRulesEngine");
-    }
-
     public void executeBusinessRules(PerformanceObligation pob) throws Exception {
         LOG.info("Firing all business rules");
+
+        LOG.info("pob tp: " + pob.getInput(InputTypeId.TRANSACTION_PRICE).getValue());
+        LOG.info("pob curtp: " + pob.getCurrencyInp(InputTypeId.TRANSACTION_PRICE).getValue());
+        LOG.info("pob tp: " + pob.getInput(InputTypeId.TRANSACTION_PRICE).getValue().toString());
+        LOG.info("pob eac: " + pob.getInput(InputTypeId.ESTIMATED_COST_AT_COMPLETION).getValue().toString());
         kSession.execute(pob);
         //kSession.fireAllRules();
         LOG.info("Business rule fire complete.");

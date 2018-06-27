@@ -30,6 +30,12 @@ public class PerformanceObligationService {
     private AdminService adminService;
     @EJB
     private OutputService outputService;
+    @EJB
+    private InputService inputService;
+
+    public void initializeInputs(PerformanceObligation pob) throws Exception {
+        pob.initializeInputs(inputService.findActiveInputTypes());
+    }
 
     public void initializeOutputs(PerformanceObligation pob) throws Exception {
         pob.initializeOutputs(outputService.findActiveOutputTypes());

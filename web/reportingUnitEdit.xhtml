@@ -79,8 +79,8 @@
                                             completeMethod="#{viewSupport.completeUser}"
                                             itemLabel="#{user.name}"
                                             itemValue="#{user}"
-                                            converter="userConverter">
-                                            <h:outputText value="Begin typing last name to find a user"/>
+                                            converter="userConverter"
+                                            placeholder="Begin typing last name">
                                         </p:autoComplete>
                                         <p:commandButton value="Add Preparer" style="vertical-align:middle;" ajax="true" actionListener="#{reportingUnitEdit.addPreparer(reportingUnitEdit.completedPUser)}" update=":mainForm:preparers" process="@this, :mainForm:preparerField" />
                                     </p:panelGrid>
@@ -107,8 +107,8 @@
                                             completeMethod="#{viewSupport.completeUser}"
                                             itemLabel="#{user.name}"
                                             itemValue="#{user}"
-                                            converter="userConverter">
-                                            <h:outputText value="Begin typing last name to find a user"/>
+                                            converter="userConverter"
+                                            placeholder="Begin typing last name">
                                         </p:autoComplete>
                                         <p:commandButton value="Add Approver" style="vertical-align:middle;" ajax="true" actionListener="#{reportingUnitEdit.addApprover(reportingUnitEdit.completedUser)}" update=":mainForm:approvers" process="@this, :mainForm:approverField" />
                                     </p:panelGrid>

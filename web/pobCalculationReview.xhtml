@@ -24,11 +24,12 @@
                 <div class="ui-g-12">
                     <div class="card card-w-title">
                         <h1><strong>MAY-18 Performance Obligation Inputs (4 Workdays Remaining)</strong></h1>
-                        <h4>Preparer:  Kelly Graves</h4>
-                        <h4>Status: Draft</h4>
-                        <h4>Input Set Version: 4</h4>
-                        <h4>Input Set Date: 18-MAY-2018 12:23 PM CST</h4>
-                        <h4>Input File:  1200_POCI_IMPORT_TEMPLATE_MAY-18_v1.xlsx</h4>
+                        <p:panelGrid columns="2" columnClasses="ui-grid-col-3,ui-grid-col-3" layout="grid" styleClass="ui-panelgrid-blank form-group" style="border:0px none; background-color:transparent; margin-bottom: 10px;">
+                            <p:outputLabel for="preparer" value="Preparer:"/>
+                            <h:outputText id="preparer" value="John Smith"/>
+                            <p:outputLabel for="status" value="Status:"/>
+                            <h:outputText id="status" value="Draft"/>
+                        </p:panelGrid>
 
                         <p:tabView>
                             <p:tab title="Percent Complete / Revenue">
@@ -195,7 +196,7 @@
                         <p:toolbar>
                             <f:facet name="right">
                                 <p:commandButton value="Back to Inputs" icon="ui-icon-arrowthick-1-w" action="#{calcReviewController.returnToInputs}"/>
-                                <p:commandButton value="Submit for Approval" icon="inputOnlineEntry" action="#{calcReviewController.returnToInputs}"/>
+                                <p:commandButton value="Submit for Approval" icon="ui-icon-check" action="#{calcReviewController.returnToInputs}"/>
                             </f:facet>
                         </p:toolbar>
                     </div>

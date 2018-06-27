@@ -113,7 +113,7 @@ public class Contract extends BaseEntity<Long> implements Comparable<Contract>, 
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "contract")
     @JoinTable(name = "CONTRACT_POBS", joinColumns = @JoinColumn(name = "CONTRACT_ID"), inverseJoinColumns = @JoinColumn(name = "POB_ID"))
-    private List<PerformanceObligation> pobs = new ArrayList<PerformanceObligation>();
+    private List<PerformanceObligation> performanceObligations = new ArrayList<PerformanceObligation>();
 
     public Contract() {
     }
@@ -169,6 +169,14 @@ public class Contract extends BaseEntity<Long> implements Comparable<Contract>, 
 
     public void setCustomerPurchaseOrderNumber(String customerPurchaseOrderNumber) {
         this.customerPurchaseOrderNumber = customerPurchaseOrderNumber;
+    }
+
+    public List<PerformanceObligation> getPerformanceObligations() {
+        return performanceObligations;
+    }
+
+    public BigDecimal getPobCountRejected() {
+        return new BigDecimal("10.0");
     }
 
 }
