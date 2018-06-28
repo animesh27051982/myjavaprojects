@@ -53,20 +53,46 @@
                                         <h:outputText value="#{pob.revRecMethod}" rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}"/>
                                     </p:column>
 
-                                    <p:column style="white-space:pre-line;" headerText="Allocated Transaction Price">
+                                    <p:column style="white-space:pre-line;">
+                                        <f:facet name="header">
+                                            <h:outputText value="#{inputOnlineEntry.getInputTypeName(inputType.TRANSACTION_PRICE)}" />
+                                        </f:facet>
                                         <p:cellEditor rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}">
                                             <f:facet name="output">
-                                                <p:inputText value="#{pob.getCurrencyInput(inputType.TRANSACTION_PRICE)}" styleClass="#{empty pob.getCurrencyInput(inputType.TRANSACTION_PRICE) ? 'ui-state-error' : ''}" style="width: 90%;"  readonly="true"/>
+                                                <p:inputText value="#{pob.getCurrencyInput(inputType.TRANSACTION_PRICE)}" styleClass="#{empty pob.getCurrencyInput(inputType.TRANSACTION_PRICE) ? 'ui-state-error' : ''}" style="width: 90%;"  readonly="true">
+                                                    <f:convertNumber type="currency" />
+                                                </p:inputText>
                                             </f:facet>
                                             <f:facet name="input">
                                                 <p:inputText value="#{pob.getCurrencyInp(inputType.TRANSACTION_PRICE).value}">
-                                                    <p:ajax event="change" update="estGrossProfit, estGrossMargin" process="@this" listener="#{inputOnlineEntry.printInputs(pob)}"/>
+                                                    <p:ajax event="change" update="estGrossProfit, estGrossMargin" process="@this" listener="#{inputOnlineEntry.calculateOutputs(pob)}"/>
                                                 </p:inputText>
                                             </f:facet>
                                         </p:cellEditor>
                                     </p:column>
 
-                                    <p:column style="white-space:pre-line;" headerText="Estimate at Completion">
+                                    <p:column style="white-space:pre-line;">
+                                        <f:facet name="header">
+                                            <h:outputText value="#{inputOnlineEntry.getInputTypeName(inputType.LIQUIDATED_DAMAGES)}" />
+                                        </f:facet>
+                                        <p:cellEditor rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}">
+                                            <f:facet name="output">
+                                                <p:inputText value="#{pob.getCurrencyInput(inputType.LIQUIDATED_DAMAGES)}" styleClass="#{empty pob.getCurrencyInput(inputType.LIQUIDATED_DAMAGES) ? 'ui-state-error' : ''}" style="width: 90%;"  readonly="true">
+                                                    <f:convertNumber type="currency" />
+                                                </p:inputText>
+                                            </f:facet>
+                                            <f:facet name="input">
+                                                <p:inputText value="#{pob.getCurrencyInp(inputType.LIQUIDATED_DAMAGES).value}">
+                                                    <p:ajax event="change" process="@this"/>
+                                                </p:inputText>
+                                            </f:facet>
+                                        </p:cellEditor>
+                                    </p:column>
+
+                                    <p:column style="white-space:pre-line;">
+                                        <f:facet name="header">
+                                            <h:outputText value="#{inputOnlineEntry.getInputTypeName(inputType.ESTIMATED_COST_AT_COMPLETION)}" />
+                                        </f:facet>
                                         <p:cellEditor rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}">
                                             <f:facet name="output">
                                                 <p:inputText value="#{pob.getCurrencyInput(inputType.ESTIMATED_COST_AT_COMPLETION)}" styleClass="#{empty pob.getCurrencyInput(inputType.ESTIMATED_COST_AT_COMPLETION) ? 'ui-state-error' : ''}" style="width: 90%;" readonly="true"/>
@@ -78,20 +104,32 @@
                                             </f:facet>
                                         </p:cellEditor>
                                     </p:column>
-                                    <p:column style="white-space:pre-line;" headerText="Estimated Gross Profit" >
-                                        <h:outputText id="estGrossProfit" value="#{pob.getOutput(outputType.ESTIMATED_GROSS_PROFIT).value}" title="#{pob.getOutput(outputType.ESTIMATED_GROSS_PROFIT).message}" rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}"/>
+                                    <p:column style="white-space:pre-line;">
+                                        <f:facet name="header">
+                                            <h:outputText value="#{inputOnlineEntry.getOutputTypeName(outputType.ESTIMATED_GROSS_PROFIT)}" />
+                                        </f:facet>
+                                        <h:outputText id="estGrossProfit" value="#{pob.getOutput(outputType.ESTIMATED_GROSS_PROFIT).value}" title="#{pob.getOutput(outputType.ESTIMATED_GROSS_PROFIT).message}" rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}">
+                                            <f:convertNumber type="currency" />
+                                        </h:outputText>
                                     </p:column>
-                                    <p:column style="white-space:pre-line;" headerText="Estimated Gross Margin">
-                                        <h:outputText id="estGrossMargin" value="#{pob.getOutput(outputType.ESTIMATED_GROSS_MARGIN).value}" rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}"/>
+                                    <p:column style="white-space:pre-line;">
+                                        <f:facet name="header">
+                                            <h:outputText value="#{inputOnlineEntry.getOutputTypeName(outputType.ESTIMATED_GROSS_MARGIN)}" />
+                                        </f:facet>
+                                        <h:outputText id="estGrossMargin" value="#{pob.getOutput(outputType.ESTIMATED_GROSS_MARGIN).value}" rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}">
+                                            <f:convertNumber type="percent" />
+                                        </h:outputText>
                                     </p:column>
                                     <p:column style="white-space:pre-line;" headerText="Prior Period Estimate at Completion">
-                                        <h:outputText value="#{pob.pobCountRejected}" rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}" />
+                                        <h:outputText value="#{pob.pobCountRejected}" rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}">
+                                            <f:convertNumber type="currency" />
+                                        </h:outputText>
                                     </p:column>
                                     <p:column style="white-space:pre-line;" headerText="Change in Estimate">
-                                        <h:outputText value="#{pob.pobCountRejected}" rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}"/>
+                                        <h:outputText value="#{pob.pobCountRejected}" rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}">
+                                            <f:convertNumber type="currency" />
+                                        </h:outputText>
                                     </p:column>
-
-
                                 </p:treeTable>
                             </p:tab>
 
@@ -106,38 +144,68 @@
                                     <p:column style="width: 300px;" headerText="Reporting Unit - Contract" sortBy="#{pob.name}">
                                         <h:outputText value="#{pob.name}" />
                                     </p:column>
-                                    <p:column style="white-space:pre-line;" headerText="Costs Incurred Locally / Received from Suppliers">
-                                        <p:cellEditor>
+
+                                    <p:column style="white-space:pre-line;">
+                                        <f:facet name="header">
+                                            <h:outputText value="#{inputOnlineEntry.getInputTypeName(inputType.CUMULATIVE_COST_INCURRED)}" />
+                                        </f:facet>
+                                        <p:cellEditor rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}">
                                             <f:facet name="output">
-                                                <p:inputText value="#{pob.pobCountRejected}" styleClass="#{empty pob.pobCountRejected ? 'ui-state-error' : ''}" style="width: 90%;" readonly="true"/>
+                                                <p:inputText value="#{pob.getCurrencyInput(inputType.CUMULATIVE_COST_INCURRED)}" styleClass="#{empty pob.getCurrencyInput(inputType.CUMULATIVE_COST_INCURRED) ? 'ui-state-error' : ''}" style="width: 90%;" readonly="true">
+                                                    <f:convertNumber type="currency" />
+                                                </p:inputText>
                                             </f:facet>
                                             <f:facet name="input">
-                                                <p:inputText value="#{pob.pobCountRejected}"/>
+                                                <p:inputText value="#{pob.getCurrencyInp(inputType.CUMULATIVE_COST_INCURRED).value}">
+                                                    <p:ajax event="change" update="totalITD" process="@this" listener="#{inputOnlineEntry.calculateOutputs(pob)}"/>
+                                                </p:inputText>
                                             </f:facet>
                                         </p:cellEditor>
                                     </p:column>
-                                    <p:column style="white-space:pre-line;" headerText="Third Party Progress - Not Received">
-                                        <p:cellEditor>
+
+                                    <p:column style="white-space:pre-line;">
+                                        <f:facet name="header">
+                                            <h:outputText value="#{inputOnlineEntry.getInputTypeName(inputType.CUMULATIVE_THIRD_PARTY_PROGRESS)}" />
+                                        </f:facet>
+                                        <p:cellEditor rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}">
                                             <f:facet name="output">
-                                                <p:inputText value="#{pob.pobCountRejected}" styleClass="#{empty pob.pobCountRejected ? 'ui-state-error' : ''}" style="width: 90%;" readonly="true"/>
+                                                <p:inputText value="#{pob.getCurrencyInput(inputType.CUMULATIVE_THIRD_PARTY_PROGRESS)}" styleClass="#{empty pob.getCurrencyInput(inputType.CUMULATIVE_THIRD_PARTY_PROGRESS) ? 'ui-state-error' : ''}" style="width: 90%;" readonly="true">
+                                                    <f:convertNumber type="currency" />
+                                                </p:inputText>
                                             </f:facet>
                                             <f:facet name="input">
-                                                <p:inputText value="#{pob.pobCountRejected}"/>
+                                                <p:inputText value="#{pob.getCurrencyInp(inputType.CUMULATIVE_THIRD_PARTY_PROGRESS).value}">
+                                                    <p:ajax event="change" update="totalITD" process="@this" listener="#{inputOnlineEntry.calculateOutputs(pob)}"/>
+                                                </p:inputText>
                                             </f:facet>
                                         </p:cellEditor>
                                     </p:column>
-                                    <p:column style="white-space:pre-line;" headerText="Inter-Company Progress - Not Received">
-                                        <p:cellEditor>
+
+                                    <p:column style="white-space:pre-line;">
+                                        <f:facet name="header">
+                                            <h:outputText value="#{inputOnlineEntry.getInputTypeName(inputType.CUMULATIVE_INTERCOMPANY_PROGRESS)}" />
+                                        </f:facet>
+                                        <p:cellEditor rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}">
                                             <f:facet name="output">
-                                                <p:inputText value="#{pob.pobCountRejected}" styleClass="#{empty pob.pobCountRejected ? 'ui-state-error' : ''}" style="width: 90%;" readonly="true"/>
+                                                <p:inputText value="#{pob.getCurrencyInput(inputType.CUMULATIVE_INTERCOMPANY_PROGRESS)}" styleClass="#{empty pob.getCurrencyInput(inputType.CUMULATIVE_INTERCOMPANY_PROGRESS) ? 'ui-state-error' : ''}" style="width: 90%;" readonly="true">
+                                                    <f:convertNumber type="currency" />
+                                                </p:inputText>
                                             </f:facet>
                                             <f:facet name="input">
-                                                <p:inputText value="#{pob.pobCountRejected}"/>
+                                                <p:inputText value="#{pob.getCurrencyInp(inputType.CUMULATIVE_INTERCOMPANY_PROGRESS).value}">
+                                                    <p:ajax event="change" update="totalITD" process="@this" listener="#{inputOnlineEntry.calculateOutputs(pob)}"/>
+                                                </p:inputText>
                                             </f:facet>
                                         </p:cellEditor>
                                     </p:column>
-                                    <p:column style="white-space:pre-line;" headerText="Total ITD Costs">
-                                        <h:outputText value="#{pob.pobCountRejected}" />
+
+                                    <p:column style="white-space:pre-line;">
+                                        <f:facet name="header">
+                                            <h:outputText value="#{inputOnlineEntry.getOutputTypeName(outputType.CUMULATIVE_TOTAL_ITD_COSTS)}" />
+                                        </f:facet>
+                                        <h:outputText id="totalITD" value="#{pob.getOutput(outputType.CUMULATIVE_TOTAL_ITD_COSTS).value}" rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}">
+                                            <f:convertNumber type="currency" />
+                                        </h:outputText>
                                     </p:column>
                                 </p:treeTable>
                             </p:tab>

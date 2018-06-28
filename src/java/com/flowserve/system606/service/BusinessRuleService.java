@@ -6,11 +6,11 @@
 package com.flowserve.system606.service;
 
 import com.flowserve.system606.model.BusinessRule;
-import com.flowserve.system606.model.InputTypeId;
 import com.flowserve.system606.model.PerformanceObligation;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import javax.ejb.Stateless;
@@ -106,15 +106,10 @@ public class BusinessRuleService {
     }
 
     public void executeBusinessRules(PerformanceObligation pob) throws Exception {
-        LOG.info("Firing all business rules");
-
-        LOG.info("pob tp: " + pob.getInput(InputTypeId.TRANSACTION_PRICE).getValue());
-        LOG.info("pob curtp: " + pob.getCurrencyInp(InputTypeId.TRANSACTION_PRICE).getValue());
-        LOG.info("pob tp: " + pob.getInput(InputTypeId.TRANSACTION_PRICE).getValue().toString());
-        LOG.info("pob eac: " + pob.getInput(InputTypeId.ESTIMATED_COST_AT_COMPLETION).getValue().toString());
+        Logger.getLogger(BusinessRuleService.class.getName()).log(Level.FINE, "Firing all business rules.");
         kSession.execute(pob);
         //kSession.fireAllRules();
-        LOG.info("Business rule fire complete.");
+        Logger.getLogger(BusinessRuleService.class.getName()).log(Level.FINE, "Firing all business rules complete.");
     }
 
 //    @PreDestroy

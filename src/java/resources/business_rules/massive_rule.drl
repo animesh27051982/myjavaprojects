@@ -13,7 +13,7 @@ end
 
 rule "Tell User This is Good"
     when
-        pob : PerformanceObligation(estimatedGrossProfit : getCurrencyOutput("ESTIMATED_GROSS_PROFIT"))
+        pob : PerformanceObligation(estimatedGrossProfit : getCurrencyOutput("ESTIMATED_GROSS_PROFIT") != null)
         eval(estimatedGrossProfit < 100.0B)
     then
         pob.putOutputMessage("ESTIMATED_GROSS_PROFIT", "Yea probably good.");
@@ -21,7 +21,7 @@ end
 
 rule "Tell User They Lied"
     when
-        pob : PerformanceObligation(estimatedGrossProfit : getCurrencyOutput("ESTIMATED_GROSS_PROFIT"))
+        pob : PerformanceObligation(estimatedGrossProfit : getCurrencyOutput("ESTIMATED_GROSS_PROFIT") != null)
         eval(estimatedGrossProfit > 500.0B)
     then
         pob.putOutputMessage("ESTIMATED_GROSS_PROFIT", "Sorry but you probably lied.");
@@ -30,7 +30,7 @@ end
 
 rule "Calculate Estimated Gross Margin"
     when
-        pob : PerformanceObligation(estimatedGrossProfit : getCurrencyOutput("ESTIMATED_GROSS_PROFIT"), transactionPrice : getCurrencyInput("TRANSACTION_PRICE") != null)
+        pob : PerformanceObligation(estimatedGrossProfit : getCurrencyOutput("ESTIMATED_GROSS_PROFIT") != null, transactionPrice : getCurrencyInput("TRANSACTION_PRICE") != null)
     then
         pob.putCurrencyOutput("ESTIMATED_GROSS_MARGIN", estimatedGrossProfit / transactionPrice);
 end
@@ -47,6 +47,13 @@ rule "Calculate Revenue Earned to Date"
         pob : PerformanceObligation(percentComplete : getCurrencyOutput("PERCENT_COMPLETE") != null, transactionPrice : getCurrencyInput("TRANSACTION_PRICE") != null)
     then
         pob.putCurrencyOutput("REVENUE_EARNED_TO_DATE", percentComplete * transactionPrice);
+end
+
+rule "Calculate Cumulative Total ITD Costs"
+    when
+        pob : PerformanceObligation(costIncurred : getCurrencyInput("CUMULATIVE_COST_INCURRED") != null, thirdPartyProgress : getCurrencyInput("CUMULATIVE_THIRD_PARTY_PROGRESS") != null, intercoProgress : getCurrencyInput("CUMULATIVE_INTERCOMPANY_PROGRESS") != null)
+    then
+        pob.putCurrencyOutput("CUMULATIVE_TOTAL_ITD_COSTS", costIncurred + thirdPartyProgress + intercoProgress);
 end
 
 

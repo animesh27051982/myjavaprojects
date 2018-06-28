@@ -12,7 +12,6 @@ import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -92,7 +91,6 @@ public class PerformanceObligation extends BaseEntity<Long> implements Comparabl
     }
 
     public BigDecimal getCurrencyInput(String inputTypeId) {
-        LOG.log(Level.FINE, "POB.getCurrencyInput inputTypeId: " + inputTypeId);
         return ((CurrencyInput) inputs.get(inputTypeId)).getValue();
     }
 
@@ -109,6 +107,7 @@ public class PerformanceObligation extends BaseEntity<Long> implements Comparabl
     public void initializeOutput(OutputType outputType) throws Exception {
         Class<?> clazz = Class.forName(outputType.getOutputClass());
         Output output = (Output) clazz.newInstance();
+        output.setOutputType(outputType);
         outputs.put(outputType.getId(), output);
     }
 
@@ -121,6 +120,7 @@ public class PerformanceObligation extends BaseEntity<Long> implements Comparabl
     public void initializeInput(InputType inputType) throws Exception {
         Class<?> clazz = Class.forName(inputType.getInputClass());
         Input input = (Input) clazz.newInstance();
+        input.setInputType(inputType);
         inputs.put(inputType.getId(), input);
     }
 
@@ -133,7 +133,6 @@ public class PerformanceObligation extends BaseEntity<Long> implements Comparabl
     }
 
     public void putCurrencyOutput(String outputTypeId, BigDecimal value) {
-        LOG.info("Adding outut to POB.  Output datatype: " + value.getClass());
         outputs.get(outputTypeId).setValue(value);
     }
 

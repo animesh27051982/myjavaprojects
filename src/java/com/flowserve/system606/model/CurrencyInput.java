@@ -39,9 +39,6 @@ public class CurrencyInput extends Input<BigDecimal> {
     }
 
     public void setValue(BigDecimal value) {
-        if (value != null) {
-            logger.info("setting value: " + value.toString());
-        }
         this.value = value;
     }
 

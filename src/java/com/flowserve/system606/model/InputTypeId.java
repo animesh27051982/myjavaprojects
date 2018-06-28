@@ -10,8 +10,8 @@ public final class InputTypeId {
     public static final String TRANSACTION_PRICE = "TRANSACTION_PRICE";
     public static final String LIQUIDATED_DAMAGES = "LIQUIDATED_DAMAGES";
     public static final String CUMULATIVE_COST_INCURRED = "CUMULATIVE_COST_INCURRED";
-    public static final String INTERCOMPANY_PROGRESS = "INTERCOMPANY_PROGRESS";
-    public static final String THIRD_PARTY_PROGRESS = "THIRD_PARTY_PROGRESS";
+    public static final String CUMULATIVE_INTERCOMPANY_PROGRESS = "CUMULATIVE_INTERCOMPANY_PROGRESS";
+    public static final String CUMULATIVE_THIRD_PARTY_PROGRESS = "CUMULATIVE_THIRD_PARTY_PROGRESS";
     public static final String DELIVERY_DATE = "DELIVERY_DATE";
     public static final String CUMULATIVE_COST_OF_GOODS_SOLD = "CUMULATIVE_COST_OF_GOODS_SOLD";
     public static final String BILLING_AMOUNT_CONTRACT_CURRENCY = "BILLING_AMOUNT_CONTRACT_CURRENCY";

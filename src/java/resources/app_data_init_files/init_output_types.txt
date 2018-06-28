@@ -2,3 +2,4 @@ ESTIMATED_GROSS_PROFIT|POB|com.flowserve.system606.model.CurrencyOutput|Estimate
 ESTIMATED_GROSS_MARGIN|POB|com.flowserve.system606.model.CurrencyOutput|Estimated Gross Margin|Estimated Gross Margin|POC POB Outputs|H|Group1|1
 PERCENT_COMPLETE|POB|com.flowserve.system606.model.CurrencyOutput|Percent Complete|Percent Complete|POC POB Outputs|H|Group1|1
 REVENUE_EARNED_TO_DATE|POB|com.flowserve.system606.model.CurrencyOutput|Revenue Earned to Date|Revenue Earned to Date|POC POB Outputs|O|Group1|2
+CUMULATIVE_TOTAL_ITD_COSTS|POB|com.flowserve.system606.model.CurrencyOutput|Cumulative Total ITD Costs|Cumulative Total ITD Costs|POC POB Outputs|O|Group1|2

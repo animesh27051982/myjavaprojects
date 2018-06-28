@@ -6,11 +6,9 @@
 package com.flowserve.system606.view;
 
 import com.flowserve.system606.model.PerformanceObligation;
-import com.flowserve.system606.service.AdminService;
 import com.flowserve.system606.service.BusinessRuleService;
 import com.flowserve.system606.service.InputService;
 import com.flowserve.system606.service.OutputService;
-import com.flowserve.system606.service.PerformanceObligationService;
 import com.flowserve.system606.web.WebSession;
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -26,20 +24,15 @@ import org.primefaces.event.CellEditEvent;
 import org.primefaces.model.TreeNode;
 
 /**
- *
  * @author kgraves
  */
 @Named
 @ViewScoped
-public class InputOnlineEntry implements Serializable {
+public class PobCalculationReview implements Serializable {
 
-    private static final Logger logger = Logger.getLogger(InputOnlineEntry.class.getName());
+    private static final Logger logger = Logger.getLogger(PobCalculationReview.class.getName());
 
     private TreeNode pobs;
-    @Inject
-    private AdminService adminService;
-    @Inject
-    private PerformanceObligationService performanceObligationService;
     @Inject
     BusinessRuleService businessRuleService;
     private BigDecimal eacValue;

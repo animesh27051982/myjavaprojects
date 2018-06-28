@@ -1,10 +1,10 @@
 REVENUE_RECOGNITION_METHOD|POB|com.flowserve.system606.model.StringInput||Revenue Recognition Method|Revenue Recognition Method|POC POB Inputs|H|Group1|1
 TRANSACTION_PRICE|POB|com.flowserve.system606.model.CurrencyInput|CC|Transaction Price|Transaction Price|POC POB Inputs|O|Group1|2
-LIQUIDATED_DAMAGES|POB|com.flowserve.system606.model.CurrencyInput|CC|Liquidated Damages|Liquidated Damages|POC POB Inputs|P|Group1|2
+LIQUIDATED_DAMAGES|POB|com.flowserve.system606.model.CurrencyInput|CC|Liquidated Damages|LD Penalty Included in Transaction Price|POC POB Inputs|P|Group1|2
 ESTIMATED_COST_AT_COMPLETION|POB|com.flowserve.system606.model.CurrencyInput|LC|Estimated Cost at Completion|Estimated Cost at Completion|POC POB Inputs|Q|Group1|3
 CUMULATIVE_COST_INCURRED|POB|com.flowserve.system606.model.CurrencyInput|LC|Cumulative Cost Incurred / Received Local Curr|Cumulative Cost Incurred / Received Local Curr|POC POB Inputs|S|Group1|4
-INTERCOMPANY_PROGRESS|POB|com.flowserve.system606.model.CurrencyInput|LC|Interco Progress (Not Received) Local Curr|Interco Progress (Not Received) Local Curr|POC POB Inputs|T|Group1|5
-THIRD_PARTY_PROGRESS|POB|com.flowserve.system606.model.CurrencyInput|LC|3rd Party Progress (Not Received) Local Curr|3rd Party Progress (Not Received) Local Curr|POC POB Inputs|U|Group1|6
+CUMULATIVE_THIRD_PARTY_PROGRESS|POB|com.flowserve.system606.model.CurrencyInput|LC|Cumulative 3rd Party Progress (Not Received) Local Curr|Cumulative 3rd Party Progress (Not Received) Local Curr|POC POB Inputs|U|Group1|6
+CUMULATIVE_INTERCOMPANY_PROGRESS|POB|com.flowserve.system606.model.CurrencyInput|LC|Cumulative Interco Progress (Not Received) Local Curr|Cumulative Interco Progress (Not Received) Local Curr|POC POB Inputs|T|Group1|5
 DELIVERY_DATE|POB|com.flowserve.system606.model.DateInput||Actual Shipment / Delivery Date (if complete)|Actual Shipment / Delivery Date (if complete)|POC POB Inputs|W|Group1|7
 CUMULATIVE_COST_OF_GOODS_SOLD|POB|com.flowserve.system606.model.CurrencyInput|LC|If partial POB shipped: Enter Cumulative COGS|If partial POB shipped: Enter Cumulative COGS|POC POB Inputs|X|Group1|8
 BILLING_AMOUNT_CC|POB|com.flowserve.system606.model.CurrencyInput|CC|Billing Amount Contract Currency|Billing Amount Contract Currency|POC POB Inputs|Z|Group1|9

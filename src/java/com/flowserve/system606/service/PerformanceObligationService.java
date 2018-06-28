@@ -88,8 +88,8 @@ public class PerformanceObligationService {
                 pob.setName(values[count++]);
                 pob.setId(new Long(values[count++]));
                 pob.setActive(true);
-                performanceObligationService.initializeInputs(pob);
-                performanceObligationService.initializeOutputs(pob);
+                //performanceObligationService.initializeInputs(pob);
+                //performanceObligationService.initializeOutputs(pob);
 
                 persist(pob);
             }
