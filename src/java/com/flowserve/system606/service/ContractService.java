@@ -67,8 +67,17 @@ public class ContractService {
         // change to read init_contract_pob_data.txt a first time
         if (findContractById(1015) == null) {
             logger.info("Initializing Contracts");
-            BufferedReader reader = new BufferedReader(new InputStreamReader(AppInitializeService.class.getResourceAsStream("/resources/app_data_init_files/contract_data.txt"), "UTF-8"));
+            BufferedReader reader = new BufferedReader(new InputStreamReader(AppInitializeService.class.getResourceAsStream("/resources/app_data_init_files/init_contract_pob_data.txt"), "UTF-8"));
 
+            String platform = null;
+            String ru = null;
+            long contractId = -1;
+            String customerName = null;
+            String salesOrderNumber = null;
+            String pobName = null;
+            long pobId = -1;
+            String revRecMethod = null;
+            
             int count = 0;
             String line = null;
             while ((line = reader.readLine()) != null) {
@@ -80,10 +89,14 @@ public class ContractService {
                 String[] values = line.split("\\t");
 
                 Contract contract = new Contract();
-                String ru = values[count++];
-                long contractId = Long.valueOf(values[count++]);
-                String customerName = values[count++];
-                String salesOrderNumber = values[count++];
+                platform = values[count++].trim();
+                ru = values[count++].trim().replace("RU", "");
+                contractId = Long.valueOf(values[count++].trim());
+                customerName = values[count++].trim();         
+                salesOrderNumber = values[count++].trim();
+                pobName = values[count++].trim();
+                pobId = Long.valueOf(values[count++].trim());
+                revRecMethod = values[count++].trim();                
 
                 contract.setId(contractId);
                 contract.setName(customerName + '-' + contractId);

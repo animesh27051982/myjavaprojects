@@ -1,6 +1,8 @@
 package com.flowserve.system606.service;
 
+import com.flowserve.system606.model.Contract;
 import com.flowserve.system606.model.PerformanceObligation;
+import com.flowserve.system606.model.ReportingUnit;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.time.LocalDateTime;
@@ -32,6 +34,8 @@ public class PerformanceObligationService {
     private OutputService outputService;
     @EJB
     private InputService inputService;
+    @EJB
+    private ContractService contractService;
     @EJB
     private PerformanceObligationService performanceObligationService;
 
@@ -71,8 +75,17 @@ public class PerformanceObligationService {
         //read init_contract_pob_data.txt a second time
         if (findById(10660L) == null) {
             logger.info("Initializing POBs");
-            BufferedReader reader = new BufferedReader(new InputStreamReader(AppInitializeService.class.getResourceAsStream("/resources/app_data_init_files/pob_data.txt"), "UTF-8"));
+            BufferedReader reader = new BufferedReader(new InputStreamReader(AppInitializeService.class.getResourceAsStream("/resources/app_data_init_files/init_contract_pob_data.txt"), "UTF-8"));
 
+            String platform = null;
+            String ru = null;
+            long contractId = -1;
+            String customerName = null;
+            String salesOrderNumber = null;
+            String pobName = null;
+            long pobId = -1;
+            String revRecMethod = null;
+            
             int count = 0;
             String line = null;
             while ((line = reader.readLine()) != null) {
@@ -85,8 +98,27 @@ public class PerformanceObligationService {
 
                 PerformanceObligation pob = new PerformanceObligation();
 
-                pob.setName(values[count++]);
-                pob.setId(new Long(values[count++]));
+                platform = values[count++].trim();
+                ru = values[count++].trim().replace("RU", "");
+                contractId = Long.valueOf(values[count++].trim());
+                customerName = values[count++].trim();         
+                salesOrderNumber = values[count++].trim();
+                pobName = values[count++].trim();
+                pobId = Long.valueOf(values[count++].trim());
+                revRecMethod = values[count++].trim();
+                
+                Contract contract = contractService.findContractById(contractId);
+                if (contract == null) {
+                    contract = new Contract();
+                    contract.setId(contractId);
+                    contract.setName(customerName + '-' + contractId);
+                    contract.setSalesOrderNumber(salesOrderNumber);                    
+                }
+                pob.setContract(contract);
+                pob.setName(pobName);
+                pob.setId(pobId);
+                pob.setRevRecMethod(revRecMethod);
+
                 pob.setActive(true);
                 //performanceObligationService.initializeInputs(pob);
                 //performanceObligationService.initializeOutputs(pob);
