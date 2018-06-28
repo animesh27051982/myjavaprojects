@@ -3,6 +3,7 @@
                 xmlns:f="http://java.sun.com/jsf/core"
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:p="http://primefaces.org/ui"
+                xmlns:of="http://omnifaces.org/functions"
                 template="/WEB-INF/template.xhtml">
 
     <ui:define name="head">
@@ -18,6 +19,8 @@
     <ui:define name="content">
         <h:form id="form">
             <p:growl id="messages" showDetail="true" />
+            <p:importConstants type="com.flowserve.system606.model.InputTypeId" var="inputType" />
+            <p:importConstants type="com.flowserve.system606.model.OutputTypeId" var="outputType" />
 
             <div class="ui-g">
 
@@ -42,24 +45,28 @@
                                         <h:outputText value="#{pob.name}" />
                                     </p:column>
                                     <p:column style="white-space:pre-line;" headerText="ITD Costs">
-                                        <h:outputText value="#{pob.pobCountRejected}" />
+                                        <h:outputText value="#{pob.getOutput(outputType.CUMULATIVE_TOTAL_ITD_COSTS).value}" rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}" >
+                                            <f:convertNumber type="currency" />
+                                        </h:outputText>
                                     </p:column>
                                     <p:column style="white-space:pre-line;" headerText="EAC">
-                                        <h:outputText value="#{pob.pobCountRejected}" />
+                                        <h:outputText value="#{pob.getCurrencyInput(inputType.ESTIMATED_COST_AT_COMPLETION)}" rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}" >
+                                            <f:convertNumber type="currency" />
+                                        </h:outputText>
                                     </p:column>
                                     <p:column style="white-space:pre-line;" headerText="% Complete">
-                                        <h:outputText value="#{pob.pobCountRejected}" />
+                                        <h:outputText value="#{pob.getOutput(outputType.PERCENT_COMPLETE).value}" rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}" >
+
+                                        </h:outputText>
                                     </p:column>
                                     <p:column style="white-space:pre-line;" headerText="Transaction Price">
-                                        <h:outputText value="#{pob.pobCountRejected}" />
+                                        <h:outputText value="#{pob.getCurrencyInp(inputType.TRANSACTION_PRICE).value}" rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}" >
+                                            <f:convertNumber type="currency" />
+                                        </h:outputText>
                                     </p:column>
                                     <p:column style="white-space:pre-line;" headerText="Cummulative Revenue to Recognize" >
-                                        <f:facet name="header">
-                                            <h:outputText id="crr" value="Cummulative Revenue to Recognize" title="Net Revenue - Adjusted Cost of Goods Sold"/>
-                                            <p:tooltip for="crr" />
-                                            <i class="fa fa-calculator" title="Net Revenue - Adjusted Cost of Goods Sold"></i>
-                                        </f:facet>
-                                        <h:outputText value="#{pob.pobCountRejected}" />
+                                        <h:outputText value="#{pob.getOutput(outputType.CUMULATIVE_REVENUE_TO_RECOGNIZE).value}" rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}"/>
+
                                     </p:column>
                                     <p:column style="white-space:pre-line;" headerText="Prior Period Cumulative Revenue to Recognize">
                                         <h:outputText value="#{pob.pobCountRejected}" />

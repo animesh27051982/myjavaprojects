@@ -56,4 +56,16 @@ rule "Calculate Cumulative Total ITD Costs"
         pob.putCurrencyOutput("CUMULATIVE_TOTAL_ITD_COSTS", costIncurred + thirdPartyProgress + intercoProgress);
 end
 
+rule "Review Calculate Percent Complete"
+    when
+        pob : PerformanceObligation(totalITD : getCurrencyOutput("CUMULATIVE_TOTAL_ITD_COSTS") != null, estimatedEAC : getCurrencyInput("ESTIMATED_COST_AT_COMPLETION") != null)
+    then
+        pob.putCurrencyOutput("PERCENT_COMPLETE", totalITD / estimatedEAC);
+end
 
+rule "Review Cumulative to Recognize"
+    when
+        pob : PerformanceObligation(perComplete : getCurrencyOutput("PERCENT_COMPLETE") != null, transactionPrice : getCurrencyInput("TRANSACTION_PRICE") != null)
+    then
+        pob.putCurrencyOutput("CUMULATIVE_REVENUE_TO_RECOGNIZE", perComplete * transactionPrice);
+end

@@ -11,8 +11,16 @@ public final class OutputTypeId {
     public static final String ESTIMATED_GROSS_MARGIN = "ESTIMATED_GROSS_MARGIN";
     public static final String CUMULATIVE_TOTAL_ITD_COSTS = "CUMULATIVE_TOTAL_ITD_COSTS";
 
+    public static final String ESTIMATED_COST_AT_COMPLETION = "ESTIMATED_COST_AT_COMPLETION";
+    public static final String TRANSACTION_PRICE1 = "TRANSACTION_PRICE1";
+    public static final String CUMULATIVE_REVENUE_TO_RECOGNIZE = "CUMULATIVE_REVENUE_TO_RECOGNIZE";
+    public static final String PRIOR_PERIOD_CUMULATIVE_REVENUE_TO_RECOGNIZE = "PRIOR_PERIOD_CUMULATIVE_REVENUE_TO_RECOGNIZE";
+    public static final String PERIOD_REVENUE = "PERIOD_REVENUE";
+    public static final String PERIOD_EX_RATE = "PERIOD_EX_RATE";
+    public static final String PERIOD_REVENUE_LOCAL_CURRENCY = "PERIOD_REVENUE_LOCAL_CURRENCY";
+    public static final String CUMULATIVE_REVENUE_LOCAL_CURRENCY = "CUMULATIVE_REVENUE_LOCAL_CURRENCY";
+
 //    public static final String ESTIMATED_COST_AT_COMPLETION = "ESTIMATED_COST_AT_COMPLETION";
-//    public static final String TRANSACTION_PRICE = "TRANSACTION_PRICE";
 //    public static final String CUMULATIVE_COST_INCURRED = "CUMULATIVE_COST_INCURRED";
 //    public static final String INTERCOMPANY_PROGRESS = "INTERCOMPANY_PROGRESS";
 //    public static final String THIRD_PARTY_PROGRESS = "THIRD_PARTY_PROGRESS";
