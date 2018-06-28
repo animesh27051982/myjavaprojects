@@ -12,6 +12,7 @@ import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -91,6 +92,12 @@ public class PerformanceObligation extends BaseEntity<Long> implements Comparabl
     }
 
     public BigDecimal getCurrencyInput(String inputTypeId) {
+        if (((CurrencyInput) inputs.get(inputTypeId)).getValue() == null) {
+            Logger.getLogger(PerformanceObligation.class.getName()).log(Level.FINE, "getCurrencyIntput(): " + inputTypeId + " is null");
+        } else {
+            Logger.getLogger(PerformanceObligation.class.getName()).log(Level.FINE, "getCurrencyIntput(): " + inputTypeId + ": " + ((CurrencyInput) inputs.get(inputTypeId)).getValue().toPlainString());
+        }
+
         return ((CurrencyInput) inputs.get(inputTypeId)).getValue();
     }
 
@@ -133,6 +140,7 @@ public class PerformanceObligation extends BaseEntity<Long> implements Comparabl
     }
 
     public void putCurrencyOutput(String outputTypeId, BigDecimal value) {
+        Logger.getLogger(PerformanceObligation.class.getName()).log(Level.FINE, "putCurrencyOutput(): " + outputTypeId + ": " + value.toPlainString());
         outputs.get(outputTypeId).setValue(value);
     }
 
@@ -141,6 +149,12 @@ public class PerformanceObligation extends BaseEntity<Long> implements Comparabl
     }
 
     public BigDecimal getCurrencyOutput(String outputTypeId) {
+        if (((CurrencyOutput) outputs.get(outputTypeId)).getValue() == null) {
+            Logger.getLogger(PerformanceObligation.class.getName()).log(Level.FINE, "getCurrencyOutput(): " + outputTypeId + " is null");
+        } else {
+            Logger.getLogger(PerformanceObligation.class.getName()).log(Level.FINE, "getCurrencyOutput(): " + outputTypeId + ": " + ((CurrencyOutput) outputs.get(outputTypeId)).getValue().toPlainString());
+        }
+
         return ((CurrencyOutput) outputs.get(outputTypeId)).getValue();
     }
 
@@ -235,5 +249,22 @@ public class PerformanceObligation extends BaseEntity<Long> implements Comparabl
     // TODO - Temp code remove.  This is to support temp code from the JSF UI until we finish the calculations.
     public BigDecimal getPobCountRejected() {
         return new BigDecimal("10.0");
+    }
+
+    public void printInputs() {
+        for (String inputTypeId : inputs.keySet()) {
+            if (inputs.get(inputTypeId) != null && inputs.get(inputTypeId).getValue() != null) {
+                Logger.getLogger(PerformanceObligation.class.getName()).log(Level.FINE, "InputTypeId: " + inputTypeId + "\tvalue: " + inputs.get(inputTypeId).getValue());
+            }
+        }
+    }
+
+    public void printOutputs() {
+        for (String outputTypeId : outputs.keySet()) {
+            if (outputs.get(outputTypeId) != null && outputs.get(outputTypeId).getValue() != null) {
+                Logger.getLogger(PerformanceObligation.class.getName()).log(Level.FINE, "OutputTypeId: " + outputTypeId + "\tvalue: " + outputs.get(outputTypeId).getValue());
+            }
+
+        }
     }
 }

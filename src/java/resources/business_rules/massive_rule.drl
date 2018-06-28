@@ -2,70 +2,34 @@ dialect "mvel"
 
 import com.flowserve.system606.model.PerformanceObligation
 
-rule "Calculate Estimated Gross Profit"
+rule "Calculate Estimated Gross Profit and Margin"
     when
-        // Pull input values needed for calculation
+        // Pull input values needed for this calculation.
         pob : PerformanceObligation(transactionPrice : getCurrencyInput("TRANSACTION_PRICE") != null, estimatedCostAtCompletion : getCurrencyInput("ESTIMATED_COST_AT_COMPLETION") != null)
     then
-        // Execute calculation, set output.  Can pull from previous outputs.
-        pob.putCurrencyOutput("ESTIMATED_GROSS_PROFIT", transactionPrice - estimatedCostAtCompletion);
-end
-
-rule "Tell User This is Good"
-    when
-        pob : PerformanceObligation(estimatedGrossProfit : getCurrencyOutput("ESTIMATED_GROSS_PROFIT") != null)
-        eval(estimatedGrossProfit < 100.0B)
-    then
-        pob.putOutputMessage("ESTIMATED_GROSS_PROFIT", "Yea probably good.");
-end
-
-rule "Tell User They Lied"
-    when
-        pob : PerformanceObligation(estimatedGrossProfit : getCurrencyOutput("ESTIMATED_GROSS_PROFIT") != null)
-        eval(estimatedGrossProfit > 500.0B)
-    then
-        pob.putOutputMessage("ESTIMATED_GROSS_PROFIT", "Sorry but you probably lied.");
+        // Calculate all outputs possible using these inputs.
+        estimatedGrossProfit =  transactionPrice - estimatedCostAtCompletion;
+        pob.putCurrencyOutput("ESTIMATED_GROSS_PROFIT", estimatedGrossProfit);
+        estimatedGrossMargin = estimatedGrossProfit / transactionPrice
+        pob.putCurrencyOutput("ESTIMATED_GROSS_MARGIN", estimatedGrossMargin);
 end
 
 
-rule "Calculate Estimated Gross Margin"
+rule "Calculate Cumulative Total ITD Costs, Percent Complete, Revenue Earned to Date, Cumulative Revenue to Recognize"
     when
-        pob : PerformanceObligation(estimatedGrossProfit : getCurrencyOutput("ESTIMATED_GROSS_PROFIT") != null, transactionPrice : getCurrencyInput("TRANSACTION_PRICE") != null)
+        pob : PerformanceObligation(
+            costIncurred : getCurrencyInput("CUMULATIVE_COST_INCURRED") != null,
+            thirdPartyProgress : getCurrencyInput("CUMULATIVE_THIRD_PARTY_PROGRESS") != null,
+            intercoProgress : getCurrencyInput("CUMULATIVE_INTERCOMPANY_PROGRESS") != null,
+            estimatedCostAtCompletion : getCurrencyInput("ESTIMATED_COST_AT_COMPLETION") != null,
+            transactionPrice : getCurrencyInput("TRANSACTION_PRICE") != null)
     then
-        pob.putCurrencyOutput("ESTIMATED_GROSS_MARGIN", estimatedGrossProfit / transactionPrice);
-end
-
-rule "Calculate Percent Complete"
-    when
-        pob : PerformanceObligation(cumulativeCostIncurred : getCurrencyInput("CUMULATIVE_COST_INCURRED") != null, estimatedCostAtCompletion : getCurrencyInput("ESTIMATED_COST_AT_COMPLETION") != null)
-    then
-        pob.putCurrencyOutput("PERCENT_COMPLETE", cumulativeCostIncurred / estimatedCostAtCompletion);
-end
-
-rule "Calculate Revenue Earned to Date"
-    when
-        pob : PerformanceObligation(percentComplete : getCurrencyOutput("PERCENT_COMPLETE") != null, transactionPrice : getCurrencyInput("TRANSACTION_PRICE") != null)
-    then
-        pob.putCurrencyOutput("REVENUE_EARNED_TO_DATE", percentComplete * transactionPrice);
-end
-
-rule "Calculate Cumulative Total ITD Costs"
-    when
-        pob : PerformanceObligation(costIncurred : getCurrencyInput("CUMULATIVE_COST_INCURRED") != null, thirdPartyProgress : getCurrencyInput("CUMULATIVE_THIRD_PARTY_PROGRESS") != null, intercoProgress : getCurrencyInput("CUMULATIVE_INTERCOMPANY_PROGRESS") != null)
-    then
-        pob.putCurrencyOutput("CUMULATIVE_TOTAL_ITD_COSTS", costIncurred + thirdPartyProgress + intercoProgress);
-end
-
-rule "Review Calculate Percent Complete"
-    when
-        pob : PerformanceObligation(totalITD : getCurrencyOutput("CUMULATIVE_TOTAL_ITD_COSTS") != null, estimatedEAC : getCurrencyInput("ESTIMATED_COST_AT_COMPLETION") != null)
-    then
-        pob.putCurrencyOutput("PERCENT_COMPLETE", totalITD / estimatedEAC);
-end
-
-rule "Review Cumulative to Recognize"
-    when
-        pob : PerformanceObligation(perComplete : getCurrencyOutput("PERCENT_COMPLETE") != null, transactionPrice : getCurrencyInput("TRANSACTION_PRICE") != null)
-    then
-        pob.putCurrencyOutput("CUMULATIVE_REVENUE_TO_RECOGNIZE", perComplete * transactionPrice);
+        totalITDCosts = costIncurred + thirdPartyProgress + intercoProgress;
+        pob.putCurrencyOutput("CUMULATIVE_TOTAL_ITD_COSTS", totalITDCosts);
+        percentComplete = totalITDCosts / estimatedCostAtCompletion;
+        pob.putCurrencyOutput("PERCENT_COMPLETE", percentComplete);
+        revenueEarnedToDate = percentComplete * transactionPrice;
+        pob.putCurrencyOutput("REVENUE_EARNED_TO_DATE", revenueEarnedToDate);
+        revenueToRecognize = percentComplete * transactionPrice;
+        pob.putCurrencyOutput("CUMULATIVE_REVENUE_TO_RECOGNIZE", revenueToRecognize );
 end
