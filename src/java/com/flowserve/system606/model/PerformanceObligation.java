@@ -272,6 +272,10 @@ public class PerformanceObligation extends BaseEntity<Long> implements Comparabl
     }
 
     public void printOutputs() {
+        for (Object key : outputs.keySet()) {
+            Logger.getLogger(PerformanceObligation.class.getName()).log(Level.INFO, "key: " + key.toString());
+        }
+        Logger.getLogger(PerformanceObligation.class.getName()).log(Level.FINER, "message");
         for (String outputTypeId : outputs.keySet()) {
             if (outputs.get(outputTypeId) != null && outputs.get(outputTypeId).getValue() != null) {
                 Logger.getLogger(PerformanceObligation.class.getName()).log(Level.FINER, "OutputTypeId: " + outputTypeId + "\tvalue: " + outputs.get(outputTypeId).getValue());
