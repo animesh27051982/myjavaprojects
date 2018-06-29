@@ -1,13 +1,37 @@
 dialect "mvel"
 
-import com.flowserve.system606.model.PerformanceObligation
+import com.flowserve.system606.model.PerformanceObligation;
+import java.util.logging.Logger;
 
-rule "Calculate Estimated Gross Profit and Margin"
+global Logger logger;
+
+rule "Calculate EAC Change"
+
+    // Needed only to support tab-out ajax requests on the UI.
     when
         // Pull input values needed for this calculation.
-        pob : PerformanceObligation(transactionPrice : getCurrencyInput("TRANSACTION_PRICE") != null, estimatedCostAtCompletion : getCurrencyInput("ESTIMATED_COST_AT_COMPLETION") != null)
+        pob : PerformanceObligation(
+            estimatedCostAtCompletion : getCurrencyInput("ESTIMATED_COST_AT_COMPLETION") != null,
+            estimatedCostAtCompletionPriorPeriod : getCurrencyInputPriorPeriod("ESTIMATED_COST_AT_COMPLETION") != null
+        )
+    then
+        changeInEstimate = estimatedCostAtCompletionPriorPeriod - estimatedCostAtCompletion;
+        pob.putCurrencyOutput("CHANGE_IN_ESTIMATED_COST_AT_COMPLETION", changeInEstimate);
+end
+
+
+rule "Calculate Estimated Gross Profit and Margin"
+
+    // Needed only to support tab-out ajax requests on the UI.
+    when
+        // Pull input values needed for this calculation.
+        pob : PerformanceObligation(
+            transactionPrice : getCurrencyInput("TRANSACTION_PRICE") != null,
+            estimatedCostAtCompletion : getCurrencyInput("ESTIMATED_COST_AT_COMPLETION") != null
+        )
     then
         // Calculate all outputs possible using these inputs.
+
         estimatedGrossProfit =  transactionPrice - estimatedCostAtCompletion;
         pob.putCurrencyOutput("ESTIMATED_GROSS_PROFIT", estimatedGrossProfit);
         estimatedGrossMargin = estimatedGrossProfit / transactionPrice
@@ -16,13 +40,15 @@ end
 
 
 rule "Calculate Cumulative Total ITD Costs, Percent Complete, Revenue Earned to Date, Cumulative Revenue to Recognize"
+    // We have everything we need, run all calcs.
     when
         pob : PerformanceObligation(
             costIncurred : getCurrencyInput("CUMULATIVE_COST_INCURRED") != null,
             thirdPartyProgress : getCurrencyInput("CUMULATIVE_THIRD_PARTY_PROGRESS") != null,
             intercoProgress : getCurrencyInput("CUMULATIVE_INTERCOMPANY_PROGRESS") != null,
             estimatedCostAtCompletion : getCurrencyInput("ESTIMATED_COST_AT_COMPLETION") != null,
-            transactionPrice : getCurrencyInput("TRANSACTION_PRICE") != null)
+            transactionPrice : getCurrencyInput("TRANSACTION_PRICE") != null
+        )
     then
         totalITDCosts = costIncurred + thirdPartyProgress + intercoProgress;
         pob.putCurrencyOutput("CUMULATIVE_TOTAL_ITD_COSTS", totalITDCosts);
@@ -32,4 +58,7 @@ rule "Calculate Cumulative Total ITD Costs, Percent Complete, Revenue Earned to 
         pob.putCurrencyOutput("REVENUE_EARNED_TO_DATE", revenueEarnedToDate);
         revenueToRecognize = percentComplete * transactionPrice;
         pob.putCurrencyOutput("CUMULATIVE_REVENUE_TO_RECOGNIZE", revenueToRecognize );
+        logger.info("Contract to Local Fx Rate: " + pob.contractToLocalFxRate);
 end
+
+

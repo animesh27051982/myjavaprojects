@@ -11,10 +11,10 @@ public final class OutputTypeId {
     public static final String ESTIMATED_GROSS_MARGIN = "ESTIMATED_GROSS_MARGIN";
     public static final String CUMULATIVE_TOTAL_ITD_COSTS = "CUMULATIVE_TOTAL_ITD_COSTS";
 
-    public static final String ESTIMATED_COST_AT_COMPLETION = "ESTIMATED_COST_AT_COMPLETION";
-    public static final String TRANSACTION_PRICE1 = "TRANSACTION_PRICE1";
+    public static final String CHANGE_IN_ESTIMATED_COST_AT_COMPLETION = "CHANGE_IN_ESTIMATED_COST_AT_COMPLETION";
+    //public static final String TRANSACTION_PRICE1 = "TRANSACTION_PRICE1";  // this is an input 
     public static final String CUMULATIVE_REVENUE_TO_RECOGNIZE = "CUMULATIVE_REVENUE_TO_RECOGNIZE";
-    public static final String PRIOR_PERIOD_CUMULATIVE_REVENUE_TO_RECOGNIZE = "PRIOR_PERIOD_CUMULATIVE_REVENUE_TO_RECOGNIZE";
+    //public static final String PRIOR_PERIOD_CUMULATIVE_REVENUE_TO_RECOGNIZE = "PRIOR_PERIOD_CUMULATIVE_REVENUE_TO_RECOGNIZE";  // we'll get this using pob.getCurrencyValuePriorPeriod()
     public static final String PERIOD_REVENUE = "PERIOD_REVENUE";
     public static final String PERIOD_EX_RATE = "PERIOD_EX_RATE";
     public static final String PERIOD_REVENUE_LOCAL_CURRENCY = "PERIOD_REVENUE_LOCAL_CURRENCY";

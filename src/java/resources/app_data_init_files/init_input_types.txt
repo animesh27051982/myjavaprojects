@@ -12,10 +12,10 @@ BILLING_AMOUNT_LC_CURRENCY|POB|com.flowserve.system606.model.CurrencyInput|LC|Bi
 BILLING_DATE|POB|com.flowserve.system606.model.DateInput||Billing Date|Billing Date|POC POB Inputs|AB|Group1|11
 BILLING_INVOICE_NUMBER|POB|com.flowserve.system606.model.StringInput||Billing Invoice Number|Billing Invoice Number|POC POB Inputs|AC|Group1|12
 REPORTING_UNIT|Contract|com.flowserve.system606.model.StringInput||Reporting Unit|Reporting Unit|POC POB Inputs|B|Group1|13
-C_ID|Contract|com.flowserve.system606.model.DecimalInput||C-ID|C-ID|POC POB Inputs|C|Group1|14
 CUSTOMER_NAME|Contract|com.flowserve.system606.model.StringInput||Customer Name|Customer Name|POC POB Inputs|D|Group1|15
 SALES_ORDER_NUMBER|Contract|com.flowserve.system606.model.StringInput||Sales Order #|Sales Order #|POC POB Inputs|E|Group1|16
 CONTRACT_CURRENCY|Contract|com.flowserve.system606.model.StringInput||Contract Currency|Contract Currency|POC POB Inputs|I|Group1|17
 TOTAL_TRANS_PRICE_CONTRACT_CURR|Contract|com.flowserve.system606.model.DecimalInput||Total Trans Price Contract Curr|Total Trans Price Contract Curr|POC POB Inputs|J|Group1|18
 BOOKING_DATE|Contract|com.flowserve.system606.model.DateInput||Booking Date (LoA)|Booking Date (LoA)|POC POB Inputs|L|Group1|19
 ESTIMATED_COMPLETION_DATE|Contract|com.flowserve.system606.model.DateInput||Estimated Completion Date|Estimated Completion Date|POC POB Inputs|M|Group1|20
+
