@@ -7,8 +7,15 @@ package com.flowserve.system606.view;
 
 import com.flowserve.system606.model.ReportingUnit;
 import com.flowserve.system606.service.AdminService;
+import com.flowserve.system606.service.TemplateService;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
@@ -30,17 +37,19 @@ public class InputTemplateDownload implements Serializable {
     private TreeNode reportingUnits;
     private TreeNode[] selectedNodes;
     private StreamedContent file;
+    private InputStream inputStream;
+    private FileOutputStream outputStream;
     @Inject
     AdminService adminService;
+    @Inject
+    TemplateService templateService;
 
     @PostConstruct
     public void init() {
         reportingUnits = createReportingUnitTree();
-        InputStream stream = PobInput.class.getResourceAsStream("/resources/excel_input_templates/Alonso_PIQ_POCI_IMPORT_TEMPLATE_v1.xlsx");
-        file = new DefaultStreamedContent(stream, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "poci_input_template.xlsx");
-
     }
 
+    //    <p:treeTable value="#{inputTemplateDownload.reportingUnits}" from inputTemplateDownload.xhtml
     public TreeNode getReportingUnits() {
         return reportingUnits;
     }
@@ -55,10 +64,25 @@ public class InputTemplateDownload implements Serializable {
         return root;
     }
 
-    public StreamedContent getFile() {
+    public StreamedContent getFile() throws Exception {
 
-        // lots of code here...
-        // .....
+        try {
+            //reportingUnits = createReportingUnitTree();
+            inputStream = PobInput.class.getResourceAsStream("/resources/excel_input_templates/POCI_Template.xlsx");
+            outputStream = new FileOutputStream(new File("poci_input_template.xlsx"));
+            
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        List<ReportingUnit> reportingUnits = new ArrayList<ReportingUnit>();
+        reportingUnits.add( adminService.findReportingUnitByCode("1015") );
+        reportingUnits.add( adminService.findReportingUnitByCode("1100") );
+        templateService.populateData(inputStream, outputStream, reportingUnits);
+        
+        //InputStream inputStreamFromUutputStream = new ByteArrayInputStream(outputStream.toByteArray());
+        InputStream inputStreamFromOutputStream = new FileInputStream(new File("poci_input_template.xlsx"));
+        file = new DefaultStreamedContent(inputStreamFromOutputStream, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "poci_input_template.xlsx");
         return file;
     }
 
