@@ -283,4 +283,12 @@ public class PerformanceObligation extends BaseEntity<Long> implements Comparabl
     public BigDecimal getContractToLocalFxRate() {
         return new BigDecimal("1.0");
     }
+
+    public BigDecimal getCurrencyValuePriorPeriod() {
+        return new BigDecimal("500.0");
+    }
+
+    public BigDecimal getLiquidatedDamagesPriorPeriod() {
+        return new BigDecimal("50.0");
+    }
 }

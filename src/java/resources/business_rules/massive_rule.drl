@@ -47,7 +47,11 @@ rule "Calculate Cumulative Total ITD Costs, Percent Complete, Revenue Earned to 
             thirdPartyProgress : getCurrencyInput("CUMULATIVE_THIRD_PARTY_PROGRESS") != null,
             intercoProgress : getCurrencyInput("CUMULATIVE_INTERCOMPANY_PROGRESS") != null,
             estimatedCostAtCompletion : getCurrencyInput("ESTIMATED_COST_AT_COMPLETION") != null,
-            transactionPrice : getCurrencyInput("TRANSACTION_PRICE") != null
+            transactionPrice : getCurrencyInput("TRANSACTION_PRICE") != null,
+            priorPeriodCumulative : getCurrencyValuePriorPeriod() != null,
+            periodExRate: getContractToLocalFxRate() != null,
+            totalLiquidatedDamages : getCurrencyInput("LIQUIDATED_DAMAGES") != null,
+            liquidatedDamagesPriorPeriod : getLiquidatedDamagesPriorPeriod() != null
         )
     then
         totalITDCosts = costIncurred + thirdPartyProgress + intercoProgress;
@@ -58,6 +62,16 @@ rule "Calculate Cumulative Total ITD Costs, Percent Complete, Revenue Earned to 
         pob.putCurrencyOutput("REVENUE_EARNED_TO_DATE", revenueEarnedToDate);
         revenueToRecognize = percentComplete * transactionPrice;
         pob.putCurrencyOutput("CUMULATIVE_REVENUE_TO_RECOGNIZE", revenueToRecognize );
+        periodRevenue = revenueToRecognize - priorPeriodCumulative;
+        pob.putCurrencyOutput("PERIOD_REVENUE", periodRevenue);
+        periodRevenueLocalCurrency = periodRevenue * periodExRate;
+        pob.putCurrencyOutput("PERIOD_REVENUE_LOCAL_CURRENCY", periodRevenueLocalCurrency);
+        cumulativeLiquidatedDamages = percentComplete * totalLiquidatedDamages;
+        pob.putCurrencyOutput("CUMULATIVE_LIQUIDATED_DAMAGES_CC", cumulativeLiquidatedDamages);
+        liquidatedDamagesCurrentPeriodCC = cumulativeLiquidatedDamages - liquidatedDamagesPriorPeriod;
+        pob.putCurrencyOutput("LIQUIDATED_DAMAGES_RECOGNIZE_CURRENT_PERIOD_CC", liquidatedDamagesCurrentPeriodCC);
+        liquidatedDamagesCurrentPeriodLC = liquidatedDamagesCurrentPeriodCC * periodExRate;
+        pob.putCurrencyOutput("LIQUIDATED_DAMAGES_RECOGNIZE_CURRENT_PERIOD_LC", liquidatedDamagesCurrentPeriodCC);
         logger.info("Contract to Local Fx Rate: " + pob.contractToLocalFxRate);
 end
 

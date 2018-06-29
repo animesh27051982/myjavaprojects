@@ -9,3 +9,6 @@ PERIOD_REVENUE|POB|com.flowserve.system606.model.CurrencyOutput|Period Revenue|P
 PERIOD_EX_RATE|POB|com.flowserve.system606.model.CurrencyOutput|Period Ex Rate|Period Ex Rate|POC POB Outputs|O|Group1|2
 PERIOD_REVENUE_LOCAL_CURRENCY|POB|com.flowserve.system606.model.CurrencyOutput|Period Revenue Local Currency|Period Revenue Local Currency|POC POB Outputs|O|Group1|2
 CUMULATIVE_REVENUE_LOCAL_CURRENCY|POB|com.flowserve.system606.model.CurrencyOutput|Cumulative Revenue Local Currency|Cumulative Revenue Local Currency|POC POB Outputs|O|Group1|2
+CUMULATIVE_LIQUIDATED_DAMAGES_CC|POB|com.flowserve.system606.model.CurrencyOutput|Cumulative Liquidated Damages CC|Cumulative Liquidated Damages CC|POC POB Outputs|O|Group1|2
+LIQUIDATED_DAMAGES_RECOGNIZE_CURRENT_PERIOD_CC|POB|com.flowserve.system606.model.CurrencyOutput|Liquidated Damages to Recognize in Current Period (CC)|Liquidated Damages to Recognize in Current Period (CC)|POC POB Outputs|O|Group1|2
+LIQUIDATED_DAMAGES_RECOGNIZE_CURRENT_PERIOD_LC|POB|com.flowserve.system606.model.CurrencyOutput|Liquidated Damages to Recognize in Current Period (LC)|Liquidated Damages to Recognize in Current Period (LC)|POC POB Outputs|O|Group1|2
