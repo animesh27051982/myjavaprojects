@@ -12,9 +12,9 @@ import java.util.ArrayList;
 import java.util.Currency;
 import java.util.List;
 import java.util.logging.Logger;
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
@@ -110,7 +110,7 @@ public class Contract extends BaseEntity<Long> implements Comparable<Contract>, 
     @JoinColumn(name = "SALES_DESTINATION_COUNTRY_ID")
     //private Country salesDestinationCountry;
 
-    @OneToMany(mappedBy = "contract", cascade = CascadeType.PERSIST)
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "contract")
     private List<PerformanceObligation> performanceObligations = new ArrayList<PerformanceObligation>();
 
     public Contract() {
@@ -184,15 +184,15 @@ public class Contract extends BaseEntity<Long> implements Comparable<Contract>, 
     public void setTotalTransactionPrice(BigDecimal totalTransactionPrice) {
         this.totalTransactionPrice = totalTransactionPrice;
     }
-    
+
     public List<PerformanceObligation> getPerformanceObligations() {
         return performanceObligations != null ? performanceObligations : new ArrayList<>();
     }
-   
+
     public void setPerformanceObligations(List<PerformanceObligation> pobs) {
         this.performanceObligations = new ArrayList<>(pobs);
     }
-    
+
     // TODO - KJG - Remove.  Temp code for calc pages.
     public BigDecimal getPobCountRejected() {
         return new BigDecimal("10.0");

@@ -3,10 +3,12 @@ ESTIMATED_GROSS_MARGIN|POB|com.flowserve.system606.model.CurrencyOutput|Estimate
 PERCENT_COMPLETE|POB|com.flowserve.system606.model.CurrencyOutput|Percent Complete|Percent Complete|POC POB Outputs|H|Group1|1
 REVENUE_EARNED_TO_DATE|POB|com.flowserve.system606.model.CurrencyOutput|Revenue Earned to Date|Revenue Earned to Date|POC POB Outputs|O|Group1|2
 CUMULATIVE_TOTAL_ITD_COSTS|POB|com.flowserve.system606.model.CurrencyOutput|Cumulative Total ITD Costs|Cumulative Total ITD Costs|POC POB Outputs|O|Group1|2
-ESTIMATED_COST_AT_COMPLETION|POB|com.flowserve.system606.model.CurrencyOutput|Estimated Cost at Completion|Estimated Cost at Completion|POC POB Outputs|O|Group1|2
+CHANGE_IN_ESTIMATED_COST_AT_COMPLETION|POB|com.flowserve.system606.model.CurrencyOutput|Change in EAC|Change in EAC|POC POB Outputs|O|Group1|2
 CUMULATIVE_REVENUE_TO_RECOGNIZE|POB|com.flowserve.system606.model.CurrencyOutput|Cumulative Revenue to Recognize|Cumulative Revenue to Recognize|POC POB Outputs|O|Group1|2
-PRIOR_PERIOD_CUMULATIVE_REVENUE_TO_RECOGNIZE|POB|com.flowserve.system606.model.CurrencyOutput|Prior Period Cumulative Revenue to Recognize|Prior Period Cumulative Revenue to Recognize|POC POB Outputs|O|Group1|2
 PERIOD_REVENUE|POB|com.flowserve.system606.model.CurrencyOutput|Period Revenue|Period Revenue|POC POB Outputs|O|Group1|2
 PERIOD_EX_RATE|POB|com.flowserve.system606.model.CurrencyOutput|Period Ex Rate|Period Ex Rate|POC POB Outputs|O|Group1|2
 PERIOD_REVENUE_LOCAL_CURRENCY|POB|com.flowserve.system606.model.CurrencyOutput|Period Revenue Local Currency|Period Revenue Local Currency|POC POB Outputs|O|Group1|2
 CUMULATIVE_REVENUE_LOCAL_CURRENCY|POB|com.flowserve.system606.model.CurrencyOutput|Cumulative Revenue Local Currency|Cumulative Revenue Local Currency|POC POB Outputs|O|Group1|2
+CUMULATIVE_LIQUIDATED_DAMAGES_CC|POB|com.flowserve.system606.model.CurrencyOutput|Cumulative Liquidated Damages CC|Cumulative Liquidated Damages CC|POC POB Outputs|O|Group1|2
+LIQUIDATED_DAMAGES_RECOGNIZE_CURRENT_PERIOD_CC|POB|com.flowserve.system606.model.CurrencyOutput|Liquidated Damages to Recognize in Current Period (CC)|Liquidated Damages to Recognize in Current Period (CC)|POC POB Outputs|O|Group1|2
+LIQUIDATED_DAMAGES_RECOGNIZE_CURRENT_PERIOD_LC|POB|com.flowserve.system606.model.CurrencyOutput|Liquidated Damages to Recognize in Current Period (LC)|Liquidated Damages to Recognize in Current Period (LC)|POC POB Outputs|O|Group1|2

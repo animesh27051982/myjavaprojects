@@ -59,6 +59,7 @@ public class BusinessRuleService {
             }
 
             kSession = ks.newKieContainer(ks.getRepository().getDefaultReleaseId()).newStatelessKieSession();
+            kSession.setGlobal("logger", Logger.getLogger(BusinessRuleService.class.getName()));
         } catch (Exception exception) {
             throw new IllegalStateException(exception);
         }

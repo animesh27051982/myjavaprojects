@@ -56,8 +56,8 @@ public class ReportingUnit extends BaseEntity<Long> implements Comparable<Report
     @Column(name = "IS_ACTIVE")
     private boolean active;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "reportingUnit")
-    @JoinTable(name = "R_UNIT_CONTRACTS", joinColumns = @JoinColumn(name = "REPORTING_UNIT_ID"), inverseJoinColumns = @JoinColumn(name = "CONTRACT_ID"))
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "reportingUnit")
+    //@JoinTable(name = "R_UNIT_CONTRACTS", joinColumns = @JoinColumn(name = "REPORTING_UNIT_ID"), inverseJoinColumns = @JoinColumn(name = "CONTRACT_ID"))
     private List<Contract> contract = new ArrayList<Contract>();
 
     public ReportingUnit() {

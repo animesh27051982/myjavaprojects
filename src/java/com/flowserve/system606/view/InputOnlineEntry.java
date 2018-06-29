@@ -89,15 +89,9 @@ public class InputOnlineEntry implements Serializable {
         this.eacValue = eacValue;
     }
 
-    public void printInputs(PerformanceObligation pob) {
-//        Map<String, Input> inputs = pob.getInputs();
-//        for (String inputTypeId : inputs.keySet()) {
-//            logger.info("execute BR.  inputTypeId: " + inputTypeId + "\tvalue: " + inputs.get(inputTypeId).getValue());
-//        }
-    }
-
     public void calculateOutputs(PerformanceObligation pob) throws Exception {
-        printInputs(pob);
+        pob.printInputs();
         businessRuleService.executeBusinessRules(pob);
+        pob.printOutputs();
     }
 }

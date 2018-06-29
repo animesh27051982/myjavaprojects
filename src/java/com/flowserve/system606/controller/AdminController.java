@@ -48,11 +48,31 @@ public class AdminController implements Serializable {
         return "businessUnitEdit";
     }
 
+    public String newBusinessUnit(BusinessUnit u) throws Exception {
+
+        webSession.setEditBusinessUnit(new BusinessUnit());
+        return "businessUnitEdit";
+    }
+
     public String updateBusinessUnit(BusinessUnit u) {
         FacesContext context = FacesContext.getCurrentInstance();
-
         try {
             adminService.updateBusinessUnit(u);
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, e.getMessage(), e);
+            context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Error saving", e.getMessage()));
+            return null;
+        }
+
+        context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "businessUnit saved", ""));
+
+        return "businessUnitList";
+    }
+
+    public String addBusinessUnit(BusinessUnit u) {
+        FacesContext context = FacesContext.getCurrentInstance();
+        try {
+            adminService.persist(u);
         } catch (Exception e) {
             logger.log(Level.SEVERE, e.getMessage(), e);
             context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Error saving", e.getMessage()));

@@ -65,7 +65,7 @@ public class ContractService {
     public void initContracts() throws Exception {
 
         // change to read init_contract_pob_data.txt a first time
-        if (findContractById(1015) == null) {
+        if (findContractById(10512L) == null) {
             logger.info("Initializing Contracts");
             BufferedReader reader = new BufferedReader(new InputStreamReader(AppInitializeService.class.getResourceAsStream("/resources/app_data_init_files/init_contract_pob_data.txt"), "UTF-8"));
 
@@ -77,7 +77,7 @@ public class ContractService {
             String pobName = null;
             long pobId = -1;
             String revRecMethod = null;
-            
+
             int count = 0;
             String line = null;
             while ((line = reader.readLine()) != null) {
@@ -92,23 +92,37 @@ public class ContractService {
                 platform = values[count++].trim();
                 ru = values[count++].trim().replace("RU", "");
                 contractId = Long.valueOf(values[count++].trim());
-                customerName = values[count++].trim();         
+                customerName = values[count++].trim();
                 salesOrderNumber = values[count++].trim();
                 pobName = values[count++].trim();
                 pobId = Long.valueOf(values[count++].trim());
-                revRecMethod = values[count++].trim();                
+                revRecMethod = values[count++].trim();
 
                 contract.setId(contractId);
                 contract.setName(customerName + '-' + contractId);
                 contract.setSalesOrderNumber(salesOrderNumber);
+
                 ReportingUnit reportingUnit = adminService.findReportingUnitByCode(ru);
-                if (reportingUnit == null) {
-                    reportingUnit = new ReportingUnit();
-                    reportingUnit.setCode(ru);
+
+                if (contract == null) {
+                    throw new IllegalStateException("Countract refers to a non-existent RU.  Invalid.");
                 }
+                // KJG removing this code, we should never have a reporting unit that we are not prepared for.
+                // We don't want to create here.  We'll have users create via front end and then reload.
+
+//                if (reportingUnit == null) {
+//                    reportingUnit = new ReportingUnit();
+//                    reportingUnit.setCode(ru);
+//                }
                 contract.setReportingUnit(reportingUnit);
-                // persist(contract);
-                update(contract);
+                //persist(contract);
+
+                //update(contract);
+                // KJG Adding code
+                contract = update(contract);   // this gives us the JPA managed object.
+                reportingUnit.getContract().add(contract);
+                adminService.update(reportingUnit);
+
             }
 
             reader.close();

@@ -12,6 +12,7 @@ import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -91,10 +92,20 @@ public class PerformanceObligation extends BaseEntity<Long> implements Comparabl
     }
 
     public BigDecimal getCurrencyInput(String inputTypeId) {
+        if (((CurrencyInput) inputs.get(inputTypeId)).getValue() == null) {
+            Logger.getLogger(PerformanceObligation.class.getName()).log(Level.FINER, "getCurrencyIntput(): " + inputTypeId + " is null");
+        } else {
+            Logger.getLogger(PerformanceObligation.class.getName()).log(Level.FINER, "getCurrencyIntput(): " + inputTypeId + ": " + ((CurrencyInput) inputs.get(inputTypeId)).getValue().toPlainString());
+        }
+
         return ((CurrencyInput) inputs.get(inputTypeId)).getValue();
     }
 
-    public CurrencyInput getCurrencyInp(String inputTypeId) {
+    public BigDecimal getCurrencyInputPriorPeriod(String inputTypeId) {
+        return getCurrencyInput(inputTypeId);   // KJG TODO - Hack for now to just return this period's value for testing calcs.
+    }
+
+    public CurrencyInput getCurrencyInp(String inputTypeId) {  // TODO KJG - This method should be getCurrencyInput() and the method above should be getCurrencyInputValue() waiting on this due to impact.
         return (CurrencyInput) inputs.get(inputTypeId);
     }
 
@@ -105,10 +116,12 @@ public class PerformanceObligation extends BaseEntity<Long> implements Comparabl
     }
 
     public void initializeOutput(OutputType outputType) throws Exception {
-        Class<?> clazz = Class.forName(outputType.getOutputClass());
-        Output output = (Output) clazz.newInstance();
-        output.setOutputType(outputType);
-        outputs.put(outputType.getId(), output);
+        if (outputs.get(outputType) == null) {
+            Class<?> clazz = Class.forName(outputType.getOutputClass());
+            Output output = (Output) clazz.newInstance();
+            output.setOutputType(outputType);
+            outputs.put(outputType.getId(), output);
+        }
     }
 
     public void initializeInputs(List<InputType> inputTypes) throws Exception {
@@ -118,21 +131,23 @@ public class PerformanceObligation extends BaseEntity<Long> implements Comparabl
     }
 
     public void initializeInput(InputType inputType) throws Exception {
-        Class<?> clazz = Class.forName(inputType.getInputClass());
-        Input input = (Input) clazz.newInstance();
-        input.setInputType(inputType);
-        inputs.put(inputType.getId(), input);
+        if (inputs.get(inputType) == null) {
+            Class<?> clazz = Class.forName(inputType.getInputClass());
+            Input input = (Input) clazz.newInstance();
+            input.setInputType(inputType);
+            inputs.put(inputType.getId(), input);
+        }
     }
 
-    public void putOutput(Output output) {
-        outputs.put(output.getOutputType().getId(), output);
-    }
-
+//    public void putOutput(Output output) {
+//        outputs.put(output.getOutputType().getId(), output);
+//    }
     public void putOutputMessage(String outputTypeId, String message) {
         outputs.get(outputTypeId).setMessage(message);
     }
 
     public void putCurrencyOutput(String outputTypeId, BigDecimal value) {
+        Logger.getLogger(PerformanceObligation.class.getName()).log(Level.FINER, "putCurrencyOutput(): " + outputTypeId + ": " + value.toPlainString());
         outputs.get(outputTypeId).setValue(value);
     }
 
@@ -140,8 +155,22 @@ public class PerformanceObligation extends BaseEntity<Long> implements Comparabl
         return outputs.get(outputTypeId);
     }
 
+    public Output getOutputPriorPeriod(String outputTypeId) {
+        return getOutput(outputTypeId);  // KJG TODO - Hack for now to just return this period's value for testing calcs.
+    }
+
     public BigDecimal getCurrencyOutput(String outputTypeId) {
+        if (((CurrencyOutput) outputs.get(outputTypeId)).getValue() == null) {
+            Logger.getLogger(PerformanceObligation.class.getName()).log(Level.FINER, "getCurrencyOutput(): " + outputTypeId + " is null");
+        } else {
+            Logger.getLogger(PerformanceObligation.class.getName()).log(Level.FINER, "getCurrencyOutput(): " + outputTypeId + ": " + ((CurrencyOutput) outputs.get(outputTypeId)).getValue().toPlainString());
+        }
+
         return ((CurrencyOutput) outputs.get(outputTypeId)).getValue();
+    }
+
+    public BigDecimal getCurrencyOutputPriorPeriod(String outputTypeId) {
+        return new BigDecimal("100.0");
     }
 
 //    public void putDecimalOutput(String outputTypeId, BigDecimal value) {
@@ -235,5 +264,35 @@ public class PerformanceObligation extends BaseEntity<Long> implements Comparabl
     // TODO - Temp code remove.  This is to support temp code from the JSF UI until we finish the calculations.
     public BigDecimal getPobCountRejected() {
         return new BigDecimal("10.0");
+    }
+
+    public void printInputs() {
+        for (String inputTypeId : inputs.keySet()) {
+            if (inputs.get(inputTypeId) != null && inputs.get(inputTypeId).getValue() != null) {
+                Logger.getLogger(PerformanceObligation.class.getName()).log(Level.FINER, "InputTypeId: " + inputTypeId + "\tvalue: " + inputs.get(inputTypeId).getValue());
+            }
+        }
+    }
+
+    public void printOutputs() {
+        Logger.getLogger(PerformanceObligation.class.getName()).log(Level.FINER, "message");
+        for (String outputTypeId : outputs.keySet()) {
+            if (outputs.get(outputTypeId) != null && outputs.get(outputTypeId).getValue() != null) {
+                Logger.getLogger(PerformanceObligation.class.getName()).log(Level.FINER, "OutputTypeId: " + outputTypeId + "\tvalue: " + outputs.get(outputTypeId).getValue());
+            }
+
+        }
+    }
+
+    public BigDecimal getContractToLocalFxRate() {
+        return new BigDecimal("1.0");
+    }
+
+    public BigDecimal getCurrencyValuePriorPeriod() {
+        return new BigDecimal("500.0");
+    }
+
+    public BigDecimal getLiquidatedDamagesPriorPeriod() {
+        return new BigDecimal("50.0");
     }
 }
