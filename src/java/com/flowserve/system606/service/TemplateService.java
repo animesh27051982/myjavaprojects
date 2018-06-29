@@ -74,10 +74,6 @@ public class TemplateService {
                                 cell.setCellValue("AMSS");
                                 cell = row.createCell(1);
                                 cell.setCellValue( ru.getCode() );
-                                break;
-                            case "C": //C-ID
-                                cell = row.createCell(2);
-                                cell.setCellValue( contract.getId() );
                                 break;    
                             case "D":
                                 cell = row.createCell(3);
@@ -87,14 +83,7 @@ public class TemplateService {
                             case "E":
                                 cell = row.createCell(4);
                                 cell.setCellValue(contract.getSalesOrderNumber());
-                                break; 
-                            case "F":
-                                cell = row.createCell(5);
-                                cell.setCellValue(pob.getName());
-                                break;                     
-                            case "G":
-                                cell = row.createCell(6);
-                                cell.setCellValue(pob.getId());
+                                break;                      
                             case "H":
                                 cell = row.createCell(7);
                                 cell.setCellValue(pob.getRevRecMethod());
@@ -105,14 +94,23 @@ public class TemplateService {
                                 cell = row.createCell(9);
                                 if(contract.getTotalTransactionPrice() != null)
                                     cell.setCellValue(contract.getTotalTransactionPrice().doubleValue());
-                                break;                     
-                            case "K": //TRANSACTION_PRICE
-                                cell = row.createCell(10);
-                                cell.setCellValue( pob.getDecimalValue(inputType.getId()).doubleValue() );
-                                break;                     
+                                break;                                      
                         }
 
                     }
+                    // now add columns not in inputTypeList C F G K
+                    // case "C": //C-ID
+                    cell = row.createCell(2);
+                    cell.setCellValue( contract.getId() );
+                    // case "F":
+                    cell = row.createCell(5);
+                    cell.setCellValue(pob.getName());
+                    // case "G":
+                    cell = row.createCell(6);
+                    cell.setCellValue(pob.getId());                    
+                    // case "K": //TRANSACTION_PRICE
+                    //cell = row.createCell(10);
+                    //cell.setCellValue( pob.getDecimalValue(inputType.getId()).doubleValue() );
                 }
             }
       
@@ -128,4 +126,4 @@ public class TemplateService {
         Query query = em.createQuery("SELECT inputType FROM InputType inputType");
         return (List<InputType>) query.getResultList();
     }
-}
+}	
