@@ -75,6 +75,10 @@ public class AdminService {
         em.merge(u);
     }
 
+    public void persist(BusinessUnit bu) throws Exception {
+        em.persist(bu);
+    }
+
     public void persist(Object object) {
         em.persist(object);
     }

@@ -6,17 +6,17 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import javax.ejb.EJB;
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.ViewScoped;
+import javax.faces.view.ViewScoped;
+import javax.inject.Inject;
+import javax.inject.Named;
 
-@ManagedBean(name = "businessUnitSearch")
+@Named
 @ViewScoped
 public class BusinessUnitSearch implements Serializable {
 
     // private static final long serialVersionUID = -1438027991420003830L;
     List<BusinessUnit> businessUnits = new ArrayList<BusinessUnit>();
-    @EJB
+    @Inject
     private AdminService adminService;
     private String searchString = "";
 
@@ -37,7 +37,7 @@ public class BusinessUnitSearch implements Serializable {
     public List<BusinessUnit> getBusinessUnits() throws Exception {
         System.out.println("getBusinessUnits");
         businessUnits = adminService.findBusinessUnits();
-        Collections.sort(businessUnits);        
+        Collections.sort(businessUnits);
         return businessUnits;
     }
 

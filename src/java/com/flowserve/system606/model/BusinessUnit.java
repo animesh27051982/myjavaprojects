@@ -9,8 +9,11 @@ import java.io.Serializable;
 import java.util.logging.Logger;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
 @Entity
@@ -22,12 +25,14 @@ public class BusinessUnit implements Comparable<BusinessUnit>, Serializable {
     private static final Logger LOG = Logger.getLogger(BusinessUnit.class.getName());
 
     @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "FLS_SEQ")
+    @SequenceGenerator(name = "FLS_SEQ", sequenceName = "FLS_SEQ", allocationSize = 1)
     @Column(name = "BUSINESS_UNIT_ID")
     private Long id;
 
     @Column(name = "NAME")
     private String name;
-    
+
     @Column(name = "TYPE")
     private String type;
 
@@ -36,7 +41,7 @@ public class BusinessUnit implements Comparable<BusinessUnit>, Serializable {
 
     @Column(name = "DESCRIPTION")
     private String description;
-    
+
     @JoinColumn(name = "PARENT_ID")
     private BusinessUnit parent;
 
@@ -71,15 +76,15 @@ public class BusinessUnit implements Comparable<BusinessUnit>, Serializable {
     public void setName(String name) {
         this.name = name;
     }
-    
+
     public String getType() {
         return type;
     }
 
     public void setType(String type) {
         this.type = type;
-    }    
-    
+    }
+
     public String getCode() {
         return code;
     }
@@ -87,14 +92,15 @@ public class BusinessUnit implements Comparable<BusinessUnit>, Serializable {
     public void setCode(String code) {
         this.code = code;
     }
-   
+
     public String getDescription() {
         return description;
     }
 
     public void setDescription(String description) {
         this.description = description;
-    }   
+    }
+
     public BusinessUnit getParent() {
         return parent;
     }

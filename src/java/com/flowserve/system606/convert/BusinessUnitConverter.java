@@ -43,7 +43,7 @@ public class BusinessUnitConverter implements Converter {
             InitialContext ic = new InitialContext();
             adminService = (AdminService) ic.lookup("java:global/FlowServe/AdminService");
         } catch (NamingException ex) {
-            Logger.getLogger(UserConverter.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(BusinessUnitConverter.class.getName()).log(Level.SEVERE, null, ex);
         }
 
         return adminService.findBusinessUnitById(new Long(value));

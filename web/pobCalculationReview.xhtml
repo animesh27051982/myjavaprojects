@@ -140,7 +140,7 @@
                             </p:tab>
                             <p:tab title="Backlog Revaluation">
 
-                                <p:treeTable value="#{pobCalculationReview.pobs}" var="document">
+                                <p:treeTable value="#{pobCalculationReview.pobs}" var="pob">
                                     <f:facet name="header">
                                         Performance Obligations - Backlog Revaluation
                                     </f:facet>
@@ -149,7 +149,9 @@
                                         <h:outputText value="#{pob.name}" />
                                     </p:column>
                                     <p:column style="white-space:pre-line;" headerText="Transaction Price (CC)">
-                                        <f:facet name="output"><h:outputText value="#{pob.pobCountRejected}" /></f:facet>
+                                        <h:outputText value="#{pob.getCurrencyInp(inputType.TRANSACTION_PRICE).value}" rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}" >
+                                            <f:convertNumber type="currency" />
+                                        </h:outputText>
                                     </p:column>
                                     <p:column style="white-space:pre-line;" headerText="Cumulative Revenue to Date (CC)">
                                         <f:facet name="output"><h:outputText value="#{pob.pobCountRejected}" /></f:facet>
