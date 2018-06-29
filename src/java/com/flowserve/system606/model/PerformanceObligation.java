@@ -116,10 +116,12 @@ public class PerformanceObligation extends BaseEntity<Long> implements Comparabl
     }
 
     public void initializeOutput(OutputType outputType) throws Exception {
-        Class<?> clazz = Class.forName(outputType.getOutputClass());
-        Output output = (Output) clazz.newInstance();
-        output.setOutputType(outputType);
-        outputs.put(outputType.getId(), output);
+        if (outputs.get(outputType) == null) {
+            Class<?> clazz = Class.forName(outputType.getOutputClass());
+            Output output = (Output) clazz.newInstance();
+            output.setOutputType(outputType);
+            outputs.put(outputType.getId(), output);
+        }
     }
 
     public void initializeInputs(List<InputType> inputTypes) throws Exception {
@@ -129,16 +131,17 @@ public class PerformanceObligation extends BaseEntity<Long> implements Comparabl
     }
 
     public void initializeInput(InputType inputType) throws Exception {
-        Class<?> clazz = Class.forName(inputType.getInputClass());
-        Input input = (Input) clazz.newInstance();
-        input.setInputType(inputType);
-        inputs.put(inputType.getId(), input);
+        if (inputs.get(inputType) == null) {
+            Class<?> clazz = Class.forName(inputType.getInputClass());
+            Input input = (Input) clazz.newInstance();
+            input.setInputType(inputType);
+            inputs.put(inputType.getId(), input);
+        }
     }
 
-    public void putOutput(Output output) {
-        outputs.put(output.getOutputType().getId(), output);
-    }
-
+//    public void putOutput(Output output) {
+//        outputs.put(output.getOutputType().getId(), output);
+//    }
     public void putOutputMessage(String outputTypeId, String message) {
         outputs.get(outputTypeId).setMessage(message);
     }
@@ -272,9 +275,6 @@ public class PerformanceObligation extends BaseEntity<Long> implements Comparabl
     }
 
     public void printOutputs() {
-        for (Object key : outputs.keySet()) {
-            Logger.getLogger(PerformanceObligation.class.getName()).log(Level.INFO, "key: " + key.toString());
-        }
         Logger.getLogger(PerformanceObligation.class.getName()).log(Level.FINER, "message");
         for (String outputTypeId : outputs.keySet()) {
             if (outputs.get(outputTypeId) != null && outputs.get(outputTypeId).getValue() != null) {

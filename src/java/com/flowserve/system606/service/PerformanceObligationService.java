@@ -44,6 +44,7 @@ public class PerformanceObligationService {
 
     public void initializeOutputs(PerformanceObligation pob) throws Exception {
         pob.initializeOutputs(outputService.findActiveOutputTypes());
+        pob.printOutputs();
     }
 
     public PerformanceObligation findById(Long id) {
