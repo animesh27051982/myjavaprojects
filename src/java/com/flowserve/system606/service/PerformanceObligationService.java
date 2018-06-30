@@ -70,6 +70,10 @@ public class PerformanceObligationService {
         em.persist(object);
     }
 
+    public PerformanceObligation findPerformanceObligationById(Long id) {
+        return em.find(PerformanceObligation.class, id);
+    }
+
     public void initPOBs() throws Exception {
 
         //read init_contract_pob_data.txt a second time
@@ -105,12 +109,15 @@ public class PerformanceObligationService {
                 salesOrderNumber = values[count++].trim();
                 pobName = values[count++].trim();
                 pobId = Long.valueOf(values[count++].trim());
+                if (findPerformanceObligationById(contractId) != null) {
+                    throw new IllegalStateException("Duplicte POBs in the file.  This should never happen.  POB ID: " + pobId);
+                }
                 revRecMethod = values[count++].trim();
 
                 Contract contract = contractService.findContractById(contractId);
 
                 if (contract == null) {
-                    throw new IllegalStateException("POB refers to non-existent contract.  Invalid.");
+                    throw new IllegalStateException("POB refers to non-existent contract.  Invalid.  POB ID: " + pobId);
                 }
 //                if (contract == null) {
 //                    contract = new Contract();

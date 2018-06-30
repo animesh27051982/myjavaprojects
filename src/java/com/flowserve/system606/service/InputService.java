@@ -20,7 +20,6 @@ import java.io.InputStreamReader;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.ZoneId;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -85,7 +84,7 @@ public class InputService {
         InputSet inputSet = new InputSet();
         inputSet.setFilename(filename);
 
-        List<Input> inputList = new ArrayList<>();
+        //List<Input> inputList = new ArrayList<>();
         // when do we call contract.setExchange - when we save a new contract or we see a new C-ID and customer name
         List<PerformanceObligation> exchange = null;
         Contract contract = null;
@@ -117,10 +116,11 @@ public class InputService {
                 if (inputTypeMap.get(excelCol) != null) {
 
                     InputType inputType = inputTypeMap.get(excelCol);
-                    Class<?> clazz = Class.forName(inputType.getInputClass());
-                    Input input = (Input) clazz.newInstance();
-                    input.setInputType(inputType);
+                    Input input = pob.getInput(inputType.getId());
 
+//                    Class<?> clazz = Class.forName(inputType.getInputClass());
+//                    Input input = (Input) clazz.newInstance();
+//                    input.setInputType(inputType);
                     switch (cell.getCellType()) {
                         case Cell.CELL_TYPE_NUMERIC:
                             boolean bDate = false;
@@ -134,8 +134,8 @@ public class InputService {
                                     String formattedValue = formatter.formatCellValue(cell);
                                     Date d = cell.getDateCellValue();
                                     input.setValue(d.toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
-                                    inputList.add(input);
-                                    pob.putInput(input);
+                                    //inputList.add(input);
+                                    //pob.putInput(input);
                                 }
                             }
                             if (!bDate) {
@@ -151,8 +151,8 @@ public class InputService {
                                             break;
                                     }
                                 } else {
-                                    inputList.add(input);
-                                    pob.putInput(input);
+                                    //inputList.add(input);
+                                    //pob.putInput(input);
                                 }
                             }
                             break;
@@ -175,8 +175,8 @@ public class InputService {
                                     }
 
                                 } else {
-                                    inputList.add(input);
-                                    pob.putInput(input);
+                                    //inputList.add(input);
+                                    //pob.putInput(input);
                                 }
                             }
                             break;
@@ -201,26 +201,28 @@ public class InputService {
 //            pobService.initializeOutputs(pob);
 //            businessRuleService.executeBusinessRules(pob);
             //this indicates are are in a new contract, or use C-ID and Customer Name to check
-            if ((contract != null && contractId != contract.getId()) || totalTransactionPrice != null) {
-                // if there are existing old contract, save exchange list to it and finish the existing old contract
-                if (contract != null) {
-                    contract.setPerformanceObligations(exchange);
-                    //em.merge( contract );
-                    //persist(contract);
-                    logger.log(Level.INFO, "contract.getExchanges().size(): " + contract.getPerformanceObligations().size());
-                    logger.log(Level.INFO, "contract.getExchanges().get(0).getId(): " + contract.getPerformanceObligations().get(0).getId());
-                    contract = update(contract);
-                }
-                //now create a new contract for the new pob and add its pob
-                contract = createContract(reportingUnit, contractId, customerName, salesOrderNum, totalTransactionPrice);
-                exchange = contract.getPerformanceObligations();
-                pob.setContract(contract);
-                exchange.add(pob);
-            } else {
-                // we are in existing contract with a new pob, add pob to existing contract
-                pob.setContract(contract);
-                exchange.add(pob);
-            }
+
+            // KJG:  New contracts will be handled via other means.
+//            if ((contract != null && contractId != contract.getId()) || totalTransactionPrice != null) {
+//                // if there are existing old contract, save exchange list to it and finish the existing old contract
+//                if (contract != null) {
+//                    contract.setPerformanceObligations(exchange);
+//                    //em.merge( contract );
+//                    //persist(contract);
+//                    logger.log(Level.INFO, "contract.getExchanges().size(): " + contract.getPerformanceObligations().size());
+//                    logger.log(Level.INFO, "contract.getExchanges().get(0).getId(): " + contract.getPerformanceObligations().get(0).getId());
+//                    contract = update(contract);
+//                }
+//                //now create a new contract for the new pob and add its pob
+//                contract = createContract(reportingUnit, contractId, customerName, salesOrderNum, totalTransactionPrice);
+//                exchange = contract.getPerformanceObligations();
+//                pob.setContract(contract);
+//                exchange.add(pob);
+//            } else {
+//                // we are in existing contract with a new pob, add pob to existing contract
+//                pob.setContract(contract);
+//                exchange.add(pob);
+//            }
             pob = pobService.update(pob);
 //            pobService.initializeInputs(pob);
 //            pobService.initializeOutputs(pob);
@@ -231,11 +233,13 @@ public class InputService {
             logger.log(Level.INFO, "pob.ESTIMATED_GROSS_MARGIN: " + pob.getOutput(OutputTypeId.ESTIMATED_GROSS_MARGIN).getValue().toString());
         }
         fis.close();
-        inputSet.setInputs(inputList);
-        persist(inputSet);
+
+        // going to change inputset to be pob level history only.  removing for now.
+        //inputSet.setInputs(inputList);
+        //persist(inputSet);
         // need commit last contract
         // persist(contract);
-        contract.setPerformanceObligations(exchange);
+        //contract.setPerformanceObligations(exchange);
         logger.log(Level.INFO, "contract.getExchanges().size(): " + contract.getPerformanceObligations().size());
         logger.log(Level.INFO, "contract.getExchanges().get(0).getId(): " + contract.getPerformanceObligations().get(0).getId());
         contract = update(contract);

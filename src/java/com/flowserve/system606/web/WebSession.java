@@ -30,6 +30,7 @@ public class WebSession implements Serializable {
     private BusinessUnit editBusinessUnit;
     //private List<ReportingUnit> reportingUnits = new ArrayList<ReportingUnit>();  // this is temp for calculatin testing.
     private TreeNode reportingUnitTreeNode = new DefaultTreeNode();  // this is temp for calculatin testing.
+    private List<ReportingUnit> reportingUnits = new ArrayList<ReportingUnit>();
     private ReportingUnit editReportingUnit;
     private User editUser;
     private Country country;
@@ -41,10 +42,9 @@ public class WebSession implements Serializable {
     @PostConstruct
     public void init() {   // this is temp for calculatin testing.
         try {
-            List<ReportingUnit> reportingUnits = new ArrayList<ReportingUnit>();
 
             reportingUnits.add(adminService.findReportingUnitByCode("1015"));
-            //reportingUnits.add(adminService.findReportingUnitByCode("1100"));
+            reportingUnits.add(adminService.findReportingUnitByCode("1100"));
 
 //            ReportingUnit ru1015 = new ReportingUnit();
 //            ru1015.setId(12341L);
@@ -147,6 +147,10 @@ public class WebSession implements Serializable {
 
     public TreeNode getReportingUnitTreeNode() {
         return reportingUnitTreeNode;
+    }
+
+    public List<ReportingUnit> getReportingUnits() {
+        return reportingUnits;
     }
 
 }

@@ -51,7 +51,7 @@
     </session-config>
 
     <welcome-file-list>
-        <welcome-file>userSearch.xhtml</welcome-file>
+        <welcome-file>inputDashboard.xhtml</welcome-file>
     </welcome-file-list>
 
     <!-- SECURITY -->

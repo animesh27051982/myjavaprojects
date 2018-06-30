@@ -152,10 +152,14 @@ public class AdminService {
         em.persist(ru);
     }
 
+    public void update(List<ReportingUnit> rus) throws Exception {
+        for (ReportingUnit ru : rus) {
+            update(ru);
+        }
+    }
+
     public ReportingUnit update(ReportingUnit ru) throws Exception {
-
         return em.merge(ru);
-
     }
 
     public void updater(User u) throws Exception {

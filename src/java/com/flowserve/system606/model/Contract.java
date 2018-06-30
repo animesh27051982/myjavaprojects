@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.Currency;
 import java.util.List;
 import java.util.logging.Logger;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -110,7 +111,7 @@ public class Contract extends BaseEntity<Long> implements Comparable<Contract>, 
     @JoinColumn(name = "SALES_DESTINATION_COUNTRY_ID")
     //private Country salesDestinationCountry;
 
-    @OneToMany(fetch = FetchType.EAGER, mappedBy = "contract")
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "contract", cascade = CascadeType.MERGE)
     private List<PerformanceObligation> performanceObligations = new ArrayList<PerformanceObligation>();
 
     public Contract() {

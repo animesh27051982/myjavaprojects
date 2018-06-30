@@ -75,10 +75,10 @@ public class PerformanceObligation extends BaseEntity<Long> implements Comparabl
     public PerformanceObligation() {
     }
 
-    public void putInput(Input input) {
-        inputs.put(input.getInputType().getId(), input);
-    }
-
+    // Inputs will be pre-initialized.  should never need to put a new Input
+//    public void putInput(Input input) {
+//        inputs.put(input.getInputType().getId(), input);
+//    }
     public Input getInput(String inputTypeId) {
         return inputs.get(inputTypeId);
     }

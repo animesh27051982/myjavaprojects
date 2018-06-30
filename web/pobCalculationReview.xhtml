@@ -54,7 +54,7 @@
                                             <f:convertNumber type="currency" />
                                         </h:outputText>
                                     </p:column>
-                                    <p:column style="white-space:pre-line;" headerText="% Complete">
+                                    <p:column style="white-space:pre-line;" headerText="Percent Complete">
                                         <h:outputText value="#{pob.getOutput(outputType.PERCENT_COMPLETE).value}" rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}" >
                                             <f:convertNumber type="percent" />
                                         </h:outputText>
@@ -81,7 +81,6 @@
                                     </p:column>
                                     <p:column style="white-space:pre-line;" headerText="Period Fx Rate">
                                         <h:outputText value="#{pob.getContractToLocalFxRate()}" rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}">
-                                            <f:convertNumber type="currency" />
                                         </h:outputText>
                                     </p:column>
                                     <p:column style="white-space:pre-line;" headerText="Period Revenue-Local Currency">
