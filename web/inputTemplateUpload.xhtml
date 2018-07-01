@@ -25,7 +25,7 @@
                 <div class="ui-g-12 ui-md-12 ui-lg-6">
                     <div class="card card-w-title">
                         <h1>Upload Completed MAY-18 POB Template</h1>
-                        <p:fileUpload fileUploadListener="#{fileUploadView.handlePobFileUpload}" auto="true" dragDropSupport="true" label="Upload Template (or drag and drop)"
+                        <p:fileUpload fileUploadListener="#{inputTemplateUpload.handleTemplateUpload}" auto="true" dragDropSupport="true" label="Upload Template (or drag and drop)"
                                       multiple="false" update="messages" sizeLimit="10000000" allowTypes="/(\.|\/)(xlsx)$/" style="width:50%" />
                     </div>
                 </div>
@@ -46,71 +46,10 @@
                             <h:outputText id="setVersion" value="4"/>
                         </p:panelGrid>
 
-                        <p:tabView>
-                            <p:tab title="EAC Inputs">
-                                <p:treeTable value="#{inputTemplateUpload.pobs}" var="pob">
-                                    <f:facet name="header">
-                                        Performance Obligations
-                                    </f:facet>
-
-                                    <p:column style="width: 300px;" headerText="Reporting Unit - Contract" sortBy="#{pob.name}">
-                                        <h:outputText value="#{pob.name}"/>
-                                    </p:column>
-
-                                    <p:column style="white-space:pre-line;" headerText="Rev Rec Method">
-                                        <h:outputText value="#{pob.getStringInput(InputTypeId.REVENUE_RECOGNITION_METHOD)}" rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}"/>
-                                    </p:column>
-
-                                    <p:column style="white-space:pre-line;" headerText="Delivery Date">
-                                        <h:outputText value="#{pob.getStringInput(InputTypeId.DELIVERY_DATE)}" rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}"/>
-                                    </p:column>
-
-                                    <p:column style="white-space:pre-line;" headerText="Allocated Transaction Price">
-                                        <h:outputText value="#{pob.getStringInput(InputTypeId.TRANSACTION_PRICE)}" rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}"/>
-                                    </p:column>
-
-                                    <p:column style="white-space:pre-line;" headerText="Estimate at Completion">
-                                        <h:outputText value="#{pob.getStringInput(InputTypeId.ESTIMATED_COST_AT_COMPLETION)}" rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}"/>
-                                    </p:column>
-
-                                    <p:column style="white-space:pre-line;" headerText="Estimated Gross Profit" >
-                                        <h:outputText value="#{pob.getCurrencyOutput(OutputTypeId.ESTIMATED_GROSS_PROFIT)}" rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}"/>
-                                    </p:column>
-
-                                    <p:column style="white-space:pre-line;" headerText="Estimated Gross Margin">
-                                        <h:outputText value="#{pob.getCurrencyOutput(OutputTypeId.ESTIMATED_GROSS_MARGIN)}" rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}"/>
-                                    </p:column>
-
-                                    <p:column style="white-space:pre-line;" headerText="Liquidated Damages">
-                                        <h:outputText value="#{pob.getCurrencyInput(InputTypeId.LIQUIDATED_DAMAGES)}" rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}"/>
-                                    </p:column>
-
-                                    <!--
-                                    <p:column style="white-space:pre-line;" headerText="Prior Period Estimate-at-Completion">
-                                        <p:cellEditor>
-                                            <f:facet name="output"><h:outputText value="#{document.pobCountRejected}" /></f:facet>
-                                            <f:facet name="input"><p:inputText value="#{document.pobCountRejected}" style="width:100%"/></f:facet>
-                                        </p:cellEditor>
-                                    </p:column>
-                                    <p:column style="white-space:pre-line;" headerText="Change in Estimate">
-                                        <p:cellEditor>
-                                            <f:facet name="output"><h:outputText value="#{document.pobCountRejected}" /></f:facet>
-                                            <f:facet name="input"><p:inputText value="#{document.pobCountRejected}" style="width:100%"/></f:facet>
-                                        </p:cellEditor>
-                                    </p:column>
-                                    -->
-
-
-                                </p:treeTable>
-                            </p:tab>
-
-                        </p:tabView>
 
                         <p:toolbar>
                             <f:facet name="right">
-                                <p:menuButton value="Cancel Edits"/>
-                                <p:menuButton value="Save Inputs"/>
-                                <p:commandButton value="Save and Proceed to Calculation Review" icon="ui-icon-check" action="#{calcReviewController.reviewCalculations()}"/>
+                                <p:commandButton value="Proceed to Calculation Review" icon="ui-icon-check" action="#{calcReviewController.reviewCalculations()}"/>
                             </f:facet>
                         </p:toolbar>
 

@@ -6,6 +6,7 @@
 package com.flowserve.system606.view;
 
 import com.flowserve.system606.model.PerformanceObligation;
+import com.flowserve.system606.model.ReportingUnit;
 import com.flowserve.system606.service.AdminService;
 import com.flowserve.system606.service.BusinessRuleService;
 import com.flowserve.system606.service.InputService;
@@ -14,7 +15,8 @@ import com.flowserve.system606.service.PerformanceObligationService;
 import com.flowserve.system606.web.WebSession;
 import java.io.Serializable;
 import java.math.BigDecimal;
-import java.util.logging.Level;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import javax.faces.application.FacesMessage;
@@ -35,7 +37,7 @@ public class InputOnlineEntry implements Serializable {
 
     private static final Logger logger = Logger.getLogger(InputOnlineEntry.class.getName());
 
-    private TreeNode pobs;
+    private TreeNode rootTreeNode;
     @Inject
     private AdminService adminService;
     @Inject
@@ -49,18 +51,14 @@ public class InputOnlineEntry implements Serializable {
     private InputService inputService;
     @Inject
     private OutputService outputService;
+    @Inject
+    private ViewSupport viewSupport;
+
+    private List<ReportingUnit> reportingUnits = new ArrayList<ReportingUnit>();
 
     @PostConstruct
     public void init() {
-        try {
-            pobs = webSession.getReportingUnitTreeNode();
-        } catch (Exception e) {
-            logger.log(Level.SEVERE, "Error init pobs", e);
-        }
-    }
-
-    public TreeNode getPobs() {
-        return pobs;
+        rootTreeNode = viewSupport.generateNodeTree(adminService.getPreparableReportingUnits());
     }
 
     public String getInputTypeName(String inputTypeId) {
@@ -93,5 +91,13 @@ public class InputOnlineEntry implements Serializable {
         pob.printInputs();
         businessRuleService.executeBusinessRules(pob);
         pob.printOutputs();
+    }
+
+    public List<ReportingUnit> getReportingUnits() {
+        return reportingUnits;
+    }
+
+    public TreeNode getRootTreeNode() {
+        return rootTreeNode;
     }
 }

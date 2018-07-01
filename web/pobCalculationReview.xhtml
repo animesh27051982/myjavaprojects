@@ -36,7 +36,7 @@
 
                         <p:tabView>
                             <p:tab title="Percent Complete / Revenue">
-                                <p:treeTable value="#{pobCalculationReview.pobs}" var="pob">
+                                <p:treeTable value="#{pobCalculationReview.rootTreeNode}" var="pob">
                                     <f:facet name="header">
                                         Performance Obligations - % Complete / Revenue
                                     </f:facet>
@@ -94,7 +94,7 @@
                                 </p:treeTable>
                             </p:tab>
                             <p:tab title="Liquidated Damages">
-                                <p:treeTable value="#{pobCalculationReview.pobs}" var="pob">
+                                <p:treeTable value="#{pobCalculationReview.rootTreeNode}" var="pob">
                                     <f:facet name="header">
                                         Performance Obligations - Liquidated Damages
                                     </f:facet>
@@ -139,7 +139,7 @@
                             </p:tab>
                             <p:tab title="Backlog Revaluation">
 
-                                <p:treeTable value="#{pobCalculationReview.pobs}" var="pob">
+                                <p:treeTable value="#{pobCalculationReview.rootTreeNode}" var="pob">
                                     <f:facet name="header">
                                         Performance Obligations - Backlog Revaluation
                                     </f:facet>
@@ -180,7 +180,7 @@
                             </p:tab>
                             <p:tab title="Cost of Goods Sold">
 
-                                <p:treeTable value="#{pobCalculationReview.pobs}" var="document">
+                                <p:treeTable value="#{pobCalculationReview.rootTreeNode}" var="document">
                                     <f:facet name="header">
                                         Performance Obligations - Cost of Goods Sold
                                     </f:facet>

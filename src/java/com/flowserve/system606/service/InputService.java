@@ -12,19 +12,11 @@ import com.flowserve.system606.model.InputSet;
 import com.flowserve.system606.model.InputType;
 import com.flowserve.system606.model.InputTypeId;
 import com.flowserve.system606.model.OutputType;
-import com.flowserve.system606.model.OutputTypeId;
-import com.flowserve.system606.model.PerformanceObligation;
 import java.io.BufferedReader;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.time.ZoneId;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
@@ -33,15 +25,6 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 import javax.transaction.Transactional;
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.CellStyle;
-import org.apache.poi.ss.usermodel.DataFormatter;
-import org.apache.poi.ss.usermodel.DateUtil;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.util.CellReference;
-import org.apache.poi.xssf.usermodel.XSSFRow;
-import org.apache.poi.xssf.usermodel.XSSFSheet;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 /**
  *
@@ -62,191 +45,21 @@ public class InputService {
 
     private static Logger logger = Logger.getLogger("com.flowserve.system606");
 
-    public List<InputType> findActiveInputTypes() {
-        Query query = em.createQuery("SELECT it FROM InputType it WHERE it.active = TRUE");
+    public List<InputType> findActiveInputTypesPob() {
+        return findActiveInputTypesByOwnerEntityType("POB");
+    }
+
+    public List<InputType> findActiveInputTypesContract() {
+        return findActiveInputTypesByOwnerEntityType("Contract");
+    }
+
+    private List<InputType> findActiveInputTypesByOwnerEntityType(String ownerEntityType) {
+        Query query = em.createQuery("SELECT it FROM InputType it WHERE it.ownerEntityType = :OET AND it.active = TRUE");
+        query.setParameter("OET", ownerEntityType);
         return (List<InputType>) query.getResultList();
     }
 
-    public boolean readFeed(InputStream fis, String filename) throws Exception {  // Need an application exception type defined.
-
-        logger.info("readFeed:" + fis.toString());
-
-        List<InputType> inputTypeList = findInputTypes();
-        HashMap<String, InputType> inputTypeMap = new HashMap();
-        for (InputType inputType : inputTypeList) {
-            inputTypeMap.put(inputType.getExcelCol(), inputType);
-        }
-
-        XSSFRow row;
-        XSSFWorkbook workbook = new XSSFWorkbook(fis);
-        XSSFSheet spreadsheet = workbook.getSheetAt(0);
-        Iterator< Row> rowIterator = spreadsheet.iterator();
-        InputSet inputSet = new InputSet();
-        inputSet.setFilename(filename);
-
-        //List<Input> inputList = new ArrayList<>();
-        // when do we call contract.setExchange - when we save a new contract or we see a new C-ID and customer name
-        List<PerformanceObligation> exchange = null;
-        Contract contract = null;
-
-        while (rowIterator.hasNext()) {
-            row = (XSSFRow) rowIterator.next();
-            // skip first row as header
-            if (row.getRowNum() <= 1) {
-                continue;
-            } else if (row.getRowNum() > 3) //test only 2 rows
-            {
-                break;
-            }
-
-            PerformanceObligation pob = null;
-            String reportingUnit = null;
-            long contractId = -1;
-            String customerName = null;
-            String salesOrderNum = null;
-            BigDecimal totalTransactionPrice = null;
-
-            Long pobID = null;
-            Iterator< Cell> cellIterator = row.cellIterator();
-            while (cellIterator.hasNext()) {
-                Cell cell = cellIterator.next();
-
-                // only process the excel_cols that are in the map
-                String excelCol = CellReference.convertNumToColString(cell.getColumnIndex());
-                if (inputTypeMap.get(excelCol) != null) {
-
-                    InputType inputType = inputTypeMap.get(excelCol);
-                    Input input = pob.getInput(inputType.getId());
-
-//                    Class<?> clazz = Class.forName(inputType.getInputClass());
-//                    Input input = (Input) clazz.newInstance();
-//                    input.setInputType(inputType);
-                    switch (cell.getCellType()) {
-                        case Cell.CELL_TYPE_NUMERIC:
-                            boolean bDate = false;
-                            CellStyle style = cell.getCellStyle();
-                            if (style != null) {
-                                int i = style.getDataFormat();
-                                String f = style.getDataFormatString();
-                                bDate = DateUtil.isADateFormat(i, f);
-                                if (bDate) {
-                                    DataFormatter formatter = new DataFormatter();
-                                    String formattedValue = formatter.formatCellValue(cell);
-                                    Date d = cell.getDateCellValue();
-                                    input.setValue(d.toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
-                                    //inputList.add(input);
-                                    //pob.putInput(input);
-                                }
-                            }
-                            if (!bDate) {
-                                BigDecimal bd = BigDecimal.valueOf(cell.getNumericCellValue());
-                                input.setValue(bd);
-                                if (input.getInputType().getOwnerEntityType().equalsIgnoreCase("Contract")) {
-                                    switch (input.getInputType().getId()) {
-                                        case "C_ID":
-                                            contractId = (long) cell.getNumericCellValue();
-                                            break;
-                                        case "TOTAL_TRANS_PRICE_CONTRACT_CURR":
-                                            totalTransactionPrice = (BigDecimal) input.getValue();
-                                            break;
-                                    }
-                                } else {
-                                    //inputList.add(input);
-                                    //pob.putInput(input);
-                                }
-                            }
-                            break;
-
-                        case Cell.CELL_TYPE_STRING:
-                            if (!cell.getStringCellValue().trim().isEmpty()) {
-                                input.setValue(cell.getStringCellValue());
-                                if (input.getInputType().getOwnerEntityType().equalsIgnoreCase("Contract")) {
-
-                                    switch (input.getInputType().getId()) {
-                                        case "REPORTING_UNIT":
-                                            reportingUnit = (String) input.getValue();
-                                            break;
-                                        case "CUSTOMER_NAME":
-                                            customerName = (String) input.getValue();
-                                            break;
-                                        case "SALES_ORDER_NUMBER":
-                                            salesOrderNum = (String) input.getValue();
-                                            break;
-                                    }
-
-                                } else {
-                                    //inputList.add(input);
-                                    //pob.putInput(input);
-                                }
-                            }
-                            break;
-
-                    }
-                } else if (excelCol.equalsIgnoreCase("G")) { //check the POB ID column to get POB_ID
-                    switch (cell.getCellType()) {
-                        case Cell.CELL_TYPE_NUMERIC:
-                            pobID = (long) cell.getNumericCellValue();
-                            pob = pobService.findById(pobID);
-                            break;
-                        default:
-                            logger.info("Invalid POB ID \t\t ");
-                    }
-                }
-            }
-
-            // update/save the pob
-            logger.info("pobService.update POB ID:" + pob.getId() + " Name:" + pob.getName() + " \t\t ");
-            //comment these out see if contract will update pob
-//            pob = pobService.update(pob);
-//            pobService.initializeOutputs(pob);
-//            businessRuleService.executeBusinessRules(pob);
-            //this indicates are are in a new contract, or use C-ID and Customer Name to check
-
-            // KJG:  New contracts will be handled via other means.
-//            if ((contract != null && contractId != contract.getId()) || totalTransactionPrice != null) {
-//                // if there are existing old contract, save exchange list to it and finish the existing old contract
-//                if (contract != null) {
-//                    contract.setPerformanceObligations(exchange);
-//                    //em.merge( contract );
-//                    //persist(contract);
-//                    logger.log(Level.INFO, "contract.getExchanges().size(): " + contract.getPerformanceObligations().size());
-//                    logger.log(Level.INFO, "contract.getExchanges().get(0).getId(): " + contract.getPerformanceObligations().get(0).getId());
-//                    contract = update(contract);
-//                }
-//                //now create a new contract for the new pob and add its pob
-//                contract = createContract(reportingUnit, contractId, customerName, salesOrderNum, totalTransactionPrice);
-//                exchange = contract.getPerformanceObligations();
-//                pob.setContract(contract);
-//                exchange.add(pob);
-//            } else {
-//                // we are in existing contract with a new pob, add pob to existing contract
-//                pob.setContract(contract);
-//                exchange.add(pob);
-//            }
-            pob = pobService.update(pob);
-//            pobService.initializeInputs(pob);
-//            pobService.initializeOutputs(pob);
-            businessRuleService.executeBusinessRules(pob);
-            logger.log(Level.INFO, "pob.PERCENT_COMPLETE: " + pob.getOutput(OutputTypeId.PERCENT_COMPLETE).getValue().toString());
-            logger.log(Level.INFO, "pob.REVENUE_EARNED_TO_DATE: " + pob.getOutput(OutputTypeId.REVENUE_EARNED_TO_DATE).getValue().toString());
-            logger.log(Level.INFO, "pob.ESTIMATED_GROSS_PROFIT: " + pob.getOutput(OutputTypeId.ESTIMATED_GROSS_PROFIT).getValue().toString());
-            logger.log(Level.INFO, "pob.ESTIMATED_GROSS_MARGIN: " + pob.getOutput(OutputTypeId.ESTIMATED_GROSS_MARGIN).getValue().toString());
-        }
-        fis.close();
-
-        // going to change inputset to be pob level history only.  removing for now.
-        //inputSet.setInputs(inputList);
-        //persist(inputSet);
-        // need commit last contract
-        // persist(contract);
-        //contract.setPerformanceObligations(exchange);
-        logger.log(Level.INFO, "contract.getExchanges().size(): " + contract.getPerformanceObligations().size());
-        logger.log(Level.INFO, "contract.getExchanges().get(0).getId(): " + contract.getPerformanceObligations().get(0).getId());
-        contract = update(contract);
-        return true;
-    }
-
-    public List<InputType> findInputTypes() {
+    private List<InputType> findAllInputTypes() {
         Query query = em.createQuery("SELECT inputType FROM InputType inputType");
         return (List<InputType>) query.getResultList();
     }
@@ -286,7 +99,7 @@ public class InputService {
     public void initInputTypes() throws Exception {
 
         //admin = adminService.findUserByFlsId("admin");
-        if (findInputTypes().isEmpty()) {
+        if (findAllInputTypes().isEmpty()) {
             logger.info("Initializing InputTypes");
             BufferedReader reader = new BufferedReader(new InputStreamReader(AppInitializeService.class.getResourceAsStream("/resources/app_data_init_files/init_input_types.txt"), "UTF-8"));
             String inputCurrencyType = null;

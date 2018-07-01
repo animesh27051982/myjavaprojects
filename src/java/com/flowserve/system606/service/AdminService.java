@@ -13,6 +13,7 @@ import com.flowserve.system606.model.ReportingUnit;
 import com.flowserve.system606.model.User;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.Currency;
 import java.util.List;
 import java.util.Locale;
@@ -321,4 +322,14 @@ public class AdminService {
         query.setParameter("Currency", "%" + searchString.toUpperCase() + "%");
         return (List<ExchangeRate>) query.getResultList();
     }
+
+    public List<ReportingUnit> getPreparableReportingUnits() {   // TODO - Move this to UserService.
+        // TODO - figure out logged in user.
+        List<ReportingUnit> rus = new ArrayList<ReportingUnit>();
+        rus.add(findReportingUnitByCode("1015"));
+        rus.add(findReportingUnitByCode("1100"));
+
+        return rus;
+    }
+
 }

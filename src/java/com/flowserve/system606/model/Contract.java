@@ -187,11 +187,11 @@ public class Contract extends BaseEntity<Long> implements Comparable<Contract>, 
     }
 
     public List<PerformanceObligation> getPerformanceObligations() {
-        return performanceObligations != null ? performanceObligations : new ArrayList<>();
+        return performanceObligations;
     }
 
     public void setPerformanceObligations(List<PerformanceObligation> pobs) {
-        this.performanceObligations = new ArrayList<>(pobs);
+        this.performanceObligations = pobs;
     }
 
     // TODO - KJG - Remove.  Temp code for calc pages.

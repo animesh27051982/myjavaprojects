@@ -38,8 +38,18 @@ public class OutputService {
         return (List<OutputType>) query.getResultList();
     }
 
-    public List<OutputType> findActiveOutputTypes() {
+    private List<OutputType> findActiveOutputTypes() {
         Query query = em.createQuery("SELECT ot FROM OutputType ot WHERE ot.active = TRUE");
+        return (List<OutputType>) query.getResultList();
+    }
+
+    public List<OutputType> findActiveOutputTypesPob() {
+        return findActiveOutputTypesByOwnerEntityType("POB");
+    }
+
+    private List<OutputType> findActiveOutputTypesByOwnerEntityType(String ownerEntityType) {
+        Query query = em.createQuery("SELECT ot FROM OutputType ot WHERE ot.ownerEntityType = :OET AND ot.active = TRUE");
+        query.setParameter("OET", ownerEntityType);
         return (List<OutputType>) query.getResultList();
     }
 

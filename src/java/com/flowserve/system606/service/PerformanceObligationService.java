@@ -38,31 +38,37 @@ public class PerformanceObligationService {
     @EJB
     private PerformanceObligationService performanceObligationService;
 
-    public void initializeInputs(PerformanceObligation pob) throws Exception {
-        pob.initializeInputs(inputService.findActiveInputTypes());
+    private void initializeInputs(PerformanceObligation pob) throws Exception {
+        pob.initializeInputs(inputService.findActiveInputTypesPob());
     }
 
-    public void initializeOutputs(PerformanceObligation pob) throws Exception {
-        pob.initializeOutputs(outputService.findActiveOutputTypes());
-        pob.printOutputs();
+    private void initializeOutputs(PerformanceObligation pob) throws Exception {
+        pob.initializeOutputs(outputService.findActiveOutputTypesPob());
+        //pob.printOutputs();
     }
 
     public PerformanceObligation findById(Long id) {
         return em.find(PerformanceObligation.class, id);
     }
 
-    public void persist(PerformanceObligation pob) throws Exception {
-        //pob.setCreatedBy(createdBy);
-        pob.setCreationDate(LocalDateTime.now());
-        //pob.setLastUpdatedBy(createdBy);
-        pob.setLastUpdateDate(LocalDateTime.now());
-        em.persist(pob);
-    }
-
+//    public void persist(PerformanceObligation pob) throws Exception {
+//        //pob.setCreatedBy(createdBy);
+//        pob.setCreationDate(LocalDateTime.now());
+//        //pob.setLastUpdatedBy(createdBy);
+//        pob.setLastUpdateDate(LocalDateTime.now());
+//        em.persist(pob);
+//    }
     public PerformanceObligation update(PerformanceObligation pob) throws Exception {
         //User user = adminService.findUserByFlsId(sessionContext.getCallerPrincipal().getName().toLowerCase());
         //pob.setLastUpdatedBy(updatedBy);
+        if (pob.getCreationDate() == null) {
+            pob.setCreationDate(LocalDateTime.now());
+        }
         pob.setLastUpdateDate(LocalDateTime.now());
+        if (!pob.isInitialized()) {
+            initializeInputs(pob);
+            initializeOutputs(pob);
+        }
         return em.merge(pob);
     }
 
@@ -74,10 +80,14 @@ public class PerformanceObligationService {
         return em.find(PerformanceObligation.class, id);
     }
 
+    public long getPobCount() {
+        return (long) em.createQuery("SELECT COUNT(pob.id) FROM PerformanceObligation pob").getSingleResult();
+    }
+
     public void initPOBs() throws Exception {
 
         //read init_contract_pob_data.txt a second time
-        if (findById(11521L) == null) {
+        if (getPobCount() == 0) {
             logger.info("Initializing POBs");
             BufferedReader reader = new BufferedReader(new InputStreamReader(AppInitializeService.class.getResourceAsStream("/resources/app_data_init_files/init_contract_pob_data.txt"), "UTF-8"));
 
@@ -109,6 +119,7 @@ public class PerformanceObligationService {
                 salesOrderNumber = values[count++].trim();
                 pobName = values[count++].trim();
                 pobId = Long.valueOf(values[count++].trim());
+                pobName = pobName + " " + pobId;
                 if (findPerformanceObligationById(contractId) != null) {
                     throw new IllegalStateException("Duplicte POBs in the file.  This should never happen.  POB ID: " + pobId);
                 }

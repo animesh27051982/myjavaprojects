@@ -6,6 +6,7 @@
 package com.flowserve.system606.view;
 
 import com.flowserve.system606.model.PerformanceObligation;
+import com.flowserve.system606.service.AdminService;
 import com.flowserve.system606.service.BusinessRuleService;
 import com.flowserve.system606.service.InputService;
 import com.flowserve.system606.service.OutputService;
@@ -32,7 +33,7 @@ public class PobCalculationReview implements Serializable {
 
     private static final Logger logger = Logger.getLogger(PobCalculationReview.class.getName());
 
-    private TreeNode pobs;
+    private TreeNode rootTreeNode;
     @Inject
     BusinessRuleService businessRuleService;
     private BigDecimal eacValue;
@@ -42,18 +43,18 @@ public class PobCalculationReview implements Serializable {
     private InputService inputService;
     @Inject
     private OutputService outputService;
+    @Inject
+    private ViewSupport viewSupport;
+    @Inject
+    private AdminService adminService;
 
     @PostConstruct
     public void init() {
         try {
-            pobs = webSession.getReportingUnitTreeNode();
+            rootTreeNode = viewSupport.generateNodeTree(adminService.getPreparableReportingUnits());
         } catch (Exception e) {
             logger.log(Level.SEVERE, "Error init pobs", e);
         }
-    }
-
-    public TreeNode getPobs() {
-        return pobs;
     }
 
     public String getInputTypeName(String inputTypeId) {
@@ -92,5 +93,9 @@ public class PobCalculationReview implements Serializable {
     public void calculateOutputs(PerformanceObligation pob) throws Exception {
         printInputs(pob);
         businessRuleService.executeBusinessRules(pob);
+    }
+
+    public TreeNode getRootTreeNode() {
+        return rootTreeNode;
     }
 }

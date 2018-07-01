@@ -70,16 +70,16 @@ public class InputTemplateDownload implements Serializable {
             //reportingUnits = createReportingUnitTree();
             inputStream = PobInput.class.getResourceAsStream("/resources/excel_input_templates/POCI_Template.xlsx");
             outputStream = new FileOutputStream(new File("poci_input_template.xlsx"));
-            
+
         } catch (IOException e) {
             e.printStackTrace();
         }
 
         List<ReportingUnit> reportingUnits = new ArrayList<ReportingUnit>();
-        reportingUnits.add( adminService.findReportingUnitByCode("1015") );
-        reportingUnits.add( adminService.findReportingUnitByCode("1100") );
-        templateService.populateData(inputStream, outputStream, reportingUnits);
-        
+        reportingUnits.add(adminService.findReportingUnitByCode("1015"));
+        reportingUnits.add(adminService.findReportingUnitByCode("1100"));
+        templateService.processTemplateDownload(inputStream, outputStream, reportingUnits);
+
         //InputStream inputStreamFromUutputStream = new ByteArrayInputStream(outputStream.toByteArray());
         InputStream inputStreamFromOutputStream = new FileInputStream(new File("poci_input_template.xlsx"));
         file = new DefaultStreamedContent(inputStreamFromOutputStream, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "poci_input_template.xlsx");

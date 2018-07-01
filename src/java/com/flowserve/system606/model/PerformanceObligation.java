@@ -75,6 +75,10 @@ public class PerformanceObligation extends BaseEntity<Long> implements Comparabl
     public PerformanceObligation() {
     }
 
+    public boolean isInitialized() {
+        return inputs.keySet().size() != 0;
+    }
+
     // Inputs will be pre-initialized.  should never need to put a new Input
 //    public void putInput(Input input) {
 //        inputs.put(input.getInputType().getId(), input);
@@ -83,21 +87,25 @@ public class PerformanceObligation extends BaseEntity<Long> implements Comparabl
         return inputs.get(inputTypeId);
     }
 
-    public String getStringInput(String inputTypeId) {
+    public String getStringInputValue(String inputTypeId) {
         return ((StringInput) inputs.get(inputTypeId)).getValue();
     }
 
-    public LocalDate getDateInput(String inputTypeId) {
+    public StringInput getStringInput(String inputTypeId) {
+        return ((StringInput) inputs.get(inputTypeId));
+    }
+
+    public DateInput getDateInput(String inputTypeId) {
+        return ((DateInput) inputs.get(inputTypeId));
+    }
+
+    public LocalDate getDateInputValue(String inputTypeId) {
         return ((DateInput) inputs.get(inputTypeId)).getValue();
     }
 
     public BigDecimal getCurrencyInput(String inputTypeId) {
-        if (((CurrencyInput) inputs.get(inputTypeId)).getValue() == null) {
-            Logger.getLogger(PerformanceObligation.class.getName()).log(Level.FINER, "getCurrencyIntput(): " + inputTypeId + " is null");
-        } else {
-            Logger.getLogger(PerformanceObligation.class.getName()).log(Level.FINER, "getCurrencyIntput(): " + inputTypeId + ": " + ((CurrencyInput) inputs.get(inputTypeId)).getValue().toPlainString());
-        }
-
+        Logger.getLogger(PerformanceObligation.class.getName()).log(Level.FINER, "getCurrencyInput: " + inputTypeId + " POB ID: " + this.getId());
+        Logger.getLogger(PerformanceObligation.class.getName()).log(Level.FINER, "Input Object: " + inputs.get(inputTypeId));
         return ((CurrencyInput) inputs.get(inputTypeId)).getValue();
     }
 
@@ -116,7 +124,7 @@ public class PerformanceObligation extends BaseEntity<Long> implements Comparabl
     }
 
     public void initializeOutput(OutputType outputType) throws Exception {
-        if (outputs.get(outputType) == null) {
+        if (outputs.get(outputType.getId()) == null) {
             Class<?> clazz = Class.forName(outputType.getOutputClass());
             Output output = (Output) clazz.newInstance();
             output.setOutputType(outputType);
@@ -131,7 +139,7 @@ public class PerformanceObligation extends BaseEntity<Long> implements Comparabl
     }
 
     public void initializeInput(InputType inputType) throws Exception {
-        if (inputs.get(inputType) == null) {
+        if (inputs.get(inputType.getId()) == null) {
             Class<?> clazz = Class.forName(inputType.getInputClass());
             Input input = (Input) clazz.newInstance();
             input.setInputType(inputType);
@@ -147,7 +155,7 @@ public class PerformanceObligation extends BaseEntity<Long> implements Comparabl
     }
 
     public void putCurrencyOutput(String outputTypeId, BigDecimal value) {
-        Logger.getLogger(PerformanceObligation.class.getName()).log(Level.FINER, "putCurrencyOutput(): " + outputTypeId + ": " + value.toPlainString());
+        Logger.getLogger(PerformanceObligation.class.getName()).log(Level.FINE, "putCurrencyOutput(): " + outputTypeId + ": " + value.toPlainString());
         outputs.get(outputTypeId).setValue(value);
     }
 
@@ -275,12 +283,13 @@ public class PerformanceObligation extends BaseEntity<Long> implements Comparabl
     }
 
     public void printOutputs() {
-        Logger.getLogger(PerformanceObligation.class.getName()).log(Level.FINER, "message");
+        for (Object obj : outputs.keySet()) {
+            Logger.getLogger(PerformanceObligation.class.getName()).log(Level.FINER, "Key: " + obj);
+        }
         for (String outputTypeId : outputs.keySet()) {
             if (outputs.get(outputTypeId) != null && outputs.get(outputTypeId).getValue() != null) {
                 Logger.getLogger(PerformanceObligation.class.getName()).log(Level.FINER, "OutputTypeId: " + outputTypeId + "\tvalue: " + outputs.get(outputTypeId).getValue());
             }
-
         }
     }
 

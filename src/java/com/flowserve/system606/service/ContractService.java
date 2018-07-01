@@ -44,10 +44,14 @@ public class ContractService {
 
     private static Logger logger = Logger.getLogger("com.flowserve.system606");
 
+    public long getContractCount() {
+        return (long) em.createQuery("SELECT COUNT(c.id) FROM Contract c").getSingleResult();
+    }
+
     public void initContracts() throws Exception {
 
         // change to read init_contract_pob_data.txt a first time
-        if (findContractById(10512L) == null) {
+        if (getContractCount() == 0) {
             logger.info("Initializing Contracts");
             BufferedReader reader = new BufferedReader(new InputStreamReader(AppInitializeService.class.getResourceAsStream("/resources/app_data_init_files/init_contract_pob_data.txt"), "UTF-8"));
 

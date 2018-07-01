@@ -5,9 +5,14 @@
  */
 package com.flowserve.system606.view;
 
+import com.flowserve.system606.model.BusinessUnit;
+import com.flowserve.system606.model.Contract;
+import com.flowserve.system606.model.PerformanceObligation;
+import com.flowserve.system606.model.ReportingUnit;
 import com.flowserve.system606.model.User;
 import com.flowserve.system606.service.AdminService;
 import com.flowserve.system606.service.CurrencyService;
+import com.flowserve.system606.web.WebSession;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -20,6 +25,8 @@ import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.inject.Named;
+import org.primefaces.model.DefaultTreeNode;
+import org.primefaces.model.TreeNode;
 
 /**
  *
@@ -80,6 +87,27 @@ public class ViewSupport implements Serializable {
         Collections.sort(currencyList, (c1, c2) -> c1.getCurrencyCode().compareTo(c2.getCurrencyCode()));
 
         return currencyList;
+    }
+
+    public TreeNode generateNodeTree(List<ReportingUnit> reportingUnits) {
+        TreeNode root = new DefaultTreeNode(new BusinessUnit(), null);
+
+        for (ReportingUnit reportingUnit : reportingUnits) {
+            Logger.getLogger(WebSession.class.getName()).log(Level.FINER, "Adding to tree RU Name: " + reportingUnit.getName());
+            TreeNode reportingUnitNode = new DefaultTreeNode(reportingUnit, root);
+            reportingUnitNode.setExpanded(true);
+            for (Contract contract : reportingUnit.getContract()) {
+                Logger.getLogger(WebSession.class.getName()).log(Level.FINER, "Adding to tree Contract Name: " + contract.getName());
+                TreeNode contractNode = new DefaultTreeNode(contract, reportingUnitNode);
+                contractNode.setExpanded(true);
+                for (PerformanceObligation pob : contract.getPerformanceObligations()) {
+                    Logger.getLogger(WebSession.class.getName()).log(Level.FINER, "Adding to tree POB ID: " + pob.getId());
+                    new DefaultTreeNode(pob, contractNode);
+                }
+            }
+        }
+
+        return root;
     }
 
 }
