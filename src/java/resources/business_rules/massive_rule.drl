@@ -1,6 +1,8 @@
 dialect "mvel"
 
 import com.flowserve.system606.model.PerformanceObligation;
+import com.flowserve.system606.model.InputTypeName;
+import com.flowserve.system606.model.OutputTypeName;
 import java.util.logging.Logger;
 
 global Logger logger;
@@ -11,14 +13,13 @@ rule "Calculate EAC Change"
     when
         // Pull input values needed for this calculation.
         pob : PerformanceObligation(
-            estimatedCostAtCompletion : getCurrencyInput("ESTIMATED_COST_AT_COMPLETION") != null,
-            estimatedCostAtCompletionPriorPeriod : getCurrencyInputPriorPeriod("ESTIMATED_COST_AT_COMPLETION") != null
+            estimatedCostAtCompletion : getCurrencyInput(InputTypeName.ESTIMATED_COST_AT_COMPLETION) != null,
+            estimatedCostAtCompletionPriorPeriod : getCurrencyInputPriorPeriod(InputTypeName.ESTIMATED_COST_AT_COMPLETION) != null
         )
     then
         changeInEstimate = estimatedCostAtCompletionPriorPeriod - estimatedCostAtCompletion;
-        pob.putCurrencyOutput("CHANGE_IN_ESTIMATED_COST_AT_COMPLETION", changeInEstimate);
+        pob.putCurrencyOutput(OutputTypeName.CHANGE_IN_ESTIMATED_COST_AT_COMPLETION, changeInEstimate);
 end
-
 
 rule "Calculate Estimated Gross Profit and Margin"
 
@@ -26,53 +27,14 @@ rule "Calculate Estimated Gross Profit and Margin"
     when
         // Pull input values needed for this calculation.
         pob : PerformanceObligation(
-            transactionPrice : getCurrencyInput("TRANSACTION_PRICE") != null,
-            estimatedCostAtCompletion : getCurrencyInput("ESTIMATED_COST_AT_COMPLETION") != null
+            transactionPrice : getCurrencyInput(InputTypeName.TRANSACTION_PRICE) != null,
+            estimatedCostAtCompletion : getCurrencyInput(InputTypeName.ESTIMATED_COST_AT_COMPLETION) != null
         )
     then
         // Calculate all outputs possible using these inputs.
 
         estimatedGrossProfit =  transactionPrice - estimatedCostAtCompletion;
-        pob.putCurrencyOutput("ESTIMATED_GROSS_PROFIT", estimatedGrossProfit);
+        pob.putCurrencyOutput(OutputTypeName.ESTIMATED_GROSS_PROFIT, estimatedGrossProfit);
         estimatedGrossMargin = estimatedGrossProfit / transactionPrice
-        pob.putCurrencyOutput("ESTIMATED_GROSS_MARGIN", estimatedGrossMargin);
+        pob.putCurrencyOutput(OutputTypeName.ESTIMATED_GROSS_MARGIN, estimatedGrossMargin);
 end
-
-
-rule "Calculate Cumulative Total ITD Costs, Percent Complete, Revenue Earned to Date, Cumulative Revenue to Recognize"
-    // We have everything we need, run all calcs.
-    when
-        pob : PerformanceObligation(
-            costIncurred : getCurrencyInput("CUMULATIVE_COST_INCURRED") != null,
-            thirdPartyProgress : getCurrencyInput("CUMULATIVE_THIRD_PARTY_PROGRESS") != null,
-            intercoProgress : getCurrencyInput("CUMULATIVE_INTERCOMPANY_PROGRESS") != null,
-            estimatedCostAtCompletion : getCurrencyInput("ESTIMATED_COST_AT_COMPLETION") != null,
-            transactionPrice : getCurrencyInput("TRANSACTION_PRICE") != null,
-            priorPeriodCumulative : getCurrencyValuePriorPeriod() != null,
-            periodExRate: getContractToLocalFxRate() != null,
-            totalLiquidatedDamages : getCurrencyInput("LIQUIDATED_DAMAGES") != null,
-            liquidatedDamagesPriorPeriod : getLiquidatedDamagesPriorPeriod() != null
-        )
-    then
-        totalITDCosts = costIncurred + thirdPartyProgress + intercoProgress;
-        pob.putCurrencyOutput("CUMULATIVE_TOTAL_ITD_COSTS", totalITDCosts);
-        percentComplete = totalITDCosts / estimatedCostAtCompletion;
-        pob.putCurrencyOutput("PERCENT_COMPLETE", percentComplete);
-        revenueEarnedToDate = percentComplete * transactionPrice;
-        pob.putCurrencyOutput("REVENUE_EARNED_TO_DATE", revenueEarnedToDate);
-        revenueToRecognize = percentComplete * transactionPrice;
-        pob.putCurrencyOutput("CUMULATIVE_REVENUE_TO_RECOGNIZE", revenueToRecognize );
-        periodRevenue = revenueToRecognize - priorPeriodCumulative;
-        pob.putCurrencyOutput("PERIOD_REVENUE", periodRevenue);
-        periodRevenueLocalCurrency = periodRevenue * periodExRate;
-        pob.putCurrencyOutput("PERIOD_REVENUE_LOCAL_CURRENCY", periodRevenueLocalCurrency);
-        cumulativeLiquidatedDamages = percentComplete * totalLiquidatedDamages;
-        pob.putCurrencyOutput("CUMULATIVE_LIQUIDATED_DAMAGES_CC", cumulativeLiquidatedDamages);
-        liquidatedDamagesCurrentPeriodCC = cumulativeLiquidatedDamages - liquidatedDamagesPriorPeriod;
-        pob.putCurrencyOutput("LIQUIDATED_DAMAGES_RECOGNIZE_CURRENT_PERIOD_CC", liquidatedDamagesCurrentPeriodCC);
-        liquidatedDamagesCurrentPeriodLC = liquidatedDamagesCurrentPeriodCC * periodExRate;
-        pob.putCurrencyOutput("LIQUIDATED_DAMAGES_RECOGNIZE_CURRENT_PERIOD_LC", liquidatedDamagesCurrentPeriodCC);
-        logger.info("Contract to Local Fx Rate: " + pob.contractToLocalFxRate);
-end
-
-

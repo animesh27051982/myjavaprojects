@@ -57,14 +57,6 @@ public class PobCalculationReview implements Serializable {
         }
     }
 
-    public String getInputTypeName(String inputTypeId) {
-        return inputService.findInputTypeById(inputTypeId).getName();
-    }
-
-    public String getOutputTypeName(String outputTypeId) {
-        return outputService.findOutputTypeById(outputTypeId).getName();
-    }
-
     public void onCellEdit(CellEditEvent event) {
         Object oldValue = event.getOldValue();
         Object newValue = event.getNewValue();

@@ -4,26 +4,34 @@ import java.io.Serializable;
 import java.time.LocalDate;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import static javax.persistence.TemporalType.DATE;
 
 @Entity
 @Table(name = "OUTPUT_TYPES")
-public class OutputType extends BaseEntity<String> implements Serializable, Comparable<OutputType> {
+public class OutputType extends BaseEntity<Long> implements Serializable, Comparable<OutputType> {
 
     private static final long serialVersionUID = -8382719960102472187L;
 
     @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "FLS_SEQ")
+    @SequenceGenerator(name = "FLS_SEQ", sequenceName = "FLS_SEQ", allocationSize = 1)
     @Column(name = "OUTPUT_TYPE_ID")
-    private String id;
+    private Long id;
     @Column(name = "OWNER_ENTITY_TYPE")
     private String ownerEntityType;
     @Column(name = "OUTPUT_CLASS")
     private String outputClass;
+    @Enumerated(EnumType.STRING)
     @Column(name = "NAME")
-    private String name;
+    private OutputTypeName name;
     @Column(name = "DESCRIPTION")
     private String description;
     @Column(name = "EXCEL_SHEET")
@@ -47,19 +55,19 @@ public class OutputType extends BaseEntity<String> implements Serializable, Comp
     }
 
     @Override
-    public String getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
-    public String getName() {
+    public OutputTypeName getName() {
         return name;
     }
 
-    public void setName(String name) {
+    public void setName(OutputTypeName name) {
         this.name = name;
     }
 

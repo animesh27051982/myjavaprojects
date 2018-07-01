@@ -15,7 +15,6 @@ import com.flowserve.system606.service.PerformanceObligationService;
 import com.flowserve.system606.web.WebSession;
 import java.io.Serializable;
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
@@ -54,19 +53,12 @@ public class InputOnlineEntry implements Serializable {
     @Inject
     private ViewSupport viewSupport;
 
-    private List<ReportingUnit> reportingUnits = new ArrayList<ReportingUnit>();
+    private List<ReportingUnit> reportingUnits;
 
     @PostConstruct
     public void init() {
-        rootTreeNode = viewSupport.generateNodeTree(adminService.getPreparableReportingUnits());
-    }
-
-    public String getInputTypeName(String inputTypeId) {
-        return inputService.findInputTypeById(inputTypeId).getName();
-    }
-
-    public String getOutputTypeName(String outputTypeId) {
-        return outputService.findOutputTypeById(outputTypeId).getName();
+        reportingUnits = adminService.getPreparableReportingUnits();
+        rootTreeNode = viewSupport.generateNodeTree(reportingUnits);
     }
 
     public void onCellEdit(CellEditEvent event) {

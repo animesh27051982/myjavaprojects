@@ -7,6 +7,7 @@ package com.flowserve.system606.service;
 
 import com.flowserve.system606.model.Output;
 import com.flowserve.system606.model.OutputType;
+import com.flowserve.system606.model.OutputTypeName;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.time.LocalDate;
@@ -61,6 +62,12 @@ public class OutputService {
         return em.find(OutputType.class, id);
     }
 
+    public OutputType findOutputTypeByName(OutputTypeName outputName) {
+        Query query = em.createQuery("SELECT ot FROM OutputType ot WHERE ot.name = :ON");
+        query.setParameter("ON", outputName);
+        return (OutputType) query.getSingleResult();  // we want an exception if not one and only one.
+    }
+
     public void initOutputTypes() throws Exception {
 
         if (findOutputTypes().isEmpty()) {
@@ -79,10 +86,11 @@ public class OutputService {
                 String[] values = line.split("\\|");
 
                 OutputType outputType = new OutputType();
-                outputType.setId(values[count++]);
+                outputType.setName(OutputTypeName.valueOf(values[count++]));
                 outputType.setOwnerEntityType(values[count++]);
                 outputType.setOutputClass(values[count++]);
-                outputType.setName(values[count++]);
+                //outputType.setName(values[count++]);
+                count++;
                 outputType.setDescription(values[count++]);
                 outputType.setExcelSheet(values[count++]);
                 outputType.setExcelCol(values[count++]);
@@ -101,8 +109,5 @@ public class OutputService {
 
             logger.info("Finished initializing OutputTypes.");
         }
-
-        //logger.info("Input type name for " + InputTypeId.TRANSACTION_PRICE + " = " + inputService.findInputTypeById(InputTypeId.TRANSACTION_PRICE).getName());
     }
-
 }

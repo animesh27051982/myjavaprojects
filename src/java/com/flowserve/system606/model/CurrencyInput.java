@@ -9,7 +9,7 @@ import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 
 @Entity
-@DiscriminatorValue("DECIMAL")
+@DiscriminatorValue("CURRENCY")
 @AttributeOverride(name = "value", column = @Column(name = "DECIMAL_VALUE", precision = 38, scale = 14))
 public class CurrencyInput extends Input<BigDecimal> {
 

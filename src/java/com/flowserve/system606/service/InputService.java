@@ -8,9 +8,9 @@ package com.flowserve.system606.service;
 import com.flowserve.system606.model.Contract;
 import com.flowserve.system606.model.CurrencyType;
 import com.flowserve.system606.model.Input;
+import com.flowserve.system606.model.InputTypeName;
 import com.flowserve.system606.model.InputSet;
 import com.flowserve.system606.model.InputType;
-import com.flowserve.system606.model.InputTypeId;
 import com.flowserve.system606.model.OutputType;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -77,6 +77,12 @@ public class InputService {
         return em.find(InputType.class, id);
     }
 
+    public InputType findInputTypeByName(InputTypeName inputName) {
+        Query query = em.createQuery("SELECT it FROM InputType it WHERE it.name = :IN");
+        query.setParameter("IN", inputName);
+        return (InputType) query.getSingleResult();  // we want an exception if not one and only one.
+    }
+
     private Contract createContract(String reportingUnit, long contractId, String customerName, String salesOrderNum, BigDecimal totalTransactionPrice) {
         Contract contract = new Contract();
         contract.setId(contractId);
@@ -115,12 +121,13 @@ public class InputService {
                 String[] values = line.split("\\|");
 
                 InputType inputType = new InputType();
-                inputType.setId(values[count++]);
+                inputType.setName(InputTypeName.valueOf(values[count++]));
                 inputType.setOwnerEntityType(values[count++]);
                 inputType.setInputClass(values[count++]);
                 inputCurrencyType = values[count++];
                 inputType.setInputCurrencyType(inputCurrencyType == null || "".equals(inputCurrencyType) ? null : CurrencyType.fromShortName(inputCurrencyType));
-                inputType.setName(values[count++]);
+                //inputType.setName(values[count++]);
+                count++;
                 inputType.setDescription(values[count++]);
                 inputType.setExcelSheet(values[count++]);
                 inputType.setExcelCol(values[count++]);
@@ -141,7 +148,7 @@ public class InputService {
             logger.info("Finished initializing InputTypes.");
         }
 
-        logger.info("Input type name for " + InputTypeId.TRANSACTION_PRICE + " = " + findInputTypeById(InputTypeId.TRANSACTION_PRICE).getName());
+        logger.info("Input type name for " + InputTypeName.TRANSACTION_PRICE + " = " + findInputTypeByName(InputTypeName.TRANSACTION_PRICE).getName());
     }
 
     public List<InputType> findInputType() throws Exception {  // Need an application exception type defined.

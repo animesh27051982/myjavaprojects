@@ -17,12 +17,12 @@ import java.util.logging.Logger;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
 import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
 import javax.persistence.ManyToOne;
-import javax.persistence.MapKey;
+import javax.persistence.MapKeyEnumerated;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
@@ -62,15 +62,13 @@ public class PerformanceObligation extends BaseEntity<Long> implements Comparabl
     private LocalDateTime lastUpdateDate;
 
     //private String deactivationReason;  // create type class
-    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinTable(name = "POB_INPUTS", joinColumns = @JoinColumn(name = "POB_ID"), inverseJoinColumns = @JoinColumn(name = "INPUT_ID"))
-    @MapKey(name = "inputType.id")
-    private Map<String, Input> inputs = new HashMap<String, Input>();
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "performanceObligation")
+    @MapKeyEnumerated(EnumType.STRING)
+    private Map<InputTypeName, Input> inputs = new HashMap<InputTypeName, Input>();
 
-    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinTable(name = "POB_OUTPUTS", joinColumns = @JoinColumn(name = "POB_ID"), inverseJoinColumns = @JoinColumn(name = "OUTPUT_ID"))
-    @MapKey(name = "outputType.id")
-    private Map<String, Output> outputs = new HashMap<String, Output>();
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "performanceObligation")
+    @MapKeyEnumerated(EnumType.STRING)
+    private Map<OutputTypeName, Output> outputs = new HashMap<OutputTypeName, Output>();
 
     public PerformanceObligation() {
     }
@@ -83,38 +81,38 @@ public class PerformanceObligation extends BaseEntity<Long> implements Comparabl
 //    public void putInput(Input input) {
 //        inputs.put(input.getInputType().getId(), input);
 //    }
-    public Input getInput(String inputTypeId) {
-        return inputs.get(inputTypeId);
+    public Input getInput(InputTypeName inputName) {
+        return inputs.get(inputName);
     }
 
-    public String getStringInputValue(String inputTypeId) {
-        return ((StringInput) inputs.get(inputTypeId)).getValue();
+    public String getStringInputValue(InputTypeName inputName) {
+        return ((StringInput) inputs.get(inputName)).getValue();
     }
 
-    public StringInput getStringInput(String inputTypeId) {
-        return ((StringInput) inputs.get(inputTypeId));
+    public StringInput getStringInput(InputTypeName inputTypeName) {
+        return ((StringInput) inputs.get(inputTypeName));
     }
 
-    public DateInput getDateInput(String inputTypeId) {
-        return ((DateInput) inputs.get(inputTypeId));
+    public DateInput getDateInput(InputTypeName inputName) {
+        return ((DateInput) inputs.get(inputName));
     }
 
-    public LocalDate getDateInputValue(String inputTypeId) {
-        return ((DateInput) inputs.get(inputTypeId)).getValue();
+    public LocalDate getDateInputValue(InputTypeName inputName) {
+        return ((DateInput) inputs.get(inputName)).getValue();
     }
 
-    public BigDecimal getCurrencyInput(String inputTypeId) {
-        Logger.getLogger(PerformanceObligation.class.getName()).log(Level.FINER, "getCurrencyInput: " + inputTypeId + " POB ID: " + this.getId());
-        Logger.getLogger(PerformanceObligation.class.getName()).log(Level.FINER, "Input Object: " + inputs.get(inputTypeId));
-        return ((CurrencyInput) inputs.get(inputTypeId)).getValue();
+    public BigDecimal getCurrencyInput(InputTypeName inputName) {
+        Logger.getLogger(PerformanceObligation.class.getName()).log(Level.FINER, "getCurrencyInput: " + inputName + " POB ID: " + this.getId());
+        Logger.getLogger(PerformanceObligation.class.getName()).log(Level.FINER, "Input Object: " + inputs.get(inputName));
+        return ((CurrencyInput) inputs.get(inputName)).getValue();
     }
 
-    public BigDecimal getCurrencyInputPriorPeriod(String inputTypeId) {
-        return getCurrencyInput(inputTypeId);   // KJG TODO - Hack for now to just return this period's value for testing calcs.
+    public BigDecimal getCurrencyInputPriorPeriod(InputTypeName inputName) {
+        return getCurrencyInput(inputName);   // KJG TODO - Hack for now to just return this period's value for testing calcs.
     }
 
-    public CurrencyInput getCurrencyInp(String inputTypeId) {  // TODO KJG - This method should be getCurrencyInput() and the method above should be getCurrencyInputValue() waiting on this due to impact.
-        return (CurrencyInput) inputs.get(inputTypeId);
+    public CurrencyInput getCurrencyInp(InputTypeName inputName) {  // TODO KJG - This method should be getCurrencyInput() and the method above should be getCurrencyInputValue() waiting on this due to impact.
+        return (CurrencyInput) inputs.get(inputName);
     }
 
     public void initializeOutputs(List<OutputType> outputTypes) throws Exception {
@@ -124,11 +122,12 @@ public class PerformanceObligation extends BaseEntity<Long> implements Comparabl
     }
 
     public void initializeOutput(OutputType outputType) throws Exception {
-        if (outputs.get(outputType.getId()) == null) {
+        if (outputs.get(outputType.getName()) == null) {
             Class<?> clazz = Class.forName(outputType.getOutputClass());
             Output output = (Output) clazz.newInstance();
             output.setOutputType(outputType);
-            outputs.put(outputType.getId(), output);
+            output.setPerformanceObligation(this);
+            outputs.put(outputType.getName(), output);
         }
     }
 
@@ -139,11 +138,12 @@ public class PerformanceObligation extends BaseEntity<Long> implements Comparabl
     }
 
     public void initializeInput(InputType inputType) throws Exception {
-        if (inputs.get(inputType.getId()) == null) {
+        if (inputs.get(inputType.getName()) == null) {
             Class<?> clazz = Class.forName(inputType.getInputClass());
             Input input = (Input) clazz.newInstance();
             input.setInputType(inputType);
-            inputs.put(inputType.getId(), input);
+            input.setPerformanceObligation(this);
+            inputs.put(inputType.getName(), input);
         }
     }
 
@@ -154,27 +154,27 @@ public class PerformanceObligation extends BaseEntity<Long> implements Comparabl
         outputs.get(outputTypeId).setMessage(message);
     }
 
-    public void putCurrencyOutput(String outputTypeId, BigDecimal value) {
-        Logger.getLogger(PerformanceObligation.class.getName()).log(Level.FINE, "putCurrencyOutput(): " + outputTypeId + ": " + value.toPlainString());
-        outputs.get(outputTypeId).setValue(value);
+    public void putCurrencyOutput(OutputTypeName outputTypeName, BigDecimal value) {
+        Logger.getLogger(PerformanceObligation.class.getName()).log(Level.FINE, "putCurrencyOutput(): " + outputTypeName + ": " + value.toPlainString());
+        outputs.get(outputTypeName).setValue(value);
     }
 
-    public Output getOutput(String outputTypeId) {
-        return outputs.get(outputTypeId);
+    public Output getOutput(OutputTypeName outputTypeName) {
+        return outputs.get(outputTypeName);
     }
 
-    public Output getOutputPriorPeriod(String outputTypeId) {
-        return getOutput(outputTypeId);  // KJG TODO - Hack for now to just return this period's value for testing calcs.
+    public Output getOutputPriorPeriod(OutputTypeName outputTypeName) {
+        return getOutput(outputTypeName);  // KJG TODO - Hack for now to just return this period's value for testing calcs.
     }
 
-    public BigDecimal getCurrencyOutput(String outputTypeId) {
-        if (((CurrencyOutput) outputs.get(outputTypeId)).getValue() == null) {
-            Logger.getLogger(PerformanceObligation.class.getName()).log(Level.FINER, "getCurrencyOutput(): " + outputTypeId + " is null");
+    public BigDecimal getCurrencyOutput(OutputTypeName outputTypeName) {
+        if (((CurrencyOutput) outputs.get(outputTypeName)).getValue() == null) {
+            Logger.getLogger(PerformanceObligation.class.getName()).log(Level.FINER, "getCurrencyOutput(): " + outputTypeName + " is null");
         } else {
-            Logger.getLogger(PerformanceObligation.class.getName()).log(Level.FINER, "getCurrencyOutput(): " + outputTypeId + ": " + ((CurrencyOutput) outputs.get(outputTypeId)).getValue().toPlainString());
+            Logger.getLogger(PerformanceObligation.class.getName()).log(Level.FINER, "getCurrencyOutput(): " + outputTypeName + ": " + ((CurrencyOutput) outputs.get(outputTypeName)).getValue().toPlainString());
         }
 
-        return ((CurrencyOutput) outputs.get(outputTypeId)).getValue();
+        return ((CurrencyOutput) outputs.get(outputTypeName)).getValue();
     }
 
     public BigDecimal getCurrencyOutputPriorPeriod(String outputTypeId) {
@@ -245,12 +245,12 @@ public class PerformanceObligation extends BaseEntity<Long> implements Comparabl
         this.lastUpdateDate = lastUpdateDate;
     }
 
-    public BigDecimal getDecimalValue(String inputTypeId) {
-        return ((DecimalInput) inputs.get(inputTypeId)).getValue();
+    public BigDecimal getDecimalValue(InputTypeName inputName) {
+        return ((DecimalInput) inputs.get(inputName)).getValue();
     }
 
-    public LocalDate getDateValue(String inputTypeId) {
-        return ((DateInput) inputs.get(inputTypeId)).getValue();
+    public LocalDate getDateValue(InputTypeName inputName) {
+        return ((DateInput) inputs.get(inputName)).getValue();
     }
 
     public Contract getContract() {
@@ -275,9 +275,9 @@ public class PerformanceObligation extends BaseEntity<Long> implements Comparabl
     }
 
     public void printInputs() {
-        for (String inputTypeId : inputs.keySet()) {
-            if (inputs.get(inputTypeId) != null && inputs.get(inputTypeId).getValue() != null) {
-                Logger.getLogger(PerformanceObligation.class.getName()).log(Level.FINER, "InputTypeId: " + inputTypeId + "\tvalue: " + inputs.get(inputTypeId).getValue());
+        for (InputTypeName inputTypeName : inputs.keySet()) {
+            if (inputs.get(inputTypeName) != null && inputs.get(inputTypeName).getValue() != null) {
+                Logger.getLogger(PerformanceObligation.class.getName()).log(Level.FINER, "InputTypeId: " + inputTypeName + "\tvalue: " + inputs.get(inputTypeName).getValue());
             }
         }
     }
@@ -286,9 +286,9 @@ public class PerformanceObligation extends BaseEntity<Long> implements Comparabl
         for (Object obj : outputs.keySet()) {
             Logger.getLogger(PerformanceObligation.class.getName()).log(Level.FINER, "Key: " + obj);
         }
-        for (String outputTypeId : outputs.keySet()) {
-            if (outputs.get(outputTypeId) != null && outputs.get(outputTypeId).getValue() != null) {
-                Logger.getLogger(PerformanceObligation.class.getName()).log(Level.FINER, "OutputTypeId: " + outputTypeId + "\tvalue: " + outputs.get(outputTypeId).getValue());
+        for (OutputTypeName outputTypeName : outputs.keySet()) {
+            if (outputs.get(outputTypeName) != null && outputs.get(outputTypeName).getValue() != null) {
+                Logger.getLogger(PerformanceObligation.class.getName()).log(Level.FINER, "OutputTypeId: " + outputTypeName + "\tvalue: " + outputs.get(outputTypeName).getValue());
             }
         }
     }

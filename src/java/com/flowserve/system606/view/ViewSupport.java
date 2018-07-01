@@ -7,11 +7,15 @@ package com.flowserve.system606.view;
 
 import com.flowserve.system606.model.BusinessUnit;
 import com.flowserve.system606.model.Contract;
+import com.flowserve.system606.model.InputTypeName;
+import com.flowserve.system606.model.OutputTypeName;
 import com.flowserve.system606.model.PerformanceObligation;
 import com.flowserve.system606.model.ReportingUnit;
 import com.flowserve.system606.model.User;
 import com.flowserve.system606.service.AdminService;
 import com.flowserve.system606.service.CurrencyService;
+import com.flowserve.system606.service.InputService;
+import com.flowserve.system606.service.OutputService;
 import com.flowserve.system606.web.WebSession;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -42,6 +46,10 @@ public class ViewSupport implements Serializable {
     private AdminService adminService;
     @Inject
     private CurrencyService currencyService;
+    @Inject
+    private InputService inputService;
+    @Inject
+    private OutputService outputService;
     private String searchString = "";
 
     /**
@@ -108,6 +116,14 @@ public class ViewSupport implements Serializable {
         }
 
         return root;
+    }
+
+    public String getInputTypeDescription(InputTypeName inputName) {
+        return inputService.findInputTypeByName(inputName).getDescription();
+    }
+
+    public String getOutputTypeDescription(OutputTypeName outputName) {
+        return outputService.findOutputTypeByName(outputName).getDescription();
     }
 
 }
