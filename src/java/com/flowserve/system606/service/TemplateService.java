@@ -44,6 +44,8 @@ public class TemplateService {
     InputService inputService;
     @Inject
     PerformanceObligationService performanceObligationService;
+    @Inject
+    BusinessRuleService businessRuleService;
     private static final int HEADER_ROW_COUNT = 3;
 
     private static Logger logger = Logger.getLogger("com.flowserve.system606");
@@ -66,7 +68,7 @@ public class TemplateService {
         //int rowid = spreadsheet.getLastRowNum();
         int rowid = HEADER_ROW_COUNT;
         for (ReportingUnit ru : reportingUnits) {
-            List<Contract> contracts = ru.getContract();
+            List<Contract> contracts = ru.getContracts();
             for (Contract contract : contracts) {
                 List<PerformanceObligation> pobs = contract.getPerformanceObligations();
                 for (PerformanceObligation pob : pobs) {
@@ -93,8 +95,8 @@ public class TemplateService {
                     }
                 }
             }
-
         }
+
         workbook.write(outputStream);
         workbook.close();
         inputStream.close();
@@ -155,6 +157,7 @@ public class TemplateService {
 //                }
             }
 
+            businessRuleService.executeBusinessRules(pob);
             pob = performanceObligationService.update(pob);
         }
 

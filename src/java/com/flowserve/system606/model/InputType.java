@@ -52,6 +52,8 @@ public class InputType extends BaseEntity<Long> implements Comparable<InputType>
     private LocalDate effectiveTo;
     @Column(name = "IS_ACTIVE")
     private boolean active;   // maybe redundant
+    @Column(name = "IS_REQUIRED")
+    private boolean required;   // maybe redundant
 
     public InputType() {
     }
@@ -172,5 +174,13 @@ public class InputType extends BaseEntity<Long> implements Comparable<InputType>
             return this.name.equals(((InputType) obj).getName());
         }
         return false;
+    }
+
+    public boolean isRequired() {
+        return required;
+    }
+
+    public void setRequired(boolean required) {
+        this.required = required;
     }
 }

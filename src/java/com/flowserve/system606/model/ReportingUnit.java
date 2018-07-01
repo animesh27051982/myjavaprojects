@@ -59,7 +59,7 @@ public class ReportingUnit extends BaseEntity<Long> implements Comparable<Report
 
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "reportingUnit", cascade = CascadeType.MERGE)
     //@JoinTable(name = "R_UNIT_CONTRACTS", joinColumns = @JoinColumn(name = "REPORTING_UNIT_ID"), inverseJoinColumns = @JoinColumn(name = "CONTRACT_ID"))
-    private List<Contract> contract = new ArrayList<Contract>();
+    private List<Contract> contracts = new ArrayList<Contract>();
 
     public ReportingUnit() {
     }
@@ -133,16 +133,34 @@ public class ReportingUnit extends BaseEntity<Long> implements Comparable<Report
         this.id = id;
     }
 
-    public List<Contract> getContract() {
-        return contract;
+    public List<Contract> getContracts() {
+        return contracts;
     }
 
-    public void setContract(List<Contract> contract) {
-        this.contract = contract;
+    public void setContracts(List<Contract> contracts) {
+        this.contracts = contracts;
     }
 
-    public BigDecimal getPobCountRejected() {
+    public BigDecimal getPobCountRejected() {  // TODO - Remove. Temp code for UI.
         return new BigDecimal("10.0");
     }
 
+    public List<PerformanceObligation> getPerformanceObligations() {
+        List<PerformanceObligation> pobs = new ArrayList<PerformanceObligation>();
+        contracts.forEach(contract -> pobs.addAll(contract.getPerformanceObligations()));
+
+        return pobs;
+    }
+
+    public int getPobCount() {
+        return getPerformanceObligations().size();
+    }
+
+    public long getPobInputRequiredCount() {
+        return getPerformanceObligations().stream().filter(PerformanceObligation::isInputRequired).count();
+    }
+
+    public long getPobInvalidCount() {
+        return 0L;
+    }
 }

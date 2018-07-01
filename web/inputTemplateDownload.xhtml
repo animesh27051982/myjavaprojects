@@ -26,26 +26,27 @@
                         <h1><strong>Download MAY-18 Input Template</strong></h1>
                         <h4>Instructions here... all checked will be downloaded... user can modify template to remove... missing will not be updated.. zeros will be updated.... display this info here and upload screen.</h4>
 
-                        <p:treeTable value="#{inputTemplateDownload.reportingUnits}" var="reportingUnit" selectionMode="checkbox" selection="#{inputTemplateDownload.selectedNodes}">
+                        <p:dataTable value="#{inputTemplateDownload.reportingUnits}" var="ru" selection="#{inputTemplateDownload.selectedReportingUnits}" rowKey="#{ru.id}">
                             <f:facet name="header">
-                                Reporting Units
+                                Download Selected Reporting Units
                             </f:facet>
-                            <p:column headerText="Reporting Unit">
-                                <h:outputText value="#{reportingUnit.name}" />
+                            <p:column selectionMode="multiple" style="width:16px;text-align:center"/>
+                            <p:column headerText="Reporting Unit / Contract" sortBy="#{ru.name}">
+                                <h:outputText value="#{ru.name}" />
                             </p:column>
-                            <p:column headerText="Contract Count">
-                                <h:outputText value="4" />
+                            <p:column headerText="Platform">
+                                <h:outputText value="N/A" />
                             </p:column>
-                            <p:column headerText="POB Count">
-                                <h:outputText value="7" />
+                            <p:column headerText="Total POB Count">
+                                <h:outputText value="#{ru.pobCount}" />
                             </p:column>
                             <p:column headerText="POB Input Required Count">
-                                <h:outputText value="28" />
+                                <h:outputText value="#{ru.pobInputRequiredCount}" />
                             </p:column>
                             <p:column headerText="POB Invalid Count">
-                                <h:outputText value="0" />
+                                <h:outputText value="#{ru.pobInvalidCount}" />
                             </p:column>
-                        </p:treeTable>
+                        </p:dataTable>
 
                         <p:toolbar>
                             <f:facet name="right">

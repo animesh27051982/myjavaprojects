@@ -155,7 +155,7 @@ public class PerformanceObligation extends BaseEntity<Long> implements Comparabl
     }
 
     public void putCurrencyOutput(OutputTypeName outputTypeName, BigDecimal value) {
-        Logger.getLogger(PerformanceObligation.class.getName()).log(Level.FINE, "putCurrencyOutput(): " + outputTypeName + ": " + value.toPlainString());
+        Logger.getLogger(PerformanceObligation.class.getName()).log(Level.FINER, "putCurrencyOutput(): " + outputTypeName + ": " + value.toPlainString());
         outputs.get(outputTypeName).setValue(value);
     }
 
@@ -303,5 +303,15 @@ public class PerformanceObligation extends BaseEntity<Long> implements Comparabl
 
     public BigDecimal getLiquidatedDamagesPriorPeriod() {
         return new BigDecimal("50.0");
+    }
+
+    public boolean isInputRequired() {
+        for (Input input : inputs.values()) {
+            if (input.getInputType().isRequired() && input.getValue() == null) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }

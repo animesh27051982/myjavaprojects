@@ -8,9 +8,9 @@ package com.flowserve.system606.service;
 import com.flowserve.system606.model.Contract;
 import com.flowserve.system606.model.CurrencyType;
 import com.flowserve.system606.model.Input;
-import com.flowserve.system606.model.InputTypeName;
 import com.flowserve.system606.model.InputSet;
 import com.flowserve.system606.model.InputType;
+import com.flowserve.system606.model.InputTypeName;
 import com.flowserve.system606.model.OutputType;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -123,6 +123,7 @@ public class InputService {
                 InputType inputType = new InputType();
                 inputType.setName(InputTypeName.valueOf(values[count++]));
                 inputType.setOwnerEntityType(values[count++]);
+                inputType.setRequired("REQUIRED".equals(values[count++]));
                 inputType.setInputClass(values[count++]);
                 inputCurrencyType = values[count++];
                 inputType.setInputCurrencyType(inputCurrencyType == null || "".equals(inputCurrencyType) ? null : CurrencyType.fromShortName(inputCurrencyType));

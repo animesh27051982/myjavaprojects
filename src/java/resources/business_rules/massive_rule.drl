@@ -38,3 +38,41 @@ rule "Calculate Estimated Gross Profit and Margin"
         estimatedGrossMargin = estimatedGrossProfit / transactionPrice
         pob.putCurrencyOutput(OutputTypeName.ESTIMATED_GROSS_MARGIN, estimatedGrossMargin);
 end
+
+
+
+rule "Calculate Cumulative Total ITD Costs, Percent Complete, Revenue Earned to Date, Cumulative Revenue to Recognize"
+    // We have everything we need, run all calcs.
+    when
+        pob : PerformanceObligation(
+            costIncurred : getCurrencyInput(InputTypeName.CUMULATIVE_COST_INCURRED) != null,
+            thirdPartyProgress : getCurrencyInput(InputTypeName.CUMULATIVE_THIRD_PARTY_PROGRESS) != null,
+            intercoProgress : getCurrencyInput(InputTypeName.CUMULATIVE_INTERCOMPANY_PROGRESS) != null,
+            estimatedCostAtCompletion : getCurrencyInput(InputTypeName.ESTIMATED_COST_AT_COMPLETION) != null,
+            transactionPrice : getCurrencyInput(InputTypeName.TRANSACTION_PRICE) != null,
+            priorPeriodCumulative : getCurrencyValuePriorPeriod() != null,
+            periodExRate: getContractToLocalFxRate() != null,
+            totalLiquidatedDamages : getCurrencyInput(InputTypeName.LIQUIDATED_DAMAGES) != null,
+            liquidatedDamagesPriorPeriod : getLiquidatedDamagesPriorPeriod() != null
+        )
+    then
+        totalITDCosts = costIncurred + thirdPartyProgress + intercoProgress;
+        pob.putCurrencyOutput(OutputTypeName.CUMULATIVE_TOTAL_ITD_COSTS, totalITDCosts);
+        percentComplete = totalITDCosts / estimatedCostAtCompletion;
+        pob.putCurrencyOutput(OutputTypeName.PERCENT_COMPLETE, percentComplete);
+        revenueEarnedToDate = percentComplete * transactionPrice;
+        pob.putCurrencyOutput(OutputTypeName.REVENUE_EARNED_TO_DATE, revenueEarnedToDate);
+        revenueToRecognize = percentComplete * transactionPrice;
+        pob.putCurrencyOutput(OutputTypeName.CUMULATIVE_REVENUE_TO_RECOGNIZE, revenueToRecognize );
+        periodRevenue = revenueToRecognize - priorPeriodCumulative;
+        pob.putCurrencyOutput(OutputTypeName.PERIOD_REVENUE, periodRevenue);
+        periodRevenueLocalCurrency = periodRevenue * periodExRate;
+        pob.putCurrencyOutput(OutputTypeName.PERIOD_REVENUE_LOCAL_CURRENCY, periodRevenueLocalCurrency);
+        cumulativeLiquidatedDamages = percentComplete * totalLiquidatedDamages;
+        pob.putCurrencyOutput(OutputTypeName.CUMULATIVE_LIQUIDATED_DAMAGES_CC, cumulativeLiquidatedDamages);
+        liquidatedDamagesCurrentPeriodCC = cumulativeLiquidatedDamages - liquidatedDamagesPriorPeriod;
+        pob.putCurrencyOutput(OutputTypeName.LIQUIDATED_DAMAGES_RECOGNIZE_CURRENT_PERIOD_CC, liquidatedDamagesCurrentPeriodCC);
+        liquidatedDamagesCurrentPeriodLC = liquidatedDamagesCurrentPeriodCC * periodExRate;
+        pob.putCurrencyOutput(OutputTypeName.LIQUIDATED_DAMAGES_RECOGNIZE_CURRENT_PERIOD_LC, liquidatedDamagesCurrentPeriodCC);
+        logger.info("Contract to Local Fx Rate: " + pob.contractToLocalFxRate);
+end

@@ -14,17 +14,13 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
-import org.primefaces.model.CheckboxTreeNode;
 import org.primefaces.model.DefaultStreamedContent;
-import org.primefaces.model.DefaultTreeNode;
 import org.primefaces.model.StreamedContent;
-import org.primefaces.model.TreeNode;
 
 /**
  *
@@ -34,8 +30,8 @@ import org.primefaces.model.TreeNode;
 @ViewScoped
 public class InputTemplateDownload implements Serializable {
 
-    private TreeNode reportingUnits;
-    private TreeNode[] selectedNodes;
+    private List<ReportingUnit> reportingUnits;
+    private List<ReportingUnit> selectedReportingUnits;
     private StreamedContent file;
     private InputStream inputStream;
     private FileOutputStream outputStream;
@@ -46,26 +42,11 @@ public class InputTemplateDownload implements Serializable {
 
     @PostConstruct
     public void init() {
-        reportingUnits = createReportingUnitTree();
-    }
-
-    //    <p:treeTable value="#{inputTemplateDownload.reportingUnits}" from inputTemplateDownload.xhtml
-    public TreeNode getReportingUnits() {
-        return reportingUnits;
-    }
-
-    public TreeNode createReportingUnitTree() {
-        TreeNode root = new DefaultTreeNode(new ReportingUnit(), null);
-        TreeNode ru1015 = new CheckboxTreeNode(adminService.findReportingUnitByCode("1015"), root);
-        ru1015.setPartialSelected(true);
-        TreeNode ru1100 = new CheckboxTreeNode(adminService.findReportingUnitByCode("1100"), root);
-        ru1100.setPartialSelected(true);
-
-        return root;
+        reportingUnits = adminService.getPreparableReportingUnits();
+        selectedReportingUnits = reportingUnits;
     }
 
     public StreamedContent getFile() throws Exception {
-
         try {
             //reportingUnits = createReportingUnitTree();
             inputStream = PobInput.class.getResourceAsStream("/resources/excel_input_templates/POCI_Template.xlsx");
@@ -75,22 +56,23 @@ public class InputTemplateDownload implements Serializable {
             e.printStackTrace();
         }
 
-        List<ReportingUnit> reportingUnits = new ArrayList<ReportingUnit>();
-        reportingUnits.add(adminService.findReportingUnitByCode("1015"));
-        reportingUnits.add(adminService.findReportingUnitByCode("1100"));
-        templateService.processTemplateDownload(inputStream, outputStream, reportingUnits);
+        templateService.processTemplateDownload(inputStream, outputStream, selectedReportingUnits);
 
-        //InputStream inputStreamFromUutputStream = new ByteArrayInputStream(outputStream.toByteArray());
         InputStream inputStreamFromOutputStream = new FileInputStream(new File("poci_input_template.xlsx"));
         file = new DefaultStreamedContent(inputStreamFromOutputStream, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "poci_input_template.xlsx");
         return file;
     }
 
-    public TreeNode[] getSelectedNodes() {
-        return selectedNodes;
+    public List<ReportingUnit> getSelectedReportingUnits() {
+        return selectedReportingUnits;
     }
 
-    public void setSelectedNodes(TreeNode[] selectedNodes) {
-        this.selectedNodes = selectedNodes;
+    public void setSelectedReportingUnits(List<ReportingUnit> selectedReportingUnits) {
+        this.selectedReportingUnits = selectedReportingUnits;
     }
+
+    public List<ReportingUnit> getReportingUnits() {
+        return reportingUnits;
+    }
+
 }

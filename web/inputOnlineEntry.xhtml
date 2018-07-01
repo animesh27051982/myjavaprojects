@@ -272,8 +272,8 @@
                         <p:toolbar>
                             <f:facet name="right">
                                 <p:commandButton value="Cancel Edits" icon="ui-icon-cancel" ajax="false" action="#{inputController.inputDashboard()}"/>
-                                <p:commandButton value="Save Inputs" icon="ui-icon-disk" ajax="false" action="#{inputController.saveInputs(inputOnlineEntry.reportingUnits)}"/>
-                                <p:commandButton value="Save and Proceed to Calculation Review" icon="ui-icon-arrowthick-1-e" ajax="false" action="#{calcReviewController.reviewCalculations(inputOnlineEntry.reportingUnits)}"/>
+                                <p:commandButton value="Save Inputs" icon="ui-icon-disk" ajax="false" action="#{inputOnlineEntry.saveInputs()}"/>
+                                <p:commandButton value="Save and Proceed to Calculation Review" icon="ui-icon-arrowthick-1-e" ajax="false" actionListener="#{inputOnlineEntry.saveInputs()}" action="#{calcReviewController.reviewCalculations()}"/>
                             </f:facet>
                         </p:toolbar>
                     </div>

@@ -12,10 +12,12 @@ import com.flowserve.system606.service.BusinessRuleService;
 import com.flowserve.system606.service.InputService;
 import com.flowserve.system606.service.OutputService;
 import com.flowserve.system606.service.PerformanceObligationService;
+import com.flowserve.system606.service.ReportingUnitService;
 import com.flowserve.system606.web.WebSession;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import javax.faces.application.FacesMessage;
@@ -52,6 +54,8 @@ public class InputOnlineEntry implements Serializable {
     private OutputService outputService;
     @Inject
     private ViewSupport viewSupport;
+    @Inject
+    private ReportingUnitService reportingUnitService;
 
     private List<ReportingUnit> reportingUnits;
 
@@ -92,4 +96,14 @@ public class InputOnlineEntry implements Serializable {
     public TreeNode getRootTreeNode() {
         return rootTreeNode;
     }
+
+    public String saveInputs() throws Exception {
+        Logger.getLogger(InputOnlineEntry.class.getName()).log(Level.FINE, "Saving inputs.");
+        FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Inputs saved.", ""));
+
+        reportingUnitService.calculateAndSave(reportingUnits);
+
+        return "inputOnlineEntry";
+    }
+
 }

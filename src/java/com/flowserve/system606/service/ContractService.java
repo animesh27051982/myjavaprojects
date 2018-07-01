@@ -106,7 +106,7 @@ public class ContractService {
                 //update(contract);
                 // KJG Adding code
                 contract = update(contract);   // this gives us the JPA managed object.
-                reportingUnit.getContract().add(contract);
+                reportingUnit.getContracts().add(contract);
                 adminService.update(reportingUnit);
 
             }

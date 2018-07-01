@@ -18,15 +18,14 @@
 
     <ui:define name="content">
         <h:form id="form">
-            <p:growl id="messages" showDetail="true" />
-
             <div class="ui-g">
 
                 <div class="ui-g-12 ui-md-12 ui-lg-6">
                     <div class="card card-w-title">
+                        <p:messages id="messages" showDetail="true" />
                         <h1>Upload Completed MAY-18 POB Template</h1>
                         <p:fileUpload fileUploadListener="#{inputTemplateUpload.handleTemplateUpload}" auto="true" dragDropSupport="true" label="Upload Template (or drag and drop)"
-                                      multiple="false" update="messages" sizeLimit="10000000" allowTypes="/(\.|\/)(xlsx)$/" style="width:50%" />
+                                      multiple="false" update="messages, ruStatusTable" sizeLimit="10000000" allowTypes="/(\.|\/)(xlsx)$/" style="width:75%" />
                     </div>
                 </div>
 
@@ -46,9 +45,30 @@
                             <h:outputText id="setVersion" value="4"/>
                         </p:panelGrid>
 
+                        <p:dataTable id="ruStatusTable" value="#{inputTemplateUpload.reportingUnits}" var="ru" >
+                            <f:facet name="header">
+                                Reporting Unit Status
+                            </f:facet>
+                            <p:column headerText="Reporting Unit" sortBy="#{ru.name}">
+                                <h:outputText value="#{ru.name}" />
+                            </p:column>
+                            <p:column headerText="Platform">
+                                <h:outputText value="N/A" />
+                            </p:column>
+                            <p:column headerText="Total POB Count">
+                                <h:outputText value="#{ru.pobCount}" />
+                            </p:column>
+                            <p:column headerText="POB Input Required Count">
+                                <h:outputText value="#{ru.pobInputRequiredCount}" />
+                            </p:column>
+                            <p:column headerText="POB Invalid Count">
+                                <h:outputText value="#{ru.pobInvalidCount}" />
+                            </p:column>
+                        </p:dataTable>
 
                         <p:toolbar>
                             <f:facet name="right">
+                                <p:commandButton value="Back to Download" icon="ui-icon-arrowthick-1-w" action="#{inputController.proceedToInputDownload()}"/>
                                 <p:commandButton value="Proceed to Calculation Review" icon="ui-icon-check" action="#{calcReviewController.reviewCalculations()}"/>
                             </f:facet>
                         </p:toolbar>

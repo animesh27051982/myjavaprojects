@@ -104,7 +104,7 @@ public class ViewSupport implements Serializable {
             Logger.getLogger(WebSession.class.getName()).log(Level.FINER, "Adding to tree RU Name: " + reportingUnit.getName());
             TreeNode reportingUnitNode = new DefaultTreeNode(reportingUnit, root);
             reportingUnitNode.setExpanded(true);
-            for (Contract contract : reportingUnit.getContract()) {
+            for (Contract contract : reportingUnit.getContracts()) {
                 Logger.getLogger(WebSession.class.getName()).log(Level.FINER, "Adding to tree Contract Name: " + contract.getName());
                 TreeNode contractNode = new DefaultTreeNode(contract, reportingUnitNode);
                 contractNode.setExpanded(true);

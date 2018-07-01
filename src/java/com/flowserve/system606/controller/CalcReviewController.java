@@ -26,10 +26,11 @@ public class CalcReviewController implements Serializable {
         return "inputOnlineEntry";
     }
 
-    public String reviewCalculations() {
+    public String reviewCalculations() throws Exception {
         // TODO - If problem here, then return back and show validations, etc.
         // TODO - Actally handle all that as part of upload and just enable button if everything ok.
         //adminService.update();
+        //adminService.update(reportingUnits);
 
         return "pobCalculationReview";
     }

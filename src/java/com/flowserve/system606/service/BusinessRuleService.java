@@ -107,15 +107,14 @@ public class BusinessRuleService {
     }
 
     public void executeBusinessRules(PerformanceObligation pob) throws Exception {
-        Logger.getLogger(BusinessRuleService.class.getName()).log(Level.FINE, "Firing all business rules.");
+        Logger.getLogger(BusinessRuleService.class.getName()).log(Level.FINER, "Firing all business rules POB: " + pob.getId());
         kSession.execute(pob);
-        //kSession.fireAllRules();
-        Logger.getLogger(BusinessRuleService.class.getName()).log(Level.FINE, "Firing all business rules complete.");
+        Logger.getLogger(BusinessRuleService.class.getName()).log(Level.FINER, "Firing all business rules complete.");
     }
 
-//    @PreDestroy
-//    public void destruct() {
-//        LOG.info("BusinessRuleService.destruct");
-//        kSession.dispose();
-//    }
+    public void executeBusinessRules(List<PerformanceObligation> pobs) throws Exception {
+        for (PerformanceObligation pob : pobs) {
+            executeBusinessRules(pob);
+        }
+    }
 }

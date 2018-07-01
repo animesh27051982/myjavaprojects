@@ -5,10 +5,12 @@
  */
 package com.flowserve.system606.view;
 
+import com.flowserve.system606.model.ReportingUnit;
 import com.flowserve.system606.service.AdminService;
 import com.flowserve.system606.service.TemplateService;
 import java.io.InputStream;
 import java.io.Serializable;
+import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.RequestScoped;
 import javax.faces.application.FacesMessage;
@@ -29,9 +31,11 @@ public class InputTemplateUpload implements Serializable {
     AdminService adminService;
     @Inject
     private TemplateService templateService;
+    private List<ReportingUnit> reportingUnits;
 
     @PostConstruct
     public void init() {
+        reportingUnits = adminService.getPreparableReportingUnits();
     }
 
     public void handleTemplateUpload(FileUploadEvent event) throws Exception {
@@ -39,5 +43,9 @@ public class InputTemplateUpload implements Serializable {
 
         FacesMessage msg = new FacesMessage("Succesful", event.getFile().getFileName() + " is uploaded.");
         FacesContext.getCurrentInstance().addMessage(null, msg);
+    }
+
+    public List<ReportingUnit> getReportingUnits() {
+        return reportingUnits;
     }
 }

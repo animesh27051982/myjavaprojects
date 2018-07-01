@@ -1,9 +1,7 @@
 package com.flowserve.system606.controller;
 
-import com.flowserve.system606.model.ReportingUnit;
 import com.flowserve.system606.service.AdminService;
 import java.io.Serializable;
-import java.util.List;
 import java.util.logging.Logger;
 import javax.enterprise.context.RequestScoped;
 import javax.faces.application.FacesMessage;
@@ -27,11 +25,10 @@ public class InputController implements Serializable {
         return "inputDashboard";
     }
 
-    public String saveInputs(List<ReportingUnit> reportingUnits) throws Exception {
-        FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Inputs saved.", ""));
-        adminService.update(reportingUnits);
-
-        return "inputOnlineEntry";
+    public String submitForApproval() {
+        FacesMessage msg = new FacesMessage("Succesful", " Submitted for approval.");
+        FacesContext.getCurrentInstance().addMessage(null, msg);
+        return "inputDashboard";
     }
 
     public String proceedToInputDownload() {
