@@ -305,6 +305,10 @@ public class PerformanceObligation extends BaseEntity<Long> implements Comparabl
         return new BigDecimal("10.0");
     }
 
+    public BigDecimal getTransactionPriceBacklogCC() {
+        return new BigDecimal("50.0");
+    }
+
     public boolean isInputRequired() {
         for (Input input : inputs.values()) {
             if (input.getInputType().isRequired() && input.getValue() == null) {

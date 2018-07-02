@@ -12,3 +12,17 @@ CUMULATIVE_REVENUE_LOCAL_CURRENCY|POB|com.flowserve.system606.model.CurrencyOutp
 CUMULATIVE_LIQUIDATED_DAMAGES_CC|POB|com.flowserve.system606.model.CurrencyOutput|Cumulative Liquidated Damages CC|Cumulative Liquidated Damages CC|POC POB Outputs|O|Group1|2
 LIQUIDATED_DAMAGES_RECOGNIZE_CURRENT_PERIOD_CC|POB|com.flowserve.system606.model.CurrencyOutput|Liquidated Damages to Recognize in Current Period (CC)|Liquidated Damages to Recognize in Current Period (CC)|POC POB Outputs|O|Group1|2
 LIQUIDATED_DAMAGES_RECOGNIZE_CURRENT_PERIOD_LC|POB|com.flowserve.system606.model.CurrencyOutput|Liquidated Damages to Recognize in Current Period (LC)|Liquidated Damages to Recognize in Current Period (LC)|POC POB Outputs|O|Group1|2
+NET_PERIOD_SALES_LC|POB|com.flowserve.system606.model.CurrencyOutput|Net Period Sales (LC)|Net Period Sales (LC)|POC POB Outputs|O|Group1|2
+BACKLOG_REVALUED|POB|com.flowserve.system606.model.CurrencyOutput|Backlog Revalued|Backlog Revalued|POC POB Outputs|O|Group1|2
+TRANSACTION_PRICE_REVALUED|POB|com.flowserve.system606.model.CurrencyOutput|Transaction Price Revalued|Transaction Price Revalued|POC POB Outputs|O|Group1|2
+LIQUIDATED_DAMAGES_BACKLOG|POB|com.flowserve.system606.model.CurrencyOutput|Liquidated Damages in Backlog|Liquidated Damages in Backlog|POC POB Outputs|O|Group1|2
+LIQUIDATED_DAMAGES_BACKLOG_REVALUED_LC|POB|com.flowserve.system606.model.CurrencyOutput|Liquidated Damages in Backlog Revalued (LC)|Liquidated Damages in Backlog Revalued (LC)|POC POB Outputs|O|Group1|2
+LIQUIDATED_DAMAGES_RECOGNIZED_LC|POB|com.flowserve.system606.model.CurrencyOutput|Liquidated Damages Recognized to Date (LC)|Liquidated Damages Recognized to Date (LC)|POC POB Outputs|O|Group1|2
+TOTAL_ESTIMATED_LIQUIDATED_DAMAGES_LC|POB|com.flowserve.system606.model.CurrencyOutput|Total Estimated Liquidated Damages (LC)|Total Estimated Liquidated Damages (LC)|POC POB Outputs|O|Group1|2
+TOTAL_TRANSACTION_PRICE_NET_LIQUIDATED_DAMAGES_LC|POB|com.flowserve.system606.model.CurrencyOutput|Total Transaction Price Net of Liquidated Damages (LC)|Total Transaction Price Net of Liquidated Damages (LC)|POC POB Outputs|O|Group1|2
+COST_GOODS_SOLD_BACKLOG_REVALUED_LC|POB|com.flowserve.system606.model.CurrencyOutput|Cost of Goods Sold Backlog Revalued (LC)|Cost of Goods Sold Backlog Revalued (LC)|POC POB Outputs|O|Group1|2
+REMAINING_ESTIMATE_COMPLETE_LC|POB|com.flowserve.system606.model.CurrencyOutput|Remaining Estimate-to-Complete (LC)|Remaining Estimate-to-Complete (LC)|POC POB Outputs|O|Group1|2
+PROJECT_GAIN_LOSS_LC|POB|com.flowserve.system606.model.CurrencyOutput|Projected Gain(Loss) (LC)|Projected Gain(Loss) (LC)|POC POB Outputs|O|Group1|2
+ITD_STANDARD_COSTS_COGS|POB|com.flowserve.system606.model.CurrencyOutput|ITD Standard Costs (COGS)|ITD Standard Costs (COGS)|POC POB Outputs|O|Group1|2
+LOSS_CONTRACT_ADJUSTED|POB|com.flowserve.system606.model.CurrencyOutput|Loss Contract Adjusted|Loss Contract Adjusted|POC POB Outputs|O|Group1|2
+TOTAL_COST_GOODS_SOLD|POB|com.flowserve.system606.model.CurrencyOutput|Total Cost of Goods Sold|Total Cost of Goods Sold|POC POB Outputs|O|Group1|2
