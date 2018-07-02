@@ -31,10 +31,6 @@ import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
-/**
- *
- * @author Steve
- */
 @Stateless
 public class TemplateService {
 
@@ -57,15 +53,11 @@ public class TemplateService {
     public void processTemplateDownload(InputStream inputStream, FileOutputStream outputStream, List<ReportingUnit> reportingUnits) throws Exception {
 
         List<InputType> inputTypes = inputService.findActiveInputTypesPob();
-
         XSSFWorkbook workbook = new XSSFWorkbook(inputStream);
         XSSFSheet worksheet = workbook.getSheetAt(0);
-
-        //Create row object
         XSSFRow row;
         Cell cell = null;
 
-        //int rowid = spreadsheet.getLastRowNum();
         int rowid = HEADER_ROW_COUNT;
         for (ReportingUnit ru : reportingUnits) {
             List<Contract> contracts = ru.getContracts();
@@ -127,14 +119,14 @@ public class TemplateService {
                 break;
             }
             if (pobIdCell.getCellTypeEnum() != CellType.NUMERIC) { //  TODO - Need a mechansim to report exact error to user.
-                throw new IllegalStateException("This file is invalid.  POB ID column not a numeric");
+                throw new IllegalStateException("Input file invalid.  POB ID column not a numeric");
             }
 
             Logger.getLogger(InputService.class.getName()).log(Level.FINER, "Processing POB: " + NumberToTextConverter.toText(pobIdCell.getNumericCellValue()));
 
             PerformanceObligation pob = performanceObligationService.findById((long) pobIdCell.getNumericCellValue());
             if (pob == null) {
-                throw new IllegalStateException("Invalid POB: ");
+                throw new IllegalStateException("Input file invalid.  Invalid POB at row: " + row.getRowNum());
             }
 
             for (InputType inputType : inputTypes) {

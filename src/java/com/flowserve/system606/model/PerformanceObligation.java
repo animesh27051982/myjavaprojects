@@ -298,11 +298,11 @@ public class PerformanceObligation extends BaseEntity<Long> implements Comparabl
     }
 
     public BigDecimal getCurrencyValuePriorPeriod() {
-        return new BigDecimal("500.0");
+        return new BigDecimal("10.0");
     }
 
     public BigDecimal getLiquidatedDamagesPriorPeriod() {
-        return new BigDecimal("50.0");
+        return new BigDecimal("10.0");
     }
 
     public boolean isInputRequired() {
