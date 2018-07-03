@@ -11,6 +11,8 @@ import com.flowserve.system606.service.TemplateService;
 import java.io.InputStream;
 import java.io.Serializable;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.RequestScoped;
 import javax.faces.application.FacesMessage;
@@ -33,16 +35,26 @@ public class InputTemplateUpload implements Serializable {
     private TemplateService templateService;
     private List<ReportingUnit> reportingUnits;
 
+    private static Logger logger = Logger.getLogger("com.flowserve.system606");
+        
     @PostConstruct
     public void init() {
         reportingUnits = adminService.getPreparableReportingUnits();
     }
 
-    public void handleTemplateUpload(FileUploadEvent event) throws Exception {
-        templateService.processTemplateUpload((InputStream) event.getFile().getInputstream(), event.getFile().getFileName());
+    public void handleTemplateUpload(FileUploadEvent event) {
+        
+        try {
+            templateService.processTemplateUpload((InputStream) event.getFile().getInputstream(), event.getFile().getFileName());
 
-        FacesMessage msg = new FacesMessage("Succesful", event.getFile().getFileName() + " is uploaded.");
-        FacesContext.getCurrentInstance().addMessage(null, msg);
+            FacesMessage msg = new FacesMessage("Succesful", event.getFile().getFileName() + " is uploaded.");
+
+            FacesContext.getCurrentInstance().addMessage(null, msg);
+        } catch (Exception e) {
+            FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", "Error handleTemplateUpload: " + e.getMessage());
+            FacesContext.getCurrentInstance().addMessage(null, msg);
+            logger.log(Level.SEVERE, "Error handleTemplateUpload.", e);
+        }
     }
 
     public List<ReportingUnit> getReportingUnits() {
