@@ -57,6 +57,9 @@ public class ReportingUnit extends BaseEntity<Long> implements Comparable<Report
     @Column(name = "IS_ACTIVE")
     private boolean active;
 
+    @JoinColumn(name = "PARENT_ID")
+    private ReportingUnit parent;
+
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "reportingUnit", cascade = CascadeType.MERGE)
     //@JoinTable(name = "R_UNIT_CONTRACTS", joinColumns = @JoinColumn(name = "REPORTING_UNIT_ID"), inverseJoinColumns = @JoinColumn(name = "CONTRACT_ID"))
     private List<Contract> contracts = new ArrayList<Contract>();
@@ -162,5 +165,13 @@ public class ReportingUnit extends BaseEntity<Long> implements Comparable<Report
 
     public long getPobInvalidCount() {
         return 0L;
+    }
+
+    public ReportingUnit getParent() {
+        return parent;
+    }
+
+    public void setParent(ReportingUnit parent) {
+        this.parent = parent;
     }
 }

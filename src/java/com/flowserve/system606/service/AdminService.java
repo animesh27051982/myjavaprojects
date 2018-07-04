@@ -112,6 +112,10 @@ public class AdminService {
         return em.find(ReportingUnit.class, id);
     }
 
+    public ReportingUnit findReportingUnitById(Long id) {
+        return em.find(ReportingUnit.class, id);
+    }
+
     public Country findCountryById(String id) {
         return em.find(Country.class, id);
     }
