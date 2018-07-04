@@ -13,6 +13,7 @@ import com.flowserve.system606.model.ReportingUnit;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.math.BigDecimal;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -42,7 +43,7 @@ public class TemplateService {
     PerformanceObligationService performanceObligationService;
     @Inject
     BusinessRuleService businessRuleService;
-    private static final int HEADER_ROW_COUNT = 3;
+    private static final int HEADER_ROW_COUNT = 2;
 
     private static Logger logger = Logger.getLogger("com.flowserve.system606");
 
@@ -95,64 +96,77 @@ public class TemplateService {
     }
 
     public void processTemplateUpload(InputStream fis, String filename) throws Exception {  // Need an application exception type defined.
+        try {
+            List<InputType> inputTypes = inputService.findActiveInputTypesPob();
+            XSSFWorkbook workbook = new XSSFWorkbook(fis);
+            XSSFSheet worksheet = workbook.getSheetAt(0);
+            InputSet inputSet = new InputSet();
+            inputSet.setFilename(filename);
+            int pobIdColNumber = CellReference.convertColStringToIndex("G");
 
-        List<InputType> inputTypes = inputService.findActiveInputTypesPob();
-        XSSFWorkbook workbook = new XSSFWorkbook(fis);
-        XSSFSheet worksheet = workbook.getSheetAt(0);
-        InputSet inputSet = new InputSet();
-        inputSet.setFilename(filename);
-        int pobIdColNumber = CellReference.convertColStringToIndex("G");
-
-        if (worksheet == null) {
-            throw new IllegalStateException("Invalid xlsx file.  Report detail to user");
-        }
-
-        Logger.getLogger(TemplateService.class.getName()).log(Level.INFO, "Processing POB input template: " + filename);
-        for (Row row : worksheet) {
-            if (row.getRowNum() < HEADER_ROW_COUNT) {
-                continue;
-            }
-            Cell pobIdCell = row.getCell(pobIdColNumber);
-            if (pobIdCell == null || pobIdCell.getCellTypeEnum() == CellType.BLANK) {
-                Logger.getLogger(InputService.class.getName()).log(Level.FINE, "POB input template processing complete.");  // TODO - figure out if we really want to stop here.
-                break;
-            }
-            if (pobIdCell.getCellTypeEnum() != CellType.NUMERIC) { //  TODO - Need a mechansim to report exact error to user.
-                throw new IllegalStateException("Input file invalid.  POB ID column not a numeric");
+            if (worksheet == null) {
+                throw new IllegalStateException("Invalid xlsx file.  Report detail to user");
             }
 
-            Logger.getLogger(InputService.class.getName()).log(Level.FINER, "Processing POB: " + NumberToTextConverter.toText(pobIdCell.getNumericCellValue()));
-
-            PerformanceObligation pob = performanceObligationService.findById((long) pobIdCell.getNumericCellValue());
-            if (pob == null) {
-                throw new IllegalStateException("Input file invalid.  Invalid POB at row: " + row.getRowNum());
-            }
-
-            for (InputType inputType : inputTypes) {
-                Cell cell = row.getCell(CellReference.convertColStringToIndex(inputType.getExcelCol()));
-                if (cell == null || pobIdCell.getCellTypeEnum() == CellType.BLANK || ((XSSFCell) cell).getRawValue() == null) {
-                    // TODO - figure out what to do in this blank case.  It will depend on the situation.
-                    Logger.getLogger(InputService.class.getName()).log(Level.FINER, "Encountered an empty cell at row: " + row.getRowNum() + " Cell: " + inputType.getExcelCol());
+            Logger.getLogger(TemplateService.class.getName()).log(Level.INFO, "Processing POB input template: " + filename);
+            for (Row row : worksheet) {
+                if (row.getRowNum() < HEADER_ROW_COUNT) {
                     continue;
                 }
-                if ("com.flowserve.system606.model.CurrencyInput".equals(inputType.getInputClass())) {
-                    Logger.getLogger(TemplateService.class.getName()).log(Level.FINER, "Upload processing row: " + row.getRowNum() + " cell: " + cell.getColumnIndex());
-                    Logger.getLogger(TemplateService.class.getName()).log(Level.FINER, "Upload Processing. getCurrencyInp: " + cell.getNumericCellValue());
-                    pob.getCurrencyInput(inputType.getName()).setValue(new BigDecimal(NumberToTextConverter.toText(cell.getNumericCellValue())));
+                Cell pobIdCell = row.getCell(pobIdColNumber);
+                if (pobIdCell == null || pobIdCell.getCellTypeEnum() == CellType.BLANK) {
+                    Logger.getLogger(InputService.class.getName()).log(Level.FINE, "POB input template processing complete.");  // TODO - figure out if we really want to stop here.
+                    break;
                 }
-//                if ("com.flowserve.system606.model.StringInput".equals(inputType.getInputClass())) {
-//                    pob.getStringInput(inputType.getId()).setValue(cell.getStringCellValue());
-//                }
-//                if ("com.flowserve.system606.model.DateInput".equals(inputType.getInputClass())) {
-//                    pob.getDateInput(inputType.getId()).setValue(cell.getDateCellValue().toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
-//                }
+                if (pobIdCell.getCellTypeEnum() != CellType.NUMERIC) { //  TODO - Need a mechansim to report exact error to user.
+                    throw new IllegalStateException("Input file invalid.  POB ID column not a numeric");
+                }
+
+                Logger.getLogger(InputService.class.getName()).log(Level.INFO, "Processing POB: " + NumberToTextConverter.toText(pobIdCell.getNumericCellValue()));
+
+                PerformanceObligation pob = performanceObligationService.findById((long) pobIdCell.getNumericCellValue());
+                if (pob == null) {
+                    throw new IllegalStateException("Input file invalid.  Invalid POB at row: " + row.getRowNum());
+                }
+
+                for (InputType inputType : inputTypes) {
+                    Cell cell = row.getCell(CellReference.convertColStringToIndex(inputType.getExcelCol()));
+                    try {
+                        if (cell == null || pobIdCell.getCellTypeEnum() == CellType.BLANK || ((XSSFCell) cell).getRawValue() == null) {
+                            // TODO - figure out what to do in this blank case.  It will depend on the situation.
+                            Logger.getLogger(InputService.class.getName()).log(Level.INFO, "Encountered an empty cell at row: " + row.getRowNum() + " Cell: " + inputType.getExcelCol());
+                            continue;
+                        }
+                        if ("com.flowserve.system606.model.CurrencyInput".equals(inputType.getInputClass())) {
+                            Logger.getLogger(TemplateService.class.getName()).log(Level.INFO, "Upload processing row: " + row.getRowNum() + " cell: " + cell.getColumnIndex());
+                            Logger.getLogger(TemplateService.class.getName()).log(Level.INFO, "Upload Processing. getCurrencyInp: " + cell.getNumericCellValue());
+                            pob.getCurrencyInput(inputType.getName()).setValue(new BigDecimal(NumberToTextConverter.toText(cell.getNumericCellValue())));
+                        }
+                        if ("com.flowserve.system606.model.StringInput".equals(inputType.getInputClass())) {
+                            Logger.getLogger(TemplateService.class.getName()).log(Level.INFO, "Upload processing row: " + row.getRowNum() + " cell: " + cell.getColumnIndex());
+                            Logger.getLogger(TemplateService.class.getName()).log(Level.INFO, "Upload Processing. getCurrencyInp: " + cell.getStringCellValue());
+
+                            pob.getStringInput(inputType.getName()).setValue(cell.getStringCellValue());
+                        }
+                        if ("com.flowserve.system606.model.DateInput".equals(inputType.getInputClass())) {
+                            Logger.getLogger(TemplateService.class.getName()).log(Level.INFO, "Upload processing row: " + row.getRowNum() + " cell: " + cell.getColumnIndex());
+                            Logger.getLogger(TemplateService.class.getName()).log(Level.INFO, "Upload Processing. getCurrencyInp: " + cell.getDateCellValue());
+
+                            pob.getDateInput(inputType.getName()).setValue(cell.getDateCellValue().toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
+                        }
+                    } catch (Exception rce) {
+                        throw new Exception("processTemplateUpload row: " + row.getRowNum() + " cell:" + cell.getColumnIndex() + " " + rce.getMessage());
+                    }
+                }
+
+                businessRuleService.executeBusinessRules(pob);
+                pob = performanceObligationService.update(pob);
             }
-
-            businessRuleService.executeBusinessRules(pob);
-            pob = performanceObligationService.update(pob);
+        } catch (Exception e) {
+            throw new Exception("processTemplateUpload: " + e.getMessage());
+        } finally {
+            fis.close();
         }
-
-        fis.close();
 
         // going to change inputset to be pob level history only.  removing for now.
         //inputSet.setInputs(inputList);
