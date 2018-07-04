@@ -39,11 +39,11 @@ public class PerformanceObligationService {
     private PerformanceObligationService performanceObligationService;
 
     private void initializeInputs(PerformanceObligation pob) throws Exception {
-        pob.initializeInputs(inputService.findActiveInputTypesPob());
+        //b.initializeInputs(inputService.findActiveInputTypesPob());
     }
 
     private void initializeOutputs(PerformanceObligation pob) throws Exception {
-        pob.initializeOutputs(outputService.findActiveOutputTypesPob());
+        //pob.initializeOutputs(outputService.findActiveOutputTypesPob());
         //pob.printOutputs();
     }
 
@@ -51,13 +51,6 @@ public class PerformanceObligationService {
         return em.find(PerformanceObligation.class, id);
     }
 
-//    public void persist(PerformanceObligation pob) throws Exception {
-//        //pob.setCreatedBy(createdBy);
-//        pob.setCreationDate(LocalDateTime.now());
-//        //pob.setLastUpdatedBy(createdBy);
-//        pob.setLastUpdateDate(LocalDateTime.now());
-//        em.persist(pob);
-//    }
     public PerformanceObligation update(PerformanceObligation pob) throws Exception {
         //User user = adminService.findUserByFlsId(sessionContext.getCallerPrincipal().getName().toLowerCase());
         //pob.setLastUpdatedBy(updatedBy);
@@ -65,10 +58,7 @@ public class PerformanceObligationService {
             pob.setCreationDate(LocalDateTime.now());
         }
         pob.setLastUpdateDate(LocalDateTime.now());
-        if (!pob.isInitialized()) {
-            initializeInputs(pob);
-            initializeOutputs(pob);
-        }
+
         return em.merge(pob);
     }
 

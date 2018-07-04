@@ -17,6 +17,7 @@ import java.io.InputStreamReader;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
@@ -104,52 +105,59 @@ public class InputService {
 
     public void initInputTypes() throws Exception {
 
-        //admin = adminService.findUserByFlsId("admin");
-        if (findAllInputTypes().isEmpty()) {
-            logger.info("Initializing InputTypes");
-            BufferedReader reader = new BufferedReader(new InputStreamReader(AppInitializeService.class.getResourceAsStream("/resources/app_data_init_files/init_input_types.txt"), "UTF-8"));
-            String inputCurrencyType = null;
-            int count = 0;
-            String line = null;
-            while ((line = reader.readLine()) != null) {
-                if (line.trim().length() == 0) {
-                    continue;
-                }
-
-                count = 0;
-                logger.info(line);
-                String[] values = line.split("\\|");
-
-                InputType inputType = new InputType();
-                inputType.setName(InputTypeName.valueOf(values[count++]));
-                inputType.setOwnerEntityType(values[count++]);
-                inputType.setRequired("REQUIRED".equals(values[count++]));
-                inputType.setInputClass(values[count++]);
-                inputCurrencyType = values[count++];
-                inputType.setInputCurrencyType(inputCurrencyType == null || "".equals(inputCurrencyType) ? null : CurrencyType.fromShortName(inputCurrencyType));
-                //inputType.setName(values[count++]);
-                count++;
-                inputType.setDescription(values[count++]);
-                inputType.setExcelSheet(values[count++]);
-                inputType.setExcelCol(values[count++]);
-                inputType.setGroupName(values[count++]);
-                inputType.setGroupPosition(Integer.parseInt(values[count++]));
-                inputType.setEffectiveFrom(LocalDate.now());
-                //inputType.setEffectiveTo(LocalDate.now());
-                inputType.setActive(true);
-
-                logger.info("Creating InputType: " + inputType.getName());
-
-                adminService.persist(inputType);
-
+        logger.info("Initializing InputTypes");
+        BufferedReader reader = new BufferedReader(new InputStreamReader(AppInitializeService.class.getResourceAsStream("/resources/app_data_init_files/init_input_types.txt"), "UTF-8"));
+        String inputCurrencyType = null;
+        int count = 0;
+        String line = null;
+        while ((line = reader.readLine()) != null) {
+            if (line.trim().length() == 0) {
+                continue;
             }
 
-            reader.close();
+            count = 0;
+            String[] values = line.split("\\|");
 
-            logger.info("Finished initializing InputTypes.");
+            InputType inputType = new InputType();
+            inputType.setName(InputTypeName.valueOf(values[count++]));
+            try {
+                findInputTypeByName(inputType.getName());
+                continue;
+            } catch (Exception e) {
+                Logger.getLogger(InputService.class.getName()).log(Level.FINE, "Adding InputType: " + line);
+            }
+
+            inputType.setOwnerEntityType(values[count++]);
+            inputType.setRequired("REQUIRED".equals(values[count++]));
+            inputType.setInputClass(values[count++]);
+            inputCurrencyType = values[count++];
+            inputType.setInputCurrencyType(inputCurrencyType == null || "".equals(inputCurrencyType) ? null : CurrencyType.fromShortName(inputCurrencyType));
+            //inputType.setName(values[count++]);
+            count++;
+            inputType.setDescription(values[count++]);
+            inputType.setExcelSheet(values[count++]);
+            inputType.setExcelCol(values[count++]);
+            inputType.setGroupName(values[count++]);
+            inputType.setGroupPosition(Integer.parseInt(values[count++]));
+            inputType.setEffectiveFrom(LocalDate.now());
+            //inputType.setEffectiveTo(LocalDate.now());
+            inputType.setActive(true);
+
+            logger.info("Creating InputType: " + inputType.getName());
+
+            adminService.persist(inputType);
+
         }
 
-        logger.info("Input type name for " + InputTypeName.TRANSACTION_PRICE + " = " + findInputTypeByName(InputTypeName.TRANSACTION_PRICE).getName());
+        reader.close();
+
+        logger.info("Finished initializing InputTypes.");
+
+    }
+
+    public void initInputTypeMap() {
+        List<InputType> inputTypes = findAllInputTypes();
+        inputTypes.forEach(inputType -> InputTypeName.putInputType(inputType.getName(), inputType));
     }
 
     public List<InputType> findInputType() throws Exception {  // Need an application exception type defined.

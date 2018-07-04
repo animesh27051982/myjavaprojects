@@ -45,27 +45,27 @@
                                         <h:outputText value="#{pob.name}" />
                                     </p:column>
                                     <p:column style="white-space:pre-line;" headerText="ITD Costs">
-                                        <h:outputText value="#{pob.getOutput(outputType.CUMULATIVE_TOTAL_ITD_COSTS).value}" rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}" >
+                                        <h:outputText value="#{pob.getCurrencyOutputValue(outputType.CUMULATIVE_TOTAL_ITD_COSTS)}" rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}" >
                                             <f:convertNumber type="currency" />
                                         </h:outputText>
                                     </p:column>
                                     <p:column style="white-space:pre-line;" headerText="EAC">
-                                        <h:outputText value="#{pob.getCurrencyInput(inputType.ESTIMATED_COST_AT_COMPLETION)}" rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}" >
+                                        <h:outputText value="#{pob.getCurrencyInputValue(inputType.ESTIMATED_COST_AT_COMPLETION)}" rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}" >
                                             <f:convertNumber type="currency" />
                                         </h:outputText>
                                     </p:column>
                                     <p:column style="white-space:pre-line;" headerText="Percent Complete">
-                                        <h:outputText value="#{pob.getOutput(outputType.PERCENT_COMPLETE).value}" rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}" >
+                                        <h:outputText value="#{pob.getCurrencyOutputValue(outputType.PERCENT_COMPLETE)}" rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}" >
                                             <f:convertNumber type="percent" />
                                         </h:outputText>
                                     </p:column>
                                     <p:column style="white-space:pre-line;" headerText="Transaction Price">
-                                        <h:outputText value="#{pob.getCurrencyInp(inputType.TRANSACTION_PRICE).value}" rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}" >
+                                        <h:outputText value="#{pob.getCurrencyInputValue(inputType.TRANSACTION_PRICE)}" rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}" >
                                             <f:convertNumber type="currency" />
                                         </h:outputText>
                                     </p:column>
                                     <p:column style="white-space:pre-line;" headerText="Cummulative Revenue to Recognize" >
-                                        <h:outputText value="#{pob.getOutput(outputType.CUMULATIVE_REVENUE_TO_RECOGNIZE).value}" rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}">
+                                        <h:outputText value="#{pob.getCurrencyOutputValue(outputType.CUMULATIVE_REVENUE_TO_RECOGNIZE)}" rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}">
                                             <f:convertNumber type="currency" />
                                         </h:outputText>
                                     </p:column>
@@ -75,7 +75,7 @@
                                         </h:outputText>
                                     </p:column>
                                     <p:column style="white-space:pre-line;" headerText="Period Revenue">
-                                        <h:outputText value="#{pob.getOutput(outputType.PERIOD_REVENUE).value}" rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}">
+                                        <h:outputText value="#{pob.getCurrencyOutputValue(outputType.PERIOD_REVENUE)}" rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}">
                                             <f:convertNumber type="currency" />
                                         </h:outputText>
                                     </p:column>
@@ -84,12 +84,12 @@
                                         </h:outputText>
                                     </p:column>
                                     <p:column style="white-space:pre-line;" headerText="Period Revenue-Local Currency">
-                                        <h:outputText value="#{pob.getOutput(outputType.PERIOD_REVENUE_LOCAL_CURRENCY).value}" rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}">
+                                        <h:outputText value="#{pob.getCurrencyOutputValue(outputType.PERIOD_REVENUE_LOCAL_CURRENCY)}" rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}">
                                             <f:convertNumber type="currency" />
                                         </h:outputText>
                                     </p:column>
                                     <p:column style="white-space:pre-line;" headerText="Cumulative Revenue-Local Currency">
-                                        <h:outputText value="#{pob.getOutput(outputType.CUMULATIVE_REVENUE_LOCAL_CURRENCY).value}" rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}">
+                                        <h:outputText value="#{pob.getCurrencyOutputValue(outputType.CUMULATIVE_REVENUE_LOCAL_CURRENCY)}" rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}">
                                             <f:convertNumber type="currency" />
                                         </h:outputText>
                                     </p:column>
@@ -105,12 +105,12 @@
                                         <h:outputText value="#{pob.name}" />
                                     </p:column>
                                     <p:column style="white-space:pre-line;" headerText="Total Liquidated Damages">
-                                        <h:outputText value="#{pob.getCurrencyInput(inputType.LIQUIDATED_DAMAGES)}" rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}">
+                                        <h:outputText value="#{pob.getCurrencyInputValue(inputType.LIQUIDATED_DAMAGES)}" rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}">
                                             <f:convertNumber type="currency" />
                                         </h:outputText>
                                     </p:column>
                                     <p:column style="white-space:pre-line;" headerText="Cumulative Liquidated Damages  To Recognize (CC)">
-                                        <h:outputText value="#{pob.getOutput(outputType.CUMULATIVE_LIQUIDATED_DAMAGES_CC).value}" rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}">
+                                        <h:outputText value="#{pob.getCurrencyOutputValue(outputType.CUMULATIVE_LIQUIDATED_DAMAGES_CC)}" rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}">
                                             <f:convertNumber type="currency" />
                                         </h:outputText>
                                     </p:column>
@@ -120,7 +120,7 @@
                                         </h:outputText>
                                     </p:column>
                                     <p:column style="white-space:pre-line;" headerText="Liquidated Damages to Recognize in Current Period (CC)">
-                                        <h:outputText value="#{pob.getOutput(outputType.LIQUIDATED_DAMAGES_RECOGNIZE_CURRENT_PERIOD_CC).value}" rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}">
+                                        <h:outputText value="#{pob.getCurrencyOutputValue(outputType.LIQUIDATED_DAMAGES_RECOGNIZE_CURRENT_PERIOD_CC)}" rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}">
                                             <f:convertNumber type="currency" />
                                         </h:outputText>
                                     </p:column>
@@ -130,12 +130,12 @@
                                         </h:outputText>
                                     </p:column>
                                     <p:column style="white-space:pre-line;" headerText="Liquidated Damages to Recognize in Current Period (LC)">
-                                        <h:outputText value="#{pob.getOutput(outputType.LIQUIDATED_DAMAGES_RECOGNIZE_CURRENT_PERIOD_LC).value}" rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}">
+                                        <h:outputText value="#{pob.getCurrencyOutputValue(outputType.LIQUIDATED_DAMAGES_RECOGNIZE_CURRENT_PERIOD_LC)}" rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}">
                                             <f:convertNumber type="currency" />
                                         </h:outputText>
                                     </p:column>
                                     <p:column style="white-space:pre-line;" headerText="Net Period Sales (LC)">
-                                        <h:outputText value="#{pob.getOutput(outputType.NET_PERIOD_SALES_LC).value}" rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}">
+                                        <h:outputText value="#{pob.getCurrencyOutputValue(outputType.NET_PERIOD_SALES_LC)}" rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}">
                                             <f:convertNumber type="currency" />
                                         </h:outputText>
                                     </p:column>
@@ -152,12 +152,12 @@
                                         <h:outputText value="#{pob.name}" />
                                     </p:column>
                                     <p:column style="white-space:pre-line;" headerText="Transaction Price (CC)">
-                                        <h:outputText value="#{pob.getCurrencyInp(inputType.TRANSACTION_PRICE).value}" rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}" >
+                                        <h:outputText value="#{pob.getCurrencyInputValue(inputType.TRANSACTION_PRICE)}" rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}" >
                                             <f:convertNumber type="currency" />
                                         </h:outputText>
                                     </p:column>
                                     <p:column style="white-space:pre-line;" headerText="Cumulative Revenue to Date (CC)">
-                                        <h:outputText value="#{pob.getOutput(outputType.CUMULATIVE_REVENUE_TO_RECOGNIZE).value}" rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}">
+                                        <h:outputText value="#{pob.getCurrencyOutputValue(outputType.CUMULATIVE_REVENUE_TO_RECOGNIZE)}" rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}">
                                             <f:convertNumber type="currency" />
                                         </h:outputText>
                                     </p:column>
@@ -167,32 +167,32 @@
                                         </h:outputText>
                                     </p:column>
                                     <p:column style="white-space:pre-line;" headerText="Backlog Revalued">
-                                        <h:outputText value="#{pob.getOutput(outputType.BACKLOG_REVALUED).value}" rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}">
+                                        <h:outputText value="#{pob.getCurrencyOutputValue(outputType.BACKLOG_REVALUED)}" rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}">
                                             <f:convertNumber type="currency" />
                                         </h:outputText>
                                     </p:column>
                                     <p:column style="white-space:pre-line;" headerText="Cumulative Revenue Recognized (LC)">
-                                        <h:outputText value="#{pob.getOutput(outputType.CUMULATIVE_REVENUE_LOCAL_CURRENCY).value}" rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}">
+                                        <h:outputText value="#{pob.getCurrencyOutputValue(outputType.CUMULATIVE_REVENUE_LOCAL_CURRENCY)}" rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}">
                                             <f:convertNumber type="currency" />
                                         </h:outputText>
                                     </p:column>
                                     <p:column style="white-space:pre-line;" headerText="Transaction Price Revalued">
-                                        <h:outputText value="#{pob.getOutput(outputType.TRANSACTION_PRICE_REVALUED).value}" rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}">
+                                        <h:outputText value="#{pob.getCurrencyOutputValue(outputType.TRANSACTION_PRICE_REVALUED)}" rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}">
                                             <f:convertNumber type="currency" />
                                         </h:outputText>
                                     </p:column>
                                     <p:column style="white-space:pre-line;" headerText="Liquidated Damages Total (CC)">
-                                        <h:outputText value="#{pob.getCurrencyInput(inputType.LIQUIDATED_DAMAGES)}" rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}">
+                                        <h:outputText value="#{pob.getCurrencyInputValue(inputType.LIQUIDATED_DAMAGES)}" rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}">
                                             <f:convertNumber type="currency" />
                                         </h:outputText>
                                     </p:column>
                                     <p:column style="white-space:pre-line;" headerText="Liquidated Damages Recognized to Date (CC)">
-                                        <h:outputText value="#{pob.getOutput(outputType.CUMULATIVE_LIQUIDATED_DAMAGES_CC).value}" rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}">
+                                        <h:outputText value="#{pob.getCurrencyOutputValue(outputType.CUMULATIVE_LIQUIDATED_DAMAGES_CC)}" rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}">
                                             <f:convertNumber type="currency" />
                                         </h:outputText>
                                     </p:column>
                                     <p:column style="white-space:pre-line;" headerText="Liquidated Damages in Backlog">
-                                        <h:outputText value="#{pob.getOutput(outputType.LIQUIDATED_DAMAGES_BACKLOG).value}" rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}">
+                                        <h:outputText value="#{pob.getCurrencyOutputValue(outputType.LIQUIDATED_DAMAGES_BACKLOG)}" rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}">
                                             <f:convertNumber type="currency" />
                                         </h:outputText>
                                     </p:column>
@@ -209,52 +209,52 @@
                                         <h:outputText value="#{pob.name}" />
                                     </p:column>
                                     <p:column style="white-space:pre-line;" headerText="Liquidated Damages in Backlog Revalued (LC)">
-                                        <h:outputText value="#{pob.getOutput(outputType.LIQUIDATED_DAMAGES_BACKLOG_REVALUED_LC).value}" rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}">
+                                        <h:outputText value="#{pob.getCurrencyOutputValue(outputType.LIQUIDATED_DAMAGES_BACKLOG_REVALUED_LC)}" rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}">
                                             <f:convertNumber type="currency" />
                                         </h:outputText>
                                     </p:column>
                                     <p:column style="white-space:pre-line;" headerText="Liquidated Damages Recognized to Date (LC)">
-                                        <h:outputText value="#{pob.getOutput(outputType.LIQUIDATED_DAMAGES_RECOGNIZED_LC).value}" rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}">
+                                        <h:outputText value="#{pob.getCurrencyOutputValue(outputType.LIQUIDATED_DAMAGES_RECOGNIZED_LC)}" rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}">
                                             <f:convertNumber type="currency" />
                                         </h:outputText>
                                     </p:column>
                                     <p:column style="white-space:pre-line;" headerText="Total Estimated Liquidated Damages (LC)">
-                                        <h:outputText value="#{pob.getOutput(outputType.TOTAL_ESTIMATED_LIQUIDATED_DAMAGES_LC).value}" rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}">
+                                        <h:outputText value="#{pob.getCurrencyOutputValue(outputType.TOTAL_ESTIMATED_LIQUIDATED_DAMAGES_LC)}" rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}">
                                             <f:convertNumber type="currency" />
                                         </h:outputText>
                                     </p:column>
                                     <p:column style="white-space:pre-line;" headerText="Total Transaction Price Net of Liquidated Damages (LC)">
-                                        <h:outputText value="#{pob.getOutput(outputType.TOTAL_TRANSACTION_PRICE_NET_LIQUIDATED_DAMAGES_LC).value}" rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}">
+                                        <h:outputText value="#{pob.getCurrencyOutputValue(outputType.TOTAL_TRANSACTION_PRICE_NET_LIQUIDATED_DAMAGES_LC)}" rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}">
                                             <f:convertNumber type="currency" />
                                         </h:outputText>
                                     </p:column>
                                     <p:column style="white-space:pre-line;" headerText="Cost of Goods Sold Backlog Revalued (LC)">
-                                        <h:outputText value="#{pob.getOutput(outputType.COST_GOODS_SOLD_BACKLOG_REVALUED_LC).value}" rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}">
+                                        <h:outputText value="#{pob.getCurrencyOutputValue(outputType.COST_GOODS_SOLD_BACKLOG_REVALUED_LC)}" rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}">
                                             <f:convertNumber type="currency" />
                                         </h:outputText>
                                     </p:column>
                                     <p:column style="white-space:pre-line;" headerText="Remaining Estimate-to-Complete (LC)">
-                                        <h:outputText value="#{pob.getOutput(outputType.REMAINING_ESTIMATE_COMPLETE_LC).value}" rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}">
+                                        <h:outputText value="#{pob.getCurrencyOutputValue(outputType.REMAINING_ESTIMATE_COMPLETE_LC)}" rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}">
                                             <f:convertNumber type="currency" />
                                         </h:outputText>
                                     </p:column>
                                     <p:column style="white-space:pre-line;" headerText="Projected Gain(Loss) (LC)">
-                                        <h:outputText value="#{pob.getOutput(outputType.PROJECT_GAIN_LOSS_LC).value}" rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}">
+                                        <h:outputText value="#{pob.getCurrencyOutputValue(outputType.PROJECT_GAIN_LOSS_LC)}" rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}">
                                             <f:convertNumber type="currency" />
                                         </h:outputText>
                                     </p:column>
                                     <p:column style="white-space:pre-line;" headerText="ITD Standard Costs (COGS)">
-                                        <h:outputText value="#{pob.getOutput(outputType.ITD_STANDARD_COSTS_COGS).value}" rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}">
+                                        <h:outputText value="#{pob.getCurrencyOutputValue(outputType.ITD_STANDARD_COSTS_COGS)}" rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}">
                                             <f:convertNumber type="currency" />
                                         </h:outputText>
                                     </p:column>
                                     <p:column style="white-space:pre-line;" headerText="Loss Contract Adjusted">
-                                        <h:outputText value="#{pob.getOutput(outputType.LOSS_CONTRACT_ADJUSTED).value}" rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}">
+                                        <h:outputText value="#{pob.getCurrencyOutputValue(outputType.LOSS_CONTRACT_ADJUSTED)}" rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}">
                                             <f:convertNumber type="currency" />
                                         </h:outputText>
                                     </p:column>
                                     <p:column style="white-space:pre-line;" headerText="Total Cost of Goods Sold">
-                                        <h:outputText value="#{pob.getOutput(outputType.TOTAL_COST_GOODS_SOLD).value}" rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}">
+                                        <h:outputText value="#{pob.getCurrencyOutputValue(outputType.TOTAL_COST_GOODS_SOLD)}" rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}">
                                             <f:convertNumber type="currency" />
                                         </h:outputText>
                                     </p:column>

@@ -1,5 +1,8 @@
 package com.flowserve.system606.model;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * @author kgraves
  */
@@ -22,5 +25,17 @@ public enum InputTypeName {
     REVENUE_END_DATE,
     TOTAL_TRANS_PRICE_CC,
     BOOKING_DATE,
-    ESTIMATED_COMPLETION_DATE
+    ESTIMATED_COMPLETION_DATE;
+
+    static Map<InputTypeName, InputType> inputTypeMap = new HashMap<InputTypeName, InputType>();
+
+    public static InputType getInputType(InputTypeName inputTypeName) {
+        return inputTypeMap.get(inputTypeName);
+    }
+
+    public static void putInputType(InputTypeName inputTypeName, InputType inputType) {
+        if (inputTypeMap.get(inputTypeName) == null) {
+            inputTypeMap.put(inputTypeName, inputType);
+        }
+    }
 }

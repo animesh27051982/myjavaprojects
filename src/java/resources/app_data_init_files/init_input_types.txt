@@ -13,5 +13,4 @@ BILLING_DATE|POB||com.flowserve.system606.model.DateInput||Billing Date|Billing 
 BILLING_INVOICE_NUMBER|POB||com.flowserve.system606.model.StringInput||Billing Invoice Number|Billing Invoice Number|POC POB Inputs|AC|Group1|12
 TOTAL_TRANS_PRICE_CC|Contract||com.flowserve.system606.model.CurrencyInput||Total Trans Price Contract Curr|Total Trans Price Contract Curr|POC POB Inputs|J|Group1|18
 BOOKING_DATE|Contract||com.flowserve.system606.model.DateInput||Booking Date (LoA)|Booking Date (LoA)|POC POB Inputs|L|Group1|19
-ESTIMATED_COMPLETION_DATE||Contract|com.flowserve.system606.model.DateInput||Estimated Completion Date|Estimated Completion Date|POC POB Inputs|M|Group1|20
 

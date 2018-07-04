@@ -1,5 +1,8 @@
 package com.flowserve.system606.model;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * @author kgraves
  */
@@ -32,7 +35,7 @@ public enum OutputTypeName {
     PROJECT_GAIN_LOSS_LC,
     ITD_STANDARD_COSTS_COGS,
     LOSS_CONTRACT_ADJUSTED,
-    TOTAL_COST_GOODS_SOLD,
+    TOTAL_COST_GOODS_SOLD;
 
 //    ESTIMATED_COST_AT_COMPLETION = "ESTIMATED_COST_AT_COMPLETION";
 //    CUMULATIVE_COST_INCURRED = "CUMULATIVE_COST_INCURRED";
@@ -44,4 +47,15 @@ public enum OutputTypeName {
 //    BILLING_AMOUNT_LOCAL_CURRENCY = "BILLING_AMOUNT_LOCAL_CURRENCY";
 //    BILLING_DATE = "BILLING_DATE";
 //    BILLING_INVOICE_NUMBER = "BILLING_INVOICE_NUMBER";
+    static Map<OutputTypeName, OutputType> outputTypeMap = new HashMap<OutputTypeName, OutputType>();
+
+    public static OutputType getOutputType(OutputTypeName outputTypeName) {
+        return outputTypeMap.get(outputTypeName);
+    }
+
+    public static void putOutputType(OutputTypeName outputTypeName, OutputType outputType) {
+        if (outputTypeMap.get(outputTypeName) == null) {
+            outputTypeMap.put(outputTypeName, outputType);
+        }
+    }
 }

@@ -12,6 +12,7 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
@@ -70,44 +71,52 @@ public class OutputService {
 
     public void initOutputTypes() throws Exception {
 
-        if (findOutputTypes().isEmpty()) {
-            logger.info("Initializing OutputTypes");
-            BufferedReader reader = new BufferedReader(new InputStreamReader(AppInitializeService.class.getResourceAsStream("/resources/app_data_init_files/init_output_types.txt"), "UTF-8"));
+        logger.info("Initializing OutputTypes");
+        BufferedReader reader = new BufferedReader(new InputStreamReader(AppInitializeService.class.getResourceAsStream("/resources/app_data_init_files/init_output_types.txt"), "UTF-8"));
 
-            int count = 0;
-            String line = null;
-            while ((line = reader.readLine()) != null) {
-                if (line.trim().length() == 0) {
-                    continue;
-                }
-
-                count = 0;
-                logger.info(line);
-                String[] values = line.split("\\|");
-
-                OutputType outputType = new OutputType();
-                outputType.setName(OutputTypeName.valueOf(values[count++]));
-                outputType.setOwnerEntityType(values[count++]);
-                outputType.setOutputClass(values[count++]);
-                //outputType.setName(values[count++]);
-                count++;
-                outputType.setDescription(values[count++]);
-                outputType.setExcelSheet(values[count++]);
-                outputType.setExcelCol(values[count++]);
-                outputType.setGroupName(values[count++]);
-                outputType.setGroupPosition(Integer.parseInt(values[count++]));
-                outputType.setEffectiveFrom(LocalDate.now());
-                outputType.setActive(true);
-
-                logger.info("Creating OutputType: " + outputType.getName());
-
-                adminService.persist(outputType);
-
+        int count = 0;
+        String line = null;
+        while ((line = reader.readLine()) != null) {
+            if (line.trim().length() == 0) {
+                continue;
             }
 
-            reader.close();
+            count = 0;
 
-            logger.info("Finished initializing OutputTypes.");
+            String[] values = line.split("\\|");
+
+            OutputType outputType = new OutputType();
+            outputType.setName(OutputTypeName.valueOf(values[count++]));
+            try {
+                findOutputTypeByName(outputType.getName());
+                continue;
+            } catch (Exception e) {
+                Logger.getLogger(OutputService.class.getName()).log(Level.FINE, "Adding OutputType: " + line);
+            }
+
+            outputType.setOwnerEntityType(values[count++]);
+            outputType.setOutputClass(values[count++]);
+            //outputType.setName(values[count++]);
+            count++;
+            outputType.setDescription(values[count++]);
+            outputType.setExcelSheet(values[count++]);
+            outputType.setExcelCol(values[count++]);
+            outputType.setGroupName(values[count++]);
+            outputType.setGroupPosition(Integer.parseInt(values[count++]));
+            outputType.setEffectiveFrom(LocalDate.now());
+            outputType.setActive(true);
+            logger.info("Creating OutputType: " + outputType.getName());
+
+            adminService.persist(outputType);
         }
+
+        reader.close();
+
+        logger.info("Finished initializing OutputTypes.");
+    }
+
+    public void initOutputTypeMap() {
+        List<OutputType> outputTypes = findOutputTypes();
+        outputTypes.forEach(outputType -> OutputTypeName.putOutputType(outputType.getName(), outputType));
     }
 }

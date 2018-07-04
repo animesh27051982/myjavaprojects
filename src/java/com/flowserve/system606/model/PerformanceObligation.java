@@ -10,7 +10,6 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -77,113 +76,109 @@ public class PerformanceObligation extends BaseEntity<Long> implements Comparabl
         return inputs.keySet().size() != 0;
     }
 
-    // Inputs will be pre-initialized.  should never need to put a new Input
-//    public void putInput(Input input) {
-//        inputs.put(input.getInputType().getId(), input);
-//    }
-    public Input getInput(InputTypeName inputName) {
+    /**
+     * This method will insert a blank Input if it does not exist. We need this behavior in order to support the creation of new Inputs at a later date. Without
+     * this, callers would get NPE upon retrieving anything non-existent. This needs improvement however since we are dependent on a static enum which has to be
+     * modified for each new input type. A later release can be taken further in this regard, but we don't have the luxury of time for phase 1.
+     *
+     * @param inputName
+     * @return
+     */
+    private Input getInput(InputTypeName inputName) {
+        if (inputs.get(inputName) == null) {
+            initializeInput(InputTypeName.getInputType(inputName));
+        }
         return inputs.get(inputName);
     }
 
     public String getStringInputValue(InputTypeName inputName) {
-        return ((StringInput) inputs.get(inputName)).getValue();
+        return ((StringInput) getInput(inputName)).getValue();
     }
 
-    public StringInput getStringInput(InputTypeName inputTypeName) {
-        return ((StringInput) inputs.get(inputTypeName));
+    public StringInput getStringInput(InputTypeName inputName) {
+        return ((StringInput) getInput(inputName));
     }
 
     public DateInput getDateInput(InputTypeName inputName) {
-        return ((DateInput) inputs.get(inputName));
+        return ((DateInput) getInput(inputName));
+    }
+
+    public CurrencyInput getCurrencyInput(InputTypeName inputName) {  // TODO KJG - This method should be getCurrencyInput() and the method above should be getCurrencyInputValue() waiting on this due to impact.
+        return (CurrencyInput) getInput(inputName);
+    }
+
+    public BigDecimal getDecimalInputValue(InputTypeName inputName) {
+        return ((DecimalInput) getInput(inputName)).getValue();
     }
 
     public LocalDate getDateInputValue(InputTypeName inputName) {
-        return ((DateInput) inputs.get(inputName)).getValue();
+        return ((DateInput) getInput(inputName)).getValue();
     }
 
-    public BigDecimal getCurrencyInput(InputTypeName inputName) {
-        Logger.getLogger(PerformanceObligation.class.getName()).log(Level.FINER, "getCurrencyInput: " + inputName + " POB ID: " + this.getId());
-        Logger.getLogger(PerformanceObligation.class.getName()).log(Level.FINER, "Input Object: " + inputs.get(inputName));
-        return ((CurrencyInput) inputs.get(inputName)).getValue();
+    public BigDecimal getCurrencyInputValue(InputTypeName inputName) {
+        return ((CurrencyInput) getInput(inputName)).getValue();
     }
 
-    public BigDecimal getCurrencyInputPriorPeriod(InputTypeName inputName) {
-        return getCurrencyInput(inputName);   // KJG TODO - Hack for now to just return this period's value for testing calcs.
+    public BigDecimal getCurrencyInputValuePriorPeriod(InputTypeName inputName) {
+        return getCurrencyInputValue(inputName);   // KJG TODO - Hack for now to just return this period's value for testing calcs.
     }
 
-    public CurrencyInput getCurrencyInp(InputTypeName inputName) {  // TODO KJG - This method should be getCurrencyInput() and the method above should be getCurrencyInputValue() waiting on this due to impact.
-        return (CurrencyInput) inputs.get(inputName);
-    }
-
-    public void initializeOutputs(List<OutputType> outputTypes) throws Exception {
-        for (OutputType outputType : outputTypes) {
-            initializeOutput(outputType);
+    // Init missing output if needed.
+    private Output getOutput(OutputTypeName outputTypeName) {
+        if (outputs.get(outputTypeName) == null) {
+            initializeOutput(OutputTypeName.getOutputType(outputTypeName));
         }
-    }
-
-    public void initializeOutput(OutputType outputType) throws Exception {
-        if (outputs.get(outputType.getName()) == null) {
-            Class<?> clazz = Class.forName(outputType.getOutputClass());
-            Output output = (Output) clazz.newInstance();
-            output.setOutputType(outputType);
-            output.setPerformanceObligation(this);
-            outputs.put(outputType.getName(), output);
-        }
-    }
-
-    public void initializeInputs(List<InputType> inputTypes) throws Exception {
-        for (InputType inputType : inputTypes) {
-            initializeInput(inputType);
-        }
-    }
-
-    public void initializeInput(InputType inputType) throws Exception {
-        if (inputs.get(inputType.getName()) == null) {
-            Class<?> clazz = Class.forName(inputType.getInputClass());
-            Input input = (Input) clazz.newInstance();
-            input.setInputType(inputType);
-            input.setPerformanceObligation(this);
-            inputs.put(inputType.getName(), input);
-        }
-    }
-
-//    public void putOutput(Output output) {
-//        outputs.put(output.getOutputType().getId(), output);
-//    }
-    public void putOutputMessage(String outputTypeId, String message) {
-        outputs.get(outputTypeId).setMessage(message);
-    }
-
-    public void putCurrencyOutput(OutputTypeName outputTypeName, BigDecimal value) {
-        Logger.getLogger(PerformanceObligation.class.getName()).log(Level.FINER, "putCurrencyOutput(): " + outputTypeName + ": " + value.toPlainString());
-        outputs.get(outputTypeName).setValue(value);
-    }
-
-    public Output getOutput(OutputTypeName outputTypeName) {
         return outputs.get(outputTypeName);
     }
 
-    public Output getOutputPriorPeriod(OutputTypeName outputTypeName) {
-        return getOutput(outputTypeName);  // KJG TODO - Hack for now to just return this period's value for testing calcs.
+    public void putOutputMessage(OutputTypeName outputTypeName, String message) {
+        getOutput(outputTypeName).setMessage(message);
     }
 
-    public BigDecimal getCurrencyOutput(OutputTypeName outputTypeName) {
-        if (((CurrencyOutput) outputs.get(outputTypeName)).getValue() == null) {
-            Logger.getLogger(PerformanceObligation.class.getName()).log(Level.FINER, "getCurrencyOutput(): " + outputTypeName + " is null");
-        } else {
-            Logger.getLogger(PerformanceObligation.class.getName()).log(Level.FINER, "getCurrencyOutput(): " + outputTypeName + ": " + ((CurrencyOutput) outputs.get(outputTypeName)).getValue().toPlainString());
+    public void putCurrencyOutputValue(OutputTypeName outputTypeName, BigDecimal value) {
+        getOutput(outputTypeName).setValue(value);
+    }
+
+    public BigDecimal getCurrencyOutputValuePriorPeriod(OutputTypeName outputTypeName) {
+        return new BigDecimal("10.0");
+        //return getCurrencyOutputValue(outputTypeName);  // KJG TODO - Hack for now to just return this period's value for testing calcs.
+    }
+
+    public BigDecimal getCurrencyOutputValue(OutputTypeName outputTypeName) {
+        return ((CurrencyOutput) getOutput(outputTypeName)).getValue();
+    }
+
+    private void initializeOutput(OutputType outputType) {
+        try {
+
+            if (outputs.get(outputType.getName()) == null) {
+                Class<?> clazz = Class.forName(outputType.getOutputClass());
+                Output output = (Output) clazz.newInstance();
+                output.setOutputType(outputType);
+                output.setPerformanceObligation(this);
+                outputs.put(outputType.getName(), output);
+            }
+        } catch (Exception exception) {
+            Logger.getLogger(PerformanceObligation.class.getName()).log(Level.SEVERE, "Error initializeOutputs", exception);
         }
-
-        return ((CurrencyOutput) outputs.get(outputTypeName)).getValue();
     }
 
-    public BigDecimal getCurrencyOutputPriorPeriod(String outputTypeId) {
-        return new BigDecimal("100.0");
+    private void initializeInput(InputType inputType) {
+        try {
+            if (inputs.get(inputType.getName()) == null) {
+                Class<?> clazz = Class.forName(inputType.getInputClass());
+                Input input = (Input) clazz.newInstance();
+                input.setInputType(inputType);
+                input.setPerformanceObligation(this);
+                inputs.put(inputType.getName(), input);
+
+                Logger.getLogger(PerformanceObligation.class.getName()).log(Level.FINER, "Created Input: " + inputType.getName() + " on POD: " + this.getId());
+            }
+        } catch (Exception exception) {
+            Logger.getLogger(PerformanceObligation.class.getName()).log(Level.SEVERE, "Error initializeIntput", exception);
+        }
     }
 
-//    public void putDecimalOutput(String outputTypeId, BigDecimal value) {
-//        outputs.put(output.getOutputType().getId(), output);
-//    }
     @Override
     public int compareTo(PerformanceObligation obj) {
         return this.id.compareTo(obj.getId());
@@ -245,14 +240,6 @@ public class PerformanceObligation extends BaseEntity<Long> implements Comparabl
         this.lastUpdateDate = lastUpdateDate;
     }
 
-    public BigDecimal getDecimalValue(InputTypeName inputName) {
-        return ((DecimalInput) inputs.get(inputName)).getValue();
-    }
-
-    public LocalDate getDateValue(InputTypeName inputName) {
-        return ((DateInput) inputs.get(inputName)).getValue();
-    }
-
     public Contract getContract() {
         return contract;
     }
@@ -272,25 +259,6 @@ public class PerformanceObligation extends BaseEntity<Long> implements Comparabl
     // TODO - Temp code remove.  This is to support temp code from the JSF UI until we finish the calculations.
     public BigDecimal getPobCountRejected() {
         return new BigDecimal("10.0");
-    }
-
-    public void printInputs() {
-        for (InputTypeName inputTypeName : inputs.keySet()) {
-            if (inputs.get(inputTypeName) != null && inputs.get(inputTypeName).getValue() != null) {
-                Logger.getLogger(PerformanceObligation.class.getName()).log(Level.FINER, "InputTypeId: " + inputTypeName + "\tvalue: " + inputs.get(inputTypeName).getValue());
-            }
-        }
-    }
-
-    public void printOutputs() {
-        for (Object obj : outputs.keySet()) {
-            Logger.getLogger(PerformanceObligation.class.getName()).log(Level.FINER, "Key: " + obj);
-        }
-        for (OutputTypeName outputTypeName : outputs.keySet()) {
-            if (outputs.get(outputTypeName) != null && outputs.get(outputTypeName).getValue() != null) {
-                Logger.getLogger(PerformanceObligation.class.getName()).log(Level.FINER, "OutputTypeId: " + outputTypeName + "\tvalue: " + outputs.get(outputTypeName).getValue());
-            }
-        }
     }
 
     public BigDecimal getContractToLocalFxRate() {

@@ -84,9 +84,7 @@ public class InputOnlineEntry implements Serializable {
     }
 
     public void calculateOutputs(PerformanceObligation pob) throws Exception {
-        pob.printInputs();
         businessRuleService.executeBusinessRules(pob);
-        pob.printOutputs();
     }
 
     public List<ReportingUnit> getReportingUnits() {

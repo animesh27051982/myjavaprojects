@@ -79,9 +79,8 @@ public class TemplateService {
                     for (InputType inputType : inputTypes) {
                         cell = row.getCell(CellReference.convertColStringToIndex(inputType.getExcelCol()));
                         if ("com.flowserve.system606.model.CurrencyInput".equals(inputType.getInputClass())) {
-                            Logger.getLogger(TemplateService.class.getName()).log(Level.FINER, "processTemplateDownload, input type: " + inputType.getId());
                             if (pob.getCurrencyInput(inputType.getName()) != null) {
-                                cell.setCellValue(pob.getCurrencyInput(inputType.getName()).doubleValue());
+                                cell.setCellValue(pob.getCurrencyInputValue(inputType.getName()).doubleValue());
                             }
                         }
                     }
@@ -139,7 +138,7 @@ public class TemplateService {
                 if ("com.flowserve.system606.model.CurrencyInput".equals(inputType.getInputClass())) {
                     Logger.getLogger(TemplateService.class.getName()).log(Level.FINER, "Upload processing row: " + row.getRowNum() + " cell: " + cell.getColumnIndex());
                     Logger.getLogger(TemplateService.class.getName()).log(Level.FINER, "Upload Processing. getCurrencyInp: " + cell.getNumericCellValue());
-                    pob.getCurrencyInp(inputType.getName()).setValue(new BigDecimal(NumberToTextConverter.toText(cell.getNumericCellValue())));
+                    pob.getCurrencyInput(inputType.getName()).setValue(new BigDecimal(NumberToTextConverter.toText(cell.getNumericCellValue())));
                 }
 //                if ("com.flowserve.system606.model.StringInput".equals(inputType.getInputClass())) {
 //                    pob.getStringInput(inputType.getId()).setValue(cell.getStringCellValue());
