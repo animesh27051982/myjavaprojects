@@ -1,0 +1,201 @@
+
+ckleihege	Christine	Kleihege	ckleihege@rgp.com	Advanced	Site Administrator	
+kownby	Katie	Ownby	kownby@flowserve.com	Advanced	Site Administrator	
+10152851	Adam	Holtmeyer	AHoltmeyer@flowserve.com	Read Only	Default	
+10135278	Sherry	Paling	SPaling@flowserve.com	Advanced	Reviewer	8135,8165
+50040224	Bhaskar	Rao	bhrao@flowserve.com	Advanced	Site Administrator	
+FAguirre	Fernando	Aguirre	FAguirre@flowserve.com	Advanced	Reviewer	3041,3100,8079,8080,3090
+GBotcherby	Gary	Botcherby	GBotcherby@flowserve.com	Advanced	Reviewer	5000,5020,5030,5042,5045,5062,5085,5201,5215,8015,8031,8033,8034,8061,8075,8200,8336,8356,8357,8365,8390,8416,8438
+CCappellari	Claudio	Cappellari	CCappellari@flowserve.com	Advanced	Reviewer	8225,8310,8405
+FClaassens	Frank	Claassens	FClaassens@flowserve.com	Advanced	Reviewer	8354,8190,8035,8237,8355,8359,8191,8205,8045,8227,8460,8128,8348,8410,8315,8389,8449,8140,8141
+10135153	Lorena	Martinez Caparros	lmartinezcaparros@flowserve.com	Advanced	Reviewer	8010,8059,8005,8057,8410,8449,7890,8000,8025,8060,8405,8421,8395
+10101806	Ponramar	Sabarinathan	PSabarinathan@flowserve.com	Advanced	Reviewer	8265,8279
+twilson	Tami	Wilson	TWilson@flowserve.com	Advanced	Reviewer	8115,5130,3041,3100,1970,1972,1015,1600,1700,1705,1710,1615,1736,8095,1720,1610,1725,8090,8079,8080,1727
+10154783	Mohammad	Noorali	MNoorali@flowserve.com	Advanced	Site Administrator	
+10134730	Anabel	Orozco	AOrozco@flowserve.com	Advanced	Preparer	8000
+10008892	Deborah	Coleman	DColeman@Flowserve.com	Advanced	Preparer	8470
+EVet	Eloy	de Vet	evet@flowserve.com	Advanced	Preparer	8033,8225
+BEly	Barbara	Ely	bely@flowserve.com	Advanced	Reviewer	1200,1205,1225,1350
+rbasore	Randy	Basore	rbasore@flowserve.com	Advanced	Preparer	3041,3100,8079,8080,3090
+cwhite	Charmaine	White	cwhite@flowserve.com	Advanced	Preparer	1405
+10122281	Federica	Di Sarno	fdisarno@flowserve.com	Advanced	Preparer	8355,8179,8291,8293,8295,8357,8458,7905
+DSchwartz	Dan	Schwartz	dschwartz@flowserve.com	Advanced	Preparer	5200
+10148437	Alessandro	Porta	aporta@flowserve.com	Advanced	Preparer	8310
+10150905	Susan	Du	sdu@flowserve.com	Advanced	Preparer	5000,5200,8075
+10153690	Thomas F	Burke	tburke@flowserve.com	Advanced	Preparer	8115,1015
+10140005	Geok Theng	Cheng	gcheng@flowserve.com	Advanced	Preparer	8365,8438
+10136429	Rong (Grace)	Wang	rwang@flowserve.com	Advanced	Preparer	8701,8702,8724,8832,8833
+10149176	Jana	Gorges	jgorges@flowserve.com	Advanced	Preparer	7866
+mfuentes	Miriam	Fuentes Romero	mfuentes@flowserve.com	Advanced	Preparer	8405
+10149913	Andreas	Schupfer	aschuepfer@flowserve.com	Advanced	Reviewer	7866,7899,7914,7923,7926,7929,7932,7935,8195,8943,7846,7845
+PeHill	Penny	Hill	pehill@flowserve.com	Advanced	Reviewer	8115,5130,3041,3100,1970,1972,1015,1600,1700,1705,1710,1615,1736,8095,1720,1610,1725,8090,8079,8080,1727
+10150437	Erik	Sockman	esockman@flowserve.com	Advanced	Reviewer	5200
+10119621	Eric	Wang	ewang@flowserve.com	Advanced	Reviewer	8701,8702,8709,8724,8832,8833
+Ewu	Eric	Wu	ewu@flowserve.com	Advanced	Reviewer	1100,1105,1320,1370,1405,7803
+AFoley	Allan	Foley	afoley@flowserve.com	Advanced	Reviewer	1405
+CByrd	Cameron	Byrd	cbyrd@flowserve.com	Advanced	Reviewer	1200,1205,1225,8000,8060,8321,8330,1350
+10130759	Gertjan	de Heer	gheer@flowserve.com	Advanced	Reviewer	8247,8354,8035,8503,8237,8500,SSIA,8045,7887,7908,8034,8225
+10137764	Gary W	Dowell	gdowell@flowserve.com	Advanced	Reviewer	5020,5030,5042,5045,5085
+MKoenig	Mike	Koenig	mkoenig@flowserve.com	Advanced	Reviewer	8247,8115,8255,8334,5130,3041,3100,8337,1970,1972,1015,8341,8345,8525,8120,8130,8941,8010,8335,8067,8059,8065,8129,8520,8125,8351,8492,8057,8482,1600,1700,1705,1710,1615,1736,8095,1720,1610,1725,8090,8079,8080,3090,1727
+10143988	Matthew	Klopfer	mklopfer@flowserve.com	Advanced	Approver	
+AHiggins	Andrew	Higgins	ahiggins@flowserve.com	Advanced	Approver	
+EJohansson	Erik	Johansson	ejohansson@flowserve.com	Advanced	Approver	
+CEvarts	Fred	Evarts	fred.evarts@flowserve.com	Advanced	Approver	
+BVelasco	Bill	Velasco	bvelasco@flowserve.com	Advanced	Approver	
+SGoodman	Saul	Goodman	bhrao@flowserve.com	Advanced	Preparer	
+SLynch	Sherry	Lynch	slynch@flowserve.com	Advanced	Preparer	5115
+DBauernfeind	David	Bauernfeind	DBauernfeind@flowserve.com	Advanced	Reviewer	
+MKretchmar	Mariana	Kretchmar	mkretchmar@flowserve.com	Read Only	Default	
+JEastham	Janet	Eastham	jeastham@flowserve.com	Read Only	Default	
+ECarminati	Elisabetta	Carminati	ecarminati@flowserve.com	Advanced	Preparer	8291,8293,8295
+ldons	Linda	Dons- van de Par	ldons@flowserve.com	Advanced	Preparer	8033,8225
+10118344	Sivaraman	Rajendran	srajendran@flowserve.com	Advanced	Preparer	5050,5052
+10129700	Istvan	Murcsik	imurcsik@flowserve.com	Read Only	Default	8025
+10140854	Aman	Vij	AmVij@flowserve.com	Advanced	Reporting User	
+10152669	Timothy	Maldonado	TMaldonado@flowserve.com	Read Only	Default	
+10152988	Jennifer	Crouch	JCrouch@flowserve.com	Read Only	Default	
+ALadaran	Adelita	Ladaran	aladaran@flowserve.com	Advanced	Preparer	8080
+KKaruppiah	Kanagasabai	A/L Karuppiah	kkaruppiah@flowserve.com	Advanced	Reviewer	8325
+GuGarcia	Ma. Guadalupe	Garcia	gugarcia@flowserve.com	Advanced	Preparer	8345
+epai	Chun-Mei	Pai	epai@flowserve.com	Advanced	Reviewer	8320,8440,8377,8375
+TFath	Thomas	Fath	tfath@flowserve.com	Advanced	Reviewer	5130,1970,1972
+BBrown	Brenda	Brown	bbrown@flowserve.com	Advanced	Preparer	5115
+DMcKasson	Douglas	McKasson	dmckasson@flowserve.com	Advanced	Reviewer	5115,5200,5220,8033,8034,8061,8179,8291,8416,8418,8459,8830
+CDimler	Cherrie	Dimler	cdimler@flowserve.com	Advanced	Preparer	1105
+KKarnes	Kimberly	Karnes	kkarnes@flowserve.com	Advanced	Preparer	1105
+jegardner	Jennifier	Gardner	jgardner@flowserve.com	Advanced	Preparer	1405
+ahartman	Amy	Hartman	ahartman@flowserve.com	Advanced	Preparer	1600,1700,1705,1710,1615,1736,8095,1720,1610,1725,8090
+jtaube	Jamin	Taube	JTaube@flowserve.com	Advanced	Preparer	1600,1700,1705,1710,1615,1736,8095,1720,1610,1725,8090
+YLukins	Yvonne	Lukins	ylukins@flowserve.com	Advanced	Reviewer	5000,5020,5030,5042,5045,5062,5085,5201,5215,8075
+MTeguh	Meliana	Teguh	mteguh@flowserve.com	Advanced	Preparer	1200
+ABarlow	Andrea	Barlow	abarlow@flowserve.com	Advanced	Reviewer	1600,1700,1705,1710,1727
+PKumar	Prashanth	Venkobarao	pkumar@flowserve.com	Advanced	Preparer	5050,5052
+MMolero	Marisa	Molero	mmolero@flowserve.com	Advanced	Reviewer	8410,8449
+MMallia	Marzia	Mallia	mmallia@flowserve.com	Advanced	Preparer	8291,8295
+piazza	Lucia Maria	Piazza	lpiazza@flowserve.com	Advanced	Preparer	8310
+TFocacci	Tiziana	Focacci	tfocacci@flowserve.com	Advanced	Preparer	8293
+GFleisher	Gina	Fleisher	gfleisher@flowserve.com	Advanced	Preparer	1600,1700,1705,1710,1615,1736,8095,1720,1610,1725,8090
+CryBrown	Crystal	Brown	crybrown@flowserve.com	Advanced	Reviewer	1105
+10036129	Henry	Rodis	HRodis@flowserve.com	Advanced	Preparer	1600,1700,1705,1710,1615,1736,8095,1720,1610,1725,8090
+EHobel	Erich Robert	Hobel	rhobel@flowserve.com	Advanced	Reviewer	8031
+10038715	Hadi	Sohani	HSohani@flowserve.com	Advanced	Preparer	8025,8421
+KJensen	Karin	Jensen	kjensen@flowserve.com	Advanced	Reviewer	8416,8418
+CLundberg	Christina	Lundberg	clundberg@flowserve.com	Advanced	Preparer	8418
+SaYoung	Sandy	Young	sayoung@flowserve.com	Advanced	Preparer	1200
+TRichardson	William	Richardson	trichardson@flowserve.com	Advanced	Reviewer	5115
+AvaLi	Huizhen	Li	avali@flowserve.com	Advanced	Preparer	8713,8709
+WLim	Wee Lay	Lim	wlim@flowserve.com	Advanced	Preparer	8370
+PaBowden	Paul	Bowden	pabowden@flowserve.com	Advanced	Preparer	8020,8350,8015
+KMorgan	Kay	Morgan	kmorgan@flowserve.com	Advanced	Preparer	8455
+TSadee	Teun	Sadee	tsadee@flowserve.com	Advanced	Preparer	8033,8225
+JDun	Jeroen	Dun	jedun@flowserve.com	Advanced	Reviewer	8035,8237,8045
+CAlbertz	Christian	Albertz	calbertz@flowserve.com	Advanced	Reviewer	8830
+EHaselhoff	Erwin	Haselhoff	ehaselhoff@flowserve.com	Advanced	Preparer	8200
+CLieback	Claudia	Lieback	clieback@flowserve.com	Advanced	Preparer	8179
+aholt	Andrea	Holt	aholt@flowserve.com	Advanced	Reviewer	8195,8943
+RHeine	Ralf	Heine	rheine@flowserve.com	Advanced	Preparer	8195
+kburgmann	Katrin	Burgmann	kburgmann@flowserve.com	Advanced	Preparer	8210,8205,7846
+Praimbault	Pascale	Raimbault	praimbault@flowserve.com	Advanced	Preparer	8135,8165
+RVeeken	Richard	Veeken	rveeken@flowserve.com	Advanced	Reviewer	8255,8227
+SChambers	Samuel	Chambers	SChambers@flowserve.com	Advanced	Reviewer	8458,8459
+rroed	Rebel	Roed	rroed@flowserve.com	Advanced	Preparer	5062,5215
+MPong	Shiow Chyong May	Pong	mpong@flowserve.com	Advanced	Reviewer	8380,8494
+EHorvath	Erich	Horvath	ehorvath@flowserve.com	Advanced	Reviewer	8025,8421
+ZYan	Yan	Zhu	zyan@flowserve.com	Advanced	Reviewer	8713,8709,8715
+darnaltes	Daniel	Arnaltes Corral	darnaltes@flowserve.com	Advanced	Preparer	8405
+ybeukes	Yvette	Beukes	ybeukes@flowserve.com	Advanced	Reviewer	8389,8390
+10081974	Marcel	Mallinckrodt-Kleefass	mmallinckrodt@flowserve.com	Advanced	Reviewer	8190,8191
+10082977	Christopher	Story	cstory@flowserve.com	Advanced	Preparer	5115
+MKvapilova	Monika	Kvapilova	mkvapilova@flowserve.com	Advanced	Preparer	8354
+SeSrinivas	Srinivas	Setty	sesrinivas@flowserve.com	Advanced	Reviewer	8355,8359,5050,5052,8265,8271,8275,8279,8356,8357
+shtan	Sharon	Tan	shtan@flowserve.com	Advanced	Preparer	8365,8438
+nmahesh	Mahesh	Neelakantan	nmahesh@flowserve.com	Advanced	Preparer	8357
+ecisneros	Eduardo Agustin	Cisneros	ecisneros@flowserve.com	Advanced	Reviewer	8334,8337,8341,8345,8335,8330,8333,8336
+10095497	Victor	Perez Blanco	vblanco@flowserve.com	Advanced	Preparer	8405
+gcalderon	Guido	Calderon	gcalderon@flowserve.com	Advanced	Preparer	8000
+arijsewijk	Aad	Rijsewijk	arijsewijk@flowserve.com	Advanced	Preparer	8225
+mnagtzaam	Maikel	Nagtzaam	mnagtzaam@flowserve.com	Advanced	Preparer	8255,8227
+minamullah	Mirza	Inamullah	minamullah@flowserve.com	Advanced	Reviewer	8357
+hmohammed	Hussian	Mohammad	hmohammed@flowserve.com	Advanced	Reviewer	8359
+mfraesdorf	Maik	Fraesdorf	mfraesdorf@flowserve.com	Advanced	Preparer	8200
+alperez	Lupicinia	Perez	alperez@flowserve.com	Advanced	Preparer	8120
+svangool	Steven	Gool	svangool@flowserve.com	Advanced	Preparer	8255
+pjarappa	Prakasha	Jarappa	pjarappa@flowserve.com	Advanced	Preparer	8358,SHAID
+ESoeters	Eric	Soeters	esoeters@flowserve.com	Advanced	Reviewer	8033,8034
+TSiebert	Tim	Siebert	tsiebert@flowserve.com	Advanced	Reviewer	8210,8200,7846,7845
+Maedwards	Martin	Edwards	MaEdwards@flowserve.com	Advanced	Reviewer	8458,8459
+10111418	Shahrukh	Khalil	skhalil@flowserve.com	Advanced	Preparer	8356
+10111598	Uwe	Berggotz	uberggoetz@flowserve.com	Advanced	Preparer	8179
+10113858	Nagbhushan	Rao	narao@flowserve.com	Advanced	Reviewer	8355,8359,5050,5052,8265,8271,8275,8279,8356,8357
+10114358	Cornelia	Kubica	ckubica@flowserve.com	Advanced	Preparer	8025
+10115679	Lee San	Mei	lmei@flowserve.com	Advanced	Preparer	8365,8438
+YLei	Yi Ju	Lei	ylei@flowserve.com	Advanced	Preparer	8711
+10122021	Ian	Fletcher	ifletcher@flowserve.com	Advanced	Reviewer	8020,8350,8015,8910
+10126019	Sara	AlShuwaier	salshuwaier@flowserve.com	Advanced	Preparer	8358,SHAID
+10156342	M	Thajdheen	mthajdheen1@flowserve.com	Advanced	Preparer	8358,SHAID
+10130206	Cesar	Cardone	ccardone@flowserve.com	Advanced	Reviewer	8334,8335,8330,8333
+10130900	Phillip	Kirley	pkirley@flowserve.com	Advanced	Preparer	8910
+10131458	Pongpat	Kulpatwattana	pkulpatwattana@flowserve.com	Advanced	Reviewer	8436,8435
+10131723	Alejandro	Valdes Araya	avaldesaraya@flowserve.com	Advanced	Reviewer	8120,8125
+10131879	Anais	NOC	ANOC@flowserve.com	Advanced	Reviewer	8140,8141
+10132300	Abul	Hussain	AbHussain@flowserve.com	Advanced	Preparer	8265,8279
+10132361	Edmundo	Villarroel	evillarroel@flowserve.com	Advanced	Reviewer	8525,8130,8129,8520,8492,8482,8132
+10132559	Christine	Lackner	chlackner@flowserve.com	Advanced	Preparer	8031
+10132669	Lu	Wang	luwang@flowserve.com	Advanced	Preparer	8714
+10133566	Kazim	Mohamed	kmohamed@flowserve.com	Advanced	Preparer	8357
+10133605	Andrew	Carpenter	acarpenter@flowserve.com	Advanced	Reviewer	
+10135003	Andres Sebastian	Pol	AnPol@flowserve.com	Advanced	Preparer	8000
+10135021	Otelo	Tavares de Melo	OTavaresDeMelo@Flowserve.com	Advanced	Preparer	8458,8459
+10135111	Ping	Wu	PWu@flowserve.com	Advanced	Preparer	8709,8715
+10135268	Hans	Boeken	HBoeken@flowserve.com	Advanced	Reviewer	8503,8500,SSIA,8210,8681,7846,7845
+10135383	Gerald	Straussberger	GStraussberger@flowserve.com	Advanced	Reviewer	
+10135474	Yanti	Octavia Tjoa	YOctaviaTjoa@flowserve.com	Advanced	Reviewer	8713,8320,8380,8711,8020,8350,8285,8325,8494,8436,8329,8328,8435,8370,8282,8440,8377,8375,8714,7815,7818,7821,8365,8438
+10135569	Johnny	Batista	JBatista@flowserve.com	Advanced	Preparer	8525,8130,8129,8520,8492,8482,8132
+10135850	Jens	Karlsson	JKarlsson@flowserve.com	Advanced	Preparer	8416
+10136444	Charles	Davis	ChDavis@flowserve.com	Advanced	Preparer	1405
+10136480	Adilson	Lasso	ALasso@flowserve.com	Advanced	Reviewer	8067,8065,8060,8061,8062
+10136613	Miriam	Basterra Sanz	MBasterraSanz@flowserve.com	Advanced	Preparer	8410,8449
+10137628	Cedric	Nathaniel	CNathaniel@flowserve.com	Advanced	Reviewer	8356
+10137975	Olga	Ruutikainen	ORuutikainen@flowserve.com	Advanced	Preparer	8500,SSIA
+10138007	Rutger	Slabbekoorn	RSlabbekoorn@flowserve.com	Advanced	Preparer	8035,8237,8045
+10138942	Ikue	Kaihara	IKaihara@flowserve.com	Advanced	Preparer	8320
+10140581	Dinar	Ibragimov	DIbragimov@flowserve.com	Advanced	Reviewer	8503,8500,SSIA
+10140654	Judith	Koeller	JKoeller@flowserve.com	Advanced	Preparer	8025,8421
+10140897	Martin	Doepper	MDoepper@flowserve.com	Advanced	Preparer	8190
+10141424	Daniel	Su	DanSu@flowserve.com	Advanced	Reviewer	8713,8711,8714,8709,8715
+10141854	Afaq	Ahmed	AfAhmed@flowserve.com	Advanced	Preparer	8355
+10142347	Terezia	Taylor	TeTaylor@flowserve.com	Advanced	Preparer	1405
+10142351	Xueyun	Toh	XToh@flowserve.com	Advanced	Preparer	8380
+10142508	Nabeel	Shah	NaShah@flowserve.com	Advanced	Preparer	8356
+10142640	Ylenia	Campisi	YCampisi@flowserve.com	Advanced	Preparer	8310
+10142650	Adeline Yuh Huah	Lim	AdLim@flowserve.com	Advanced	Reviewer	8380,8285,8325,8494,8436,8329,8328,8435,8370,8282,8440,8377,8375,7815,7818,7821,8365,8438
+10143655	Sri Tutio Minarsih	Nainggolan	SNainggolan@flowserve.com	Advanced	Preparer	8285,8282
+10144086	Saqib	Siddiqui	SSiddiqui@flowserve.com	Advanced	Reviewer	8355
+10144088	Cherise	Ng	ChNg@flowserve.com	Advanced	Preparer	8325
+10145006	Suzanne	Jones	SuJones@flowserve.com	Advanced	Preparer	1600,1700,1705,1710,1615,1736,8095,1720,1610,1725,8090
+10145507	Mirko	Goeddertz	mgoeddertz@flowserve.com	Advanced	Reviewer	8140,8141,7881,8135,8165,8195
+10145715	Diana	Moore	DiMoore@flowserve.com	Advanced	Preparer	1600,1700,1705,1710,1615,1736,8095,1720,1610,1725,8090
+10147046	Chiman	Patel	CPatel@flowserve.com	Advanced	Reviewer	1370
+10147325	Troy	Clapsaddle	TClapsaddle@Flowserve.com	Advanced	Preparer	1100
+10148134	Mohammed	Asif	MAsif@flowserve.com	Advanced	Reviewer	8358,SHAID
+10148219	Cristian	Gonzalez Ruiz-Peinado	CrGonzalezRuiz-Peinado@Flowserve.com	Advanced	Preparer	8405
+10148327	Mariano	del Cura Serrano	MdelCuraSerrano@Flowserve.com	Advanced	Preparer	8405
+10148706	Sian Eng	Chia	SianEng@flowserve.com	Advanced	Preparer	7818
+10148736	Paul	Bull	PBull@flowserve.com	Advanced	Reviewer	7917
+WaiTan	Wai Tiong	Tan	WaTan@flowserve.com	Advanced	Preparer	7818
+10148876	Shubin	Zhang	ShuZhang@flowserve.com	Advanced	Preparer	7830
+10148915	Nicoletta	Tusa	NTusa@flowserve.com	Advanced	Preparer	8295,7905
+10148949	Evelien	Neukermans	ENeukermans@flowserve.com	Advanced	Reviewer	7908
+10149001	Drazenka	Isik	DIsik@flowserve.com	Advanced	Reviewer	7914
+10149131	Juan Javier	Perez	JuPerez@flowserve.com	Advanced	Reviewer	7890,8395
+10149211	Siew Kim	Tan	LiTan@flowserve.com	Advanced	Preparer	7815
+10149402	Dirk	Both	DBoth@flowserve.com	Advanced	Preparer	7866
+10150073	Antoinette	Sapor	ASapor@flowserve.com	Advanced	Reviewer	7881
+10150293	Washingtone	Zimbwa	WZimbwa@Flowserve.com	Advanced	Preparer	8390
+10150310	Shu Ching	Yeh	SYeh@Flowserve.com	Advanced	Preparer	1200
+10150664	Miranti Lucia	Herliana	MHerliana@Flowserve.com	Advanced	Reviewer	8285,8282
+10150703	Monica	Hakvoort	MDankelman@flowserve.com	Advanced	Reviewer	7887
+10151004	Adila	Binti Osman	ABintiOsman@flowserve.com	Advanced	Preparer	8328
+10151021	Claudio	Petraglia	CPetraglia@Flowserve.com	Advanced	Preparer	8310
+10151121	Ana	Alfaro	AnAlfaro@Flowserve.com	Advanced	Preparer	1200
+1
