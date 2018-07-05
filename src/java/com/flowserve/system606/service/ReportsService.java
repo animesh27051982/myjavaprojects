@@ -7,7 +7,6 @@ package com.flowserve.system606.service;
 
 import com.flowserve.system606.model.Contract;
 import com.flowserve.system606.model.InputType;
-import com.flowserve.system606.model.InputTypeName;
 import com.flowserve.system606.model.PerformanceObligation;
 import com.flowserve.system606.model.ReportingUnit;
 import java.io.FileOutputStream;
@@ -35,7 +34,7 @@ public class ReportsService {
     private EntityManager em;
     private static Logger logger = Logger.getLogger("com.flowserve.system606");
     @Inject
-    PerformanceObligationService performanceObligationService;
+    PerformanceObligationService pobService;
 
     @Inject
     private InputService inputService;
@@ -56,20 +55,20 @@ public class ReportsService {
 
                 // Populate non-input cells
                 row.getCell(0, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK).setCellValue(contract.getName());
-                InputType inputType = inputService.findInputTypeByName(InputTypeName.TRANSACTION_PRICE);
+                InputType inputType = inputService.findInputTypeById("TRANSACTION_PRICE");
                 cell = row.getCell(1, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
-                if (pob.getCurrencyInput(inputType.getName()).getValue() != null) {
-                    cell.setCellValue(pob.getCurrencyInputValue(inputType.getName()).doubleValue());
+                if (pobService.getCurrencyInput(inputType.getId(), pob).getValue() != null) {
+                    cell.setCellValue(pobService.getCurrencyInputValue(inputType.getId(), pob).doubleValue());
                 }
-                inputType = inputService.findInputTypeByName(InputTypeName.LIQUIDATED_DAMAGES);
+                inputType = inputService.findInputTypeById("LIQUIDATED_DAMAGES");
                 cell = row.getCell(2, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
-                if (pob.getCurrencyInput(inputType.getName()).getValue() != null) {
-                    cell.setCellValue(pob.getCurrencyInputValue(inputType.getName()).doubleValue());
+                if (pobService.getCurrencyInput(inputType.getId(), pob).getValue() != null) {
+                    cell.setCellValue(pobService.getCurrencyInputValue(inputType.getId(), pob).doubleValue());
                 }
-                inputType = inputService.findInputTypeByName(InputTypeName.ESTIMATED_COST_AT_COMPLETION);
+                inputType = inputService.findInputTypeById("ESTIMATED_COST_AT_COMPLETION");
                 cell = row.getCell(3, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
-                if (pob.getCurrencyInput(inputType.getName()).getValue() != null) {
-                    cell.setCellValue(pob.getCurrencyInputValue(inputType.getName()).doubleValue());
+                if (pobService.getCurrencyInput(inputType.getId(), pob).getValue() != null) {
+                    cell.setCellValue(pobService.getCurrencyInputValue(inputType.getId(), pob).doubleValue());
                 }
 
             }

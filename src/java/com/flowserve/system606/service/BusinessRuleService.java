@@ -112,9 +112,9 @@ public class BusinessRuleService {
     }
 
     public void executeBusinessRules(PerformanceObligation pob) throws Exception {
-        Logger.getLogger(BusinessRuleService.class.getName()).log(Level.FINE, "Firing all business rules POB: " + pob.getId());
+        Logger.getLogger(BusinessRuleService.class.getName()).log(Level.FINER, "Firing all business rules POB: " + pob.getId());
         kSession.execute(pob);
-        Logger.getLogger(BusinessRuleService.class.getName()).log(Level.FINE, "Firing all business rules complete.");
+        Logger.getLogger(BusinessRuleService.class.getName()).log(Level.FINER, "Firing all business rules complete.");
     }
 
     public void executeBusinessRules(List<PerformanceObligation> pobs) throws Exception {
