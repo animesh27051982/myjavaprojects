@@ -53,9 +53,7 @@ public class AppInitializeService {
             financialPeriodService.initFinancialPeriods();
             currencyService.initCurrencyConverter();
             inputService.initInputTypes();
-            inputService.initInputTypeMap();
             outputService.initOutputTypes();
-            outputService.initOutputTypeMap();
             adminService.initCountries();    // We don't need this as an Entity.  Convert to standard Java object with converters.
 
             adminService.initReportingUnits();

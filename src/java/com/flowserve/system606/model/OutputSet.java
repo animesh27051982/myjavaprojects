@@ -19,14 +19,15 @@ import javax.persistence.Temporal;
 import static javax.persistence.TemporalType.TIMESTAMP;
 
 @Entity
-@Table(name = "INPUT_SETS")
-public class InputSet extends BaseEntity<Long> {
+@Table(name = "OUTPUT_SETS")
+public class OutputSet extends BaseEntity<Long> {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "FLS_SEQ")
     @SequenceGenerator(name = "FLS_SEQ", sequenceName = "FLS_SEQ", allocationSize = 1)
-    @Column(name = "INPUT_SET_ID")
+    @Column(name = "OUTPUT_SET_ID")
     private Long id;
+
     @Column(name = "VERSION")
     private int version;
     @Column(name = "FILENAME")
@@ -42,22 +43,16 @@ public class InputSet extends BaseEntity<Long> {
     private WorkflowStatus status;
     @Column(name = "MOST_RECENT")
     private boolean mostRecent;
+
+    @OneToMany(cascade = {CascadeType.ALL}, fetch = FetchType.EAGER, mappedBy = "outputSet")
+    //@MapKey(name = "outputType.id")
+    private Map<OutputType, Output> idOutputMap = new HashMap<OutputType, Output>();
+
     @OneToOne
     @JoinColumn(name = "POB_ID")
     private PerformanceObligation performanceObligation;
-    @OneToOne
-    @JoinColumn(name = "CONTRACT_ID")
-    private Contract contract;
 
-    /**
-     * The string key is the 'key' to the whole design. Would rather use a hard type here but the String will give us max flexibility. New inputs/outputs/calcs
-     * on the fly. Use downstream type enforcement to prevent errors. i.e. string constants in DRL file.
-     */
-    @OneToMany(cascade = {CascadeType.ALL}, fetch = FetchType.EAGER, mappedBy = "inputSet")
-    //@MapKeyColumn(name = "TYPE_INPUT")
-    private Map<InputType, Input> typeInputMap = new HashMap<InputType, Input>();
-
-    public InputSet() {
+    public OutputSet() {
     }
 
     @Override
@@ -125,16 +120,8 @@ public class InputSet extends BaseEntity<Long> {
         this.performanceObligation = performanceObligation;
     }
 
-    public Map<InputType, Input> getTypeInputMap() {
-        return typeInputMap;
-    }
-
-    public Contract getContract() {
-        return contract;
-    }
-
-    public void setContract(Contract contract) {
-        this.contract = contract;
+    public Map<OutputType, Output> getIdOutputMap() {
+        return idOutputMap;
     }
 
 }

@@ -10,7 +10,6 @@ import com.flowserve.system606.model.CurrencyType;
 import com.flowserve.system606.model.Input;
 import com.flowserve.system606.model.InputSet;
 import com.flowserve.system606.model.InputType;
-import com.flowserve.system606.model.InputTypeName;
 import com.flowserve.system606.model.OutputType;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -78,7 +77,7 @@ public class InputService {
         return em.find(InputType.class, id);
     }
 
-    public InputType findInputTypeByName(InputTypeName inputName) {
+    public InputType findInputTypeByName(String inputName) {
         Query query = em.createQuery("SELECT it FROM InputType it WHERE it.name = :IN");
         query.setParameter("IN", inputName);
         return (InputType) query.getSingleResult();  // we want an exception if not one and only one.
@@ -119,10 +118,11 @@ public class InputService {
             String[] values = line.split("\\|");
 
             InputType inputType = new InputType();
-            inputType.setName(InputTypeName.valueOf(values[count++]));
+            inputType.setId(values[count++]);
             try {
-                findInputTypeByName(inputType.getName());
-                continue;
+                if (findInputTypeById(inputType.getId()) != null) {
+                    continue;
+                }
             } catch (Exception e) {
                 Logger.getLogger(InputService.class.getName()).log(Level.FINE, "Adding InputType: " + line);
             }
@@ -132,8 +132,7 @@ public class InputService {
             inputType.setInputClass(values[count++]);
             inputCurrencyType = values[count++];
             inputType.setInputCurrencyType(inputCurrencyType == null || "".equals(inputCurrencyType) ? null : CurrencyType.fromShortName(inputCurrencyType));
-            //inputType.setName(values[count++]);
-            count++;
+            inputType.setName(values[count++]);
             inputType.setDescription(values[count++]);
             inputType.setExcelSheet(values[count++]);
             inputType.setExcelCol(values[count++]);
@@ -155,11 +154,10 @@ public class InputService {
 
     }
 
-    public void initInputTypeMap() {
-        List<InputType> inputTypes = findAllInputTypes();
-        inputTypes.forEach(inputType -> InputTypeName.putInputType(inputType.getName(), inputType));
-    }
-
+//    public void initInputTypeMap() {
+//        List<InputType> inputTypes = findAllInputTypes();
+//        inputTypes.forEach(inputType -> InputTypeKey.putInputType(inputType.getName(), inputType));
+//    }
     public List<InputType> findInputType() throws Exception {  // Need an application exception type defined.
 
         TypedQuery<InputType> query = em.createQuery("SELECT b FROM InputType b", InputType.class);

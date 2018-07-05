@@ -157,7 +157,8 @@ public class ReportingUnit extends BaseEntity<Long> implements Comparable<Report
     }
 
     public long getPobInputRequiredCount() {
-        return getPerformanceObligations().stream().filter(PerformanceObligation::isInputRequired).count();
+        return 0l;
+        //return getPerformanceObligations().stream().filter(PerformanceObligation::isInputRequired).count();
     }
 
     public long getPobInvalidCount() {

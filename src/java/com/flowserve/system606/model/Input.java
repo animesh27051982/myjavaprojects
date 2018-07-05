@@ -10,7 +10,6 @@ import javax.persistence.Id;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
@@ -32,12 +31,12 @@ public abstract class Input<T> extends BaseEntity<Long> {
     @OneToOne
     @JoinColumn(name = "INPUT_TYPE_ID")
     private InputType inputType;
-    @ManyToOne
-    @JoinColumn(name = "CONTRACT_ID")
-    private Contract contract;
-    @ManyToOne
-    @JoinColumn(name = "POB_ID")
-    private PerformanceObligation performanceObligation;
+    @OneToOne
+    @JoinColumn(name = "PERIOD_ID")
+    private FinancialPeriod financialPeriod;
+    @OneToOne
+    @JoinColumn(name = "INPUT_SET_ID")
+    private InputSet inputSet;
     @Column(name = "CURRENCY_CODE")
     private String currencyCode;  // Consider JavaMoney, etc.,  java.util.Currency.. or our own Currency class.
     @OneToOne
@@ -115,19 +114,19 @@ public abstract class Input<T> extends BaseEntity<Long> {
         this.message = message;
     }
 
-    public Contract getContract() {
-        return contract;
+    public FinancialPeriod getFinancialPeriod() {
+        return financialPeriod;
     }
 
-    public void setContract(Contract contract) {
-        this.contract = contract;
+    public void setFinancialPeriod(FinancialPeriod financialPeriod) {
+        this.financialPeriod = financialPeriod;
     }
 
-    public PerformanceObligation getPerformanceObligation() {
-        return performanceObligation;
+    public InputSet getInputSet() {
+        return inputSet;
     }
 
-    public void setPerformanceObligation(PerformanceObligation performanceObligation) {
-        this.performanceObligation = performanceObligation;
+    public void setInputSet(InputSet inputSet) {
+        this.inputSet = inputSet;
     }
 }

@@ -4,34 +4,26 @@ import java.io.Serializable;
 import java.time.LocalDate;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import static javax.persistence.TemporalType.DATE;
 
 @Entity
 @Table(name = "INPUT_TYPES")
-public class InputType extends BaseEntity<Long> implements Comparable<InputType>, Serializable {
+public class InputType extends BaseEntity<String> implements Comparable<InputType>, Serializable {
 
     private static final long serialVersionUID = -8382719960002472187L;
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "FLS_SEQ")
-    @SequenceGenerator(name = "FLS_SEQ", sequenceName = "FLS_SEQ", allocationSize = 1)
     @Column(name = "INPUT_TYPE_ID")
-    private Long id;
+    private String id;
     @Column(name = "OWNER_ENTITY_TYPE")
     private String ownerEntityType;
     @Column(name = "INPUT_CLASS")
     private String inputClass;
-    @Enumerated(EnumType.STRING)
     @Column(name = "NAME")
-    private InputTypeName name;
+    private String name;
     @Column(name = "DESCRIPTION")
     private String description;
     @Column(name = "INPUT_CURRENCY_TYPE")
@@ -59,20 +51,12 @@ public class InputType extends BaseEntity<Long> implements Comparable<InputType>
     }
 
     @Override
-    public Long getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(String id) {
         this.id = id;
-    }
-
-    public InputTypeName getName() {
-        return name;
-    }
-
-    public void setName(InputTypeName name) {
-        this.name = name;
     }
 
     public String getExcelSheet() {
@@ -182,5 +166,13 @@ public class InputType extends BaseEntity<Long> implements Comparable<InputType>
 
     public void setRequired(boolean required) {
         this.required = required;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 }

@@ -20,8 +20,6 @@
 
     <ui:define name="content">
         <h:form id="form">
-            <p:importConstants type="com.flowserve.system606.model.InputTypeName" var="inputType" />
-            <p:importConstants type="com.flowserve.system606.model.OutputTypeName" var="outputType" />
 
             <div class="ui-g">
                 <div class="ui-g-12">
@@ -58,17 +56,17 @@
 
                                     <p:column style="white-space:pre-line;">
                                         <f:facet name="header">
-                                            <h:outputText value="#{viewSupport.getInputTypeDescription(inputType.TRANSACTION_PRICE)}" />
+                                            <h:outputText value="#{viewSupport.getInputTypeDescription('TRANSACTION_PRICE')}" />
                                         </f:facet>
                                         <p:cellEditor rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}">
                                             <f:facet name="output">
-                                                <p:inputText value="#{pob.getCurrencyInputValue(inputType.TRANSACTION_PRICE)}" styleClass="#{empty pob.getCurrencyInputValue(inputType.TRANSACTION_PRICE) ? 'ui-state-error' : ''}" style="width: 90%;"  readonly="true">
+                                                <p:inputText value="#{viewSupport.getCurrencyInputValue('TRANSACTION_PRICE', pob)}" styleClass="#{empty viewSupport.getCurrencyInputValue('TRANSACTION_PRICE', pob) ? 'ui-state-error' : ''}" style="width: 90%;"  readonly="true">
                                                     <f:validateDoubleRange/>
                                                     <f:convertNumber type="currency" />
                                                 </p:inputText>
                                             </f:facet>
                                             <f:facet name="input">
-                                                <p:inputText value="#{pob.getCurrencyInput(inputType.TRANSACTION_PRICE).value}">
+                                                <p:inputText value="#{viewSupport.getCurrencyInput('TRANSACTION_PRICE', pob).value}">
                                                     <p:ajax event="change" update="estGrossProfit, estGrossMargin" process="@this" listener="#{inputOnlineEntry.calculateOutputs(pob)}"/>
                                                 </p:inputText>
                                             </f:facet>
@@ -77,17 +75,17 @@
 
                                     <p:column style="white-space:pre-line;">
                                         <f:facet name="header">
-                                            <h:outputText value="#{viewSupport.getInputTypeDescription(inputType.LIQUIDATED_DAMAGES)}" />
+                                            <h:outputText value="#{viewSupport.getInputTypeDescription('LIQUIDATED_DAMAGES')}" />
                                         </f:facet>
                                         <p:cellEditor rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}">
                                             <f:facet name="output">
-                                                <p:inputText value="#{pob.getCurrencyInputValue(inputType.LIQUIDATED_DAMAGES)}" styleClass="#{empty pob.getCurrencyInputValue(inputType.LIQUIDATED_DAMAGES) ? 'ui-state-error' : ''}" style="width: 90%;"  readonly="true">
+                                                <p:inputText value="#{viewSupport.getCurrencyInputValue('LIQUIDATED_DAMAGES', pob)}" styleClass="#{empty viewSupport.getCurrencyInputValue('LIQUIDATED_DAMAGES', pob) ? 'ui-state-error' : ''}" style="width: 90%;"  readonly="true">
                                                     <f:validateDoubleRange/>
                                                     <f:convertNumber type="currency" />
                                                 </p:inputText>
                                             </f:facet>
                                             <f:facet name="input">
-                                                <p:inputText value="#{pob.getCurrencyInput(inputType.LIQUIDATED_DAMAGES).value}">
+                                                <p:inputText value="#{viewSupport.getCurrencyInput('LIQUIDATED_DAMAGES', pob).value}">
                                                     <p:ajax event="change" process="@this"/>
                                                 </p:inputText>
                                             </f:facet>
@@ -96,17 +94,17 @@
 
                                     <p:column style="white-space:pre-line;">
                                         <f:facet name="header">
-                                            <h:outputText value="#{viewSupport.getInputTypeDescription(inputType.ESTIMATED_COST_AT_COMPLETION)}" />
+                                            <h:outputText value="#{viewSupport.getInputTypeDescription('ESTIMATED_COST_AT_COMPLETION')}" />
                                         </f:facet>
                                         <p:cellEditor rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}">
                                             <f:facet name="output">
-                                                <p:inputText value="#{pob.getCurrencyInputValue(inputType.ESTIMATED_COST_AT_COMPLETION)}" styleClass="#{empty pob.getCurrencyInputValue(inputType.ESTIMATED_COST_AT_COMPLETION) ? 'ui-state-error' : ''}" style="width: 90%;" readonly="true">
+                                                <p:inputText value="#{viewSupport.getCurrencyInputValue('ESTIMATED_COST_AT_COMPLETION', pob)}" styleClass="#{empty viewSupport.getCurrencyInputValue('ESTIMATED_COST_AT_COMPLETION', pob) ? 'ui-state-error' : ''}" style="width: 90%;" readonly="true">
                                                     <f:validateDoubleRange/>
                                                     <f:convertNumber type="currency" />
                                                 </p:inputText>
                                             </f:facet>
                                             <f:facet name="input">
-                                                <p:inputText value="#{pob.getCurrencyInput(inputType.ESTIMATED_COST_AT_COMPLETION).value}">
+                                                <p:inputText value="#{viewSupport.getCurrencyInput('ESTIMATED_COST_AT_COMPLETION', pob).value}">
                                                     <p:ajax event="change" update="estGrossProfit, estGrossMargin, eacPrior, eacChange" process="@this" listener="#{inputOnlineEntry.calculateOutputs(pob)}"/>
                                                 </p:inputText>
                                             </f:facet>
@@ -114,27 +112,27 @@
                                     </p:column>
                                     <p:column style="white-space:pre-line;">
                                         <f:facet name="header">
-                                            <h:outputText value="#{viewSupport.getOutputTypeDescription(outputType.ESTIMATED_GROSS_PROFIT)}" />
+                                            <h:outputText value="#{viewSupport.getOutputTypeDescription('ESTIMATED_GROSS_PROFIT')}" />
                                         </f:facet>
-                                        <h:outputText id="estGrossProfit" value="#{pob.getCurrencyOutputValue(outputType.ESTIMATED_GROSS_PROFIT)}" rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}">
+                                        <h:outputText id="estGrossProfit" value="#{viewSupport.getCurrencyOutputValue('ESTIMATED_GROSS_PROFIT', pob)}" rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}">
                                             <f:convertNumber type="currency" />
                                         </h:outputText>
                                     </p:column>
                                     <p:column style="white-space:pre-line;">
                                         <f:facet name="header">
-                                            <h:outputText value="#{viewSupport.getOutputTypeDescription(outputType.ESTIMATED_GROSS_MARGIN)}" />
+                                            <h:outputText value="#{viewSupport.getOutputTypeDescription('ESTIMATED_GROSS_MARGIN')}" />
                                         </f:facet>
-                                        <h:outputText id="estGrossMargin" value="#{pob.getCurrencyOutputValue(outputType.ESTIMATED_GROSS_MARGIN)}" rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}">
+                                        <h:outputText id="estGrossMargin" value="#{viewSupport.getCurrencyOutputValue('ESTIMATED_GROSS_MARGIN', pob)}" rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}">
                                             <f:convertNumber type="percent" />
                                         </h:outputText>
                                     </p:column>
                                     <p:column style="white-space:pre-line;" headerText="Prior Period Estimate at Completion">
-                                        <h:outputText id="eacPrior" value="#{pob.getCurrencyInputValuePriorPeriod(inputType.ESTIMATED_COST_AT_COMPLETION)}" rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}">
+                                        <h:outputText id="eacPrior" value="#{viewSupport.getCurrencyInputValuePriorPeriod('ESTIMATED_COST_AT_COMPLETION', pob)}" rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}">
                                             <f:convertNumber type="currency" />
                                         </h:outputText>
                                     </p:column>
                                     <p:column style="white-space:pre-line;" headerText="Change in Estimate">
-                                        <h:outputText id="eacChange" value="#{pob.getCurrencyOutputValuePriorPeriod(outputType.CHANGE_IN_ESTIMATED_COST_AT_COMPLETION)}" rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}">
+                                        <h:outputText id="eacChange" value="#{viewSupport.getCurrencyOutputValue('CHANGE_IN_ESTIMATED_COST_AT_COMPLETION', pob)}" rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}">
                                             <f:convertNumber type="currency" />
                                         </h:outputText>
                                     </p:column>
@@ -155,17 +153,17 @@
 
                                     <p:column style="white-space:pre-line;">
                                         <f:facet name="header">
-                                            <h:outputText value="#{viewSupport.getInputTypeDescription(inputType.CUMULATIVE_COST_INCURRED)}" />
+                                            <h:outputText value="#{viewSupport.getInputTypeDescription('CUMULATIVE_COST_INCURRED')}" />
                                         </f:facet>
                                         <p:cellEditor rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}">
                                             <f:facet name="output">
-                                                <p:inputText value="#{pob.getCurrencyInputValue(inputType.CUMULATIVE_COST_INCURRED)}" styleClass="#{empty pob.getCurrencyInputValue(inputType.CUMULATIVE_COST_INCURRED) ? 'ui-state-error' : ''}" style="width: 90%;" readonly="true">
+                                                <p:inputText value="#{viewSupport.getCurrencyInputValue('CUMULATIVE_COST_INCURRED', pob)}" styleClass="#{empty viewSupport.getCurrencyInputValue('CUMULATIVE_COST_INCURRED', pob) ? 'ui-state-error' : ''}" style="width: 90%;" readonly="true">
                                                     <f:validateDoubleRange/>
                                                     <f:convertNumber type="currency" />
                                                 </p:inputText>
                                             </f:facet>
                                             <f:facet name="input">
-                                                <p:inputText value="#{pob.getCurrencyInput(inputType.CUMULATIVE_COST_INCURRED).value}">
+                                                <p:inputText value="#{viewSupport.getCurrencyInput('CUMULATIVE_COST_INCURRED', pob).value}">
                                                     <p:ajax event="change" update="totalITD" process="@this" listener="#{inputOnlineEntry.calculateOutputs(pob)}"/>
                                                 </p:inputText>
                                             </f:facet>
@@ -174,17 +172,17 @@
 
                                     <p:column style="white-space:pre-line;">
                                         <f:facet name="header">
-                                            <h:outputText value="#{viewSupport.getInputTypeDescription(inputType.CUMULATIVE_THIRD_PARTY_PROGRESS)}" />
+                                            <h:outputText value="#{viewSupport.getInputTypeDescription('CUMULATIVE_THIRD_PARTY_PROGRESS')}" />
                                         </f:facet>
                                         <p:cellEditor rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}">
                                             <f:facet name="output">
-                                                <p:inputText value="#{pob.getCurrencyInputValue(inputType.CUMULATIVE_THIRD_PARTY_PROGRESS)}" styleClass="#{empty pob.getCurrencyInputValue(inputType.CUMULATIVE_THIRD_PARTY_PROGRESS) ? 'ui-state-error' : ''}" style="width: 90%;" readonly="true">
+                                                <p:inputText value="#{viewSupport.getCurrencyInputValue('CUMULATIVE_THIRD_PARTY_PROGRESS', pob)}" styleClass="#{empty viewSupport.getCurrencyInputValue('CUMULATIVE_THIRD_PARTY_PROGRESS', pob) ? 'ui-state-error' : ''}" style="width: 90%;" readonly="true">
                                                     <f:validateDoubleRange/>
                                                     <f:convertNumber type="currency" />
                                                 </p:inputText>
                                             </f:facet>
                                             <f:facet name="input">
-                                                <p:inputText value="#{pob.getCurrencyInput(inputType.CUMULATIVE_THIRD_PARTY_PROGRESS).value}">
+                                                <p:inputText value="#{viewSupport.getCurrencyInput('CUMULATIVE_THIRD_PARTY_PROGRESS', pob).value}">
                                                     <p:ajax event="change" update="totalITD" process="@this" listener="#{inputOnlineEntry.calculateOutputs(pob)}"/>
                                                 </p:inputText>
                                             </f:facet>
@@ -193,17 +191,17 @@
 
                                     <p:column style="white-space:pre-line;">
                                         <f:facet name="header">
-                                            <h:outputText value="#{viewSupport.getInputTypeDescription(inputType.CUMULATIVE_INTERCOMPANY_PROGRESS)}" />
+                                            <h:outputText value="#{viewSupport.getInputTypeDescription('CUMULATIVE_INTERCOMPANY_PROGRESS')}" />
                                         </f:facet>
                                         <p:cellEditor rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}">
                                             <f:facet name="output">
-                                                <p:inputText value="#{pob.getCurrencyInputValue(inputType.CUMULATIVE_INTERCOMPANY_PROGRESS)}" styleClass="#{empty pob.getCurrencyInputValue(inputType.CUMULATIVE_INTERCOMPANY_PROGRESS) ? 'ui-state-error' : ''}" style="width: 90%;" readonly="true">
+                                                <p:inputText value="#{viewSupport.getCurrencyInputValue('CUMULATIVE_INTERCOMPANY_PROGRESS', pob)}" styleClass="#{empty viewSupport.getCurrencyInputValue('CUMULATIVE_INTERCOMPANY_PROGRESS', pob) ? 'ui-state-error' : ''}" style="width: 90%;" readonly="true">
                                                     <f:validateDoubleRange/>
                                                     <f:convertNumber type="currency" />
                                                 </p:inputText>
                                             </f:facet>
                                             <f:facet name="input">
-                                                <p:inputText value="#{pob.getCurrencyInput(inputType.CUMULATIVE_INTERCOMPANY_PROGRESS).value}">
+                                                <p:inputText value="#{viewSupport.getCurrencyInput('CUMULATIVE_INTERCOMPANY_PROGRESS', pob).value}">
                                                     <p:ajax event="change" update="totalITD" process="@this" listener="#{inputOnlineEntry.calculateOutputs(pob)}"/>
                                                 </p:inputText>
                                             </f:facet>
@@ -212,9 +210,9 @@
 
                                     <p:column style="white-space:pre-line;">
                                         <f:facet name="header">
-                                            <h:outputText value="#{viewSupport.getOutputTypeDescription(outputType.CUMULATIVE_TOTAL_ITD_COSTS)}" />
+                                            <h:outputText value="#{viewSupport.getOutputTypeDescription('CUMULATIVE_TOTAL_ITD_COSTS')}" />
                                         </f:facet>
-                                        <h:outputText id="totalITD" value="#{pob.getCurrencyOutputValue(outputType.CUMULATIVE_TOTAL_ITD_COSTS)}" rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}">
+                                        <h:outputText id="totalITD" value="#{viewSupport.getCurrencyOutputValue('CUMULATIVE_TOTAL_ITD_COSTS', pob)}" rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}">
                                             <f:convertNumber type="currency" />
                                         </h:outputText>
                                     </p:column>

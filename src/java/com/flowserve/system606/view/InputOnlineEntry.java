@@ -42,7 +42,7 @@ public class InputOnlineEntry implements Serializable {
     @Inject
     private AdminService adminService;
     @Inject
-    private PerformanceObligationService performanceObligationService;
+    private PerformanceObligationService pobService;
     @Inject
     BusinessRuleService businessRuleService;
     private BigDecimal eacValue;

@@ -40,7 +40,7 @@ public class TemplateService {
     @Inject
     InputService inputService;
     @Inject
-    PerformanceObligationService performanceObligationService;
+    PerformanceObligationService pobService;
     @Inject
     BusinessRuleService businessRuleService;
     private static final int HEADER_ROW_COUNT = 2;
@@ -80,8 +80,10 @@ public class TemplateService {
                     for (InputType inputType : inputTypes) {
                         cell = row.getCell(CellReference.convertColStringToIndex(inputType.getExcelCol()));
                         if ("com.flowserve.system606.model.CurrencyInput".equals(inputType.getInputClass())) {
-                            if (pob.getCurrencyInput(inputType.getName()) != null) {
-                                cell.setCellValue(pob.getCurrencyInputValue(inputType.getName()).doubleValue());
+                            //if (pob.getCurrencyInput(inputType.getName()) != null) {
+                            if (pobService.getCurrencyInput(inputType.getId(), pob) != null) {
+                                //cell.setCellValue(pob.getCurrencyInputValue(inputType.getName()).doubleValue());
+                                cell.setCellValue(pobService.getCurrencyInputValue(inputType.getId(), pob).doubleValue());
                             }
                         }
                     }
@@ -124,7 +126,7 @@ public class TemplateService {
 
                 Logger.getLogger(InputService.class.getName()).log(Level.INFO, "Processing POB: " + NumberToTextConverter.toText(pobIdCell.getNumericCellValue()));
 
-                PerformanceObligation pob = performanceObligationService.findById((long) pobIdCell.getNumericCellValue());
+                PerformanceObligation pob = pobService.findById((long) pobIdCell.getNumericCellValue());
                 if (pob == null) {
                     throw new IllegalStateException("Input file invalid.  Invalid POB at row: " + row.getRowNum());
                 }
@@ -140,19 +142,23 @@ public class TemplateService {
                         if ("com.flowserve.system606.model.CurrencyInput".equals(inputType.getInputClass())) {
                             Logger.getLogger(TemplateService.class.getName()).log(Level.INFO, "Upload processing row: " + row.getRowNum() + " cell: " + cell.getColumnIndex());
                             Logger.getLogger(TemplateService.class.getName()).log(Level.INFO, "Upload Processing. getCurrencyInp: " + cell.getNumericCellValue());
-                            pob.getCurrencyInput(inputType.getName()).setValue(new BigDecimal(NumberToTextConverter.toText(cell.getNumericCellValue())));
+                            //pob.getCurrencyInput(inputType.getName()).setValue(new BigDecimal(NumberToTextConverter.toText(cell.getNumericCellValue())));
+                            pobService.getCurrencyInput(inputType.getId(), pob).setValue(new BigDecimal(NumberToTextConverter.toText(cell.getNumericCellValue())));
                         }
                         if ("com.flowserve.system606.model.StringInput".equals(inputType.getInputClass())) {
                             Logger.getLogger(TemplateService.class.getName()).log(Level.INFO, "Upload processing row: " + row.getRowNum() + " cell: " + cell.getColumnIndex());
                             Logger.getLogger(TemplateService.class.getName()).log(Level.INFO, "Upload Processing. getCurrencyInp: " + cell.getStringCellValue());
 
-                            pob.getStringInput(inputType.getName()).setValue(cell.getStringCellValue());
+                            //pob.getStringInput(inputType.getName()).setValue(cell.getStringCellValue());
+                            pobService.getStringInput(inputType.getId(), pob).setValue(cell.getStringCellValue());
+
                         }
                         if ("com.flowserve.system606.model.DateInput".equals(inputType.getInputClass())) {
                             Logger.getLogger(TemplateService.class.getName()).log(Level.INFO, "Upload processing row: " + row.getRowNum() + " cell: " + cell.getColumnIndex());
                             Logger.getLogger(TemplateService.class.getName()).log(Level.INFO, "Upload Processing. getCurrencyInp: " + cell.getDateCellValue());
 
-                            pob.getDateInput(inputType.getName()).setValue(cell.getDateCellValue().toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
+                            //pob.getDateInput(inputType.getName()).setValue(cell.getDateCellValue().toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
+                            pobService.getDateInput(inputType.getId(), pob).setValue(cell.getDateCellValue().toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
                         }
                     } catch (Exception rce) {
                         throw new Exception("processTemplateUpload row: " + row.getRowNum() + " cell:" + cell.getColumnIndex() + " " + rce.getMessage());
@@ -160,7 +166,7 @@ public class TemplateService {
                 }
 
                 businessRuleService.executeBusinessRules(pob);
-                pob = performanceObligationService.update(pob);
+                pob = pobService.update(pob);
             }
         } catch (Exception e) {
             throw new Exception("processTemplateUpload: " + e.getMessage());

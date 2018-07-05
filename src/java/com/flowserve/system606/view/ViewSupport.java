@@ -7,8 +7,8 @@ package com.flowserve.system606.view;
 
 import com.flowserve.system606.model.BusinessUnit;
 import com.flowserve.system606.model.Contract;
-import com.flowserve.system606.model.InputTypeName;
-import com.flowserve.system606.model.OutputTypeName;
+import com.flowserve.system606.model.Input;
+import com.flowserve.system606.model.Output;
 import com.flowserve.system606.model.PerformanceObligation;
 import com.flowserve.system606.model.ReportingUnit;
 import com.flowserve.system606.model.User;
@@ -16,8 +16,10 @@ import com.flowserve.system606.service.AdminService;
 import com.flowserve.system606.service.CurrencyService;
 import com.flowserve.system606.service.InputService;
 import com.flowserve.system606.service.OutputService;
+import com.flowserve.system606.service.PerformanceObligationService;
 import com.flowserve.system606.web.WebSession;
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Currency;
@@ -51,6 +53,8 @@ public class ViewSupport implements Serializable {
     @Inject
     private OutputService outputService;
     private String searchString = "";
+    @Inject
+    private PerformanceObligationService pobService;
 
     /**
      * Creates a new instance of ViewSupport
@@ -118,12 +122,36 @@ public class ViewSupport implements Serializable {
         return root;
     }
 
-    public String getInputTypeDescription(InputTypeName inputName) {
-        return inputService.findInputTypeByName(inputName).getDescription();
+    public String getInputTypeDescription(String inputTypeId) {
+        return inputService.findInputTypeById(inputTypeId).getDescription();
     }
 
-    public String getOutputTypeDescription(OutputTypeName outputName) {
-        return outputService.findOutputTypeByName(outputName).getDescription();
+    public String getOutputTypeDescription(String outputTypeId) {
+        return outputService.findOutputTypeById(outputTypeId).getDescription();
+    }
+
+    public BigDecimal getCurrencyInputValue(String inputTypeId, PerformanceObligation pob) {
+        return pobService.getCurrencyInputValue(inputTypeId, pob);
+    }
+
+    public Input getCurrencyInput(String inputTypeId, PerformanceObligation pob) {
+        return pobService.getCurrencyInput(inputTypeId, pob);
+    }
+
+    public BigDecimal getCurrencyOutputValue(String outputTypeId, PerformanceObligation pob) {
+        return pobService.getCurrencyOutputValue(outputTypeId, pob);
+    }
+
+    public BigDecimal getCurrencyOutputValuePriorPeriod(String outputTypeId, PerformanceObligation pob) {
+        return pobService.getCurrencyOutputValuePriorPeriod(outputTypeId, pob);
+    }
+
+    public BigDecimal getCurrencyInputValuePriorPeriod(String outputTypeId, PerformanceObligation pob) {
+        return pobService.getCurrencyInputValuePriorPeriod(outputTypeId, pob);
+    }
+
+    public Output getCurrencyOutput(String outputTypeId, PerformanceObligation pob) {
+        return pobService.getCurrencyOutput(outputTypeId, pob);
     }
 
 }

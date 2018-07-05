@@ -49,4 +49,8 @@ public class FinancialPeriodService {
 
     }
 
+    public FinancialPeriod getCurrentFinancialPeriod() {
+        return findById("MAY-18");
+    }
+
 }

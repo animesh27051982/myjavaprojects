@@ -7,7 +7,6 @@ package com.flowserve.system606.service;
 
 import com.flowserve.system606.model.Output;
 import com.flowserve.system606.model.OutputType;
-import com.flowserve.system606.model.OutputTypeName;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.time.LocalDate;
@@ -63,7 +62,7 @@ public class OutputService {
         return em.find(OutputType.class, id);
     }
 
-    public OutputType findOutputTypeByName(OutputTypeName outputName) {
+    public OutputType findOutputTypeByName(String outputName) {
         Query query = em.createQuery("SELECT ot FROM OutputType ot WHERE ot.name = :ON");
         query.setParameter("ON", outputName);
         return (OutputType) query.getSingleResult();  // we want an exception if not one and only one.
@@ -86,18 +85,18 @@ public class OutputService {
             String[] values = line.split("\\|");
 
             OutputType outputType = new OutputType();
-            outputType.setName(OutputTypeName.valueOf(values[count++]));
+            outputType.setId(values[count++]);
             try {
-                findOutputTypeByName(outputType.getName());
-                continue;
+                if (findOutputTypeById(outputType.getId()) != null) {
+                    continue;
+                }
             } catch (Exception e) {
                 Logger.getLogger(OutputService.class.getName()).log(Level.FINE, "Adding OutputType: " + line);
             }
 
             outputType.setOwnerEntityType(values[count++]);
             outputType.setOutputClass(values[count++]);
-            //outputType.setName(values[count++]);
-            count++;
+            outputType.setName(values[count++]);
             outputType.setDescription(values[count++]);
             outputType.setExcelSheet(values[count++]);
             outputType.setExcelCol(values[count++]);
@@ -115,8 +114,8 @@ public class OutputService {
         logger.info("Finished initializing OutputTypes.");
     }
 
-    public void initOutputTypeMap() {
-        List<OutputType> outputTypes = findOutputTypes();
-        outputTypes.forEach(outputType -> OutputTypeName.putOutputType(outputType.getName(), outputType));
-    }
+//    public void initOutputTypeMap() {
+//        List<OutputType> outputTypes = findOutputTypes();
+//        outputTypes.forEach(outputType -> OutputTypeKey.putOutputType(outputType.getName(), outputType));
+//    }
 }

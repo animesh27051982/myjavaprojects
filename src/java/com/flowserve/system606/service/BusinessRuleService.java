@@ -14,6 +14,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import javax.ejb.Stateless;
+import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
@@ -36,6 +37,8 @@ public class BusinessRuleService {
     @PersistenceContext(unitName = "FlowServePU")
     private EntityManager em;
     StatelessKieSession kSession = null;
+    @Inject
+    PerformanceObligationService performanceObligationService;
 
     @PostConstruct
     public void initBusinessRulesEngine() {
@@ -60,6 +63,8 @@ public class BusinessRuleService {
 
             kSession = ks.newKieContainer(ks.getRepository().getDefaultReleaseId()).newStatelessKieSession();
             kSession.setGlobal("logger", Logger.getLogger(BusinessRuleService.class.getName()));
+            kSession.setGlobal("pobService", performanceObligationService);
+
         } catch (Exception exception) {
             throw new IllegalStateException(exception);
         }
@@ -107,9 +112,9 @@ public class BusinessRuleService {
     }
 
     public void executeBusinessRules(PerformanceObligation pob) throws Exception {
-        Logger.getLogger(BusinessRuleService.class.getName()).log(Level.FINER, "Firing all business rules POB: " + pob.getId());
+        Logger.getLogger(BusinessRuleService.class.getName()).log(Level.FINE, "Firing all business rules POB: " + pob.getId());
         kSession.execute(pob);
-        Logger.getLogger(BusinessRuleService.class.getName()).log(Level.FINER, "Firing all business rules complete.");
+        Logger.getLogger(BusinessRuleService.class.getName()).log(Level.FINE, "Firing all business rules complete.");
     }
 
     public void executeBusinessRules(List<PerformanceObligation> pobs) throws Exception {

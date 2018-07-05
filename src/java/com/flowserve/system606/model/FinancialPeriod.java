@@ -26,7 +26,7 @@ public class FinancialPeriod extends BaseEntity<String> implements Comparable<Fi
     private static final Logger LOG = Logger.getLogger(FinancialPeriod.class.getName());
     @Id
     @Column(name = "FINANCIAL_PERIOD_ID")
-    private String id;
+    private String id;   // MAY-18
     @Column(name = "NAME")
     private String name;
     @Column(name = "START_DATE")
@@ -35,8 +35,8 @@ public class FinancialPeriod extends BaseEntity<String> implements Comparable<Fi
     private LocalDate endDate;
     @Column(name = "PERIOD_YEAR")
     private int periodYear;
-    @Column(name = "PERIOD_NUM")
-    private int periodNum;
+    @Column(name = "PERIOD_NUMBER")  // TODO - Change to comparable int
+    private Integer number;
     private PeriodStatus status;
     @OneToOne
     @JoinColumn(name = "CREATED_BY_ID")
@@ -54,19 +54,19 @@ public class FinancialPeriod extends BaseEntity<String> implements Comparable<Fi
     public FinancialPeriod() {
     }
 
-    public FinancialPeriod(String id, String name, LocalDate startDate, LocalDate endDate, int periodYear, int periodNum, PeriodStatus status) {
+    public FinancialPeriod(String id, String name, LocalDate startDate, LocalDate endDate, int periodYear, int compare, PeriodStatus status) {
         this.id = id;
         this.name = name;
         this.startDate = startDate;
         this.endDate = endDate;
         this.periodYear = periodYear;
-        this.periodNum = periodNum;
+        this.number = number;
         this.status = status;
     }
 
     @Override
     public int compareTo(FinancialPeriod obj) {
-        return this.id.compareTo(obj.getId());
+        return this.number.compareTo(obj.getNumber());
     }
 
     public String getName() {
@@ -75,14 +75,6 @@ public class FinancialPeriod extends BaseEntity<String> implements Comparable<Fi
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
     }
 
     public LocalDate getStartDate() {
@@ -107,14 +99,6 @@ public class FinancialPeriod extends BaseEntity<String> implements Comparable<Fi
 
     public void setPeriodYear(int periodYear) {
         this.periodYear = periodYear;
-    }
-
-    public int getPeriodNum() {
-        return periodNum;
-    }
-
-    public void setPeriodNum(int periodNum) {
-        this.periodNum = periodNum;
     }
 
     public PeriodStatus getStatus() {
@@ -155,6 +139,22 @@ public class FinancialPeriod extends BaseEntity<String> implements Comparable<Fi
 
     public void setLastUpdateDate(LocalDateTime lastUpdateDate) {
         this.lastUpdateDate = lastUpdateDate;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public Integer getNumber() {
+        return number;
+    }
+
+    public void setNumber(Integer number) {
+        this.number = number;
     }
 
 }
