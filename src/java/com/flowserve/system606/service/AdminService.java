@@ -112,6 +112,10 @@ public class AdminService {
         return em.find(ReportingUnit.class, id);
     }
 
+    public ReportingUnit findReportingUnitById(Long id) {
+        return em.find(ReportingUnit.class, id);
+    }
+
     public Country findCountryById(String id) {
         return em.find(Country.class, id);
     }
@@ -126,6 +130,17 @@ public class AdminService {
         query.setParameter("CODE", code);
         List<ReportingUnit> reportingUnits = query.getResultList();
         if (reportingUnits.size() > 0) {
+            return reportingUnits.get(0);
+        }
+        return null;
+    }
+
+    public ReportingUnit findPreparersByReportingUnitCode(String code) {
+        Query query = em.createQuery("SELECT reportingUnit FROM ReportingUnit reportingUnit WHERE reportingUnit.code = :CODE");
+        query.setParameter("CODE", code);
+        List<ReportingUnit> reportingUnits = query.getResultList();
+        List<User> user = reportingUnits.get(0).getPreparers();
+        if (user.size() > 0) {
             return reportingUnits.get(0);
         }
         return null;
@@ -288,6 +303,43 @@ public class AdminService {
                     }
                     ru.setActive(true);
                     persist(ru);
+                }
+
+            }
+
+            reader.close();
+
+            logger.info("Finished initializing Reporting Units.");
+        }
+    }
+
+    public void initAssignPreparersForReportingUnit() throws Exception {
+
+        if (findPreparersByReportingUnitCode("8000") == null) {
+            logger.info("Initializing Reporting Units Preparers");
+            BufferedReader reader = new BufferedReader(new InputStreamReader(AppInitializeService.class.getResourceAsStream("/resources/app_data_init_files/preparers_list.txt"), "UTF-8"));
+
+            String line = null;
+            while ((line = reader.readLine()) != null) {
+                if (line.trim().length() == 0) {
+                    continue;
+                }
+
+                String[] values = line.split("\\t");
+                if (values.length > 6 && values[5].equalsIgnoreCase("Preparer")) {
+
+                    String[] code = values[6].split(",");
+                    User user = findUserByFlsIdType(values[0]);
+                    int len = code.length;
+                    for (int i = 0; i < len; i++) {
+                        ReportingUnit ru = findReportingUnitByCode(code[i]);
+                        if (ru != null && user != null) {
+                            ru.getPreparers().add(user);
+                            update(ru);
+                        }
+
+                    }
+
                 }
 
             }

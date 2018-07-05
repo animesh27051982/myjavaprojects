@@ -56,7 +56,21 @@
                                             <h:outputText value="#{cur.currencyCode}" />
                                         </p:column>
                                     </p:selectOneMenu>
-
+                                    <p:outputLabel for="parentBusinessField" value="Business Unit"/>
+                                    <p:autoComplete
+                                        id="parentBusinessField"
+                                        var="buss"
+                                        maxResults="10"
+                                        required="#{false}"
+                                        forceSelection="#{true}"
+                                        value="#{reportingUnitEdit.editReporintgUnit.businessUnit}"
+                                        completeMethod="#{reportingUnitEdit.assignBusinessUnit}"
+                                        itemLabel="#{buss.name}"
+                                        itemValue="#{buss}"
+                                        converter="businessUnitConverter"
+                                        >
+                                        <h:outputText value="Begin typing business unit name"/>
+                                    </p:autoComplete>
                                     <p:outputLabel for="preparers" value="Preparers" />
                                     <p:panelGrid id="preparers" columns="1">
                                         <p:dataTable id="preparersTable" style="margin-bottom: 10px;" var="preparer" value="#{reportingUnitEdit.editReporintgUnit.preparers}" >
@@ -112,6 +126,21 @@
                                         </p:autoComplete>
                                         <p:commandButton value="Add Approver" style="vertical-align:middle;" ajax="true" actionListener="#{reportingUnitEdit.addApprover(reportingUnitEdit.completedUser)}" update=":mainForm:approvers" process="@this, :mainForm:approverField" />
                                     </p:panelGrid>
+                                    <p:outputLabel for="parentSiteField" value="Parent Reporting Unit"/>
+                                    <p:autoComplete
+                                        id="parentSiteField"
+                                        var="site"
+                                        maxResults="10"
+                                        required="#{false}"
+                                        forceSelection="#{true}"
+                                        value="#{reportingUnitEdit.editReporintgUnit.parent}"
+                                        completeMethod="#{reportingUnitEdit.parentReportingUnit}"
+                                        itemLabel="#{site.name}"
+                                        itemValue="#{site}"
+                                        converter="reportingUnitConverter"
+                                        >
+                                        <h:outputText value="Begin typing reporting unit name"/>
+                                    </p:autoComplete>
                                     <f:facet name="footer">
                                         <p:toolbar>
                                             <f:facet name="right">

@@ -1,0 +1,45 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                template="/WEB-INF/template.xhtml">
+
+    <ui:define name="head">
+        <style type="text/css">
+
+        </style>
+    </ui:define>
+
+    <ui:define name="title">Report Contract Estimate</ui:define>
+    <ui:define name="viewname">Report Contract Estimate</ui:define>
+
+    <ui:define name="content">
+        <h:form id="form">
+
+            <div class="ui-g">
+
+                <div class="ui-g-12">
+                    <div class="card card-w-title">
+                        <p:messages showDetail="true" />
+
+                        <h1><strong>Download Report</strong></h1>
+                   
+
+ 
+                        <p:toolbar>
+                           
+                            <f:facet name="left">
+                                 <h4>Click Here to Download Report</h4>
+                               <p:commandButton value="Download  Report" ajax="false" style="width:auto;" icon="ui-icon-arrowthick-1-s">
+                                   <p:fileDownload value="#{reportContractEstimate.file}" />
+                                </p:commandButton>   
+                            </f:facet>
+                        </p:toolbar>
+                    </div>
+                </div>
+            </div>
+        </h:form>
+    </ui:define>
+
+</ui:composition>

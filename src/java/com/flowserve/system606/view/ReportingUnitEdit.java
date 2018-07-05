@@ -6,6 +6,7 @@
 package com.flowserve.system606.view;
 
 import com.flowserve.system606.controller.AdminController;
+import com.flowserve.system606.model.BusinessUnit;
 import com.flowserve.system606.model.Country;
 import com.flowserve.system606.model.ReportingUnit;
 import com.flowserve.system606.model.User;
@@ -116,6 +117,32 @@ public class ReportingUnitEdit implements Serializable {
 
     public String addUpdateCondition() throws Exception {
         return this.editReporintgUnit.getId() == null ? adminController.addReportingUnit(this.editReporintgUnit) : adminController.updateReportingUnit(this.editReporintgUnit);
+    }
+
+    public List<BusinessUnit> assignBusinessUnit(String searchString) {
+        List<BusinessUnit> sites = null;
+
+        try {
+            sites = adminService.searchSites(searchString);
+        } catch (Exception e) {
+            FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", " site location error  " + e.getMessage());
+            FacesContext.getCurrentInstance().addMessage(null, msg);
+            logger.log(Level.SEVERE, "Error siteLocations.", e);
+        }
+        return sites;
+    }
+
+    public List<ReportingUnit> parentReportingUnit(String searchString) {
+        List<ReportingUnit> rUnit = null;
+
+        try {
+            rUnit = adminService.searchReportingUnits(searchString);
+        } catch (Exception e) {
+            FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", " site location error  " + e.getMessage());
+            FacesContext.getCurrentInstance().addMessage(null, msg);
+            logger.log(Level.SEVERE, "Error siteLocations.", e);
+        }
+        return rUnit;
     }
 
     public ReportingUnit getEditReporintgUnit() {

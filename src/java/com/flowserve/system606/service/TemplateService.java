@@ -10,11 +10,17 @@ import com.flowserve.system606.model.InputSet;
 import com.flowserve.system606.model.InputType;
 import com.flowserve.system606.model.PerformanceObligation;
 import com.flowserve.system606.model.ReportingUnit;
+import com.flowserve.system606.view.PobInput;
+import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStreamWriter;
 import java.math.BigDecimal;
 import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -44,6 +50,7 @@ public class TemplateService {
     @Inject
     BusinessRuleService businessRuleService;
     private static final int HEADER_ROW_COUNT = 2;
+    private InputStream inputStream;
 
     private static Logger logger = Logger.getLogger("com.flowserve.system606");
 
@@ -179,4 +186,100 @@ public class TemplateService {
         //persist(inputSet);
     }
 
+    public void reportingPreparersList() throws Exception {
+        Logger.getLogger(InputService.class.getName()).log(Level.INFO, "Start: ");
+        String folder = "D:/Users/shubhamv/Documents/NetBeansProjects/FlowServe/src/java/resources/app_data_init_files/";
+        try {
+
+            File fout = new File(folder + "preparers_list.txt");
+            //Create the file
+            if (fout.exists()) {
+                fout.delete();
+                fout.createNewFile();
+            } else {
+                fout.createNewFile();
+            }
+
+            FileOutputStream fos = new FileOutputStream(fout);
+
+            BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(fos));
+            //BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(fos));
+            inputStream = PobInput.class.getResourceAsStream("/resources/excel_input_templates/User Access - 02JUL2018.xlsx");
+            XSSFWorkbook workbook = new XSSFWorkbook(inputStream);
+            XSSFSheet worksheet = workbook.getSheet("User Profiles 27JUN2018");
+            Iterator<Row> rowIterator = worksheet.iterator();
+            while (rowIterator.hasNext()) {
+                String fsl_id = "";
+                String id = "";
+                String f_name = "";
+                String l_name = "";
+                String email = "";
+                String role = "";
+                String group = "";
+                //Get the row object
+                Row row = rowIterator.next();
+                if (row.getRowNum() == 0 || row.getRowNum() == 1 || row.getRowNum() == 2) {
+                    continue;
+                }
+                //Every row has columns, get the column iterator and iterate over them
+                Iterator<Cell> cellIterator = row.cellIterator();
+
+                while (cellIterator.hasNext()) {
+                    //Get the Cell object
+                    Cell cell = cellIterator.next();
+
+                    //check the cell type and process accordingly
+                    switch (cell.getCellType()) {
+                        case Cell.CELL_TYPE_STRING:
+                            if (fsl_id.equalsIgnoreCase("")) {
+                                fsl_id = cell.getStringCellValue().trim();
+                            } else if (id.equalsIgnoreCase("")) {
+                                //2nd column
+                                id = cell.getStringCellValue().trim();
+                            } else if (f_name.equalsIgnoreCase("")) {
+                                //3rd column
+                                f_name = cell.getStringCellValue().trim();
+                            } else if (l_name.equalsIgnoreCase("")) {
+                                //4th column
+                                l_name = cell.getStringCellValue().trim();
+                            } else if (email.equalsIgnoreCase("")) {
+                                //5th column
+                                email = cell.getStringCellValue().trim();
+                            } else if (role.equalsIgnoreCase("")) {
+                                //6th column
+                                role = cell.getStringCellValue().trim();
+                            } else if (group.equalsIgnoreCase("")) {
+                                //7th column
+                                String gr = cell.getStringCellValue().trim();
+                                String[] splitStr = gr.split(" ");
+                                int len = splitStr.length;
+                                for (int i = 0; i < len; i++) {
+
+                                    if (splitStr[i].startsWith("RU")) {
+                                        if (group.equalsIgnoreCase("")) {
+                                            group = splitStr[i].replace("RU", "");
+                                        } else {
+                                            group = group + "," + splitStr[i].replace("RU", "");
+                                        }
+
+                                    }
+
+                                }
+
+                            }
+                            break;
+
+                    }
+
+                } //end of cell iterator
+                //Logger.getLogger(InputService.class.getName()).log(Level.INFO, "Second: " + group);
+                bw.newLine();
+                bw.write(fsl_id + "\t" + id + "\t" + f_name + "\t" + l_name + "\t" + email + "\t" + role + "\t" + group);
+            }
+            // bw.close();
+            inputStream.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 }
