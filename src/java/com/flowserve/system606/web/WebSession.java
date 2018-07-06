@@ -2,6 +2,7 @@ package com.flowserve.system606.web;
 
 import com.flowserve.system606.model.BusinessUnit;
 import com.flowserve.system606.model.Country;
+import com.flowserve.system606.model.FinancialPeriod;
 import com.flowserve.system606.model.ReportingUnit;
 import com.flowserve.system606.model.User;
 import com.flowserve.system606.service.AdminService;
@@ -31,6 +32,7 @@ public class WebSession implements Serializable {
     private PerformanceObligationService performanceObligationService;
     @Inject
     private AdminService adminService;
+    private FinancialPeriod editFinancialPeriod;
 
     @PostConstruct
     public void init() {   // this is temp for calculatin testing.
@@ -70,6 +72,14 @@ public class WebSession implements Serializable {
 
     public TreeNode getReportingUnitTreeNode() {
         return reportingUnitTreeNode;
+    }
+
+    public void setEditFinancialPeriod(FinancialPeriod editFinancialPeriod) {
+        this.editFinancialPeriod = editFinancialPeriod;
+    }
+
+    public FinancialPeriod getEditFinancialPeriod() {
+        return editFinancialPeriod;
     }
 
 }
