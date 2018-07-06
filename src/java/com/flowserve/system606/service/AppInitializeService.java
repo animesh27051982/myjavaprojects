@@ -53,6 +53,7 @@ public class AppInitializeService {
         try {
             adminService.initUsers();
             financialPeriodService.initFinancialPeriods();
+            adminService.initCompanies();
             currencyService.initCurrencyConverter();
             inputService.initInputTypes();
             outputService.initOutputTypes();
@@ -65,6 +66,7 @@ public class AppInitializeService {
             businessRuleService.initBusinessRules();
             businessRuleService.initBusinessRulesEngine();
             adminService.initAssignPreparersForReportingUnit();
+
             // businessRuleService.executePOBCalculations(pob);// TODO - Remove
             //DroolsTest.execute();
         } catch (Exception ex) {
