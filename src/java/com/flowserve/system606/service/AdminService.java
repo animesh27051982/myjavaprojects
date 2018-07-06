@@ -6,6 +6,7 @@
 package com.flowserve.system606.service;
 
 import com.flowserve.system606.model.BusinessUnit;
+import com.flowserve.system606.model.Company;
 import com.flowserve.system606.model.Country;
 import com.flowserve.system606.model.ExchangeRate;
 import com.flowserve.system606.model.InputType;
@@ -19,6 +20,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.logging.Logger;
 import javax.ejb.Stateless;
+import javax.inject.Inject;
 import javax.inject.Named;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -35,6 +37,8 @@ public class AdminService {
 
     @PersistenceContext(unitName = "FlowServePU")
     private EntityManager em;
+    @Inject
+    private FinancialPeriodService financialPeriodService;
 
     private static Logger logger = Logger.getLogger("com.flowserve.system606");
 
@@ -120,6 +124,10 @@ public class AdminService {
         return em.find(Country.class, id);
     }
 
+    public Country findCompanyById(String id) {
+        return em.find(Country.class, id);
+    }
+
     public List<ReportingUnit> findAllReportingUnits() {
         Query query = em.createQuery("SELECT ru FROM ReportingUnit ru ORDER BY ru.code");
         return (List<ReportingUnit>) query.getResultList();
@@ -176,6 +184,10 @@ public class AdminService {
 
     public ReportingUnit update(ReportingUnit ru) throws Exception {
         return em.merge(ru);
+    }
+
+    public Company update(Company c) throws Exception {
+        return em.merge(c);
     }
 
     public void updater(User u) throws Exception {
@@ -347,6 +359,19 @@ public class AdminService {
             reader.close();
 
             logger.info("Finished initializing Reporting Units.");
+        }
+    }
+
+    public void initCompanies() throws Exception {
+        if (findCompanyById("FLS") == null) {
+            Company fls = new Company();
+            fls.setId("FLS");
+            fls.setName("Flowserve");
+            fls.setDescription("Flowserve");
+            fls.setInputFreezeWorkday(15);
+            fls.setCurrentPeriod(financialPeriodService.findById("MAY-18"));
+
+            update(fls);
         }
     }
 
