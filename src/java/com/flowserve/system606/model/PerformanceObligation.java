@@ -26,7 +26,7 @@ import static javax.persistence.TemporalType.TIMESTAMP;
 
 @Entity
 @Table(name = "PERFORMANCE_OBLIGATIONS")
-public class PerformanceObligation extends BaseEntity<Long> implements ValueStore, Comparable<PerformanceObligation>, Serializable {
+public class PerformanceObligation extends BaseEntity<Long> implements Calculable, Comparable<PerformanceObligation>, Serializable {
 
     private static final long serialVersionUID = 4995349370717535419L;
     private static final Logger LOG = Logger.getLogger(PerformanceObligation.class.getName());
@@ -58,11 +58,9 @@ public class PerformanceObligation extends BaseEntity<Long> implements ValueStor
 
     //private String deactivationReason;  // create type class
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "performanceObligation")
-    //@MapKeyColumn(name = "PERIOD_INPUT_SET")
     private Map<FinancialPeriod, InputSet> periodInputSetMap = new HashMap<FinancialPeriod, InputSet>();
 
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "performanceObligation")
-    //@MapKeyColumn(name = "PERIOD_OUTPUT_SET")
     private Map<FinancialPeriod, OutputSet> periodOutputSetMap = new HashMap<FinancialPeriod, OutputSet>();
 
     public PerformanceObligation() {

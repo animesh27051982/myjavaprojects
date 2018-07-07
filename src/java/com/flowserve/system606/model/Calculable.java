@@ -11,7 +11,7 @@ import java.util.Map;
  *
  * @author kgraves
  */
-public interface ValueStore {
+public interface Calculable {
 
     public Map<FinancialPeriod, InputSet> getPeriodInputSetMap();
 

@@ -16,7 +16,6 @@ import com.flowserve.system606.model.OutputSet;
 import com.flowserve.system606.model.OutputType;
 import com.flowserve.system606.model.PerformanceObligation;
 import com.flowserve.system606.model.StringInput;
-import com.flowserve.system606.model.ValueStore;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
@@ -24,6 +23,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
+import com.flowserve.system606.model.Calculable;
 
 /**
  *
@@ -41,7 +41,7 @@ public class CalculationService {
     @Inject
     private BusinessRuleService businessRulesService;
 
-    private Input getInput(String inputTypeId, ValueStore valueStore) {  // TODO - Exception type to be thrown?
+    private Input getInput(String inputTypeId, Calculable valueStore) {  // TODO - Exception type to be thrown?
         FinancialPeriod period = financialPeriodService.getCurrentFinancialPeriod();
         InputType inputType = inputService.findInputTypeById(inputTypeId);
 
@@ -55,11 +55,11 @@ public class CalculationService {
         return valueStore.getPeriodInputSetMap().get(period).getTypeInputMap().get(inputType);
     }
 
-    private boolean inputSetExistsForPeriod(FinancialPeriod period, ValueStore valueStore) {
+    private boolean inputSetExistsForPeriod(FinancialPeriod period, Calculable valueStore) {
         return valueStore.getPeriodInputSetMap().get(period) != null;
     }
 
-    private void initializeInputSetForPeriod(FinancialPeriod period, ValueStore valueStore) {
+    private void initializeInputSetForPeriod(FinancialPeriod period, Calculable valueStore) {
         InputSet inputSet = new InputSet();
         if (valueStore instanceof PerformanceObligation) {
             inputSet.setPerformanceObligation((PerformanceObligation) valueStore);
@@ -67,11 +67,11 @@ public class CalculationService {
         valueStore.getPeriodInputSetMap().put(period, inputSet);
     }
 
-    private boolean inputExistsForPeriod(FinancialPeriod period, InputType inputType, ValueStore valueStore) {
+    private boolean inputExistsForPeriod(FinancialPeriod period, InputType inputType, Calculable valueStore) {
         return valueStore.getPeriodInputSetMap().get(period).getTypeInputMap().get(inputType) != null;
     }
 
-    private void initializeInputForPeriod(FinancialPeriod period, InputType inputType, ValueStore valueStore) {
+    private void initializeInputForPeriod(FinancialPeriod period, InputType inputType, Calculable valueStore) {
         try {
             Class<?> clazz = Class.forName(inputType.getInputClass());
             Input input = (Input) clazz.newInstance();
@@ -84,7 +84,7 @@ public class CalculationService {
         }
     }
 
-    public String getStringInputValue(String inputTypeId, ValueStore valueStore) {
+    public String getStringInputValue(String inputTypeId, Calculable valueStore) {
         return (String) getInput(inputTypeId, valueStore).getValue();
     }
 
@@ -173,7 +173,7 @@ public class CalculationService {
 //
 //        return false;
 //    }
-    public void executeBusinessRules(ValueStore valueStore) throws Exception {
+    public void executeBusinessRules(Calculable valueStore) throws Exception {
         Logger.getLogger(BusinessRuleService.class.getName()).log(Level.FINER, "Firing all business rules for: " + valueStore.getId());
         businessRulesService.executeBusinessRules(valueStore);
         Logger.getLogger(BusinessRuleService.class.getName()).log(Level.FINER, "Firing all business rules complete.");

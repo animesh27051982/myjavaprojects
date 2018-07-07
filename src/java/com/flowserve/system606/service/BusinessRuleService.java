@@ -6,7 +6,7 @@
 package com.flowserve.system606.service;
 
 import com.flowserve.system606.model.BusinessRule;
-import com.flowserve.system606.model.ValueStore;
+import com.flowserve.system606.model.Calculable;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.List;
@@ -110,7 +110,7 @@ public class BusinessRuleService {
         LOG.info("Finished initBusinessRules");
     }
 
-    public void executeBusinessRules(ValueStore valueStore) throws Exception {
-        kSession.execute(valueStore);
+    public void executeBusinessRules(Calculable calculable) throws Exception {
+        kSession.execute(calculable);
     }
 }
