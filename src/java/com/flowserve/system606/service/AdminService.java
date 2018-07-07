@@ -68,7 +68,7 @@ public class AdminService {
         return (List<BusinessUnit>) query.getResultList();
     }
 
-    public BusinessUnit findBusinessUnitById(Long id) {
+    public BusinessUnit findBusinessUnitById(String id) {
 
         return em.find(BusinessUnit.class, id);
     }
@@ -155,9 +155,41 @@ public class AdminService {
         return null;
     }
 
+    public ReportingUnit findBUByReportingUnitCode(String code) {
+        Query query = em.createQuery("SELECT reportingUnit FROM ReportingUnit reportingUnit WHERE reportingUnit.code = :CODE");
+        query.setParameter("CODE", code);
+        List<ReportingUnit> reportingUnits = query.getResultList();
+        BusinessUnit bu = reportingUnits.get(0).getBusinessUnit();
+        if (bu != null) {
+            return reportingUnits.get(0);
+        }
+        return null;
+    }
+
+    public ReportingUnit findParentInReportingUnitCode(String code) {
+        Query query = em.createQuery("SELECT reportingUnit FROM ReportingUnit reportingUnit WHERE reportingUnit.code = :CODE");
+        query.setParameter("CODE", code);
+        List<ReportingUnit> reportingUnits = query.getResultList();
+        ReportingUnit bu = reportingUnits.get(0).getParent();
+        if (bu != null) {
+            return reportingUnits.get(0);
+        }
+        return null;
+    }
+
     public Country findCountryByCode(String code) {
         Query query = em.createQuery("SELECT country FROM Country country WHERE country.code = :CODE");
         query.setParameter("CODE", code);
+        List<Country> countries = query.getResultList();
+        if (countries.size() > 0) {
+            return countries.get(0);
+        }
+        return null;
+    }
+
+    public Country findCountryByName(String name) {
+        Query query = em.createQuery("SELECT country FROM Country country WHERE country.name = :NAME OR country.code = :NAME");
+        query.setParameter("NAME", name);
         List<Country> countries = query.getResultList();
         if (countries.size() > 0) {
             return countries.get(0);
@@ -248,7 +280,6 @@ public class AdminService {
                 if (line.trim().length() == 0) {
                     continue;
                 }
-
                 String[] values = line.split("\\t");
                 if (values.length == 7 && !values[6].equalsIgnoreCase("ORG_LEVEL")) {
                     String flsId = values[0];
@@ -263,7 +294,6 @@ public class AdminService {
                     updater(user);
                 }
             }
-
             reader.close();
             //this.initSupervisor();
             logger.info("Finished initializing users.");
@@ -279,54 +309,124 @@ public class AdminService {
             if (line.trim().length() == 0) {
                 continue;
             }
-
             String[] values = line.split("\\t");
             User us = findUserByFlsIdType(values[0]);
             if (us != null) {
                 us.setSupervisor(findUserByFlsIdType(values[1]));
                 updateUser(us);
             }
-
         }
         breader.close();
     }
 
     public void initReportingUnits() throws Exception {
 
-        if (findReportingUnitByCode("0100") == null) {
+        if (findReportingUnitByCode("1105") == null) {
             logger.info("Initializing Reporting Units");
             BufferedReader reader = new BufferedReader(new InputStreamReader(AppInitializeService.class.getResourceAsStream("/resources/app_data_init_files/reporting_units.txt"), "UTF-8"));
 
-            int count = 0;
             String line = null;
             while ((line = reader.readLine()) != null) {
                 if (line.trim().length() == 0) {
                     continue;
                 }
-
-                count = 0;
                 String[] values = line.split("\\t");
-                if (!values[1].equalsIgnoreCase("NAME")) {
-                    ReportingUnit ru = new ReportingUnit();
-                    ru.setCode(values[count++]);
-                    ru.setName(ru.getCode() + " " + values[count++]);
-                    if (values.length > 2) {
-                        ru.setLocalCurrency(Currency.getInstance(new Locale("en", values[count])));
-                        ru.setCountry(findCountryByCode(values[count++]));
+                ReportingUnit ru = new ReportingUnit();
+                ru.setCode(values[1].trim());
+                ru.setName(ru.getCode() + " " + values[0]);
+                if (values.length > 2) {
+                    Country cn = findCountryByName(values[2]);
+                    if (cn != null) {
+                        ru.setCountry(cn);
+                        ru.setLocalCurrency(Currency.getInstance(new Locale("en", cn.getCode())));
+
                     }
-                    ru.setActive(true);
-                    persist(ru);
                 }
-
+                ru.setActive(true);
+                persist(ru);
             }
-
             reader.close();
-
             logger.info("Finished initializing Reporting Units.");
         }
     }
 
-    public void initAssignPreparersForReportingUnit() throws Exception {
+    public void initBusinessUnit() throws Exception {
+        if (findBusinessUnitById("AMSS") == null) {
+            logger.info("Initializing Business Units");
+            BufferedReader reader = new BufferedReader(new InputStreamReader(AppInitializeService.class.getResourceAsStream("/resources/app_data_init_files/business_units.txt"), "UTF-8"));
+
+            String line = null;
+            while ((line = reader.readLine()) != null) {
+                if (line.trim().length() == 0) {
+                    continue;
+                }
+                String[] values = line.split("\\t");
+                BusinessUnit bu = new BusinessUnit();
+                bu.setId(values[0]);
+                bu.setName(values[0]);
+                persist(bu);
+            }
+            reader.close();
+            logger.info("Finished initializing Business Units.");
+        }
+    }
+
+    public void initBUinRU() throws Exception {
+        if (findBUByReportingUnitCode("8000") == null) {
+            logger.info("initBUinRU");
+            BufferedReader reader = new BufferedReader(new InputStreamReader(AppInitializeService.class.getResourceAsStream("/resources/app_data_init_files/business_unit_reporting.txt"), "UTF-8"));
+
+            String line = null;
+            while ((line = reader.readLine()) != null) {
+                if (line.trim().length() == 0) {
+                    continue;
+                }
+                String[] values = line.split("\\t");
+                if (values.length == 3) {
+                    ReportingUnit ru = findReportingUnitByCode(values[0]);
+                    BusinessUnit bu = findBusinessUnitById(values[2]);
+                    ru.setBusinessUnit(bu);
+                    update(ru);
+                }
+            }
+            reader.close();
+            logger.info("Finished initBUinRU.");
+        }
+    }
+
+    public void initCoEtoParentRU() throws Exception {
+        if (findParentInReportingUnitCode("8000") == null) {
+            logger.info("initCoEtoParentRU");
+            BufferedReader reader = new BufferedReader(new InputStreamReader(AppInitializeService.class.getResourceAsStream("/resources/app_data_init_files/reporting_units.txt"), "UTF-8"));
+
+            String line = null;
+            while ((line = reader.readLine()) != null) {
+                if (line.trim().length() == 0) {
+                    continue;
+                }
+                String[] values = line.split("\\t");
+                if (values.length > 3) {
+                    ReportingUnit ru = findReportingUnitByCode(values[3]);
+                    if (ru == null) {
+                        ReportingUnit addRU = new ReportingUnit();
+                        String code = values[3];
+                        addRU.setCode(code);
+                        addRU.setName("Center of Excellence " + code.substring(code.length() - 1));
+                        addRU.setActive(true);
+                        persist(addRU);
+                        ru = findReportingUnitByCode(code);
+                    }
+                    ReportingUnit preRU = findReportingUnitByCode(values[1]);
+                    preRU.setParent(ru);
+                    update(preRU);
+                }
+            }
+            reader.close();
+            logger.info("Finished initCoEtoParentRU.");
+        }
+    }
+
+    public void initPreparersReviewerForRU() throws Exception {
 
         if (findPreparersByReportingUnitCode("8000") == null) {
             logger.info("Initializing Reporting Units Preparers");
@@ -353,6 +453,18 @@ public class AdminService {
 
                     }
 
+                } else if (values.length > 6 && values[5].equalsIgnoreCase("Reviewer")) {
+                    String[] code = values[6].split(",");
+                    User user = findUserByFlsIdType(values[0]);
+                    int len = code.length;
+                    for (int i = 0; i < len; i++) {
+                        ReportingUnit ru = findReportingUnitByCode(code[i]);
+                        if (ru != null && user != null) {
+                            ru.getApprovers().add(user);
+                            update(ru);
+                        }
+
+                    }
                 }
 
             }

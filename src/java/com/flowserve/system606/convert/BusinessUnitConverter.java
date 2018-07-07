@@ -46,7 +46,7 @@ public class BusinessUnitConverter implements Converter {
             Logger.getLogger(BusinessUnitConverter.class.getName()).log(Level.SEVERE, null, ex);
         }
 
-        return adminService.findBusinessUnitById(new Long(value));
+        return adminService.findBusinessUnitById(value);
 
     }
 
