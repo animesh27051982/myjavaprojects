@@ -6,6 +6,7 @@
 package com.flowserve.system606.controller;
 
 import com.flowserve.system606.model.BusinessUnit;
+import com.flowserve.system606.model.FinancialPeriod;
 import com.flowserve.system606.model.ReportingUnit;
 import com.flowserve.system606.model.User;
 import com.flowserve.system606.service.AdminService;
@@ -152,6 +153,42 @@ public class AdminController implements Serializable {
         context.addMessage(null, new FacesMessage("Successful", "User saved"));
 
         return "userSearch";
+    }
+    
+    public String editFinancialPeriod(FinancialPeriod f) throws Exception {
+
+        webSession.setEditFinancialPeriod(f);
+        return "financialPeriodEdit";
+    }
+
+    public String addFinancialPeriod(FinancialPeriod financialPeriod) {
+        FacesContext context = FacesContext.getCurrentInstance();
+        try {
+            adminService.persist(financialPeriod);
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, e.getMessage(), e);
+            context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Error saving", e.getMessage()));
+            return null;
+        }
+
+        context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "FinancialPeriod saved", ""));
+
+        return "financialPeriodList";
+    }
+
+    public String updateFinancialPeriod(FinancialPeriod financialPeriod) {
+         FacesContext context = FacesContext.getCurrentInstance();
+        try {
+            adminService.updateFinancialPeriod(financialPeriod);
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, e.getMessage(), e);
+            context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Error saving", e.getMessage()));
+            return null;
+        }
+
+        context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "financialPeriod saved", ""));
+
+        return "financialPeriodList";
     }
 
 }

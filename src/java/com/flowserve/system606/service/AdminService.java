@@ -9,6 +9,7 @@ import com.flowserve.system606.model.BusinessUnit;
 import com.flowserve.system606.model.Company;
 import com.flowserve.system606.model.Country;
 import com.flowserve.system606.model.ExchangeRate;
+import com.flowserve.system606.model.FinancialPeriod;
 import com.flowserve.system606.model.InputType;
 import com.flowserve.system606.model.ReportingUnit;
 import com.flowserve.system606.model.User;
@@ -407,6 +408,15 @@ public class AdminService {
         rus.add(findReportingUnitByCode("1100"));
 
         return rus;
+    }
+
+    public List<FinancialPeriod> findFinancialPeriods() {
+        TypedQuery<FinancialPeriod> query = em.createQuery("SELECT b FROM FinancialPeriod b", FinancialPeriod.class);
+        return (List<FinancialPeriod>) query.getResultList();
+    }
+
+    public void updateFinancialPeriod(FinancialPeriod financialPeriod) {
+        em.merge(financialPeriod);
     }
 
 }
