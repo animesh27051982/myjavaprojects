@@ -56,6 +56,7 @@ public class InputOnlineEntry implements Serializable {
     private ViewSupport viewSupport;
     @Inject
     private ReportingUnitService reportingUnitService;
+    private String contractFilterText;
 
     private List<ReportingUnit> reportingUnits;
 
@@ -63,6 +64,27 @@ public class InputOnlineEntry implements Serializable {
     public void init() {
         reportingUnits = adminService.getPreparableReportingUnits();
         rootTreeNode = viewSupport.generateNodeTree(reportingUnits);
+    }
+
+    public void filterByContractText() {
+        if (isEmpty(contractFilterText)) {
+            rootTreeNode = viewSupport.generateNodeTree(reportingUnits);
+        } else {
+            viewSupport.filterNodeTree(rootTreeNode, contractFilterText);
+        }
+    }
+
+    public void clearFilterByContractText() {
+        contractFilterText = null;
+        rootTreeNode = viewSupport.generateNodeTree(reportingUnits);
+    }
+
+    private boolean isEmpty(String text) {
+        if (text == null || "".equals(contractFilterText.trim())) {
+            return true;
+        }
+
+        return false;
     }
 
     public void onCellEdit(CellEditEvent event) {
@@ -102,6 +124,14 @@ public class InputOnlineEntry implements Serializable {
         reportingUnitService.calculateAndSave(reportingUnits);
 
         return "inputOnlineEntry";
+    }
+
+    public String getContractFilterText() {
+        return contractFilterText;
+    }
+
+    public void setContractFilterText(String contractFilterText) {
+        this.contractFilterText = contractFilterText;
     }
 
 }

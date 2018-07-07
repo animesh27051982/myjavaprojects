@@ -37,9 +37,20 @@
                             <h:outputText id="setVersion" value="4"/>
                         </p:panelGrid>
 
-                        <p:tabView>
+                        <p:outputPanel>
+                            <h:outputText value="Filter list by contract name or id:" />
+                            <p:inputText id="globalFilterText" value="#{inputOnlineEntry.contractFilterText}" style="width:150px; margin-left: 5px;" placeholder="Enter name or id:">
+                            </p:inputText>
+                            <p:commandButton id="globalFilter" style="margin-left: 5px;" value="Filter" actionListener="#{inputOnlineEntry.filterByContractText()}" update=":form:topLevelTabView"/>
+                            <p:commandButton id="globalFilterClear" style="margin-left: 5px;" value="Clear Filter" actionListener="#{inputOnlineEntry.clearFilterByContractText()}" update=":form:topLevelTabView, :form:globalFilterText"/>
+                        </p:outputPanel>
+
+                        <p:tabView id="topLevelTabView" style="margin-top: 15px;">
+
                             <p:tab title="EAC Inputs">
+
                                 <p:treeTable value="#{inputOnlineEntry.rootTreeNode}" editable="true" editMode="cell" var="pob">
+
                                     <f:facet name="header">
                                         Performance Obligations
                                     </f:facet>

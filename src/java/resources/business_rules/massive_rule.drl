@@ -1,11 +1,11 @@
 dialect "mvel"
 
 import java.math.BigDecimal;
-import com.flowserve.system606.service.PerformanceObligationService;
+import com.flowserve.system606.service.CalculationService;
 import com.flowserve.system606.model.PerformanceObligation;
 import java.util.logging.Logger;
 global Logger logger;
-global PerformanceObligationService pobService;
+global CalculationService calcService;
 
 rule "Calculate EAC Change"
 
@@ -13,13 +13,13 @@ rule "Calculate EAC Change"
     when
         // Pull input values needed for this calculation.
         pob : PerformanceObligation()
-        eval(pobService.getCurrencyInputValue("ESTIMATED_COST_AT_COMPLETION", pob) != null)
-        eval(pobService.getCurrencyInputValuePriorPeriod("ESTIMATED_COST_AT_COMPLETION", pob) != null)
+        eval(calcService.getCurrencyInputValue("ESTIMATED_COST_AT_COMPLETION", pob) != null)
+        eval(calcService.getCurrencyInputValuePriorPeriod("ESTIMATED_COST_AT_COMPLETION", pob) != null)
     then
-        estimatedCostAtCompletion = pobService.getCurrencyInputValue("ESTIMATED_COST_AT_COMPLETION", pob);
-        estimatedCostAtCompletionPriorPeriod = pobService.getCurrencyInputValuePriorPeriod("ESTIMATED_COST_AT_COMPLETION", pob);
+        estimatedCostAtCompletion = calcService.getCurrencyInputValue("ESTIMATED_COST_AT_COMPLETION", pob);
+        estimatedCostAtCompletionPriorPeriod = calcService.getCurrencyInputValuePriorPeriod("ESTIMATED_COST_AT_COMPLETION", pob);
         changeInEstimate = estimatedCostAtCompletionPriorPeriod - estimatedCostAtCompletion;
-        pobService.putCurrencyOutputValue("CHANGE_IN_ESTIMATED_COST_AT_COMPLETION", pob, changeInEstimate);
+        calcService.putCurrencyOutputValue("CHANGE_IN_ESTIMATED_COST_AT_COMPLETION", pob, changeInEstimate);
 end
 
 rule "Calculate Estimated Gross Profit and Margin"
@@ -28,14 +28,14 @@ rule "Calculate Estimated Gross Profit and Margin"
     when
         // Pull input values needed for this calculation.
         pob : PerformanceObligation()
-        eval(pobService.getCurrencyInputValue("TRANSACTION_PRICE", pob) != null)
-        eval(pobService.getCurrencyInputValuePriorPeriod("ESTIMATED_COST_AT_COMPLETION", pob) != null)
+        eval(calcService.getCurrencyInputValue("TRANSACTION_PRICE", pob) != null)
+        eval(calcService.getCurrencyInputValuePriorPeriod("ESTIMATED_COST_AT_COMPLETION", pob) != null)
     then
         // Calculate all outputs possible using these inputs.
-        transactionPrice = pobService.getCurrencyInputValue("TRANSACTION_PRICE", pob);
-        estimatedCostAtCompletion = pobService.getCurrencyInputValue("ESTIMATED_COST_AT_COMPLETION", pob);
+        transactionPrice = calcService.getCurrencyInputValue("TRANSACTION_PRICE", pob);
+        estimatedCostAtCompletion = calcService.getCurrencyInputValue("ESTIMATED_COST_AT_COMPLETION", pob);
         estimatedGrossProfit =  transactionPrice - estimatedCostAtCompletion;
-        pobService.putCurrencyOutputValue("ESTIMATED_GROSS_PROFIT", pob, estimatedGrossProfit);
+        calcService.putCurrencyOutputValue("ESTIMATED_GROSS_PROFIT", pob, estimatedGrossProfit);
         estimatedGrossMargin = estimatedGrossProfit / transactionPrice
-        pobService.putCurrencyOutputValue("ESTIMATED_GROSS_MARGIN", pob, estimatedGrossMargin);
+        calcService.putCurrencyOutputValue("ESTIMATED_GROSS_MARGIN", pob, estimatedGrossMargin);
 end

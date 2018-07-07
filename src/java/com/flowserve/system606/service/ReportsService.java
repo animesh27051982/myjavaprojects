@@ -34,7 +34,7 @@ public class ReportsService {
     private EntityManager em;
     private static Logger logger = Logger.getLogger("com.flowserve.system606");
     @Inject
-    PerformanceObligationService pobService;
+    private CalculationService calculationService;
 
     @Inject
     private InputService inputService;
@@ -57,18 +57,18 @@ public class ReportsService {
                 row.getCell(0, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK).setCellValue(contract.getName());
                 InputType inputType = inputService.findInputTypeById("TRANSACTION_PRICE");
                 cell = row.getCell(1, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
-                if (pobService.getCurrencyInput(inputType.getId(), pob).getValue() != null) {
-                    cell.setCellValue(pobService.getCurrencyInputValue(inputType.getId(), pob).doubleValue());
+                if (calculationService.getCurrencyInput(inputType.getId(), pob).getValue() != null) {
+                    cell.setCellValue(calculationService.getCurrencyInputValue(inputType.getId(), pob).doubleValue());
                 }
                 inputType = inputService.findInputTypeById("LIQUIDATED_DAMAGES");
                 cell = row.getCell(2, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
-                if (pobService.getCurrencyInput(inputType.getId(), pob).getValue() != null) {
-                    cell.setCellValue(pobService.getCurrencyInputValue(inputType.getId(), pob).doubleValue());
+                if (calculationService.getCurrencyInput(inputType.getId(), pob).getValue() != null) {
+                    cell.setCellValue(calculationService.getCurrencyInputValue(inputType.getId(), pob).doubleValue());
                 }
                 inputType = inputService.findInputTypeById("ESTIMATED_COST_AT_COMPLETION");
                 cell = row.getCell(3, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
-                if (pobService.getCurrencyInput(inputType.getId(), pob).getValue() != null) {
-                    cell.setCellValue(pobService.getCurrencyInputValue(inputType.getId(), pob).doubleValue());
+                if (calculationService.getCurrencyInput(inputType.getId(), pob).getValue() != null) {
+                    cell.setCellValue(calculationService.getCurrencyInputValue(inputType.getId(), pob).doubleValue());
                 }
 
             }

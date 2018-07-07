@@ -6,11 +6,10 @@
 package com.flowserve.system606.service;
 
 import com.flowserve.system606.model.BusinessRule;
-import com.flowserve.system606.model.PerformanceObligation;
+import com.flowserve.system606.model.ValueStore;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.List;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import javax.ejb.Stateless;
@@ -36,9 +35,9 @@ public class BusinessRuleService {
 
     @PersistenceContext(unitName = "FlowServePU")
     private EntityManager em;
-    StatelessKieSession kSession = null;
+    private StatelessKieSession kSession = null;
     @Inject
-    PerformanceObligationService performanceObligationService;
+    private CalculationService calculationService;
 
     @PostConstruct
     public void initBusinessRulesEngine() {
@@ -63,7 +62,7 @@ public class BusinessRuleService {
 
             kSession = ks.newKieContainer(ks.getRepository().getDefaultReleaseId()).newStatelessKieSession();
             kSession.setGlobal("logger", Logger.getLogger(BusinessRuleService.class.getName()));
-            kSession.setGlobal("pobService", performanceObligationService);
+            kSession.setGlobal("calcService", calculationService);
 
         } catch (Exception exception) {
             throw new IllegalStateException(exception);
@@ -111,15 +110,7 @@ public class BusinessRuleService {
         LOG.info("Finished initBusinessRules");
     }
 
-    public void executeBusinessRules(PerformanceObligation pob) throws Exception {
-        Logger.getLogger(BusinessRuleService.class.getName()).log(Level.FINER, "Firing all business rules POB: " + pob.getId());
-        kSession.execute(pob);
-        Logger.getLogger(BusinessRuleService.class.getName()).log(Level.FINER, "Firing all business rules complete.");
-    }
-
-    public void executeBusinessRules(List<PerformanceObligation> pobs) throws Exception {
-        for (PerformanceObligation pob : pobs) {
-            executeBusinessRules(pob);
-        }
+    public void executeBusinessRules(ValueStore valueStore) throws Exception {
+        kSession.execute(valueStore);
     }
 }

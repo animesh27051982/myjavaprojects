@@ -13,6 +13,7 @@ import com.flowserve.system606.model.PerformanceObligation;
 import com.flowserve.system606.model.ReportingUnit;
 import com.flowserve.system606.model.User;
 import com.flowserve.system606.service.AdminService;
+import com.flowserve.system606.service.CalculationService;
 import com.flowserve.system606.service.CurrencyService;
 import com.flowserve.system606.service.InputService;
 import com.flowserve.system606.service.OutputService;
@@ -26,6 +27,7 @@ import java.util.Currency;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.regex.Pattern;
 import javax.enterprise.context.ApplicationScoped;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
@@ -55,6 +57,8 @@ public class ViewSupport implements Serializable {
     private String searchString = "";
     @Inject
     private PerformanceObligationService pobService;
+    @Inject
+    private CalculationService calculationService;
 
     /**
      * Creates a new instance of ViewSupport
@@ -66,7 +70,6 @@ public class ViewSupport implements Serializable {
         List<User> users = null;
         try {
             users = adminService.findByStartsWithLastName(searchString);
-
         } catch (Exception e) {
             FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", " user search error  " + e.getMessage());
             FacesContext.getCurrentInstance().addMessage(null, msg);
@@ -122,6 +125,40 @@ public class ViewSupport implements Serializable {
         return root;
     }
 
+    public void filterNodeTree(TreeNode root, String contractFilterText) {
+        List<TreeNode> contractsToRemove = new ArrayList<TreeNode>();
+
+        for (TreeNode reportingUnit : root.getChildren()) {
+            for (TreeNode contract : reportingUnit.getChildren()) {
+                String contractName = ((Contract) contract.getData()).getName();
+                String contractId = ((Contract) contract.getData()).getId().toString();
+
+                if (!Pattern.compile(Pattern.quote(contractFilterText), Pattern.CASE_INSENSITIVE).matcher(contractName).find()
+                        && !Pattern.compile(Pattern.quote(contractFilterText), Pattern.CASE_INSENSITIVE).matcher(contractId).find()) {
+                    contractsToRemove.add(contract);
+                }
+            }
+        }
+
+        // Ugly but necessary to prevent ConcurrentModificationException
+        for (TreeNode contract : contractsToRemove) {
+            contract.getParent().getChildren().remove(contract);
+        }
+
+        List<TreeNode> reportingUnitsToRemove = new ArrayList<TreeNode>();
+
+        for (TreeNode reportingUnit : root.getChildren()) {
+            if (reportingUnit.getChildCount() == 0) {
+                reportingUnitsToRemove.add(reportingUnit);
+            }
+        }
+
+        for (TreeNode ru : reportingUnitsToRemove) {
+            ru.getParent().getChildren().remove(ru);
+        }
+
+    }
+
     public String getInputTypeDescription(String inputTypeId) {
         return inputService.findInputTypeById(inputTypeId).getDescription();
     }
@@ -131,27 +168,27 @@ public class ViewSupport implements Serializable {
     }
 
     public BigDecimal getCurrencyInputValue(String inputTypeId, PerformanceObligation pob) {
-        return pobService.getCurrencyInputValue(inputTypeId, pob);
+        return calculationService.getCurrencyInputValue(inputTypeId, pob);
     }
 
     public Input getCurrencyInput(String inputTypeId, PerformanceObligation pob) {
-        return pobService.getCurrencyInput(inputTypeId, pob);
+        return calculationService.getCurrencyInput(inputTypeId, pob);
     }
 
     public BigDecimal getCurrencyOutputValue(String outputTypeId, PerformanceObligation pob) {
-        return pobService.getCurrencyOutputValue(outputTypeId, pob);
+        return calculationService.getCurrencyOutputValue(outputTypeId, pob);
     }
 
     public BigDecimal getCurrencyOutputValuePriorPeriod(String outputTypeId, PerformanceObligation pob) {
-        return pobService.getCurrencyOutputValuePriorPeriod(outputTypeId, pob);
+        return calculationService.getCurrencyOutputValuePriorPeriod(outputTypeId, pob);
     }
 
     public BigDecimal getCurrencyInputValuePriorPeriod(String outputTypeId, PerformanceObligation pob) {
-        return pobService.getCurrencyInputValuePriorPeriod(outputTypeId, pob);
+        return calculationService.getCurrencyInputValuePriorPeriod(outputTypeId, pob);
     }
 
     public Output getCurrencyOutput(String outputTypeId, PerformanceObligation pob) {
-        return pobService.getCurrencyOutput(outputTypeId, pob);
+        return calculationService.getCurrencyOutput(outputTypeId, pob);
     }
 
 }

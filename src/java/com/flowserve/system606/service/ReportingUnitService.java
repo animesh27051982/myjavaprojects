@@ -20,13 +20,11 @@ public class ReportingUnitService {
     @Inject
     private AdminService adminService;
     @Inject
-    private BusinessRuleService businessRuleService;
-    @Inject
-    private PerformanceObligationService performanceObligationService;
+    private CalculationService calculationService;
 
     public void calculateAndSave(List<ReportingUnit> reportingUnits) throws Exception {
         for (ReportingUnit reportingUnit : reportingUnits) {
-            businessRuleService.executeBusinessRules(reportingUnit.getPerformanceObligations());
+            calculationService.executeBusinessRules(reportingUnit.getPerformanceObligations());
         }
 
         adminService.update(reportingUnits);

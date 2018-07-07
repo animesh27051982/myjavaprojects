@@ -26,7 +26,7 @@ import static javax.persistence.TemporalType.TIMESTAMP;
 
 @Entity
 @Table(name = "PERFORMANCE_OBLIGATIONS")
-public class PerformanceObligation extends BaseEntity<Long> implements Comparable<PerformanceObligation>, Serializable {
+public class PerformanceObligation extends BaseEntity<Long> implements ValueStore, Comparable<PerformanceObligation>, Serializable {
 
     private static final long serialVersionUID = 4995349370717535419L;
     private static final Logger LOG = Logger.getLogger(PerformanceObligation.class.getName());

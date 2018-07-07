@@ -44,11 +44,13 @@ public class TemplateService {
     @PersistenceContext(unitName = "FlowServePU")
     private EntityManager em;
     @Inject
-    InputService inputService;
+    private InputService inputService;
     @Inject
-    PerformanceObligationService pobService;
+    private CalculationService calculationService;
     @Inject
-    BusinessRuleService businessRuleService;
+    private PerformanceObligationService pobService;
+    @Inject
+    private BusinessRuleService businessRuleService;
     private static final int HEADER_ROW_COUNT = 2;
     private InputStream inputStream;
 
@@ -88,9 +90,9 @@ public class TemplateService {
                         cell = row.getCell(CellReference.convertColStringToIndex(inputType.getExcelCol()));
                         if ("com.flowserve.system606.model.CurrencyInput".equals(inputType.getInputClass())) {
                             //if (pob.getCurrencyInput(inputType.getName()) != null) {
-                            if (pobService.getCurrencyInput(inputType.getId(), pob) != null) {
+                            if (calculationService.getCurrencyInput(inputType.getId(), pob) != null) {
                                 //cell.setCellValue(pob.getCurrencyInputValue(inputType.getName()).doubleValue());
-                                cell.setCellValue(pobService.getCurrencyInputValue(inputType.getId(), pob).doubleValue());
+                                cell.setCellValue(calculationService.getCurrencyInputValue(inputType.getId(), pob).doubleValue());
                             }
                         }
                     }
@@ -143,29 +145,16 @@ public class TemplateService {
                     try {
                         if (cell == null || pobIdCell.getCellTypeEnum() == CellType.BLANK || ((XSSFCell) cell).getRawValue() == null) {
                             // TODO - figure out what to do in this blank case.  It will depend on the situation.
-                            Logger.getLogger(InputService.class.getName()).log(Level.INFO, "Encountered an empty cell at row: " + row.getRowNum() + " Cell: " + inputType.getExcelCol());
                             continue;
                         }
                         if ("com.flowserve.system606.model.CurrencyInput".equals(inputType.getInputClass())) {
-                            Logger.getLogger(TemplateService.class.getName()).log(Level.INFO, "Upload processing row: " + row.getRowNum() + " cell: " + cell.getColumnIndex());
-                            Logger.getLogger(TemplateService.class.getName()).log(Level.INFO, "Upload Processing. getCurrencyInp: " + cell.getNumericCellValue());
-                            //pob.getCurrencyInput(inputType.getName()).setValue(new BigDecimal(NumberToTextConverter.toText(cell.getNumericCellValue())));
-                            pobService.getCurrencyInput(inputType.getId(), pob).setValue(new BigDecimal(NumberToTextConverter.toText(cell.getNumericCellValue())));
+                            calculationService.getCurrencyInput(inputType.getId(), pob).setValue(new BigDecimal(NumberToTextConverter.toText(cell.getNumericCellValue())));
                         }
                         if ("com.flowserve.system606.model.StringInput".equals(inputType.getInputClass())) {
-                            Logger.getLogger(TemplateService.class.getName()).log(Level.INFO, "Upload processing row: " + row.getRowNum() + " cell: " + cell.getColumnIndex());
-                            Logger.getLogger(TemplateService.class.getName()).log(Level.INFO, "Upload Processing. getCurrencyInp: " + cell.getStringCellValue());
-
-                            //pob.getStringInput(inputType.getName()).setValue(cell.getStringCellValue());
-                            pobService.getStringInput(inputType.getId(), pob).setValue(cell.getStringCellValue());
-
+                            calculationService.getStringInput(inputType.getId(), pob).setValue(cell.getStringCellValue());
                         }
                         if ("com.flowserve.system606.model.DateInput".equals(inputType.getInputClass())) {
-                            Logger.getLogger(TemplateService.class.getName()).log(Level.INFO, "Upload processing row: " + row.getRowNum() + " cell: " + cell.getColumnIndex());
-                            Logger.getLogger(TemplateService.class.getName()).log(Level.INFO, "Upload Processing. getCurrencyInp: " + cell.getDateCellValue());
-
-                            //pob.getDateInput(inputType.getName()).setValue(cell.getDateCellValue().toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
-                            pobService.getDateInput(inputType.getId(), pob).setValue(cell.getDateCellValue().toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
+                            calculationService.getDateInput(inputType.getId(), pob).setValue(cell.getDateCellValue().toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
                         }
                     } catch (Exception rce) {
                         throw new Exception("processTemplateUpload row: " + row.getRowNum() + " cell:" + cell.getColumnIndex() + " " + rce.getMessage());
