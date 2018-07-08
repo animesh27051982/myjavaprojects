@@ -28,6 +28,10 @@
                             <p:commandButton icon="ui-icon-contact fa fa-plus" value="New Business Unit" action="#{adminController.newBusinessUnit(businessUnit)}"></p:commandButton>
                             <p:dataTable id="userTable" var="businessUnit" value="#{businessUnitSearch.businessUnits}"  paginator="true" rows="30">
 
+                                <p:column headerText="ID" sortBy="#{businessUnit.id}">
+                                    <h:outputText value="#{businessUnit.id}" />
+                                </p:column>
+
                                 <p:column headerText="Name" sortBy="#{businessUnit.name}">
                                     <h:outputText value="#{businessUnit.name}" />
                                 </p:column>
@@ -35,11 +39,6 @@
                                 <p:column  headerText="Type" sortBy="#{businessUnit.type}">
                                     <h:outputText value="#{businessUnit.type}" />
                                 </p:column>
-
-                                <p:column headerText="Code" sortBy="#{businessUnit.type}">
-                                    <h:outputText value="#{businessUnit.code}" />
-                                </p:column>
-
                                 <p:column headerText="Description" sortBy="#{businessUnit.description}">
                                     <h:outputText value="#{businessUnit.description}" />
                                 </p:column>

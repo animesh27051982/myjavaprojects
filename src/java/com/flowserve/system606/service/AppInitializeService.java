@@ -58,14 +58,16 @@ public class AppInitializeService {
             inputService.initInputTypes();
             outputService.initOutputTypes();
             adminService.initCountries();    // We don't need this as an Entity.  Convert to standard Java object with converters.
-
+            adminService.initBusinessUnit();
             adminService.initReportingUnits();
+            adminService.initBUinRU();
+            adminService.initCoEtoParentRU();
             contractService.initContracts();
             pobService.initPOBs();
 
             businessRuleService.initBusinessRules();
             businessRuleService.initBusinessRulesEngine();
-            adminService.initAssignPreparersForReportingUnit();
+            adminService.initPreparersReviewerForRU();
 
             // businessRuleService.executePOBCalculations(pob);// TODO - Remove
             //DroolsTest.execute();
