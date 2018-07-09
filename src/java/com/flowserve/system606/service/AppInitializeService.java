@@ -10,9 +10,9 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
-import javax.ejb.EJB;
 import javax.ejb.Singleton;
 import javax.ejb.Startup;
+import javax.inject.Inject;
 
 /**
  *
@@ -27,19 +27,19 @@ public class AppInitializeService {
     List<User> admin = null;
     User ad;
 
-    @EJB
+    @Inject
     private AdminService adminService;
-    @EJB
+    @Inject
     private PerformanceObligationService pobService;
-    @EJB
+    @Inject
     private CurrencyService currencyService;
-    @EJB
+    @Inject
     private FinancialPeriodService financialPeriodService;
-    @EJB
+    @Inject
     private MetricService metricService;
-    @EJB
+    @Inject
     private CalculationService calculationService;
-    @EJB
+    @Inject
     private ContractService contractService;
 
     @PostConstruct
@@ -53,14 +53,16 @@ public class AppInitializeService {
             currencyService.initCurrencyConverter();
             metricService.initMetricTypes();
             adminService.initCountries();    // We don't need this as an Entity.  Convert to standard Java object with converters.
-
+            adminService.initBusinessUnit();
             adminService.initReportingUnits();
+            adminService.initBUinRU();
+            adminService.initCoEtoParentRU();
+            adminService.initPreparersReviewerForRU();
             contractService.initContracts();
             pobService.initPOBs();
 
             calculationService.initBusinessRules();
             calculationService.initBusinessRulesEngine();
-            adminService.initAssignPreparersForReportingUnit();
 
             // businessRuleService.executePOBCalculations(pob);// TODO - Remove
             //DroolsTest.execute();
