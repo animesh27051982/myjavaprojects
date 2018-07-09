@@ -5,25 +5,39 @@
  */
 package com.flowserve.system606.service;
 
-import com.flowserve.system606.model.CurrencyInput;
-import com.flowserve.system606.model.DateInput;
+import com.flowserve.system606.model.Accumulable;
+import com.flowserve.system606.model.BusinessRule;
+import com.flowserve.system606.model.Calculable;
+import com.flowserve.system606.model.CurrencyMetric;
+import com.flowserve.system606.model.DateMetric;
 import com.flowserve.system606.model.FinancialPeriod;
-import com.flowserve.system606.model.Input;
-import com.flowserve.system606.model.InputSet;
-import com.flowserve.system606.model.InputType;
-import com.flowserve.system606.model.Output;
-import com.flowserve.system606.model.OutputSet;
-import com.flowserve.system606.model.OutputType;
+import com.flowserve.system606.model.Metric;
+import com.flowserve.system606.model.MetricPriorPeriod;
+import com.flowserve.system606.model.MetricSet;
+import com.flowserve.system606.model.MetricType;
 import com.flowserve.system606.model.PerformanceObligation;
-import com.flowserve.system606.model.StringInput;
+import com.flowserve.system606.model.StringMetric;
 import java.math.BigDecimal;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.annotation.PostConstruct;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
-import com.flowserve.system606.model.Calculable;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
+import org.kie.api.KieServices;
+import org.kie.api.builder.KieBuilder;
+import org.kie.api.builder.KieFileSystem;
+import org.kie.api.builder.KieRepository;
+import org.kie.api.builder.Message;
+import org.kie.api.runtime.StatelessKieSession;
 
 /**
  *
@@ -32,156 +46,235 @@ import com.flowserve.system606.model.Calculable;
 @Stateless
 public class CalculationService {
 
+    @PersistenceContext(unitName = "FlowServePU")
+    private EntityManager em;
     @Inject
     private FinancialPeriodService financialPeriodService;
     @Inject
-    private InputService inputService;
-    @Inject
-    private OutputService outputService;
-    @Inject
-    private BusinessRuleService businessRulesService;
+    private MetricService metricService;
+    private StatelessKieSession kSession = null;
+    private static final String PACKAGE_PREFIX = "com.flowserve.system606.model.";
 
-    private Input getInput(String inputTypeId, Calculable valueStore) {  // TODO - Exception type to be thrown?
-        FinancialPeriod period = financialPeriodService.getCurrentFinancialPeriod();
-        InputType inputType = inputService.findInputTypeById(inputTypeId);
-
-        if (!inputSetExistsForPeriod(period, valueStore)) {
-            initializeInputSetForPeriod(period, valueStore);
-        }
-        if (!inputExistsForPeriod(period, inputType, valueStore)) {
-            initializeInputForPeriod(period, inputType, valueStore);
-        }
-
-        return valueStore.getPeriodInputSetMap().get(period).getTypeInputMap().get(inputType);
-    }
-
-    private boolean inputSetExistsForPeriod(FinancialPeriod period, Calculable valueStore) {
-        return valueStore.getPeriodInputSetMap().get(period) != null;
-    }
-
-    private void initializeInputSetForPeriod(FinancialPeriod period, Calculable valueStore) {
-        InputSet inputSet = new InputSet();
-        if (valueStore instanceof PerformanceObligation) {
-            inputSet.setPerformanceObligation((PerformanceObligation) valueStore);
-        }
-        valueStore.getPeriodInputSetMap().put(period, inputSet);
-    }
-
-    private boolean inputExistsForPeriod(FinancialPeriod period, InputType inputType, Calculable valueStore) {
-        return valueStore.getPeriodInputSetMap().get(period).getTypeInputMap().get(inputType) != null;
-    }
-
-    private void initializeInputForPeriod(FinancialPeriod period, InputType inputType, Calculable valueStore) {
-        try {
-            Class<?> clazz = Class.forName(inputType.getInputClass());
-            Input input = (Input) clazz.newInstance();
-            input.setInputType(inputType);
-            input.setInputSet(valueStore.getPeriodInputSetMap().get(period));
-            valueStore.getPeriodInputSetMap().get(period).getTypeInputMap().put(inputType, input);
-        } catch (Exception e) {
-            Logger.getLogger(PerformanceObligationService.class.getName()).log(Level.SEVERE, "Severe exception initializing inputTypeId: " + inputType.getId(), e);
-            throw new IllegalStateException("Severe exception initializing inputTypeId: " + inputType.getId(), e);
-        }
-    }
-
-    public String getStringInputValue(String inputTypeId, Calculable valueStore) {
-        return (String) getInput(inputTypeId, valueStore).getValue();
-    }
-
-    public BigDecimal getDecimalInputValue(String inputTypeId, PerformanceObligation pob) {
-        return (BigDecimal) getInput(inputTypeId, pob).getValue();
-    }
-
-    public LocalDate getDateInputValue(String inputTypeId, PerformanceObligation pob) {
-        return (LocalDate) getInput(inputTypeId, pob).getValue();
-    }
-
-    public BigDecimal getCurrencyInputValue(String inputTypeId, PerformanceObligation pob) {
-        return (BigDecimal) getInput(inputTypeId, pob).getValue();
-    }
-
-    public BigDecimal getCurrencyInputValuePriorPeriod(String inputTypeId, PerformanceObligation pob) {
-        return getCurrencyInputValue(inputTypeId, pob);   // KJG TODO - Hack for now to just return this period's value for testing calcs.
-    }
-
-    public StringInput getStringInput(String inputTypeId, PerformanceObligation pob) {
-        return (StringInput) getInput(inputTypeId, pob);
-    }
-
-    public DateInput getDateInput(String inputTypeId, PerformanceObligation pob) {
-        return (DateInput) getInput(inputTypeId, pob);
-    }
-
-    public CurrencyInput getCurrencyInput(String inputTypeId, PerformanceObligation pob) {  // TODO KJG - This method should be getCurrencyInput() and the method above should be getCurrencyInputValue() waiting on this due to impact.
-        return (CurrencyInput) getInput(inputTypeId, pob);
-    }
-
-    // Init missing output if needed.
-    private Output getOutput(String outputTypeId, PerformanceObligation pob) {  // TODO - Exception type to be thrown?
-
-        FinancialPeriod period = financialPeriodService.getCurrentFinancialPeriod();
-        OutputType outputType = outputService.findOutputTypeById(outputTypeId);
+    @PostConstruct
+    public void initBusinessRulesEngine() {
+        Logger.getLogger(CalculationService.class.getName()).log(Level.INFO, "initBusinessRulesEngine");
 
         try {
-            if (pob.getPeriodOutputSetMap().get(period) == null) {
-                OutputSet outputSet = new OutputSet();
-                outputSet.setPerformanceObligation(pob);
-                pob.getPeriodOutputSetMap().put(period, outputSet);
+            KieServices ks = KieServices.Factory.get();
+            KieRepository kr = ks.getRepository();
+            KieFileSystem kfs = ks.newKieFileSystem();
 
+            //kfs.write("src/main/resources/DroolsTest.drl", "");
+            for (BusinessRule rule : findAllBusinessRules()) {
+                String drl = rule.getContent();
+                kfs.write("src/main/resources/" + rule.getRuleKey() + ".drl", drl);
             }
-            if (pob.getPeriodOutputSetMap().get(period).getIdOutputMap().get(outputType) == null) {
-                Class<?> clazz = Class.forName(outputType.getOutputClass());
-                Output output = (Output) clazz.newInstance();
-                output.setOutputType(outputType);
-                output.setOutputSet(pob.getPeriodOutputSetMap().get(period));
-                pob.getPeriodOutputSetMap().get(period).getIdOutputMap().put(outputType, output);
+
+            KieBuilder kb = ks.newKieBuilder(kfs).buildAll();
+
+            if (kb.getResults().hasMessages(Message.Level.ERROR)) {
+                throw new RuntimeException("Business Rule Build Errors:\n" + kb.getResults().toString());
             }
-        } catch (Exception e) {
-            Logger.getLogger(PerformanceObligationService.class.getName()).log(Level.SEVERE, "Severe exception initializing outputTypeId: " + outputTypeId, e);
-            throw new IllegalStateException("Severe exception initializing outputTypeId: " + outputTypeId, e);
+
+            kSession = ks.newKieContainer(ks.getRepository().getDefaultReleaseId()).newStatelessKieSession();
+            kSession.setGlobal("logger", Logger.getLogger(CalculationService.class.getName()));
+            //kSession.setGlobal("calcService", calculationService);
+
+        } catch (Exception exception) {
+            throw new IllegalStateException(exception);
         }
 
-        return pob.getPeriodOutputSetMap().get(period).getIdOutputMap().get(outputType);
+        Logger.getLogger(CalculationService.class.getName()).log(Level.INFO, "Finished initBusinessRulesEngine");
     }
 
-//    public void putOutputMessage(String outputTypeId, String message) {
-//        getOutput(outputTypeId).setMessage(message);
-//    }
-    public void putCurrencyOutputValue(String outputTypeId, PerformanceObligation pob, BigDecimal value) {
-        getOutput(outputTypeId, pob).setValue(value);
+    // intelliGet since this is no ordinary get.  Initialize any missing metrics on the fly.
+    private Metric intelliGetMetric(String metricTypeId, Calculable calculable) {  // TODO - Exception type to be thrown?
+        FinancialPeriod period = financialPeriodService.getCurrentFinancialPeriod();
+        MetricType metricType = metricService.findMetricTypeById(metricTypeId);
+
+        if (!metricSetExistsForPeriod(period, calculable)) {
+            initializeMetricSetForPeriod(period, calculable);
+        }
+        if (!metricExistsForPeriod(period, metricType, calculable)) {
+            initializeMetricForPeriod(period, metricType, calculable);
+        }
+
+        return calculable.getPeriodMetricSetMap().get(period).getTypeMetricMap().get(metricType);
     }
 
-    public BigDecimal getCurrencyOutputValuePriorPeriod(String outputTypeId, PerformanceObligation pob) {
-        return new BigDecimal("10.0");
-        //return getCurrencyOutputValue(outputTypeId);  // KJG TODO - Hack for now to just return this period's value for testing calcs.
+    private boolean metricSetExistsForPeriod(FinancialPeriod period, Calculable calculable) {
+        return calculable.getPeriodMetricSetMap().get(period) != null;
     }
 
-    public BigDecimal getCurrencyOutputValue(String outputTypeId, PerformanceObligation pob) {
-        return (BigDecimal) getOutput(outputTypeId, pob).getValue();
+    private void initializeMetricSetForPeriod(FinancialPeriod period, Calculable calculable) {
+        MetricSet metricSet = new MetricSet();
+        if (calculable instanceof PerformanceObligation) {
+            metricSet.setPerformanceObligation((PerformanceObligation) calculable);
+        }
+        calculable.getPeriodMetricSetMap().put(period, metricSet);
     }
 
-    public Output getCurrencyOutput(String outputTypeId, PerformanceObligation pob) {
-        return getOutput(outputTypeId, pob);
+    private boolean metricExistsForPeriod(FinancialPeriod period, MetricType metricType, Calculable calculable) {
+        return calculable.getPeriodMetricSetMap().get(period).getTypeMetricMap().get(metricType) != null;
     }
 
-//    public boolean isInputRequired() {
-//        for (Input input : periodInputSets.values()) {
-//            if (input.getInputType().isRequired() && input.getValue() == null) {
+    private void initializeMetricForPeriod(FinancialPeriod period, MetricType metricType, Calculable calculable) {
+        try {
+            Class<?> clazz = Class.forName(PACKAGE_PREFIX + metricType.getMetricClass());
+            Metric metric = (Metric) clazz.newInstance();
+            metric.setMetricType(metricType);
+            metric.setMetricSet(calculable.getPeriodMetricSetMap().get(period));
+            calculable.getPeriodMetricSetMap().get(period).getTypeMetricMap().put(metricType, metric);
+        } catch (Exception e) {
+            Logger.getLogger(PerformanceObligationService.class.getName()).log(Level.SEVERE, "Severe exception initializing metricTypeId: " + metricType.getId(), e);
+            throw new IllegalStateException("Severe exception initializing metricTypeId: " + metricType.getId(), e);
+        }
+    }
+
+    public String getStringMetricValue(String metricTypeId, Calculable calculable) {
+        return (String) intelliGetMetric(metricTypeId, calculable).getValue();
+    }
+
+    public BigDecimal getDecimalMetricValue(String metricTypeId, PerformanceObligation pob) {
+        return (BigDecimal) intelliGetMetric(metricTypeId, pob).getValue();
+    }
+
+    public LocalDate getDateMetricValue(String metricTypeId, PerformanceObligation pob) {
+        return (LocalDate) intelliGetMetric(metricTypeId, pob).getValue();
+    }
+
+    public BigDecimal getCurrencyMetricValue(String metricTypeId, PerformanceObligation pob) {
+        return (BigDecimal) intelliGetMetric(metricTypeId, pob).getValue();
+    }
+
+    public BigDecimal getCurrencyMetricValuePriorPeriod(String metricTypeId, PerformanceObligation pob) {
+        return getCurrencyMetricValue(metricTypeId, pob);   // KJG TODO - Hack for now to just return this period's value for testing calcs.
+    }
+
+    public StringMetric getStringMetric(String metricTypeId, PerformanceObligation pob) {
+        return (StringMetric) intelliGetMetric(metricTypeId, pob);
+    }
+
+    public DateMetric getDateMetric(String metricTypeId, PerformanceObligation pob) {
+        return (DateMetric) intelliGetMetric(metricTypeId, pob);
+    }
+
+    public CurrencyMetric getCurrencyMetric(String metricTypeId, PerformanceObligation pob) {  // TODO KJG - This method should be getCurrencyMetric() and the method above should be getCurrencyMetricValue() waiting on this due to impact.
+        return (CurrencyMetric) intelliGetMetric(metricTypeId, pob);
+    }
+
+    public void putCurrencyMetricValue(String metricTypeId, PerformanceObligation pob, BigDecimal value) {
+        intelliGetMetric(metricTypeId, pob).setValue(value);
+    }
+
+//    public boolean isMetricRequired() {
+//        for (Metric metric : periodMetricSets.values()) {
+//            if (metric.getMetricType().isRequired() && metric.getValue() == null) {
 //                return true;
 //            }
 //        }
 //
 //        return false;
 //    }
-    public void executeBusinessRules(Calculable valueStore) throws Exception {
-        Logger.getLogger(BusinessRuleService.class.getName()).log(Level.FINER, "Firing all business rules for: " + valueStore.getId());
-        businessRulesService.executeBusinessRules(valueStore);
-        Logger.getLogger(BusinessRuleService.class.getName()).log(Level.FINER, "Firing all business rules complete.");
+    public void executeBusinessRules(Calculable calculable) throws Exception {
+        Logger.getLogger(CalculationService.class.getName()).log(Level.FINER, "Firing all business rules for: " + calculable.getId());
+        List<Object> facts = new ArrayList<Object>();
+
+        facts.add(calculable);
+        FinancialPeriod period = financialPeriodService.getCurrentFinancialPeriod();
+        facts.addAll(getAllPeriodMetrics(calculable, period));
+        facts.addAll(getAllPriorPeriodMetrics(calculable, period));
+
+        kSession.execute(facts);
+        Logger.getLogger(CalculationService.class.getName()).log(Level.FINER, "Firing all business rules complete.");
     }
 
     public void executeBusinessRules(List<PerformanceObligation> pobs) throws Exception {
         for (PerformanceObligation pob : pobs) {
             executeBusinessRules(pob);
         }
+    }
+
+    private Collection<Metric> getAllPeriodMetrics(Calculable calculable, FinancialPeriod period) {
+        return calculable.getPeriodMetricSetMap().get(period).getTypeMetricMap().values();
+    }
+
+    private Collection<MetricPriorPeriod> getAllPriorPeriodMetrics(Calculable calculable, FinancialPeriod currentPeriod) {
+        // TODO - change this to retrieve prior from periodService.  Use current for now.
+        FinancialPeriod previousPeriod = financialPeriodService.getCurrentFinancialPeriod();
+        Collection<Metric> metrics = calculable.getPeriodMetricSetMap().get(previousPeriod).getTypeMetricMap().values();
+        List<MetricPriorPeriod> metricsPriorPeriod = new ArrayList<MetricPriorPeriod>();
+        for (Metric metric : metrics) {
+            metricsPriorPeriod.add(new MetricPriorPeriod(metric));
+        }
+
+        return metricsPriorPeriod;
+    }
+
+    public BusinessRule findByRuleKey(String ruleKey) {
+        Query query = em.createQuery("SELECT bu FROM BusinessRule bu WHERE bu.ruleKey = :RULE_KEY");
+        query.setParameter("RULE_KEY", ruleKey);
+        return (BusinessRule) query.getSingleResult();  // we want an exception if not one and only one.
+    }
+
+    public void persist(BusinessRule bu) throws Exception {
+        em.persist(bu);
+    }
+
+    public BusinessRule update(BusinessRule bu) throws Exception {
+        return em.merge(bu);
+    }
+
+    public List<BusinessRule> findAllBusinessRules() throws Exception {
+        Query query = em.createQuery("SELECT bu FROM BusinessRule bu", BusinessRule.class);
+
+        return (List<BusinessRule>) query.getResultList();
+    }
+
+    /**
+     * This method will throw an exception if the underlying type does not support BigDecimal summation. We want the exception in the invalid case as it
+     * indicates either a programming error or a business rules error. Neither of which is recoverable.
+     *
+     * @param metricTypeId
+     * @param contract
+     * @return
+     */
+    public BigDecimal getAccumulatedCurrencyMetricValue(String metricTypeId, Accumulable accumulable) {
+
+        BigDecimal sum = new BigDecimal("0.0");
+
+        if (accumulable.getChildAccumulables().isEmpty()) {
+            // TODO - We can abstract this further instead of hard cast to pob.
+            BigDecimal value = getCurrencyMetric(metricTypeId, ((PerformanceObligation) accumulable)).getValue();
+            if (value != null) {
+                sum = sum.add(value);
+            }
+            return sum;
+        }
+
+        for (Accumulable childAccumulable : accumulable.getChildAccumulables()) {
+            sum = sum.add(getAccumulatedCurrencyMetricValue(metricTypeId, childAccumulable));
+        }
+
+        return sum;
+    }
+
+    public void initBusinessRules() throws Exception {
+        Logger.getLogger(CalculationService.class.getName()).log(Level.INFO, "initBusinessRules");
+        String content = new String(Files.readAllBytes(Paths.get(getClass().getResource("/resources/business_rules/massive_rule.drl").toURI())));
+
+        if (findAllBusinessRules().isEmpty()) {
+            BusinessRule businessRule = new BusinessRule();
+            businessRule.setRuleKey("massive.rule");
+            businessRule.setVersionNumber(1L);
+            businessRule.setContent(content);
+            persist(businessRule);
+        } else {
+            BusinessRule businessRule = findByRuleKey("massive.rule");
+            businessRule.setContent(content);
+            update(businessRule);
+        }
+
+        Logger.getLogger(CalculationService.class.getName()).log(Level.INFO, "Finished initBusinessRules");
     }
 }

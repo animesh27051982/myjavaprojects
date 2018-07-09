@@ -2,18 +2,22 @@ package com.flowserve.system606.model;
 
 import java.math.BigDecimal;
 import java.util.Currency;
+import java.util.logging.Logger;
 import javax.persistence.AttributeOverride;
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 
 @Entity
-@DiscriminatorValue("DECIMAL")
+@DiscriminatorValue("CURRENCY")
 @AttributeOverride(name = "value", column = @Column(name = "DECIMAL_VALUE", precision = 38, scale = 14))
-public class CurrencyOutput extends Output<BigDecimal> {
+public class CurrencyMetric extends Metric<BigDecimal> {
+
+    private static final Logger logger = Logger.getLogger(CurrencyMetric.class.getName());
 
     private BigDecimal value;
-
+    @Column(name = "INPUT_CURRENCY_CODE")
+    private Currency inputCurrency;
     @Column(name = "LOCAL_CURRENCY_CODE")
     private Currency localCurrency;
     @Column(name = "LOCAL_CURRENCY_VALUE", precision = 38, scale = 14)
@@ -27,7 +31,7 @@ public class CurrencyOutput extends Output<BigDecimal> {
     @Column(name = "REPORTING_CURRENCY_VALUE", precision = 38, scale = 14)
     private BigDecimal reportingCurrencyValue;
 
-    public CurrencyOutput() {
+    public CurrencyMetric() {
     }
 
     public BigDecimal getValue() {
@@ -36,6 +40,14 @@ public class CurrencyOutput extends Output<BigDecimal> {
 
     public void setValue(BigDecimal value) {
         this.value = value;
+    }
+
+    public Currency getInputCurrency() {
+        return inputCurrency;
+    }
+
+    public void setInputCurrency(Currency inputCurrency) {
+        this.inputCurrency = inputCurrency;
     }
 
     public Currency getLocalCurrency() {

@@ -5,8 +5,8 @@
  */
 package com.flowserve.system606.view;
 
-import com.flowserve.system606.model.InputType;
-import com.flowserve.system606.service.InputService;
+import com.flowserve.system606.model.MetricType;
+import com.flowserve.system606.service.MetricService;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -21,21 +21,21 @@ import javax.inject.Named;
  */
 @Named
 @ViewScoped
-public class InputTypeList implements Serializable {
+public class MetricTypeList implements Serializable {
 
     private static final long serialVersionUID = -1438027991420003830L;
-    List<InputType> inputTypes = new ArrayList<InputType>();
+    private List<MetricType> metricTypes = new ArrayList<MetricType>();
     @Inject
-    InputService inputService;
+    private MetricService metricService;
 
-    public List<InputType> getInputTypes() throws Exception {
-        inputTypes = inputService.findInputType();
-        Collections.sort(inputTypes);
-        return inputTypes;
+    public List<MetricType> getMetricTypes() throws Exception {
+        metricTypes = metricService.findMetricType();
+        Collections.sort(metricTypes);
+        return metricTypes;
     }
 
-    public void setInputTypes(List<InputType> inputTypes) {
-        this.inputTypes = inputTypes;
+    public void setMetricTypes(List<MetricType> metricTypes) {
+        this.metricTypes = metricTypes;
     }
 
 }

@@ -9,11 +9,11 @@ import javax.persistence.Entity;
 @Entity
 @DiscriminatorValue("DECIMAL")
 @AttributeOverride(name = "value", column = @Column(name = "DECIMAL_VALUE", precision = 38, scale = 14))
-public class DecimalInput extends Input<BigDecimal> {
+public class DecimalMetric extends Metric<BigDecimal> {
 
     private BigDecimal value;
 
-    public DecimalInput() {
+    public DecimalMetric() {
     }
 
     public BigDecimal getValue() {

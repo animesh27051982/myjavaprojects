@@ -27,7 +27,7 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name = "REPORTING_UNITS")
-public class ReportingUnit extends BaseEntity<Long> implements Comparable<ReportingUnit>, Serializable {
+public class ReportingUnit extends BaseEntity<Long> implements Accumulable, Comparable<ReportingUnit>, Serializable {
 
     private static final long serialVersionUID = 8757812203684986897L;
     private static final Logger LOG = Logger.getLogger(ReportingUnit.class.getName());
@@ -61,7 +61,6 @@ public class ReportingUnit extends BaseEntity<Long> implements Comparable<Report
     private ReportingUnit parent;
 
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "reportingUnit", cascade = CascadeType.MERGE)
-    //@JoinTable(name = "R_UNIT_CONTRACTS", joinColumns = @JoinColumn(name = "REPORTING_UNIT_ID"), inverseJoinColumns = @JoinColumn(name = "CONTRACT_ID"))
     private List<Contract> contracts = new ArrayList<Contract>();
 
     public ReportingUnit() {
@@ -140,8 +139,8 @@ public class ReportingUnit extends BaseEntity<Long> implements Comparable<Report
         return contracts;
     }
 
-    public void setContracts(List<Contract> contracts) {
-        this.contracts = contracts;
+    public List<Accumulable> getChildAccumulables() {
+        return new ArrayList<Accumulable>(contracts);
     }
 
     public BigDecimal getPobCountRejected() {  // TODO - Remove. Temp code for UI.

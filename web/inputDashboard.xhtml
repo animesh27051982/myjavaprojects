@@ -105,6 +105,11 @@
                                 <p:column headerText="Platform">
                                     <h:outputText value="N/A" />
                                 </p:column>
+                                <p:column style="white-space:pre-line;" headerText="Estimate at Completion">
+                                    <h:outputText id="eac" value="#{viewSupport.getAccumulatedCurrencyMetricValue('ESTIMATED_COST_AT_COMPLETION', ru)}">
+                                        <f:convertNumber type="currency" />
+                                    </h:outputText>
+                                </p:column>
                                 <p:column headerText="Total POB Count">
                                     <h:outputText value="#{ru.pobCount}" />
                                 </p:column>

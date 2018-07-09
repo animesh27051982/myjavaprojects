@@ -5,18 +5,16 @@
  */
 package com.flowserve.system606.view;
 
+import com.flowserve.system606.model.Accumulable;
 import com.flowserve.system606.model.BusinessUnit;
 import com.flowserve.system606.model.Contract;
-import com.flowserve.system606.model.Input;
-import com.flowserve.system606.model.Output;
+import com.flowserve.system606.model.Metric;
 import com.flowserve.system606.model.PerformanceObligation;
 import com.flowserve.system606.model.ReportingUnit;
 import com.flowserve.system606.model.User;
 import com.flowserve.system606.service.AdminService;
 import com.flowserve.system606.service.CalculationService;
-import com.flowserve.system606.service.CurrencyService;
-import com.flowserve.system606.service.InputService;
-import com.flowserve.system606.service.OutputService;
+import com.flowserve.system606.service.MetricService;
 import com.flowserve.system606.service.PerformanceObligationService;
 import com.flowserve.system606.web.WebSession;
 import java.io.Serializable;
@@ -49,11 +47,7 @@ public class ViewSupport implements Serializable {
     @Inject
     private AdminService adminService;
     @Inject
-    private CurrencyService currencyService;
-    @Inject
-    private InputService inputService;
-    @Inject
-    private OutputService outputService;
+    private MetricService metricService;
     private String searchString = "";
     @Inject
     private PerformanceObligationService pobService;
@@ -159,36 +153,23 @@ public class ViewSupport implements Serializable {
 
     }
 
-    public String getInputTypeDescription(String inputTypeId) {
-        return inputService.findInputTypeById(inputTypeId).getDescription();
+    public String getMetricTypeDescription(String metricTypeId) {
+        return metricService.findMetricTypeById(metricTypeId).getDescription();
     }
 
-    public String getOutputTypeDescription(String outputTypeId) {
-        return outputService.findOutputTypeById(outputTypeId).getDescription();
+    public BigDecimal getCurrencyMetricValue(String metricTypeId, PerformanceObligation pob) {
+        return calculationService.getCurrencyMetricValue(metricTypeId, pob);
     }
 
-    public BigDecimal getCurrencyInputValue(String inputTypeId, PerformanceObligation pob) {
-        return calculationService.getCurrencyInputValue(inputTypeId, pob);
+    public BigDecimal getAccumulatedCurrencyMetricValue(String metricTypeId, Accumulable accumulable) {
+        return calculationService.getAccumulatedCurrencyMetricValue(metricTypeId, accumulable);
     }
 
-    public Input getCurrencyInput(String inputTypeId, PerformanceObligation pob) {
-        return calculationService.getCurrencyInput(inputTypeId, pob);
+    public Metric getCurrencyMetric(String metricTypeId, PerformanceObligation pob) {
+        return calculationService.getCurrencyMetric(metricTypeId, pob);
     }
 
-    public BigDecimal getCurrencyOutputValue(String outputTypeId, PerformanceObligation pob) {
-        return calculationService.getCurrencyOutputValue(outputTypeId, pob);
+    public BigDecimal getCurrencyMetricValuePriorPeriod(String outputTypeId, PerformanceObligation pob) {
+        return calculationService.getCurrencyMetricValuePriorPeriod(outputTypeId, pob);
     }
-
-    public BigDecimal getCurrencyOutputValuePriorPeriod(String outputTypeId, PerformanceObligation pob) {
-        return calculationService.getCurrencyOutputValuePriorPeriod(outputTypeId, pob);
-    }
-
-    public BigDecimal getCurrencyInputValuePriorPeriod(String outputTypeId, PerformanceObligation pob) {
-        return calculationService.getCurrencyInputValuePriorPeriod(outputTypeId, pob);
-    }
-
-    public Output getCurrencyOutput(String outputTypeId, PerformanceObligation pob) {
-        return calculationService.getCurrencyOutput(outputTypeId, pob);
-    }
-
 }

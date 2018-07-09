@@ -5,16 +5,11 @@
  */
 package com.flowserve.system606.model;
 
-import java.util.Map;
-
 /**
  *
  * @author kgraves
  */
-public interface Calculable {
-
-    public Map<FinancialPeriod, MetricSet> getPeriodMetricSetMap();
-
-    public Long getId();
-
+public enum MetricDirection {
+    INPUT,
+    OUTPUT
 }

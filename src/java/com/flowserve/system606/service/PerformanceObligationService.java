@@ -31,17 +31,7 @@ public class PerformanceObligationService {
     @Resource
     private SessionContext sessionContext;
     @EJB
-    private AdminService adminService;
-    @EJB
-    private OutputService outputService;
-    @EJB
-    private InputService inputService;
-    @EJB
     private ContractService contractService;
-    @EJB
-    private PerformanceObligationService performanceObligationService;
-    @EJB
-    private FinancialPeriodService financialPeriodService;
 
     public PerformanceObligation
             findById(Long id) {

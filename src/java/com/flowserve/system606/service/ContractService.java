@@ -6,9 +6,9 @@
 package com.flowserve.system606.service;
 
 import com.flowserve.system606.model.Contract;
-import com.flowserve.system606.model.Input;
-import com.flowserve.system606.model.InputSet;
-import com.flowserve.system606.model.InputType;
+import com.flowserve.system606.model.Metric;
+import com.flowserve.system606.model.MetricSet;
+import com.flowserve.system606.model.MetricType;
 import com.flowserve.system606.model.ReportingUnit;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -36,8 +36,6 @@ public class ContractService {
     private PerformanceObligationService pobService;
     @EJB
     private AdminService adminService;
-    @EJB
-    private BusinessRuleService businessRuleService;
 
     private static Logger logger = Logger.getLogger("com.flowserve.system606");
 
@@ -288,22 +286,22 @@ public class ContractService {
 //        contract = update(contract);
 //        return true;
 //    }
-    public List<InputType> findInputTypes() {
+    public List<MetricType> findInputTypes() {
         Query query = em.createQuery("SELECT inputType FROM InputType inputType");
-        return (List<InputType>) query.getResultList();
+        return (List<MetricType>) query.getResultList();
     }
 
-    public void persist(Input input) throws Exception {
+    public void persist(Metric input) throws Exception {
         em.persist(input);
     }
 
     @Transactional
-    public void persist(InputSet inputSet) throws Exception {
+    public void persist(MetricSet inputSet) throws Exception {
         em.persist(inputSet);
     }
 
-    public InputType findInputTypeById(String id) {
-        return em.find(InputType.class, id);
+    public MetricType findInputTypeById(String id) {
+        return em.find(MetricType.class, id);
     }
 
     private Contract createContract(String reportingUnit, long contractId, String customerName, String salesOrderNum, BigDecimal totalTransactionPrice) {

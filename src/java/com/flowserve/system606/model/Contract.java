@@ -25,7 +25,7 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name = "CONTRACTS")
-public class Contract extends BaseEntity<Long> implements Comparable<Contract>, Serializable {
+public class Contract extends BaseEntity<Long> implements Accumulable, Comparable<Contract>, Serializable {
 
     private static final long serialVersionUID = -1990764230607265489L;
     private static final Logger LOG = Logger.getLogger(Contract.class.getName());
@@ -190,8 +190,8 @@ public class Contract extends BaseEntity<Long> implements Comparable<Contract>, 
         return performanceObligations;
     }
 
-    public void setPerformanceObligations(List<PerformanceObligation> pobs) {
-        this.performanceObligations = pobs;
+    public List<Accumulable> getChildAccumulables() {
+        return new ArrayList<Accumulable>(performanceObligations);
     }
 
     // TODO - KJG - Remove.  Temp code for calc pages.

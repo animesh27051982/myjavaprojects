@@ -4,28 +4,36 @@ import java.io.Serializable;
 import java.time.LocalDate;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import static javax.persistence.TemporalType.DATE;
 
 @Entity
-@Table(name = "OUTPUT_TYPES")
-public class OutputType extends BaseEntity<String> implements Serializable, Comparable<OutputType> {
+@Table(name = "METRIC_TYPES")
+public class MetricType extends BaseEntity<String> implements Comparable<MetricType>, Serializable {
 
-    private static final long serialVersionUID = -8382719960102472187L;
+    private static final long serialVersionUID = -8382719960002472187L;
+    private static final String CURRENCY_METRIC = "CurrencyMetric";
 
     @Id
-    @Column(name = "OUTPUT_TYPE_ID")
+    @Column(name = "METRIC_TYPE_ID")
     private String id;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "DIRECTION")
+    private MetricDirection direction;
     @Column(name = "OWNER_ENTITY_TYPE")
     private String ownerEntityType;
-    @Column(name = "OUTPUT_CLASS")
-    private String outputClass;
+    @Column(name = "METRIC_CLASS")
+    private String inputClass;
     @Column(name = "NAME")
     private String name;
     @Column(name = "DESCRIPTION")
     private String description;
+    @Column(name = "METRIC_CURRENCY_TYPE")
+    private CurrencyType inputCurrencyType;
     @Column(name = "EXCEL_SHEET")
     private String excelSheet;  // for reading from xlsx
     @Column(name = "EXCEL_COL")
@@ -42,8 +50,19 @@ public class OutputType extends BaseEntity<String> implements Serializable, Comp
     private LocalDate effectiveTo;
     @Column(name = "IS_ACTIVE")
     private boolean active;   // maybe redundant
+    @Column(name = "IS_REQUIRED")
+    private boolean required;   // maybe redundant
 
-    public OutputType() {
+    public MetricType() {
+    }
+
+    @Override
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 
     public String getExcelSheet() {
@@ -102,6 +121,14 @@ public class OutputType extends BaseEntity<String> implements Serializable, Comp
         this.active = active;
     }
 
+    public String getMetricClass() {
+        return inputClass;
+    }
+
+    public void setMetricClass(String inputClass) {
+        this.inputClass = inputClass;
+    }
+
     public String getDescription() {
         return description;
     }
@@ -118,17 +145,33 @@ public class OutputType extends BaseEntity<String> implements Serializable, Comp
         this.ownerEntityType = ownerEntityType;
     }
 
-    public String getOutputClass() {
-        return outputClass;
+    public CurrencyType getMetricCurrencyType() {
+        return inputCurrencyType;
     }
 
-    public void setOutputClass(String outputClass) {
-        this.outputClass = outputClass;
+    public void setMetricCurrencyType(CurrencyType inputCurrencyType) {
+        this.inputCurrencyType = inputCurrencyType;
     }
 
     @Override
-    public int compareTo(OutputType o) {
+    public int compareTo(MetricType o) {
         return this.name.compareTo(o.name);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof MetricType) {
+            return this.name.equals(((MetricType) obj).getName());
+        }
+        return false;
+    }
+
+    public boolean isRequired() {
+        return required;
+    }
+
+    public void setRequired(boolean required) {
+        this.required = required;
     }
 
     public String getName() {
@@ -139,12 +182,15 @@ public class OutputType extends BaseEntity<String> implements Serializable, Comp
         this.name = name;
     }
 
-    @Override
-    public String getId() {
-        return id;
+    public MetricDirection getDirection() {
+        return direction;
     }
 
-    public void setId(String id) {
-        this.id = id;
+    public void setDirection(MetricDirection direction) {
+        this.direction = direction;
+    }
+
+    public boolean isCurrency() {
+        return CURRENCY_METRIC.equals(this.getMetricClass());
     }
 }

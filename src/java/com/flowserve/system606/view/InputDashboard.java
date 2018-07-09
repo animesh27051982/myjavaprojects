@@ -8,7 +8,6 @@ package com.flowserve.system606.view;
 import com.flowserve.system606.model.Contract;
 import com.flowserve.system606.model.ReportingUnit;
 import com.flowserve.system606.service.AdminService;
-import com.flowserve.system606.service.BusinessRuleService;
 import com.flowserve.system606.service.ReportingUnitService;
 import com.flowserve.system606.web.WebSession;
 import java.io.Serializable;
@@ -35,11 +34,7 @@ public class InputDashboard implements Serializable {
     @Inject
     private AdminService adminService;
     @Inject
-    BusinessRuleService businessRuleService;
-    @Inject
     private WebSession webSession;
-    @Inject
-    private ViewSupport viewSupport;
     @Inject
     private ReportingUnitService reportingUnitService;
 

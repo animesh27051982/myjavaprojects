@@ -9,11 +9,11 @@ import javax.persistence.Entity;
 @Entity
 @DiscriminatorValue("DATE")
 @AttributeOverride(name = "value", column = @Column(name = "DATE_VALUE"))
-public class DateInput extends Input<LocalDate> {
+public class DateMetric extends Metric<LocalDate> {
 
     private LocalDate value;
 
-    public DateInput() {
+    public DateMetric() {
     }
 
     public LocalDate getValue() {

@@ -6,7 +6,7 @@
 package com.flowserve.system606.service;
 
 import com.flowserve.system606.model.Contract;
-import com.flowserve.system606.model.InputType;
+import com.flowserve.system606.model.MetricType;
 import com.flowserve.system606.model.PerformanceObligation;
 import com.flowserve.system606.model.ReportingUnit;
 import java.io.FileOutputStream;
@@ -37,7 +37,7 @@ public class ReportsService {
     private CalculationService calculationService;
 
     @Inject
-    private InputService inputService;
+    private MetricService metricService;
     private static final int HEADER_ROW_COUNT = 10;
 
     public void generateContractEsimatesReport(InputStream inputStream, FileOutputStream outputStream, List<ReportingUnit> reportingUnits) throws Exception {
@@ -55,20 +55,20 @@ public class ReportsService {
 
                 // Populate non-input cells
                 row.getCell(0, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK).setCellValue(contract.getName());
-                InputType inputType = inputService.findInputTypeById("TRANSACTION_PRICE");
+                MetricType inputType = metricService.findMetricTypeById("TRANSACTION_PRICE");
                 cell = row.getCell(1, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
-                if (calculationService.getCurrencyInput(inputType.getId(), pob).getValue() != null) {
-                    cell.setCellValue(calculationService.getCurrencyInputValue(inputType.getId(), pob).doubleValue());
+                if (calculationService.getCurrencyMetric(inputType.getId(), pob).getValue() != null) {
+                    cell.setCellValue(calculationService.getCurrencyMetricValue(inputType.getId(), pob).doubleValue());
                 }
-                inputType = inputService.findInputTypeById("LIQUIDATED_DAMAGES");
+                inputType = metricService.findMetricTypeById("LIQUIDATED_DAMAGES");
                 cell = row.getCell(2, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
-                if (calculationService.getCurrencyInput(inputType.getId(), pob).getValue() != null) {
-                    cell.setCellValue(calculationService.getCurrencyInputValue(inputType.getId(), pob).doubleValue());
+                if (calculationService.getCurrencyMetric(inputType.getId(), pob).getValue() != null) {
+                    cell.setCellValue(calculationService.getCurrencyMetricValue(inputType.getId(), pob).doubleValue());
                 }
-                inputType = inputService.findInputTypeById("ESTIMATED_COST_AT_COMPLETION");
+                inputType = metricService.findMetricTypeById("ESTIMATED_COST_AT_COMPLETION");
                 cell = row.getCell(3, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
-                if (calculationService.getCurrencyInput(inputType.getId(), pob).getValue() != null) {
-                    cell.setCellValue(calculationService.getCurrencyInputValue(inputType.getId(), pob).doubleValue());
+                if (calculationService.getCurrencyMetric(inputType.getId(), pob).getValue() != null) {
+                    cell.setCellValue(calculationService.getCurrencyMetricValue(inputType.getId(), pob).doubleValue());
                 }
 
             }

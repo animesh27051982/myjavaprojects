@@ -10,7 +10,7 @@ import com.flowserve.system606.model.Company;
 import com.flowserve.system606.model.Country;
 import com.flowserve.system606.model.ExchangeRate;
 import com.flowserve.system606.model.FinancialPeriod;
-import com.flowserve.system606.model.InputType;
+import com.flowserve.system606.model.MetricType;
 import com.flowserve.system606.model.ReportingUnit;
 import com.flowserve.system606.model.User;
 import java.io.BufferedReader;
@@ -165,7 +165,7 @@ public class AdminService {
         return null;
     }
 
-    public void persist(InputType inputType) throws Exception {
+    public void persist(MetricType inputType) throws Exception {
         em.persist(inputType);
     }
 

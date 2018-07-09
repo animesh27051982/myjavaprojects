@@ -8,7 +8,9 @@ package com.flowserve.system606.model;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 import javax.persistence.CascadeType;
@@ -26,7 +28,7 @@ import static javax.persistence.TemporalType.TIMESTAMP;
 
 @Entity
 @Table(name = "PERFORMANCE_OBLIGATIONS")
-public class PerformanceObligation extends BaseEntity<Long> implements Calculable, Comparable<PerformanceObligation>, Serializable {
+public class PerformanceObligation extends BaseEntity<Long> implements Calculable, Accumulable, Comparable<PerformanceObligation>, Serializable {
 
     private static final long serialVersionUID = 4995349370717535419L;
     private static final Logger LOG = Logger.getLogger(PerformanceObligation.class.getName());
@@ -58,10 +60,7 @@ public class PerformanceObligation extends BaseEntity<Long> implements Calculabl
 
     //private String deactivationReason;  // create type class
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "performanceObligation")
-    private Map<FinancialPeriod, InputSet> periodInputSetMap = new HashMap<FinancialPeriod, InputSet>();
-
-    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "performanceObligation")
-    private Map<FinancialPeriod, OutputSet> periodOutputSetMap = new HashMap<FinancialPeriod, OutputSet>();
+    private Map<FinancialPeriod, MetricSet> periodMetricSetMap = new HashMap<FinancialPeriod, MetricSet>();
 
     public PerformanceObligation() {
     }
@@ -152,23 +151,11 @@ public class PerformanceObligation extends BaseEntity<Long> implements Calculabl
         return new BigDecimal("1.0");
     }
 
-    public BigDecimal getCurrencyValuePriorPeriod() {
-        return new BigDecimal("10.0");
+    public Map<FinancialPeriod, MetricSet> getPeriodMetricSetMap() {
+        return periodMetricSetMap;
     }
 
-    public BigDecimal getLiquidatedDamagesPriorPeriod() {
-        return new BigDecimal("10.0");
-    }
-
-    public BigDecimal getTransactionPriceBacklogCC() {
-        return new BigDecimal("50.0");
-    }
-
-    public Map<FinancialPeriod, InputSet> getPeriodInputSetMap() {
-        return periodInputSetMap;
-    }
-
-    public Map<FinancialPeriod, OutputSet> getPeriodOutputSetMap() {
-        return periodOutputSetMap;
+    public List<Accumulable> getChildAccumulables() {
+        return new ArrayList<Accumulable>();
     }
 }

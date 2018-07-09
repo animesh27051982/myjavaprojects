@@ -8,12 +8,9 @@ package com.flowserve.system606.view;
 import com.flowserve.system606.model.PerformanceObligation;
 import com.flowserve.system606.model.ReportingUnit;
 import com.flowserve.system606.service.AdminService;
-import com.flowserve.system606.service.BusinessRuleService;
-import com.flowserve.system606.service.InputService;
-import com.flowserve.system606.service.OutputService;
+import com.flowserve.system606.service.CalculationService;
 import com.flowserve.system606.service.PerformanceObligationService;
 import com.flowserve.system606.service.ReportingUnitService;
-import com.flowserve.system606.web.WebSession;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.List;
@@ -44,14 +41,8 @@ public class InputOnlineEntry implements Serializable {
     @Inject
     private PerformanceObligationService pobService;
     @Inject
-    BusinessRuleService businessRuleService;
+    private CalculationService calculationService;
     private BigDecimal eacValue;
-    @Inject
-    private WebSession webSession;
-    @Inject
-    private InputService inputService;
-    @Inject
-    private OutputService outputService;
     @Inject
     private ViewSupport viewSupport;
     @Inject
@@ -106,7 +97,7 @@ public class InputOnlineEntry implements Serializable {
     }
 
     public void calculateOutputs(PerformanceObligation pob) throws Exception {
-        businessRuleService.executeBusinessRules(pob);
+        calculationService.executeBusinessRules(pob);
     }
 
     public List<ReportingUnit> getReportingUnits() {

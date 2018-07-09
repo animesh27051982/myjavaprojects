@@ -5,16 +5,13 @@
  */
 package com.flowserve.system606.model;
 
-import java.util.Map;
+import java.util.List;
 
 /**
  *
  * @author kgraves
  */
-public interface Calculable {
+public interface Accumulable {
 
-    public Map<FinancialPeriod, MetricSet> getPeriodMetricSetMap();
-
-    public Long getId();
-
+    public List<Accumulable> getChildAccumulables();
 }

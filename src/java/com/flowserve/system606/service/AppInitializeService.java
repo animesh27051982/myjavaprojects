@@ -36,15 +36,11 @@ public class AppInitializeService {
     @EJB
     private FinancialPeriodService financialPeriodService;
     @EJB
-    private InputService inputService;
+    private MetricService metricService;
     @EJB
-    private OutputService outputService;
-    @EJB
-    private BusinessRuleService businessRuleService;
+    private CalculationService calculationService;
     @EJB
     private ContractService contractService;
-    @EJB
-    private TemplateService templateService;
 
     @PostConstruct
     public void init() {
@@ -55,16 +51,15 @@ public class AppInitializeService {
             financialPeriodService.initFinancialPeriods();
             adminService.initCompanies();
             currencyService.initCurrencyConverter();
-            inputService.initInputTypes();
-            outputService.initOutputTypes();
+            metricService.initMetricTypes();
             adminService.initCountries();    // We don't need this as an Entity.  Convert to standard Java object with converters.
 
             adminService.initReportingUnits();
             contractService.initContracts();
             pobService.initPOBs();
 
-            businessRuleService.initBusinessRules();
-            businessRuleService.initBusinessRulesEngine();
+            calculationService.initBusinessRules();
+            calculationService.initBusinessRulesEngine();
             adminService.initAssignPreparersForReportingUnit();
 
             // businessRuleService.executePOBCalculations(pob);// TODO - Remove

@@ -19,13 +19,13 @@ import javax.persistence.Temporal;
 import static javax.persistence.TemporalType.TIMESTAMP;
 
 @Entity
-@Table(name = "INPUT_SETS")
-public class InputSet extends BaseEntity<Long> {
+@Table(name = "METRIC_SETS")
+public class MetricSet extends BaseEntity<Long> {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "FLS_SEQ")
     @SequenceGenerator(name = "FLS_SEQ", sequenceName = "FLS_SEQ", allocationSize = 1)
-    @Column(name = "INPUT_SET_ID")
+    @Column(name = "METRIC_SET_ID")
     private Long id;
     @Column(name = "VERSION")
     private int version;
@@ -49,15 +49,10 @@ public class InputSet extends BaseEntity<Long> {
     @JoinColumn(name = "CONTRACT_ID")
     private Contract contract;
 
-    /**
-     * The string key is the 'key' to the whole design. Would rather use a hard type here but the String will give us max flexibility. New inputs/outputs/calcs
-     * on the fly. Use downstream type enforcement to prevent errors. i.e. string constants in DRL file.
-     */
-    @OneToMany(cascade = {CascadeType.ALL}, fetch = FetchType.EAGER, mappedBy = "inputSet")
-    //@MapKeyColumn(name = "TYPE_INPUT")
-    private Map<InputType, Input> typeInputMap = new HashMap<InputType, Input>();
+    @OneToMany(cascade = {CascadeType.ALL}, fetch = FetchType.EAGER, mappedBy = "metricSet")
+    private Map<MetricType, Metric> typeMetricMap = new HashMap<MetricType, Metric>();
 
-    public InputSet() {
+    public MetricSet() {
     }
 
     @Override
@@ -125,8 +120,8 @@ public class InputSet extends BaseEntity<Long> {
         this.performanceObligation = performanceObligation;
     }
 
-    public Map<InputType, Input> getTypeInputMap() {
-        return typeInputMap;
+    public Map<MetricType, Metric> getTypeMetricMap() {
+        return typeMetricMap;
     }
 
     public Contract getContract() {

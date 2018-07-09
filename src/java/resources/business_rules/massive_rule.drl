@@ -1,11 +1,28 @@
 dialect "mvel"
 
 import java.math.BigDecimal;
-import com.flowserve.system606.service.CalculationService;
 import com.flowserve.system606.model.PerformanceObligation;
+import com.flowserve.system606.model.Metric;
+import com.flowserve.system606.model.MetricPriorPeriod;
 import java.util.logging.Logger;
 global Logger logger;
-global CalculationService calcService;
+
+rule "Calculate Estimated Gross Profit and Margin"
+
+    // Needed only to support tab-out ajax requests on the UI.
+    when
+        // Pull input values needed for this calculation.
+        pob : PerformanceObligation()  // If a pob exists
+        transactionPrice : Metric(metricType.id == "TRANSACTION_PRICE", value != null)  // if this metric exists and is not null, initialize variable.
+        estimatedCostAtCompletion : Metric(metricType.id == "ESTIMATED_COST_AT_COMPLETION", value != null)
+        estimatedGrossProfit : Metric(metricType.id == "ESTIMATED_GROSS_PROFIT")  // Initialize variable for calc result.
+        estimatedGrossMargin : Metric(metricType.id == "ESTIMATED_GROSS_MARGIN")
+    then
+        // Calculate all outputs possible using these inputs.
+        modify (estimatedGrossProfit) { value = (transactionPrice.value - estimatedCostAtCompletion.value)};
+        modify (estimatedGrossMargin) { value = (estimatedGrossProfit.value / transactionPrice.value)};
+end
+
 
 rule "Calculate EAC Change"
 
@@ -13,29 +30,21 @@ rule "Calculate EAC Change"
     when
         // Pull input values needed for this calculation.
         pob : PerformanceObligation()
-        eval(calcService.getCurrencyInputValue("ESTIMATED_COST_AT_COMPLETION", pob) != null)
-        eval(calcService.getCurrencyInputValuePriorPeriod("ESTIMATED_COST_AT_COMPLETION", pob) != null)
+        estimatedCostAtCompletion : Metric(metricType.id == "ESTIMATED_COST_AT_COMPLETION", value != null)
+        estimatedCostAtCompletionPriorPeriod : MetricPriorPeriod(metricType.id == "ESTIMATED_COST_AT_COMPLETION", value != null)
+        changeInEstimate : Metric(metricType.id == "CHANGE_IN_ESTIMATED_COST_AT_COMPLETION")
     then
-        estimatedCostAtCompletion = calcService.getCurrencyInputValue("ESTIMATED_COST_AT_COMPLETION", pob);
-        estimatedCostAtCompletionPriorPeriod = calcService.getCurrencyInputValuePriorPeriod("ESTIMATED_COST_AT_COMPLETION", pob);
-        changeInEstimate = estimatedCostAtCompletionPriorPeriod - estimatedCostAtCompletion;
-        calcService.putCurrencyOutputValue("CHANGE_IN_ESTIMATED_COST_AT_COMPLETION", pob, changeInEstimate);
+        modify (changeInEstimate) { value = (estimatedCostAtCompletionPriorPeriod.value - estimatedCostAtCompletion.value)};
 end
 
-rule "Calculate Estimated Gross Profit and Margin"
 
-    // Needed only to support tab-out ajax requests on the UI.
-    when
-        // Pull input values needed for this calculation.
-        pob : PerformanceObligation()
-        eval(calcService.getCurrencyInputValue("TRANSACTION_PRICE", pob) != null)
-        eval(calcService.getCurrencyInputValuePriorPeriod("ESTIMATED_COST_AT_COMPLETION", pob) != null)
-    then
-        // Calculate all outputs possible using these inputs.
-        transactionPrice = calcService.getCurrencyInputValue("TRANSACTION_PRICE", pob);
-        estimatedCostAtCompletion = calcService.getCurrencyInputValue("ESTIMATED_COST_AT_COMPLETION", pob);
-        estimatedGrossProfit =  transactionPrice - estimatedCostAtCompletion;
-        calcService.putCurrencyOutputValue("ESTIMATED_GROSS_PROFIT", pob, estimatedGrossProfit);
-        estimatedGrossMargin = estimatedGrossProfit / transactionPrice
-        calcService.putCurrencyOutputValue("ESTIMATED_GROSS_MARGIN", pob, estimatedGrossMargin);
-end
+
+
+
+
+
+
+
+
+
+

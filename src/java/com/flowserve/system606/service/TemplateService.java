@@ -6,8 +6,8 @@
 package com.flowserve.system606.service;
 
 import com.flowserve.system606.model.Contract;
-import com.flowserve.system606.model.InputSet;
-import com.flowserve.system606.model.InputType;
+import com.flowserve.system606.model.MetricSet;
+import com.flowserve.system606.model.MetricType;
 import com.flowserve.system606.model.PerformanceObligation;
 import com.flowserve.system606.model.ReportingUnit;
 import com.flowserve.system606.view.PobInput;
@@ -44,13 +44,11 @@ public class TemplateService {
     @PersistenceContext(unitName = "FlowServePU")
     private EntityManager em;
     @Inject
-    private InputService inputService;
+    private MetricService metricService;
     @Inject
     private CalculationService calculationService;
     @Inject
     private PerformanceObligationService pobService;
-    @Inject
-    private BusinessRuleService businessRuleService;
     private static final int HEADER_ROW_COUNT = 2;
     private InputStream inputStream;
 
@@ -62,7 +60,7 @@ public class TemplateService {
 
     public void processTemplateDownload(InputStream inputStream, FileOutputStream outputStream, List<ReportingUnit> reportingUnits) throws Exception {
 
-        List<InputType> inputTypes = inputService.findActiveInputTypesPob();
+        List<MetricType> inputTypes = metricService.findActiveMetricTypesPob();
         XSSFWorkbook workbook = new XSSFWorkbook(inputStream);
         XSSFSheet worksheet = workbook.getSheetAt(0);
         XSSFRow row;
@@ -86,13 +84,13 @@ public class TemplateService {
                     row.getCell(6).setCellValue(pob.getId());
                     row.getCell(7).setCellValue(pob.getRevRecMethod());
 
-                    for (InputType inputType : inputTypes) {
+                    for (MetricType inputType : inputTypes) {
                         cell = row.getCell(CellReference.convertColStringToIndex(inputType.getExcelCol()));
-                        if ("com.flowserve.system606.model.CurrencyInput".equals(inputType.getInputClass())) {
-                            //if (pob.getCurrencyInput(inputType.getName()) != null) {
-                            if (calculationService.getCurrencyInput(inputType.getId(), pob) != null) {
-                                //cell.setCellValue(pob.getCurrencyInputValue(inputType.getName()).doubleValue());
-                                cell.setCellValue(calculationService.getCurrencyInputValue(inputType.getId(), pob).doubleValue());
+                        if ("com.flowserve.system606.model.CurrencyMetric".equals(inputType.getMetricClass())) {
+                            //if (pob.getCurrencyMetric(inputType.getName()) != null) {
+                            if (calculationService.getCurrencyMetric(inputType.getId(), pob) != null) {
+                                //cell.setCellValue(pob.getCurrencyMetricValue(inputType.getName()).doubleValue());
+                                cell.setCellValue(calculationService.getCurrencyMetricValue(inputType.getId(), pob).doubleValue());
                             }
                         }
                     }
@@ -108,10 +106,10 @@ public class TemplateService {
 
     public void processTemplateUpload(InputStream fis, String filename) throws Exception {  // Need an application exception type defined.
         try {
-            List<InputType> inputTypes = inputService.findActiveInputTypesPob();
+            List<MetricType> inputTypes = metricService.findActiveMetricTypesPob();
             XSSFWorkbook workbook = new XSSFWorkbook(fis);
             XSSFSheet worksheet = workbook.getSheetAt(0);
-            InputSet inputSet = new InputSet();
+            MetricSet inputSet = new MetricSet();
             inputSet.setFilename(filename);
             int pobIdColNumber = CellReference.convertColStringToIndex("G");
 
@@ -126,42 +124,42 @@ public class TemplateService {
                 }
                 Cell pobIdCell = row.getCell(pobIdColNumber);
                 if (pobIdCell == null || pobIdCell.getCellTypeEnum() == CellType.BLANK) {
-                    Logger.getLogger(InputService.class.getName()).log(Level.FINE, "POB input template processing complete.");  // TODO - figure out if we really want to stop here.
+                    Logger.getLogger(MetricService.class.getName()).log(Level.FINE, "POB input template processing complete.");  // TODO - figure out if we really want to stop here.
                     break;
                 }
                 if (pobIdCell.getCellTypeEnum() != CellType.NUMERIC) { //  TODO - Need a mechansim to report exact error to user.
                     throw new IllegalStateException("Input file invalid.  POB ID column not a numeric");
                 }
 
-                Logger.getLogger(InputService.class.getName()).log(Level.INFO, "Processing POB: " + NumberToTextConverter.toText(pobIdCell.getNumericCellValue()));
+                Logger.getLogger(MetricService.class.getName()).log(Level.INFO, "Processing POB: " + NumberToTextConverter.toText(pobIdCell.getNumericCellValue()));
 
                 PerformanceObligation pob = pobService.findById((long) pobIdCell.getNumericCellValue());
                 if (pob == null) {
                     throw new IllegalStateException("Input file invalid.  Invalid POB at row: " + row.getRowNum());
                 }
 
-                for (InputType inputType : inputTypes) {
+                for (MetricType inputType : inputTypes) {
                     Cell cell = row.getCell(CellReference.convertColStringToIndex(inputType.getExcelCol()));
                     try {
                         if (cell == null || pobIdCell.getCellTypeEnum() == CellType.BLANK || ((XSSFCell) cell).getRawValue() == null) {
                             // TODO - figure out what to do in this blank case.  It will depend on the situation.
                             continue;
                         }
-                        if ("com.flowserve.system606.model.CurrencyInput".equals(inputType.getInputClass())) {
-                            calculationService.getCurrencyInput(inputType.getId(), pob).setValue(new BigDecimal(NumberToTextConverter.toText(cell.getNumericCellValue())));
+                        if ("com.flowserve.system606.model.CurrencyMetric".equals(inputType.getMetricClass())) {
+                            calculationService.getCurrencyMetric(inputType.getId(), pob).setValue(new BigDecimal(NumberToTextConverter.toText(cell.getNumericCellValue())));
                         }
-                        if ("com.flowserve.system606.model.StringInput".equals(inputType.getInputClass())) {
-                            calculationService.getStringInput(inputType.getId(), pob).setValue(cell.getStringCellValue());
+                        if ("com.flowserve.system606.model.StringMetric".equals(inputType.getMetricClass())) {
+                            calculationService.getStringMetric(inputType.getId(), pob).setValue(cell.getStringCellValue());
                         }
-                        if ("com.flowserve.system606.model.DateInput".equals(inputType.getInputClass())) {
-                            calculationService.getDateInput(inputType.getId(), pob).setValue(cell.getDateCellValue().toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
+                        if ("com.flowserve.system606.model.DateMetric".equals(inputType.getMetricClass())) {
+                            calculationService.getDateMetric(inputType.getId(), pob).setValue(cell.getDateCellValue().toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
                         }
                     } catch (Exception rce) {
                         throw new Exception("processTemplateUpload row: " + row.getRowNum() + " cell:" + cell.getColumnIndex() + " " + rce.getMessage());
                     }
                 }
 
-                businessRuleService.executeBusinessRules(pob);
+                calculationService.executeBusinessRules(pob);
                 pob = pobService.update(pob);
             }
         } catch (Exception e) {
@@ -176,7 +174,7 @@ public class TemplateService {
     }
 
     public void reportingPreparersList() throws Exception {
-        Logger.getLogger(InputService.class.getName()).log(Level.INFO, "Start: ");
+        Logger.getLogger(MetricService.class.getName()).log(Level.INFO, "Start: ");
         String folder = "D:/Users/shubhamv/Documents/NetBeansProjects/FlowServe/src/java/resources/app_data_init_files/";
         try {
 

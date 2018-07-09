@@ -19,24 +19,25 @@ import static javax.persistence.TemporalType.TIMESTAMP;
 @Entity
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "VALUE_TYPE")
-@Table(name = "INPUTS")
-public abstract class Input<T> extends BaseEntity<Long> {
+@Table(name = "METRICS")
+public abstract class Metric<T> extends BaseEntity<Long> {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "FLS_SEQ")
     @SequenceGenerator(name = "FLS_SEQ", sequenceName = "FLS_SEQ", allocationSize = 1)
-    @Column(name = "INPUT_ID")
+    @Column(name = "METRIC_ID")
     private Long id;
 
     @OneToOne
-    @JoinColumn(name = "INPUT_TYPE_ID")
-    private InputType inputType;
+    @JoinColumn(name = "METRIC_TYPE_ID")
+    private MetricType metricType;
+
     @OneToOne
     @JoinColumn(name = "PERIOD_ID")
     private FinancialPeriod financialPeriod;
     @OneToOne
-    @JoinColumn(name = "INPUT_SET_ID")
-    private InputSet inputSet;
+    @JoinColumn(name = "METRIC_SET_ID")
+    private MetricSet metricSet;
     @Column(name = "CURRENCY_CODE")
     private String currencyCode;  // Consider JavaMoney, etc.,  java.util.Currency.. or our own Currency class.
     @OneToOne
@@ -50,7 +51,7 @@ public abstract class Input<T> extends BaseEntity<Long> {
     @Column(name = "MESSAGE", length = 2048)
     private String message;
 
-    public Input() {
+    public Metric() {
     }
 
     public abstract T getValue();
@@ -82,12 +83,12 @@ public abstract class Input<T> extends BaseEntity<Long> {
         this.createdBy = createdBy;
     }
 
-    public InputType getInputType() {
-        return inputType;
+    public MetricType getMetricType() {
+        return metricType;
     }
 
-    public void setInputType(InputType inputType) {
-        this.inputType = inputType;
+    public void setMetricType(MetricType metricType) {
+        this.metricType = metricType;
     }
 
     public LocalDateTime getCreationDate() {
@@ -122,11 +123,11 @@ public abstract class Input<T> extends BaseEntity<Long> {
         this.financialPeriod = financialPeriod;
     }
 
-    public InputSet getInputSet() {
-        return inputSet;
+    public MetricSet getMetricSet() {
+        return metricSet;
     }
 
-    public void setInputSet(InputSet inputSet) {
-        this.inputSet = inputSet;
+    public void setMetricSet(MetricSet metricSet) {
+        this.metricSet = metricSet;
     }
 }
