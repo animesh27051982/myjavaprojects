@@ -5,6 +5,7 @@
  */
 package com.flowserve.system606.model;
 
+import com.flowserve.system606.service.PerformanceObligationService;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -12,6 +13,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -32,6 +34,7 @@ public class PerformanceObligation extends BaseEntity<Long> implements Calculabl
 
     private static final long serialVersionUID = 4995349370717535419L;
     private static final Logger LOG = Logger.getLogger(PerformanceObligation.class.getName());
+    private static final String PACKAGE_PREFIX = "com.flowserve.system606.model.";
 
     @Id
     @Column(name = "POB_ID")
@@ -151,11 +154,39 @@ public class PerformanceObligation extends BaseEntity<Long> implements Calculabl
         return new BigDecimal("1.0");
     }
 
-    public Map<FinancialPeriod, MetricSet> getPeriodMetricSetMap() {
-        return periodMetricSetMap;
+    public Metric getPeriodMetric(FinancialPeriod period, MetricType metricType) {
+        return periodMetricSetMap.get(period).getTypeMetricMap().get(metricType);
     }
 
     public List<Accumulable> getChildAccumulables() {
         return new ArrayList<Accumulable>();
     }
+
+    public void initializeMetricSetForPeriod(FinancialPeriod period) {
+        MetricSet metricSet = new MetricSet();
+        metricSet.setPerformanceObligation(this);
+        periodMetricSetMap.put(period, metricSet);
+    }
+
+    public void initializeMetricForPeriod(FinancialPeriod period, MetricType metricType) {
+        try {
+            Class<?> clazz = Class.forName(PACKAGE_PREFIX + metricType.getMetricClass());
+            Metric metric = (Metric) clazz.newInstance();
+            metric.setMetricType(metricType);
+            metric.setMetricSet(periodMetricSetMap.get(period));
+            periodMetricSetMap.get(period).getTypeMetricMap().put(metricType, metric);
+        } catch (Exception e) {
+            Logger.getLogger(PerformanceObligationService.class.getName()).log(Level.SEVERE, "Severe exception initializing metricTypeId: " + metricType.getId(), e);
+            throw new IllegalStateException("Severe exception initializing metricTypeId: " + metricType.getId(), e);
+        }
+    }
+
+    public boolean metricSetExistsForPeriod(FinancialPeriod period) {
+        return periodMetricSetMap.get(period) != null;
+    }
+
+    public boolean metricExistsForPeriod(FinancialPeriod period, MetricType metricType) {
+        return periodMetricSetMap.get(period).getTypeMetricMap().get(metricType) != null;
+    }
+
 }

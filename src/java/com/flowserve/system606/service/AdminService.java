@@ -10,6 +10,7 @@ import com.flowserve.system606.model.Company;
 import com.flowserve.system606.model.Country;
 import com.flowserve.system606.model.ExchangeRate;
 import com.flowserve.system606.model.FinancialPeriod;
+import com.flowserve.system606.model.Holiday;
 import com.flowserve.system606.model.MetricType;
 import com.flowserve.system606.model.ReportingUnit;
 import com.flowserve.system606.model.User;
@@ -90,6 +91,23 @@ public class AdminService {
         em.persist(object);
     }
 
+    public List<Holiday> findHolidayList() throws Exception {  // Need an application exception type defined.
+
+        TypedQuery<Holiday> query = em.createQuery("SELECT b FROM Holiday b", Holiday.class);
+        return (List<Holiday>) query.getResultList();
+    }
+
+    public void updateHoliday(Holiday h) {
+        em.merge(h);
+    }
+
+    public void deleteHoliday(Holiday h) throws Exception {
+        if (!em.contains(h)) {
+            h = em.merge(h);
+        }
+        em.remove(h);
+    }
+
     public List<User> findUserByFlsId(String adname) {
         Query query = em.createQuery("SELECT u FROM User u WHERE UPPER(u.flsId) = :FLS_ID ORDER BY UPPER(u.id)");
         query.setParameter("FLS_ID", adname.toUpperCase());
@@ -126,8 +144,8 @@ public class AdminService {
         return em.find(Country.class, id);
     }
 
-    public Country findCompanyById(String id) {
-        return em.find(Country.class, id);
+    public Company findCompanyById(String id) {
+        return em.find(Company.class, id);
     }
 
     public List<ReportingUnit> findAllReportingUnits() {
@@ -238,6 +256,17 @@ public class AdminService {
         return (List<ReportingUnit>) query.getResultList();
     }
 
+    public List<ReportingUnit> parentReportingUnits(String searchString, ReportingUnit ru) throws Exception {  // Need an application exception type defined.
+        if (searchString == null || searchString.trim().length() < 2) {
+            throw new Exception("Please supply a search string with at least 2 characters.");
+        }
+        TypedQuery<ReportingUnit> query = em.createQuery("SELECT ru  FROM ReportingUnit ru WHERE ru.id != :ID AND (UPPER(ru.name) LIKE :NAME OR UPPER(ru.code) LIKE :NAME) ORDER BY UPPER(ru.name)", ReportingUnit.class);
+        query.setParameter("NAME", "%" + searchString.toUpperCase() + "%");
+        query.setParameter("ID", ru.getId());
+
+        return (List<ReportingUnit>) query.getResultList();
+    }
+
     public List<BusinessUnit> searchSites(String searchString) throws Exception {
         if (searchString == null || searchString.trim().length() < 2) {
             throw new Exception("Please supply a search string with at least 2 characters.");
@@ -245,8 +274,29 @@ public class AdminService {
 
         TypedQuery<BusinessUnit> query = em.createQuery("SELECT s FROM BusinessUnit s WHERE UPPER(s.name) LIKE :NAME order by UPPER(s.name)", BusinessUnit.class);
         query.setParameter("NAME", "%" + searchString.toUpperCase() + "%");
-        Logger.getLogger(AdminService.class.getName()).log(Level.FINE, "searchSites:" + query.toString());
         return (List<BusinessUnit>) query.getResultList();
+    }
+
+    public List<BusinessUnit> searchParentBu(String searchString, BusinessUnit bu) throws Exception {
+        if (searchString == null || searchString.trim().length() < 2) {
+            throw new Exception("Please supply a search string with at least 2 characters.");
+        }
+
+        TypedQuery<BusinessUnit> query = em.createQuery("SELECT s FROM BusinessUnit s WHERE s.id != :ID AND UPPER(s.name) LIKE :NAME order by UPPER(s.name)", BusinessUnit.class);
+        query.setParameter("NAME", "%" + searchString.toUpperCase() + "%");
+        query.setParameter("ID", bu.getId());
+        return (List<BusinessUnit>) query.getResultList();
+    }
+
+    public List<Company> searchCompany(String searchString) throws Exception {
+        if (searchString == null || searchString.trim().length() < 2) {
+            throw new Exception("Please supply a search string with at least 2 characters.");
+        }
+
+        TypedQuery<Company> query = em.createQuery("SELECT s FROM Company s WHERE UPPER(s.name) LIKE :NAME OR UPPER(s.id) LIKE :NAME order by UPPER(s.name)", Company.class);
+        query.setParameter("NAME", "%" + searchString.toUpperCase() + "%");
+        Logger.getLogger(AdminService.class.getName()).log(Level.FINE, "searchSites:" + query.toString());
+        return (List<Company>) query.getResultList();
     }
 
     public List<Country> AllCountry() throws Exception {
@@ -384,7 +434,9 @@ public class AdminService {
                     ReportingUnit ru = findReportingUnitByCode(values[0]);
                     BusinessUnit bu = findBusinessUnitById(values[2]);
                     ru.setBusinessUnit(bu);
+                    bu.getReportingUnit().add(ru);
                     update(ru);
+                    updateBusinessUnit(bu);
                 }
             }
             reader.close();
@@ -418,7 +470,9 @@ public class AdminService {
                     }
                     ReportingUnit preRU = findReportingUnitByCode(values[1]);
                     preRU.setParent(ru);
+                    ru.getChildReportingUnits().add(preRU);
                     update(preRU);
+                    update(ru);
                 }
             }
             reader.close();
@@ -473,6 +527,22 @@ public class AdminService {
 
             Logger.getLogger(AdminService.class.getName()).log(Level.INFO, "Finished initializing Reporting Units.");
         }
+    }
+
+    public void initCompaniesInRUs() throws Exception {
+
+        if (findReportingUnitByCode("8000").getCompany() == null) {
+            Company cm = findCompanyById("FLS");
+            Logger.getLogger(AdminService.class.getName()).log(Level.INFO, "initializing Assign Company to RU");
+            List<ReportingUnit> reportingUnits = findAllReportingUnits();
+            for (ReportingUnit ru : reportingUnits) {
+                cm.getReportingUnit().add(ru);
+                ru.setCompany(cm);
+                update(ru);
+                update(cm);
+            }
+        }
+
     }
 
     public void initCompanies() throws Exception {

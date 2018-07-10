@@ -6,17 +6,22 @@
 package com.flowserve.system606.model;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Logger;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 @Entity
 @Table(name = "COMPANIES")
-public class Company extends BaseEntity<String> implements Comparable<Company>, Serializable {
+public class Company extends BaseEntity<String> implements Comparable<Company>, Accumulable, Serializable {
 
     private static final long serialVersionUID = -5428359272400395184L;
     private static final Logger LOG = Logger.getLogger(Company.class.getName());
@@ -35,6 +40,9 @@ public class Company extends BaseEntity<String> implements Comparable<Company>, 
     private FinancialPeriod currentPeriod;
     @Column(name = "INPUT_FREEZE_WORKDAY")
     private Integer inputFreezeWorkday;
+
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "company", cascade = CascadeType.MERGE)
+    private List<ReportingUnit> reportingUnit = new ArrayList<ReportingUnit>();
 
     public Company() {
     }
@@ -90,5 +98,18 @@ public class Company extends BaseEntity<String> implements Comparable<Company>, 
 
     public void setInputFreezeWorkday(Integer inputFreezeWorkday) {
         this.inputFreezeWorkday = inputFreezeWorkday;
+    }
+
+    public List<ReportingUnit> getReportingUnit() {
+        return reportingUnit;
+    }
+
+    public void setReportingUnit(List<ReportingUnit> reportingUnit) {
+        this.reportingUnit = reportingUnit;
+    }
+
+    @Override
+    public List<Accumulable> getChildAccumulables() {
+        return new ArrayList<Accumulable>(reportingUnit);
     }
 }

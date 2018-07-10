@@ -1,0 +1,80 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                template="/WEB-INF/template.xhtml">
+
+    <ui:define name="head">
+        <style type="text/css">
+
+        </style>
+    </ui:define>
+
+    <ui:define name="title">Metric Types</ui:define>
+
+    <ui:define name="viewname">Metric Types</ui:define>
+
+    <ui:define name="content">
+        <div style="min-height: calc(100vh - 235px);">
+            <h:form id="mainForm">
+                <div class="ui-g">
+
+                    <div class="ui-g-12">
+                        <div class="card card-w-title">
+                            <h1>Metric Types</h1>
+                            <p:dataTable id="inputTable" var="inputType" value="#{metricTypeList.metricTypes}"  paginator="true" rows="30" tableStyle="table-layout:auto">
+
+                                <p:column headerText="Name" sortBy="#{inputType.name}">
+                                    <h:outputText value="#{inputType.name}" />
+                                </p:column>
+
+                                <p:column headerText="Group Name" sortBy="#{inputType.groupName}">
+                                    <h:outputText value="#{inputType.groupName}" />
+                                </p:column>
+
+                                <p:column headerText="Group Position" sortBy="#{inputType.groupPosition}">
+                                    <h:outputText value="#{inputType.groupPosition}" />
+                                </p:column>
+
+                                <p:column headerText="Currency Type" sortBy="#{inputType.metricCurrencyType}">
+                                    <h:outputText value="#{inputType.metricCurrencyType}" />
+                                </p:column>
+                                
+                                <p:column headerText="Metric Class" sortBy="#{inputType.metricClass}">
+                                    <h:outputText value="#{inputType.metricClass}" />
+                                </p:column>
+                                
+                                <p:column headerText="Owner Entity Type" sortBy="#{inputType.ownerEntityType}">
+                                    <h:outputText value="#{inputType.ownerEntityType}" />
+                                </p:column>
+
+                                <p:column headerText="Excel Sheet" sortBy="#{inputType.excelSheet}">
+                                    <h:outputText value="#{inputType.excelSheet}" />
+                                </p:column>
+
+                                <p:column headerText="Excel Col" sortBy="#{inputType.excelCol}">
+                                    <h:outputText value="#{inputType.excelCol}" />
+                                </p:column>
+
+                                <p:column headerText="Effective From Date" sortBy="#{inputType.effectiveFrom}">
+                                    <h:outputText value="#{inputType.effectiveFrom}" />
+                                </p:column>
+
+                                <p:column headerText="Effective To Date" sortBy="#{inputType.effectiveTo}">
+                                    <h:outputText value="#{inputType.effectiveTo}" />
+                                </p:column>
+
+                                <p:column headerText="Description" sortBy="#{inputType.description}">
+                                    <h:outputText value="#{inputType.description}" />
+                                </p:column>
+
+                            </p:dataTable>
+                        </div>
+                    </div>
+                </div>
+            </h:form>
+        </div>
+    </ui:define>
+
+</ui:composition>

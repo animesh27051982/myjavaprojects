@@ -57,6 +57,7 @@ public class AppInitializeService {
             adminService.initReportingUnits();
             adminService.initBUinRU();
             adminService.initCoEtoParentRU();
+            adminService.initCompaniesInRUs();
             adminService.initPreparersReviewerForRU();
             contractService.initContracts();
             pobService.initPOBs();

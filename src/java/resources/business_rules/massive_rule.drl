@@ -37,14 +37,70 @@ rule "Calculate EAC Change"
         modify (changeInEstimate) { value = (estimatedCostAtCompletionPriorPeriod.value - estimatedCostAtCompletion.value)};
 end
 
+rule "Calculate Cumulative Total ITD Costs, Percent Complete, Revenue Earned to Date, Cumulative Revenue to Recognize"
+    // We have everything we need, run all calcs.
+    when
+        pob : PerformanceObligation()
+        costIncurred : Metric(metricType.id == "CUMULATIVE_COST_INCURRED", value != null)       // null check means don't run this entire rule if the metric value is null.  We may have to break the rules up and pull the ones that rely on prior period to their own rule but proceed here for now.
+        thirdPartyProgress : Metric(metricType.id == "CUMULATIVE_THIRD_PARTY_PROGRESS", value != null)
+        intercoProgress : Metric(metricType.id == "CUMULATIVE_INTERCOMPANY_PROGRESS", value != null)
+        estimatedCostAtCompletion : Metric(metricType.id == "ESTIMATED_COST_AT_COMPLETION", value != null)
+        transactionPrice : Metric(metricType.id == "TRANSACTION_PRICE", value != null)
+        totalLiquidatedDamages : Metric(metricType.id == "LIQUIDATED_DAMAGES", value != null)
+        totalITDCosts : Metric(metricType.id == "CUMULATIVE_TOTAL_ITD_COSTS")               // don't worry about null check here since we setting this as output calc below.  it is null initially.
+        percentComplete : Metric(metricType.id == "PERCENT_COMPLETE")                       // don't worry about null check here since we setting this as output calc below.  it is null initially.
 
+        periodExRate: Metric(metricType.id == "PERIOD_EX_RATE")
+        priorPeriodCumulativeRevenue : MetricPriorPeriod(metricType.id == "CUMULATIVE_REVENUE_TO_RECOGNIZE")
+        liquidatedDamagesPriorPeriod : MetricPriorPeriod(metricType.id == "LIQUIDATED_DAMAGES")
+        transactionPriceBacklogCC : MetricPriorPeriod(metricType.id == "TRANSACTION_PRICE_BACKLOG_CC")
+        revenueToRecognize : Metric(metricType.id == "CUMULATIVE_REVENUE_TO_RECOGNIZE")
+        periodRevenue : Metric(metricType.id == "PERIOD_REVENUE")
+        periodRevenueLocalCurrency : Metric(metricType.id == "PERIOD_REVENUE_LOCAL_CURRENCY")
+        cumulativeLiquidatedDamages : Metric(metricType.id == "CUMULATIVE_LIQUIDATED_DAMAGES_CC")
+        liquidatedDamagesCurrentPeriodCC : Metric(metricType.id == "LIQUIDATED_DAMAGES_RECOGNIZE_CURRENT_PERIOD_CC")
+        liquidatedDamagesCurrentPeriodLC : Metric(metricType.id == "LIQUIDATED_DAMAGES_RECOGNIZE_CURRENT_PERIOD_LC")
+        cumulativeRevenueLC : Metric(metricType.id == "CUMULATIVE_REVENUE_LOCAL_CURRENCY")
+        netPeriodSalesLC : Metric(metricType.id == "NET_PERIOD_SALES_LC")
+        backlogRevalued : Metric(metricType.id == "BACKLOG_REVALUED")
+        transactionPriceRevalued : Metric(metricType.id == "TRANSACTION_PRICE_REVALUED")
+        liquidatedDamagesBacklog : Metric(metricType.id == "LIQUIDATED_DAMAGES_BACKLOG")
+        liquidatedDamagesBacklogRevaluedLC : Metric(metricType.id == "LIQUIDATED_DAMAGES_BACKLOG_REVALUED_LC")
+        liquidatedDamagesRecognizedLC : Metric(metricType.id == "LIQUIDATED_DAMAGES_RECOGNIZED_LC")
+        totalEstimatedLiquidatedDamagesLC : Metric(metricType.id == "TOTAL_ESTIMATED_LIQUIDATED_DAMAGES_LC")
+        totalTransactionPriceLiquidatedDamages : Metric(metricType.id == "TOTAL_TRANSACTION_PRICE_NET_LIQUIDATED_DAMAGES_LC")
+        costGoodsSoldBacklogRevalued : Metric(metricType.id == "COST_GOODS_SOLD_BACKLOG_REVALUED_LC")
+        remainingEstimateComplete : Metric(metricType.id == "REMAINING_ESTIMATE_COMPLETE_LC")
+        projectGainLoss : Metric(metricType.id == "PROJECT_GAIN_LOSS_LC")
+        itdStandardCost : Metric(metricType.id == "ITD_STANDARD_COSTS_COGS")
+        lossContractAdjust : Metric(metricType.id == "LOSS_CONTRACT_ADJUSTED")
+        totalCostGoodsSold : Metric(metricType.id == "TOTAL_COST_GOODS_SOLD")
+    then
 
-
-
-
-
-
-
-
-
-
+        modify (totalITDCosts) { value = (costIncurred.value + thirdPartyProgress.value + intercoProgress.value)};
+        modify (percentComplete) { value = (totalITDCosts.value / estimatedCostAtCompletion.value)};
+        modify (revenueToRecognize) { value = (percentComplete.value * transactionPrice.value)};
+        modify (cumulativeLiquidatedDamages) { value = (percentComplete.value * totalLiquidatedDamages.value)};
+        modify (priorPeriodCumulativeRevenue) { setValue( 50.0 )};
+        modify (periodRevenue) { value = (revenueToRecognize.value - priorPeriodCumulativeRevenue.value)};
+        modify (periodExRate) { value = (priorPeriodCumulativeRevenue.value - 49.0)};
+        modify (periodRevenueLocalCurrency) { value = (periodRevenue.value * periodExRate.value)};
+        modify (liquidatedDamagesCurrentPeriodCC) { value = (cumulativeLiquidatedDamages.value - liquidatedDamagesPriorPeriod.value)};
+        modify (liquidatedDamagesCurrentPeriodLC) { value = (liquidatedDamagesCurrentPeriodCC.value * periodExRate.value)};
+        modify (cumulativeRevenueLC) { value = (revenueToRecognize.value * periodExRate.value)};
+        modify (netPeriodSalesLC) { value = (periodRevenueLocalCurrency.value - liquidatedDamagesCurrentPeriodLC.value)};
+        modify (transactionPriceBacklogCC) { setValue( 50.0 )};
+        modify (backlogRevalued) { value = (transactionPriceBacklogCC.value * periodExRate.value)};
+        modify (transactionPriceRevalued) { value = (backlogRevalued.value + cumulativeRevenueLC.value)};
+        modify (liquidatedDamagesBacklog) { value = (totalLiquidatedDamages.value - cumulativeLiquidatedDamages.value)};
+        modify (liquidatedDamagesBacklogRevaluedLC) { value = (liquidatedDamagesBacklog.value * periodExRate.value)};
+        modify (liquidatedDamagesRecognizedLC) { value = (transactionPriceBacklogCC.value)};
+        modify (totalEstimatedLiquidatedDamagesLC) { value = (liquidatedDamagesBacklogRevaluedLC.value - liquidatedDamagesRecognizedLC.value)};
+        modify (totalTransactionPriceLiquidatedDamages) { value = (transactionPriceBacklogCC.value)};
+        modify (costGoodsSoldBacklogRevalued) { value = (transactionPriceBacklogCC.value)};
+        modify (remainingEstimateComplete) { value = (transactionPriceBacklogCC.value)};
+        modify (projectGainLoss) { value = (costGoodsSoldBacklogRevalued.value - remainingEstimateComplete.value)};
+        modify (itdStandardCost) { value = (transactionPriceBacklogCC.value)};
+        modify (lossContractAdjust) { value = (transactionPriceBacklogCC.value)};
+        modify (totalCostGoodsSold) { value = (transactionPriceBacklogCC.value)};
+end

@@ -5,6 +5,8 @@
  */
 package com.flowserve.system606.model;
 
+import java.math.BigDecimal;
+
 /**
  * Non-entity wrapper class for the rules engine. Provides an immutable interface for the underlying Metric for the purpose of accessing prior period values.
  * This class provides two benefits.
@@ -29,5 +31,9 @@ public class MetricPriorPeriod {
 
     public Object getValue() {
         return metric.getValue();
+    }
+
+    public void setValue(BigDecimal b) {
+        metric.setValue(b);
     }
 }

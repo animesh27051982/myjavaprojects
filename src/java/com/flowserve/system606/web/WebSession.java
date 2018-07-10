@@ -3,6 +3,7 @@ package com.flowserve.system606.web;
 import com.flowserve.system606.model.BusinessUnit;
 import com.flowserve.system606.model.Country;
 import com.flowserve.system606.model.FinancialPeriod;
+import com.flowserve.system606.model.Holiday;
 import com.flowserve.system606.model.ReportingUnit;
 import com.flowserve.system606.model.User;
 import com.flowserve.system606.service.AdminService;
@@ -28,6 +29,7 @@ public class WebSession implements Serializable {
     private ReportingUnit editReportingUnit;
     private User editUser;
     private Country country;
+    private Holiday editHolidays;
     @Inject
     private PerformanceObligationService performanceObligationService;
     @Inject
@@ -80,6 +82,14 @@ public class WebSession implements Serializable {
 
     public FinancialPeriod getEditFinancialPeriod() {
         return editFinancialPeriod;
+    }
+
+    public Holiday getEditHolidays() {
+        return editHolidays;
+    }
+
+    public void setEditHolidays(Holiday editHolidays) {
+        this.editHolidays = editHolidays;
     }
 
 }

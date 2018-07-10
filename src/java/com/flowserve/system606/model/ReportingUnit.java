@@ -20,6 +20,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.SequenceGenerator;
@@ -40,7 +41,7 @@ public class ReportingUnit extends BaseEntity<Long> implements Accumulable, Comp
     private String name;
     @Column(name = "CODE")
     private String code;
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "BUSINESS_UNIT_ID")
     private BusinessUnit businessUnit;
     @OneToOne
@@ -56,12 +57,19 @@ public class ReportingUnit extends BaseEntity<Long> implements Accumulable, Comp
     private List<User> approvers = new ArrayList<User>();
     @Column(name = "IS_ACTIVE")
     private boolean active;
-
+    @ManyToOne
     @JoinColumn(name = "PARENT_ID")
     private ReportingUnit parent;
 
+    @ManyToOne
+    @JoinColumn(name = "COMPANY_ID")
+    private Company company;
+
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "reportingUnit", cascade = CascadeType.MERGE)
     private List<Contract> contracts = new ArrayList<Contract>();
+
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "parent", cascade = CascadeType.MERGE)
+    private List<ReportingUnit> childReportingUnits = new ArrayList<ReportingUnit>();
 
     public ReportingUnit() {
     }
@@ -173,5 +181,21 @@ public class ReportingUnit extends BaseEntity<Long> implements Accumulable, Comp
 
     public void setParent(ReportingUnit parent) {
         this.parent = parent;
+    }
+
+    public Company getCompany() {
+        return company;
+    }
+
+    public void setCompany(Company company) {
+        this.company = company;
+    }
+
+    public List<ReportingUnit> getChildReportingUnits() {
+        return childReportingUnits;
+    }
+
+    public void setChildReportingUnits(List<ReportingUnit> childReportingUnits) {
+        this.childReportingUnits = childReportingUnits;
     }
 }
