@@ -30,6 +30,7 @@ OUTPUT|LIQUIDATED_DAMAGES_RECOGNIZE_CURRENT_PERIOD_LC|POB||CurrencyMetric||Liqui
 OUTPUT|NET_PERIOD_SALES_LC|POB||CurrencyMetric||Net Period Sales (LC)|Net Period Sales (LC)|POC POB Outputs|O|Group1|2
 OUTPUT|BACKLOG_REVALUED|POB||CurrencyMetric||Backlog Revalued|Backlog Revalued|POC POB Outputs|O|Group1|2
 OUTPUT|TRANSACTION_PRICE_REVALUED|POB||CurrencyMetric||Transaction Price Revalued|Transaction Price Revalued|POC POB Outputs|O|Group1|2
+OUTPUT|TRANSACTION_PRICE_BACKLOG|POB|CC|CurrencyMetric||Transaction Price Backlog|Transaction Price Backlog|POC POB Outputs|O|Group1|2
 OUTPUT|LIQUIDATED_DAMAGES_BACKLOG|POB||CurrencyMetric||Liquidated Damages in Backlog|Liquidated Damages in Backlog|POC POB Outputs|O|Group1|2
 OUTPUT|LIQUIDATED_DAMAGES_BACKLOG_REVALUED_LC|POB||CurrencyMetric||Liquidated Damages in Backlog Revalued (LC)|Liquidated Damages in Backlog Revalued (LC)|POC POB Outputs|O|Group1|2
 OUTPUT|LIQUIDATED_DAMAGES_RECOGNIZED_LC|POB||CurrencyMetric||Liquidated Damages Recognized to Date (LC)|Liquidated Damages Recognized to Date (LC)|POC POB Outputs|O|Group1|2

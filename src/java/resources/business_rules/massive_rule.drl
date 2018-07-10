@@ -37,8 +37,20 @@ rule "Calculate EAC Change"
         modify (changeInEstimate) { value = (estimatedCostAtCompletionPriorPeriod.value - estimatedCostAtCompletion.value)};
 end
 
-
-
+rule "Calculate Cumulative Total ITD Costs, Percent Complete, Revenue Earned to Date, Cumulative Revenue to Recognize"
+    // We have everything we need, run all calcs.
+    when
+        pob : PerformanceObligation()
+        costIncurred : Metric(metricType.id == "CUMULATIVE_COST_INCURRED", value != null)       // null check means don't run this entire rule if the metric value is null.  We may have to break the rules up and pull the ones that rely on prior period to their own rule but proceed here for now.
+        thirdPartyProgress : Metric(metricType.id == "CUMULATIVE_THIRD_PARTY_PROGRESS", value != null)
+        intercoProgress : Metric(metricType.id == "CUMULATIVE_INTERCOMPANY_PROGRESS", value != null)
+        estimatedCostAtCompletion : Metric(metricType.id == "ESTIMATED_COST_AT_COMPLETION", value != null)
+        totalITDCosts : Metric(metricType.id == "CUMULATIVE_TOTAL_ITD_COSTS")               // don't worry about null check here since we setting this as output calc below.  it is null initially.
+        percentComplete : Metric(metricType.id == "PERCENT_COMPLETE")                       // don't worry about null check here since we setting this as output calc below.  it is null initially.
+    then
+        modify (totalITDCosts) { value = (costIncurred.value + thirdPartyProgress.value + intercoProgress.value)};
+        modify (percentComplete) { value = (totalITDCosts.value / estimatedCostAtCompletion.value)};
+end
 
 
 

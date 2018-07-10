@@ -5,15 +5,21 @@
  */
 package com.flowserve.system606.model;
 
-import java.util.Map;
-
 /**
  *
  * @author kgraves
  */
 public interface Calculable {
 
-    public Map<FinancialPeriod, MetricSet> getPeriodMetricSetMap();
+    public Metric getPeriodMetric(FinancialPeriod period, MetricType metricType);
+
+    public void initializeMetricSetForPeriod(FinancialPeriod period);
+
+    public void initializeMetricForPeriod(FinancialPeriod period, MetricType metricType);
+
+    public boolean metricSetExistsForPeriod(FinancialPeriod period);
+
+    public boolean metricExistsForPeriod(FinancialPeriod period, MetricType metricType);
 
     public Long getId();
 

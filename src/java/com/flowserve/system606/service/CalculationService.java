@@ -13,7 +13,6 @@ import com.flowserve.system606.model.DateMetric;
 import com.flowserve.system606.model.FinancialPeriod;
 import com.flowserve.system606.model.Metric;
 import com.flowserve.system606.model.MetricPriorPeriod;
-import com.flowserve.system606.model.MetricSet;
 import com.flowserve.system606.model.MetricType;
 import com.flowserve.system606.model.PerformanceObligation;
 import com.flowserve.system606.model.StringMetric;
@@ -88,63 +87,38 @@ public class CalculationService {
     }
 
     // intelliGet since this is no ordinary get.  Initialize any missing metrics on the fly.
-    private Metric intelliGetMetric(String metricTypeId, Calculable calculable) {  // TODO - Exception type to be thrown?
+    private Metric intelliGetMetric(MetricType metricType, Calculable calculable, FinancialPeriod period) {  // TODO - Exception type to be thrown?
+//        FinancialPeriod period = financialPeriodService.getCurrentFinancialPeriod();
+
+        if (!calculable.metricSetExistsForPeriod(period)) {
+            calculable.initializeMetricSetForPeriod(period);
+        }
+        if (!calculable.metricExistsForPeriod(period, metricType)) {
+            calculable.initializeMetricForPeriod(period, metricType);
+        }
+
+        return calculable.getPeriodMetric(period, metricType);
+    }
+
+    private Metric getMetric(String metricTypeId, Calculable calculable) {
         FinancialPeriod period = financialPeriodService.getCurrentFinancialPeriod();
-        MetricType metricType = metricService.findMetricTypeById(metricTypeId);
-
-        if (!metricSetExistsForPeriod(period, calculable)) {
-            initializeMetricSetForPeriod(period, calculable);
-        }
-        if (!metricExistsForPeriod(period, metricType, calculable)) {
-            initializeMetricForPeriod(period, metricType, calculable);
-        }
-
-        return calculable.getPeriodMetricSetMap().get(period).getTypeMetricMap().get(metricType);
-    }
-
-    private boolean metricSetExistsForPeriod(FinancialPeriod period, Calculable calculable) {
-        return calculable.getPeriodMetricSetMap().get(period) != null;
-    }
-
-    private void initializeMetricSetForPeriod(FinancialPeriod period, Calculable calculable) {
-        MetricSet metricSet = new MetricSet();
-        if (calculable instanceof PerformanceObligation) {
-            metricSet.setPerformanceObligation((PerformanceObligation) calculable);
-        }
-        calculable.getPeriodMetricSetMap().put(period, metricSet);
-    }
-
-    private boolean metricExistsForPeriod(FinancialPeriod period, MetricType metricType, Calculable calculable) {
-        return calculable.getPeriodMetricSetMap().get(period).getTypeMetricMap().get(metricType) != null;
-    }
-
-    private void initializeMetricForPeriod(FinancialPeriod period, MetricType metricType, Calculable calculable) {
-        try {
-            Class<?> clazz = Class.forName(PACKAGE_PREFIX + metricType.getMetricClass());
-            Metric metric = (Metric) clazz.newInstance();
-            metric.setMetricType(metricType);
-            metric.setMetricSet(calculable.getPeriodMetricSetMap().get(period));
-            calculable.getPeriodMetricSetMap().get(period).getTypeMetricMap().put(metricType, metric);
-        } catch (Exception e) {
-            Logger.getLogger(PerformanceObligationService.class.getName()).log(Level.SEVERE, "Severe exception initializing metricTypeId: " + metricType.getId(), e);
-            throw new IllegalStateException("Severe exception initializing metricTypeId: " + metricType.getId(), e);
-        }
+        return intelliGetMetric(metricService.findMetricTypeById(metricTypeId), calculable, period);
     }
 
     public String getStringMetricValue(String metricTypeId, Calculable calculable) {
-        return (String) intelliGetMetric(metricTypeId, calculable).getValue();
+        return (String) getMetric(metricTypeId, calculable).getValue();
     }
 
     public BigDecimal getDecimalMetricValue(String metricTypeId, PerformanceObligation pob) {
-        return (BigDecimal) intelliGetMetric(metricTypeId, pob).getValue();
+        return (BigDecimal) getMetric(metricTypeId, pob).getValue();
     }
 
     public LocalDate getDateMetricValue(String metricTypeId, PerformanceObligation pob) {
-        return (LocalDate) intelliGetMetric(metricTypeId, pob).getValue();
+        return (LocalDate) getMetric(metricTypeId, pob).getValue();
     }
 
     public BigDecimal getCurrencyMetricValue(String metricTypeId, PerformanceObligation pob) {
-        return (BigDecimal) intelliGetMetric(metricTypeId, pob).getValue();
+        return (BigDecimal) getMetric(metricTypeId, pob).getValue();
     }
 
     public BigDecimal getCurrencyMetricValuePriorPeriod(String metricTypeId, PerformanceObligation pob) {
@@ -152,19 +126,19 @@ public class CalculationService {
     }
 
     public StringMetric getStringMetric(String metricTypeId, PerformanceObligation pob) {
-        return (StringMetric) intelliGetMetric(metricTypeId, pob);
+        return (StringMetric) getMetric(metricTypeId, pob);
     }
 
     public DateMetric getDateMetric(String metricTypeId, PerformanceObligation pob) {
-        return (DateMetric) intelliGetMetric(metricTypeId, pob);
+        return (DateMetric) getMetric(metricTypeId, pob);
     }
 
     public CurrencyMetric getCurrencyMetric(String metricTypeId, PerformanceObligation pob) {  // TODO KJG - This method should be getCurrencyMetric() and the method above should be getCurrencyMetricValue() waiting on this due to impact.
-        return (CurrencyMetric) intelliGetMetric(metricTypeId, pob);
+        return (CurrencyMetric) getMetric(metricTypeId, pob);
     }
 
     public void putCurrencyMetricValue(String metricTypeId, PerformanceObligation pob, BigDecimal value) {
-        intelliGetMetric(metricTypeId, pob).setValue(value);
+        getMetric(metricTypeId, pob).setValue(value);
     }
 
 //    public boolean isMetricRequired() {
@@ -182,8 +156,8 @@ public class CalculationService {
 
         facts.add(calculable);
         FinancialPeriod period = financialPeriodService.getCurrentFinancialPeriod();
-        facts.addAll(getAllPeriodMetrics(calculable, period));
-        facts.addAll(getAllPriorPeriodMetrics(calculable, period));
+        facts.addAll(getAllPeriodMetrics(calculable));
+        facts.addAll(getAllPriorPeriodMetrics(calculable));
 
         kSession.execute(facts);
         Logger.getLogger(CalculationService.class.getName()).log(Level.FINER, "Firing all business rules complete.");
@@ -195,17 +169,27 @@ public class CalculationService {
         }
     }
 
-    private Collection<Metric> getAllPeriodMetrics(Calculable calculable, FinancialPeriod period) {
-        return calculable.getPeriodMetricSetMap().get(period).getTypeMetricMap().values();
+    private Collection<Metric> getAllPeriodMetrics(Calculable calculable) {
+        FinancialPeriod period = financialPeriodService.getCurrentFinancialPeriod();
+
+        List<MetricType> metricTypes = metricService.findActiveMetricTypesPob();
+        List<Metric> metrics = new ArrayList<Metric>();
+        for (MetricType metricType : metricTypes) {  // TODO - We are getting all pob here, this may not be good long term.
+            metrics.add(intelliGetMetric(metricType, calculable, period));
+        }
+
+        return metrics;
     }
 
-    private Collection<MetricPriorPeriod> getAllPriorPeriodMetrics(Calculable calculable, FinancialPeriod currentPeriod) {
+    private Collection<MetricPriorPeriod> getAllPriorPeriodMetrics(Calculable calculable) {
         // TODO - change this to retrieve prior from periodService.  Use current for now.
         FinancialPeriod previousPeriod = financialPeriodService.getCurrentFinancialPeriod();
-        Collection<Metric> metrics = calculable.getPeriodMetricSetMap().get(previousPeriod).getTypeMetricMap().values();
+
         List<MetricPriorPeriod> metricsPriorPeriod = new ArrayList<MetricPriorPeriod>();
-        for (Metric metric : metrics) {
-            metricsPriorPeriod.add(new MetricPriorPeriod(metric));
+        List<MetricType> metricTypes = metricService.findActiveMetricTypesPob();
+
+        for (MetricType metricType : metricTypes) {
+            metricsPriorPeriod.add(new MetricPriorPeriod(intelliGetMetric(metricType, calculable, previousPeriod)));
         }
 
         return metricsPriorPeriod;
