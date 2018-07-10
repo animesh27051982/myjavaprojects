@@ -7,6 +7,7 @@ package com.flowserve.system606.controller;
 
 import com.flowserve.system606.model.BusinessUnit;
 import com.flowserve.system606.model.FinancialPeriod;
+import com.flowserve.system606.model.Holiday;
 import com.flowserve.system606.model.ReportingUnit;
 import com.flowserve.system606.model.User;
 import com.flowserve.system606.service.AdminService;
@@ -154,7 +155,7 @@ public class AdminController implements Serializable {
 
         return "userSearch";
     }
-    
+
     public String editFinancialPeriod(FinancialPeriod f) throws Exception {
 
         webSession.setEditFinancialPeriod(f);
@@ -177,7 +178,7 @@ public class AdminController implements Serializable {
     }
 
     public String updateFinancialPeriod(FinancialPeriod financialPeriod) {
-         FacesContext context = FacesContext.getCurrentInstance();
+        FacesContext context = FacesContext.getCurrentInstance();
         try {
             adminService.updateFinancialPeriod(financialPeriod);
         } catch (Exception e) {
@@ -191,4 +192,51 @@ public class AdminController implements Serializable {
         return "financialPeriodList";
     }
 
+    public String addHoliday(Holiday h) {
+        FacesContext context = FacesContext.getCurrentInstance();
+        try {
+            adminService.persist(h);
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, e.getMessage(), e);
+            context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Error saving", e.getMessage()));
+            return null;
+        }
+
+        context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "businessUnit saved", ""));
+
+        return "holidaysList";
+    }
+
+    public String editHoliday(Holiday h) throws Exception {
+
+        webSession.setEditHolidays(h);
+        return "holidaysEdit";
+    }
+
+    public String newHoliday(Holiday h) throws Exception {
+
+        webSession.setEditHolidays(new Holiday());
+        return "holidaysEdit";
+    }
+
+    public String updateHoliday(Holiday h) {
+        FacesContext context = FacesContext.getCurrentInstance();
+        try {
+            adminService.updateHoliday(h);
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, e.getMessage(), e);
+            context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Error saving", e.getMessage()));
+            return null;
+        }
+
+        context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "businessUnit saved", ""));
+
+        return "holidaysList";
+    }
+
+    public String deleteHoliday(Holiday h) throws Exception {
+
+        adminService.deleteHoliday(h);
+        return "holidaysList";
+    }
 }

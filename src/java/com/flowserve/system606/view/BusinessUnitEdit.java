@@ -55,7 +55,7 @@ public class BusinessUnitEdit implements Serializable {
         List<BusinessUnit> sites = null;
 
         try {
-            sites = adminService.searchSites(searchString);
+            sites = adminService.searchParentBu(searchString, this.businessUnit);
         } catch (Exception e) {
             FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", " site location error  " + e.getMessage());
             FacesContext.getCurrentInstance().addMessage(null, msg);

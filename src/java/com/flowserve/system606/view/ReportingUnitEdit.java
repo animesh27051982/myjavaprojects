@@ -136,7 +136,7 @@ public class ReportingUnitEdit implements Serializable {
         List<ReportingUnit> rUnit = null;
 
         try {
-            rUnit = adminService.searchReportingUnits(searchString);
+            rUnit = adminService.parentReportingUnits(searchString, this.editReporintgUnit);
         } catch (Exception e) {
             FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", " site location error  " + e.getMessage());
             FacesContext.getCurrentInstance().addMessage(null, msg);

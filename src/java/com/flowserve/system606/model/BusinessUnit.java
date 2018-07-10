@@ -6,11 +6,16 @@
 package com.flowserve.system606.model;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Logger;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 @Entity
@@ -36,6 +41,12 @@ public class BusinessUnit implements Comparable<BusinessUnit>, Serializable {
 
     @JoinColumn(name = "PARENT_ID")
     private BusinessUnit parent;
+
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "businessUnit", cascade = CascadeType.MERGE)
+    private List<ReportingUnit> reportingUnit = new ArrayList<ReportingUnit>();
+
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "parent", cascade = CascadeType.MERGE)
+    private List<BusinessUnit> childBusinessUnit = new ArrayList<BusinessUnit>();
 
     public BusinessUnit() {
     }
@@ -92,4 +103,21 @@ public class BusinessUnit implements Comparable<BusinessUnit>, Serializable {
     public void setId(String id) {
         this.id = id;
     }
+
+    public List<ReportingUnit> getReportingUnit() {
+        return reportingUnit;
+    }
+
+    public void setReportingUnit(List<ReportingUnit> reportingUnit) {
+        this.reportingUnit = reportingUnit;
+    }
+
+    public List<BusinessUnit> getChildBusinessUnit() {
+        return childBusinessUnit;
+    }
+
+    public void setChildBusinessUnit(List<BusinessUnit> childBusinessUnit) {
+        this.childBusinessUnit = childBusinessUnit;
+    }
+
 }

@@ -42,3 +42,4 @@ OUTPUT|PROJECT_GAIN_LOSS_LC|POB||CurrencyMetric||Projected Gain(Loss) (LC)|Proje
 OUTPUT|ITD_STANDARD_COSTS_COGS|POB||CurrencyMetric||ITD Standard Costs (COGS)|ITD Standard Costs (COGS)|POC POB Outputs|O|Group1|2
 OUTPUT|LOSS_CONTRACT_ADJUSTED|POB||CurrencyMetric||Loss Contract Adjusted|Loss Contract Adjusted|POC POB Outputs|O|Group1|2
 OUTPUT|TOTAL_COST_GOODS_SOLD|POB||CurrencyMetric||Total Cost of Goods Sold|Total Cost of Goods Sold|POC POB Outputs|O|Group1|2
+OUTPUT|TRANSACTION_PRICE_BACKLOG_CC|POB||CurrencyMetric||Transaction Price in Backlog (CC)|Transaction Price in Backlog (CC)|POC POB Outputs|O|Group1|2
