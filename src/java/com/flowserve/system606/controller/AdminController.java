@@ -7,6 +7,7 @@ package com.flowserve.system606.controller;
 
 import com.flowserve.system606.model.BusinessUnit;
 import com.flowserve.system606.model.Company;
+import com.flowserve.system606.model.Contract;
 import com.flowserve.system606.model.FinancialPeriod;
 import com.flowserve.system606.model.Holiday;
 import com.flowserve.system606.model.ReportingUnit;
@@ -260,5 +261,10 @@ public class AdminController implements Serializable {
         context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "businessUnit saved", ""));
 
         return "CompanyList";
+    }
+
+    public String generateReport(Contract c) throws Exception {
+        webSession.setEditContract(c);
+        return "reportContractEstimate";
     }
 }
