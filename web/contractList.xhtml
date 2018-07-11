@@ -45,6 +45,9 @@
                                 <p:column headerText="Contract Name" sortBy="#{contract.name}" >
                                     <h:commandLink value="#{contract.name}" action="#{adminController.generateReport(contract)}" title="Download Report"></h:commandLink>
                                 </p:column>
+                                <p:column headerText="Sales Order Number" sortBy="#{contract.salesOrderNumber}" >
+                                    <h:outputText value="#{contract.salesOrderNumber}" ></h:outputText>
+                                </p:column>
                                 <p:column headerText="Reporting Unit Name" sortBy="#{contract.reportingUnit.name}">
                                     <h:outputText value="#{contract.reportingUnit.name}" />
                                 </p:column>
