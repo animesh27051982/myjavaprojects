@@ -11,7 +11,6 @@ import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
@@ -60,7 +59,6 @@ public class ReportsService {
         BigDecimal EAC = viewSupport.getAccumulatedCurrencyMetricValue("ESTIMATED_COST_AT_COMPLETION", contract);
         BigDecimal estimatedGrossProfit = viewSupport.getAccumulatedCurrencyMetricValue("ESTIMATED_GROSS_PROFIT", contract);
         //BigDecimal estimatedGrossMargin = viewSupport.getAccumulatedCurrencyMetricValue("ESTIMATED_GROSS_MARGIN", contract);
-        Logger.getLogger(ReportsService.class.getName()).log(Level.INFO, "message" + estimatedGrossProfit);
         BigDecimal estimatedGrossMargin = new BigDecimal(0);
         if (estimatedGrossProfit.compareTo(BigDecimal.ZERO) > 0) {
             estimatedGrossMargin = estimatedGrossProfit.divide(trancationPrice, 2, RoundingMode.HALF_UP).multiply(new BigDecimal(100));

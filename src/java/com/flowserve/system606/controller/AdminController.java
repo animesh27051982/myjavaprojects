@@ -245,7 +245,7 @@ public class AdminController implements Serializable {
     public String editCompany(Company c) throws Exception {
 
         webSession.setEditCompany(c);
-        return "CompanyEdit";
+        return "companyEdit";
     }
 
     public String updateCompany(Company c) {
@@ -260,7 +260,7 @@ public class AdminController implements Serializable {
 
         context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "businessUnit saved", ""));
 
-        return "CompanyList";
+        return "companyList";
     }
 
     public String generateReport(Contract c) throws Exception {
