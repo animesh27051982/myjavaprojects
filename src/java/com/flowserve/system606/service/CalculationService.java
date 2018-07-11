@@ -88,8 +88,6 @@ public class CalculationService {
 
     // intelliGet since this is no ordinary get.  Initialize any missing metrics on the fly.
     private Metric intelliGetMetric(MetricType metricType, Calculable calculable, FinancialPeriod period) {  // TODO - Exception type to be thrown?
-//        FinancialPeriod period = financialPeriodService.getCurrentFinancialPeriod();
-
         if (!calculable.metricSetExistsForPeriod(period)) {
             calculable.initializeMetricSetForPeriod(period);
         }
@@ -102,6 +100,11 @@ public class CalculationService {
 
     private Metric getMetric(String metricTypeId, Calculable calculable) {
         FinancialPeriod period = financialPeriodService.getCurrentFinancialPeriod();
+        return intelliGetMetric(metricService.findMetricTypeById(metricTypeId), calculable, period);
+    }
+
+    private Metric getMetricPriorPeriod(String metricTypeId, Calculable calculable) {
+        FinancialPeriod period = financialPeriodService.getPriorFinancialPeriod();
         return intelliGetMetric(metricService.findMetricTypeById(metricTypeId), calculable, period);
     }
 
@@ -122,7 +125,7 @@ public class CalculationService {
     }
 
     public BigDecimal getCurrencyMetricValuePriorPeriod(String metricTypeId, PerformanceObligation pob) {
-        return getCurrencyMetricValue(metricTypeId, pob);   // KJG TODO - Hack for now to just return this period's value for testing calcs.
+        return (BigDecimal) getMetricPriorPeriod(metricTypeId, pob).getValue();
     }
 
     public StringMetric getStringMetric(String metricTypeId, PerformanceObligation pob) {
@@ -153,9 +156,7 @@ public class CalculationService {
     public void executeBusinessRules(Calculable calculable) throws Exception {
         Logger.getLogger(CalculationService.class.getName()).log(Level.FINER, "Firing all business rules for: " + calculable.getId());
         List<Object> facts = new ArrayList<Object>();
-
         facts.add(calculable);
-        FinancialPeriod period = financialPeriodService.getCurrentFinancialPeriod();
         facts.addAll(getAllPeriodMetrics(calculable));
         facts.addAll(getAllPriorPeriodMetrics(calculable));
 
@@ -183,13 +184,17 @@ public class CalculationService {
 
     private Collection<MetricPriorPeriod> getAllPriorPeriodMetrics(Calculable calculable) {
         // TODO - change this to retrieve prior from periodService.  Use current for now.
-        FinancialPeriod previousPeriod = financialPeriodService.getCurrentFinancialPeriod();
+        FinancialPeriod previousPeriod = financialPeriodService.getPriorFinancialPeriod();
 
         List<MetricPriorPeriod> metricsPriorPeriod = new ArrayList<MetricPriorPeriod>();
         List<MetricType> metricTypes = metricService.findActiveMetricTypesPob();
 
         for (MetricType metricType : metricTypes) {
-            metricsPriorPeriod.add(new MetricPriorPeriod(intelliGetMetric(metricType, calculable, previousPeriod)));
+            Metric previousPeriodMetric = intelliGetMetric(metricType, calculable, previousPeriod);
+            if (previousPeriodMetric.getValue() == null && previousPeriodMetric instanceof CurrencyMetric) {
+                previousPeriodMetric.setValue(new BigDecimal("0.0"));
+            }
+            metricsPriorPeriod.add(new MetricPriorPeriod(previousPeriodMetric));
         }
 
         return metricsPriorPeriod;
@@ -218,10 +223,6 @@ public class CalculationService {
     /**
      * This method will throw an exception if the underlying type does not support BigDecimal summation. We want the exception in the invalid case as it
      * indicates either a programming error or a business rules error. Neither of which is recoverable.
-     *
-     * @param metricTypeId
-     * @param contract
-     * @return
      */
     public BigDecimal getAccumulatedCurrencyMetricValue(String metricTypeId, Accumulable accumulable) {
 
