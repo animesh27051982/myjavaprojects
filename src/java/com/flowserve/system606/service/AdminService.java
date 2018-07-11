@@ -7,6 +7,7 @@ package com.flowserve.system606.service;
 
 import com.flowserve.system606.model.BusinessUnit;
 import com.flowserve.system606.model.Company;
+import com.flowserve.system606.model.Contract;
 import com.flowserve.system606.model.Country;
 import com.flowserve.system606.model.ExchangeRate;
 import com.flowserve.system606.model.FinancialPeriod;
@@ -601,4 +602,18 @@ public class AdminService {
         em.merge(financialPeriod);
     }
 
+    public List<Company> findAllCompany() throws Exception {  // Need an application exception type defined.
+
+        TypedQuery<Company> query = em.createQuery("SELECT c FROM Company c", Company.class);
+        return (List<Company>) query.getResultList();
+    }
+
+    public List<Contract> searchContract(String searchString) throws Exception {  // Need an application exception type defined.
+        if (searchString == null || searchString.trim().length() < 2) {
+            throw new Exception("Please supply a search string with at least 2 characters.");
+        }
+        TypedQuery<Contract> query = em.createQuery("SELECT c FROM Contract c WHERE UPPER(c.name) LIKE :NAME ORDER BY UPPER(c.name)", Contract.class);
+        query.setParameter("NAME", "%" + searchString.toUpperCase() + "%");
+        return (List<Contract>) query.getResultList();
+    }
 }

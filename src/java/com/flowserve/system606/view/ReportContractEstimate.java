@@ -5,16 +5,16 @@
  */
 package com.flowserve.system606.view;
 
-import com.flowserve.system606.model.ReportingUnit;
+import com.flowserve.system606.model.Contract;
 import com.flowserve.system606.service.AdminService;
 import com.flowserve.system606.service.ReportsService;
+import com.flowserve.system606.web.WebSession;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
-import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
@@ -33,19 +33,18 @@ public class ReportContractEstimate implements Serializable {
     private StreamedContent file;
     private InputStream inputStream;
     private FileOutputStream outputStream;
-
-    private List<ReportingUnit> reportingUnits;
-    private List<ReportingUnit> selectedReportingUnits;
+    private Contract contract = new Contract();
 
     @Inject
     AdminService adminService;
     @Inject
     ReportsService reportsService;
+    @Inject
+    private WebSession webSession;
 
     @PostConstruct
     public void init() {
-        reportingUnits = adminService.getPreparableReportingUnits();
-        selectedReportingUnits = reportingUnits;
+        contract = webSession.getEditContract();
     }
 
     public StreamedContent getFile() throws Exception {
@@ -58,11 +57,19 @@ public class ReportContractEstimate implements Serializable {
             e.printStackTrace();
         }
 
-        reportsService.generateContractEsimatesReport(inputStream, outputStream, selectedReportingUnits);
+        reportsService.generateContractEsimatesReport(inputStream, outputStream, contract);
 
         InputStream inputStreamFromOutputStream = new FileInputStream(new File("Outputs_Summary_v2.xlsx"));
         file = new DefaultStreamedContent(inputStreamFromOutputStream, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "Outputs_Summary_v2.xlsx");
         return file;
+    }
+
+    public Contract getContract() {
+        return contract;
+    }
+
+    public void setContract(Contract contract) {
+        this.contract = contract;
     }
 
 }
