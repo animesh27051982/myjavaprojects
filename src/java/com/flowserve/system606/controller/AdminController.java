@@ -6,6 +6,7 @@
 package com.flowserve.system606.controller;
 
 import com.flowserve.system606.model.BusinessUnit;
+import com.flowserve.system606.model.Company;
 import com.flowserve.system606.model.FinancialPeriod;
 import com.flowserve.system606.model.Holiday;
 import com.flowserve.system606.model.ReportingUnit;
@@ -238,5 +239,26 @@ public class AdminController implements Serializable {
 
         adminService.deleteHoliday(h);
         return "holidaysList";
+    }
+
+    public String editCompany(Company c) throws Exception {
+
+        webSession.setEditCompany(c);
+        return "CompanyEdit";
+    }
+
+    public String updateCompany(Company c) {
+        FacesContext context = FacesContext.getCurrentInstance();
+        try {
+            adminService.update(c);
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, e.getMessage(), e);
+            context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Error saving", e.getMessage()));
+            return null;
+        }
+
+        context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "businessUnit saved", ""));
+
+        return "CompanyList";
     }
 }

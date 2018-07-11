@@ -601,4 +601,9 @@ public class AdminService {
         em.merge(financialPeriod);
     }
 
+    public List<Company> findAllCompany() throws Exception {  // Need an application exception type defined.
+
+        TypedQuery<Company> query = em.createQuery("SELECT c FROM Company c", Company.class);
+        return (List<Company>) query.getResultList();
+    }
 }
