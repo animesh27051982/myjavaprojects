@@ -6,12 +6,11 @@
 package com.flowserve.system606.service;
 
 import com.flowserve.system606.model.Contract;
-import com.flowserve.system606.model.MetricType;
-import com.flowserve.system606.model.PerformanceObligation;
-import com.flowserve.system606.model.ReportingUnit;
+import com.flowserve.system606.view.ViewSupport;
 import java.io.FileOutputStream;
 import java.io.InputStream;
-import java.util.List;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.logging.Logger;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
@@ -38,41 +37,44 @@ public class ReportsService {
 
     @Inject
     private MetricService metricService;
+    @Inject
+    private ContractService contractService;
+    @Inject
+    private ViewSupport viewSupport;
     private static final int HEADER_ROW_COUNT = 10;
 
-    public void generateContractEsimatesReport(InputStream inputStream, FileOutputStream outputStream, List<ReportingUnit> reportingUnits) throws Exception {
+    public void generateContractEsimatesReport(InputStream inputStream, FileOutputStream outputStream, Contract contract) throws Exception {
 
         XSSFWorkbook workbook = new XSSFWorkbook(inputStream);
         XSSFSheet worksheet = workbook.getSheet("Contract Summary-1");
         XSSFRow row;
         Cell cell = null;
         int rowid = HEADER_ROW_COUNT;
-        List<Contract> contracts = reportingUnits.get(0).getContracts();
-        for (Contract contract : contracts) {
-            List<PerformanceObligation> pobs = contract.getPerformanceObligations();
-            for (PerformanceObligation pob : pobs) {
-                row = worksheet.getRow(rowid++);
+        XSSFRow rowTitle = worksheet.getRow(1);
+        cell = rowTitle.getCell(0, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
+        cell.setCellValue(contract.getName());
 
-                // Populate non-input cells
-                row.getCell(0, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK).setCellValue(contract.getName());
-                MetricType inputType = metricService.findMetricTypeById("TRANSACTION_PRICE");
-                cell = row.getCell(1, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
-                if (calculationService.getCurrencyMetric(inputType.getId(), pob).getValue() != null) {
-                    cell.setCellValue(calculationService.getCurrencyMetricValue(inputType.getId(), pob).doubleValue());
-                }
-                inputType = metricService.findMetricTypeById("LIQUIDATED_DAMAGES");
-                cell = row.getCell(2, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
-                if (calculationService.getCurrencyMetric(inputType.getId(), pob).getValue() != null) {
-                    cell.setCellValue(calculationService.getCurrencyMetricValue(inputType.getId(), pob).doubleValue());
-                }
-                inputType = metricService.findMetricTypeById("ESTIMATED_COST_AT_COMPLETION");
-                cell = row.getCell(3, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
-                if (calculationService.getCurrencyMetric(inputType.getId(), pob).getValue() != null) {
-                    cell.setCellValue(calculationService.getCurrencyMetricValue(inputType.getId(), pob).doubleValue());
-                }
-
-            }
+        BigDecimal trancationPrice = viewSupport.getAccumulatedCurrencyMetricValue("TRANSACTION_PRICE", contract);
+        BigDecimal loquidatedDamage = viewSupport.getAccumulatedCurrencyMetricValue("LIQUIDATED_DAMAGES", contract);
+        BigDecimal EAC = viewSupport.getAccumulatedCurrencyMetricValue("ESTIMATED_COST_AT_COMPLETION", contract);
+        BigDecimal estimatedGrossProfit = viewSupport.getAccumulatedCurrencyMetricValue("ESTIMATED_GROSS_PROFIT", contract);
+        //BigDecimal estimatedGrossMargin = viewSupport.getAccumulatedCurrencyMetricValue("ESTIMATED_GROSS_MARGIN", contract);
+        BigDecimal estimatedGrossMargin = new BigDecimal(0);
+        if (estimatedGrossProfit.compareTo(BigDecimal.ZERO) > 0) {
+            estimatedGrossMargin = estimatedGrossProfit.divide(trancationPrice, 2, RoundingMode.HALF_UP).multiply(new BigDecimal(100));
         }
+
+        row = worksheet.getRow(rowid++);
+        cell = row.getCell(1, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
+        cell.setCellValue(trancationPrice.doubleValue());
+        cell = row.getCell(2, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
+        cell.setCellValue(loquidatedDamage.doubleValue());
+        cell = row.getCell(3, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
+        cell.setCellValue(EAC.doubleValue());
+        cell = row.getCell(4, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
+        cell.setCellValue(estimatedGrossProfit.doubleValue());
+        cell = row.getCell(5, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
+        cell.setCellValue(estimatedGrossMargin.doubleValue());
 
         workbook.write(outputStream);
         workbook.close();

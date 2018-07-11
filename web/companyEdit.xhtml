@@ -1,0 +1,47 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                template="/WEB-INF/template.xhtml">
+
+    <ui:define name="head">
+        <style type="text/css">
+
+        </style>
+    </ui:define>
+
+    <ui:define name="title">Edit Company</ui:define>
+
+    <ui:define name="viewname">Edit Company</ui:define>
+
+    <ui:define name="content">
+        <div style="min-height: calc(100vh - 235px);">
+            <h:form>
+                <div class="ui-fluid">
+                    <div class="ui-g">
+                        <div class="ui-g-12">
+                            <div class="card card-w-title">
+                                <h1>Edit Company</h1>
+                                <p:panelGrid columns="2" columnClasses="ui-grid-col-2,ui-grid-col-4,ui-grid-col-2,ui-grid-col-4" layout="grid" styleClass="ui-panelgrid-blank form-group" style="border:0px none; background-color:transparent;">
+                                    <p:outputLabel for="id" value="ID"/>
+                                    <p:outputLabel id="id" value="#{companyEdit.company.id}"/>
+                                    <p:outputLabel for="name" value="Name"/>
+                                    <p:outputLabel id="name" value="#{companyEdit.company.name}" />
+                                    <p:outputLabel for="type" value="Type"/>
+                                    <p:inputText id="type" value="#{companyEdit.company.inputFreezeWorkday}"/>
+                                    <p:outputLabel for="description" value="Description"/>
+                                    <p:outputLabel id="description" value="#{companyEdit.company.description}"/>
+
+                                    <p:outputLabel for="btn" value="" />
+                                    <p:commandButton id="btn" value="Update" icon="ui-icon-edit" action="#{adminController.updateCompany(companyEdit.company)}" style="max-width:150px;"/>
+                                </p:panelGrid>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </h:form>
+        </div>
+    </ui:define>
+
+</ui:composition>
