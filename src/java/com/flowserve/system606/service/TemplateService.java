@@ -106,7 +106,7 @@ public class TemplateService {
 
     public void processTemplateUpload(InputStream fis, String filename) throws Exception {  // Need an application exception type defined.
         try {
-            List<MetricType> inputTypes = metricService.findActiveMetricTypesPob();
+            List<MetricType> inputTypes = metricService.getAllPobExcelInputMetricTypes();
             XSSFWorkbook workbook = new XSSFWorkbook(fis);
             XSSFSheet worksheet = workbook.getSheetAt(0);
             MetricSet inputSet = new MetricSet();
@@ -122,7 +122,7 @@ public class TemplateService {
                 if (row.getRowNum() < HEADER_ROW_COUNT) {
                     continue;
                 }
-                Cell pobIdCell = row.getCell(pobIdColNumber);
+                Cell pobIdCell = row.getCell(pobIdColNumber);                
                 if (pobIdCell == null || pobIdCell.getCellTypeEnum() == CellType.BLANK) {
                     Logger.getLogger(MetricService.class.getName()).log(Level.FINE, "POB input template processing complete.");  // TODO - figure out if we really want to stop here.
                     break;
