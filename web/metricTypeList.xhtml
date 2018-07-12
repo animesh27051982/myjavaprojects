@@ -24,30 +24,27 @@
                         <div class="card card-w-title">
                             <h1>Metric Types</h1>
                             <p:dataTable id="inputTable" var="inputType" value="#{metricTypeList.metricTypes}"  paginator="true" rows="30" tableStyle="table-layout:auto">
-                                <p:column headerText="ID" sortBy="#{inputType.id}">
-                                    <h:outputText value="#{inputType.id}" />
-                                </p:column>
 
                                 <p:column headerText="Name" sortBy="#{inputType.name}">
                                     <h:outputText value="#{inputType.name}" />
                                 </p:column>
 
-<!--                                <p:column headerText="Group Name" sortBy="#{inputType.groupName}">
+                                <p:column headerText="Group Name" sortBy="#{inputType.groupName}">
                                     <h:outputText value="#{inputType.groupName}" />
                                 </p:column>
 
                                 <p:column headerText="Group Position" sortBy="#{inputType.groupPosition}">
                                     <h:outputText value="#{inputType.groupPosition}" />
-                                </p:column>-->
+                                </p:column>
 
                                 <p:column headerText="Currency Type" sortBy="#{inputType.metricCurrencyType}">
                                     <h:outputText value="#{inputType.metricCurrencyType}" />
                                 </p:column>
-
+                                
                                 <p:column headerText="Metric Class" sortBy="#{inputType.metricClass}">
                                     <h:outputText value="#{inputType.metricClass}" />
                                 </p:column>
-
+                                
                                 <p:column headerText="Owner Entity Type" sortBy="#{inputType.ownerEntityType}">
                                     <h:outputText value="#{inputType.ownerEntityType}" />
                                 </p:column>
@@ -64,13 +61,13 @@
                                     <h:outputText value="#{inputType.effectiveFrom}" />
                                 </p:column>
 
-<!--                                <p:column headerText="Effective To Date" sortBy="#{inputType.effectiveTo}">
+                                <p:column headerText="Effective To Date" sortBy="#{inputType.effectiveTo}">
                                     <h:outputText value="#{inputType.effectiveTo}" />
                                 </p:column>
 
                                 <p:column headerText="Description" sortBy="#{inputType.description}">
                                     <h:outputText value="#{inputType.description}" />
-                                </p:column>-->
+                                </p:column>
 
                             </p:dataTable>
                         </div>
