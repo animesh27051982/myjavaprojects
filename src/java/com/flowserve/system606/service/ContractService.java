@@ -13,10 +13,11 @@ import com.flowserve.system606.model.ReportingUnit;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.math.BigDecimal;
+import java.util.Currency;
 import java.util.List;
 import java.util.logging.Logger;
-import javax.ejb.EJB;
 import javax.ejb.Stateless;
+import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
@@ -32,10 +33,12 @@ public class ContractService {
     @PersistenceContext(unitName = "FlowServePU")
     private EntityManager em;
 
-    @EJB
+    @Inject
     private PerformanceObligationService pobService;
-    @EJB
+    @Inject
     private AdminService adminService;
+    @Inject
+    private CurrencyService currencyService;
 
     private static Logger logger = Logger.getLogger("com.flowserve.system606");
 
@@ -58,6 +61,7 @@ public class ContractService {
             String pobName = null;
             long pobId = -1;
             String revRecMethod = null;
+            String contractCurrencyCode = null;
 
             int count = 0;
             String line = null;
@@ -80,11 +84,13 @@ public class ContractService {
                 pobName = values[count++].trim();
                 pobId = Long.valueOf(values[count++].trim());
                 revRecMethod = values[count++].trim();
+                contractCurrencyCode = values[count++].trim();
 
                 Contract contract = new Contract();
                 contract.setId(contractId);
                 contract.setName(customerName + '-' + contractId);
                 contract.setSalesOrderNumber(salesOrderNumber);
+                contract.setContractCurrency(Currency.getInstance(contractCurrencyCode));
 
                 ReportingUnit reportingUnit = adminService.findReportingUnitByCode(ru);
 

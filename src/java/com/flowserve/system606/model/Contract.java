@@ -198,4 +198,12 @@ public class Contract extends BaseEntity<Long> implements Accumulable, Comparabl
     public BigDecimal getPobCountRejected() {
         return new BigDecimal("10.0");
     }
+
+    public Currency getContractCurrency() {
+        return contractCurrency;
+    }
+
+    public void setContractCurrency(Currency contractCurrency) {
+        this.contractCurrency = contractCurrency;
+    }
 }

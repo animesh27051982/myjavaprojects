@@ -10,6 +10,7 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Currency;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -30,7 +31,7 @@ import static javax.persistence.TemporalType.TIMESTAMP;
 
 @Entity
 @Table(name = "PERFORMANCE_OBLIGATIONS")
-public class PerformanceObligation extends BaseEntity<Long> implements Calculable, Accumulable, Comparable<PerformanceObligation>, Serializable {
+public class PerformanceObligation extends BaseEntity<Long> implements MetricStore, Accumulable, Comparable<PerformanceObligation>, Serializable {
 
     private static final long serialVersionUID = 4995349370717535419L;
     private static final Logger LOG = Logger.getLogger(PerformanceObligation.class.getName());
@@ -187,6 +188,14 @@ public class PerformanceObligation extends BaseEntity<Long> implements Calculabl
 
     public boolean metricExistsForPeriod(FinancialPeriod period, MetricType metricType) {
         return periodMetricSetMap.get(period).getTypeMetricMap().get(metricType) != null;
+    }
+
+    public Currency getLocalCurrency() {
+        return this.getContract().getReportingUnit().getLocalCurrency();
+    }
+
+    public Currency getContractCurrency() {
+        return this.getContract().getContractCurrency();
     }
 
 }

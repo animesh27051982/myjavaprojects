@@ -38,8 +38,6 @@ public abstract class Metric<T> extends BaseEntity<Long> {
     @OneToOne
     @JoinColumn(name = "METRIC_SET_ID")
     private MetricSet metricSet;
-    @Column(name = "CURRENCY_CODE")
-    private String currencyCode;  // Consider JavaMoney, etc.,  java.util.Currency.. or our own Currency class.
     @OneToOne
     @JoinColumn(name = "CREATED_BY_ID")
     private User createdBy;
@@ -65,14 +63,6 @@ public abstract class Metric<T> extends BaseEntity<Long> {
 
     public void setId(Long id) {
         this.id = id;
-    }
-
-    public String getCurrencyCode() {
-        return currencyCode;
-    }
-
-    public void setCurrencyCode(String currencyCode) {
-        this.currencyCode = currencyCode;
     }
 
     public User getCreatedBy() {

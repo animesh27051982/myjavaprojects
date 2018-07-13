@@ -39,6 +39,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 public class CurrencyService {
 
     private static final Logger logger = Logger.getLogger(CurrencyService.class.getName());
+    private static final int SCALE = 14;
 
     @PersistenceContext(unitName = "FlowServePU")
     private EntityManager em;
@@ -185,8 +186,14 @@ public class CurrencyService {
     }
 
     public BigDecimal convert(BigDecimal amount, Currency fromCurrency, Currency toCurrency, FinancialPeriod period) throws Exception {  // throw an application defined exception here instead of Exception
-        ExchangeRate er = findRateByFromToPeriod(fromCurrency, toCurrency, period);
-        return amount.multiply(er.getConversionRate()).setScale(14, BigDecimal.ROUND_HALF_UP);
+
+        ExchangeRate er = null;
+        try {
+            er = findRateByFromToPeriod(fromCurrency, toCurrency, period);
+        } catch (Exception e) {
+            throw new IllegalStateException("Unable to find an exchange rate from " + fromCurrency.getCurrencyCode() + " to " + toCurrency.getCurrencyCode() + " in period " + period.getId());
+        }
+        return amount.multiply(er.getConversionRate()).setScale(SCALE, BigDecimal.ROUND_HALF_UP);
     }
 
     public void initCurrencyConverter() throws Exception {

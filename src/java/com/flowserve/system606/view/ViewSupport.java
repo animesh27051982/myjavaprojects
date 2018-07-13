@@ -158,6 +158,7 @@ public class ViewSupport implements Serializable {
     }
 
     public BigDecimal getCurrencyMetricValue(String metricTypeId, PerformanceObligation pob) {
+        Logger.getLogger(ViewSupport.class.getName()).log(Level.FINE, "metricTypeId: " + metricTypeId);
         return calculationService.getCurrencyMetricValue(metricTypeId, pob);
     }
 

@@ -108,13 +108,11 @@ public class InputOnlineEntry implements Serializable {
         return rootTreeNode;
     }
 
-    public String saveInputs() throws Exception {
+    public void saveInputs() throws Exception {
         Logger.getLogger(InputOnlineEntry.class.getName()).log(Level.FINE, "Saving inputs.");
         FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Inputs saved.", ""));
 
         reportingUnitService.calculateAndSave(reportingUnits);
-
-        return "inputOnlineEntry";
     }
 
     public String getContractFilterText() {

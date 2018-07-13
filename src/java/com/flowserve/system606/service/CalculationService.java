@@ -7,12 +7,12 @@ package com.flowserve.system606.service;
 
 import com.flowserve.system606.model.Accumulable;
 import com.flowserve.system606.model.BusinessRule;
-import com.flowserve.system606.model.Calculable;
 import com.flowserve.system606.model.CurrencyMetric;
 import com.flowserve.system606.model.DateMetric;
 import com.flowserve.system606.model.FinancialPeriod;
 import com.flowserve.system606.model.Metric;
 import com.flowserve.system606.model.MetricPriorPeriod;
+import com.flowserve.system606.model.MetricStore;
 import com.flowserve.system606.model.MetricType;
 import com.flowserve.system606.model.PerformanceObligation;
 import com.flowserve.system606.model.StringMetric;
@@ -50,6 +50,8 @@ public class CalculationService {
     @Inject
     private FinancialPeriodService financialPeriodService;
     @Inject
+    private CurrencyService currencyService;
+    @Inject
     private MetricService metricService;
     private StatelessKieSession kSession = null;
     private static final String PACKAGE_PREFIX = "com.flowserve.system606.model.";
@@ -86,30 +88,72 @@ public class CalculationService {
         Logger.getLogger(CalculationService.class.getName()).log(Level.INFO, "Finished initBusinessRulesEngine");
     }
 
-    // intelliGet since this is no ordinary get.  Initialize any missing metrics on the fly.
-    private Metric intelliGetMetric(MetricType metricType, Calculable calculable, FinancialPeriod period) {  // TODO - Exception type to be thrown?
-        if (!calculable.metricSetExistsForPeriod(period)) {
-            calculable.initializeMetricSetForPeriod(period);
-        }
-        if (!calculable.metricExistsForPeriod(period, metricType)) {
-            calculable.initializeMetricForPeriod(period, metricType);
-        }
-
-        return calculable.getPeriodMetric(period, metricType);
-    }
-
-    private Metric getMetric(String metricTypeId, Calculable calculable) {
+    private void initializeCurrenciesCurrentPeriod(Collection<Metric> metrics, MetricStore metricStore) throws Exception {
         FinancialPeriod period = financialPeriodService.getCurrentFinancialPeriod();
-        return intelliGetMetric(metricService.findMetricTypeById(metricTypeId), calculable, period);
+
+        for (Metric metric : metrics) {
+            initializeCurrencies(metric, metricStore, period);
+        }
     }
 
-    private Metric getMetricPriorPeriod(String metricTypeId, Calculable calculable) {
+    private void initializeCurrencies(Metric metric, MetricStore metricStore, FinancialPeriod period) throws Exception {
+        if (metric.getValue() == null || !(metric instanceof CurrencyMetric)) {
+            return;
+        }
+        if (metric.getMetricType().getMetricCurrencyType() == null) {
+            throw new IllegalStateException("There is no currency type defined for the metric type " + metric.getMetricType().getId() + ".  Please contact a system administrator.");
+        }
+        if (metricStore.getLocalCurrency() == null) {
+            throw new IllegalStateException("There is no local currency defined for the reporting unit.  Please contact a system administrator.");
+        }
+        if (metricStore.getContractCurrency() == null) {
+            throw new IllegalStateException("There is no contract currency defined for the contract.  Please contact a system administrator.");
+        }
+
+        CurrencyMetric currencyMetric = (CurrencyMetric) metric;
+        if (currencyMetric.isLocalCurrencyMetric()) {
+            currencyMetric.setLocalCurrencyValue(currencyMetric.getValue());
+            if (currencyMetric.getValue().equals(BigDecimal.ZERO)) {
+                currencyMetric.setContractCurrencyValue(BigDecimal.ZERO);
+            } else {
+                BigDecimal contractCurrencyValue = currencyService.convert(currencyMetric.getValue(), metricStore.getLocalCurrency(), metricStore.getContractCurrency(), period);
+                currencyMetric.setContractCurrencyValue(contractCurrencyValue);
+            }
+        } else if (currencyMetric.isContractCurrencyMetric()) {
+            currencyMetric.setContractCurrencyValue(currencyMetric.getValue());
+            if (currencyMetric.getValue().equals(BigDecimal.ZERO)) {
+                currencyMetric.setLocalCurrencyValue(BigDecimal.ZERO);
+            } else {
+                BigDecimal localCurrencyValue = currencyService.convert(currencyMetric.getValue(), metricStore.getContractCurrency(), metricStore.getLocalCurrency(), period);
+                currencyMetric.setLocalCurrencyValue(localCurrencyValue);
+            }
+        }
+    }
+
+    // intelliGet since this is no ordinary get.  Initialize any missing metrics on the fly.
+    private Metric intelliGetMetric(MetricType metricType, MetricStore metricStore, FinancialPeriod period) {  // TODO - Exception type to be thrown?
+        if (!metricStore.metricSetExistsForPeriod(period)) {
+            metricStore.initializeMetricSetForPeriod(period);
+        }
+        if (!metricStore.metricExistsForPeriod(period, metricType)) {
+            metricStore.initializeMetricForPeriod(period, metricType);
+        }
+
+        return metricStore.getPeriodMetric(period, metricType);
+    }
+
+    private Metric getMetric(String metricTypeId, MetricStore metricStore) {
+        FinancialPeriod period = financialPeriodService.getCurrentFinancialPeriod();
+        return intelliGetMetric(metricService.findMetricTypeById(metricTypeId), metricStore, period);
+    }
+
+    private Metric getMetricPriorPeriod(String metricTypeId, MetricStore metricStore) {
         FinancialPeriod period = financialPeriodService.getPriorFinancialPeriod();
-        return intelliGetMetric(metricService.findMetricTypeById(metricTypeId), calculable, period);
+        return intelliGetMetric(metricService.findMetricTypeById(metricTypeId), metricStore, period);
     }
 
-    public String getStringMetricValue(String metricTypeId, Calculable calculable) {
-        return (String) getMetric(metricTypeId, calculable).getValue();
+    public String getStringMetricValue(String metricTypeId, MetricStore metricStore) {
+        return (String) getMetric(metricTypeId, metricStore).getValue();
     }
 
     public BigDecimal getDecimalMetricValue(String metricTypeId, PerformanceObligation pob) {
@@ -153,14 +197,20 @@ public class CalculationService {
 //
 //        return false;
 //    }
-    public void executeBusinessRules(Calculable calculable) throws Exception {
-        Logger.getLogger(CalculationService.class.getName()).log(Level.FINER, "Firing all business rules for: " + calculable.getId());
-        List<Object> facts = new ArrayList<Object>();
-        facts.add(calculable);
-        facts.addAll(getAllPeriodMetrics(calculable));
-        facts.addAll(getAllPriorPeriodMetrics(calculable));
+    public void executeBusinessRules(MetricStore metricStore) throws Exception {
+        Logger.getLogger(CalculationService.class.getName()).log(Level.FINER, "Firing all business rules for: " + metricStore.getId());
 
+        Logger.getLogger(CalculationService.class.getName()).log(Level.INFO, "Running currency conversions");
+
+        List<Object> facts = new ArrayList<Object>();
+        facts.add(metricStore);
+        Collection<Metric> currentPeriodMetrics = getAllCurrentPeriodMetrics(metricStore);
+        initializeCurrenciesCurrentPeriod(currentPeriodMetrics, metricStore);
+        facts.addAll(currentPeriodMetrics);
+        facts.addAll(getAllPriorPeriodMetrics(metricStore));
         kSession.execute(facts);
+        initializeCurrenciesCurrentPeriod(currentPeriodMetrics, metricStore);
+
         Logger.getLogger(CalculationService.class.getName()).log(Level.FINER, "Firing all business rules complete.");
     }
 
@@ -170,34 +220,38 @@ public class CalculationService {
         }
     }
 
-    private Collection<Metric> getAllPeriodMetrics(Calculable calculable) {
+    private Collection<Metric> getAllCurrentPeriodMetrics(MetricStore metricStore) throws Exception {
         FinancialPeriod period = financialPeriodService.getCurrentFinancialPeriod();
 
         List<MetricType> metricTypes = metricService.findActiveMetricTypesPob();
         List<Metric> metrics = new ArrayList<Metric>();
         for (MetricType metricType : metricTypes) {  // TODO - We are getting all pob here, this may not be good long term.
-            metrics.add(intelliGetMetric(metricType, calculable, period));
+            metrics.add(intelliGetMetric(metricType, metricStore, period));
         }
 
         return metrics;
     }
 
-    private Collection<MetricPriorPeriod> getAllPriorPeriodMetrics(Calculable calculable) {
+    private Collection<MetricPriorPeriod> getAllPriorPeriodMetrics(MetricStore metricStore) {
         // TODO - change this to retrieve prior from periodService.  Use current for now.
-        FinancialPeriod previousPeriod = financialPeriodService.getPriorFinancialPeriod();
+        FinancialPeriod priorPeriod = financialPeriodService.getPriorFinancialPeriod();
 
         List<MetricPriorPeriod> metricsPriorPeriod = new ArrayList<MetricPriorPeriod>();
         List<MetricType> metricTypes = metricService.findActiveMetricTypesPob();
 
         for (MetricType metricType : metricTypes) {
-            Metric previousPeriodMetric = intelliGetMetric(metricType, calculable, previousPeriod);
-            if (previousPeriodMetric.getValue() == null && previousPeriodMetric instanceof CurrencyMetric) {
-                previousPeriodMetric.setValue(new BigDecimal("0.0"));
+            Metric priorPeriodMetric = intelliGetMetric(metricType, metricStore, priorPeriod);
+            if (priorPeriodMetricDoesNotExist(priorPeriodMetric)) {
+                priorPeriodMetric.setValue(BigDecimal.ZERO);
             }
-            metricsPriorPeriod.add(new MetricPriorPeriod(previousPeriodMetric));
+            metricsPriorPeriod.add(new MetricPriorPeriod(priorPeriodMetric));
         }
 
         return metricsPriorPeriod;
+    }
+
+    private static boolean priorPeriodMetricDoesNotExist(Metric priorPeriodMetric) {
+        return priorPeriodMetric.getValue() == null && priorPeriodMetric instanceof CurrencyMetric;
     }
 
     public BusinessRule findByRuleKey(String ruleKey) {

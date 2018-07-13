@@ -33,10 +33,8 @@ public class PerformanceObligationService {
     @EJB
     private ContractService contractService;
 
-    public PerformanceObligation
-            findById(Long id) {
-        return em.find(PerformanceObligation.class,
-                id);
+    public PerformanceObligation findById(Long id) {
+        return em.find(PerformanceObligation.class, id);
     }
 
     public PerformanceObligation update(PerformanceObligation pob) throws Exception {

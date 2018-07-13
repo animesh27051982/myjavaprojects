@@ -5,11 +5,13 @@
  */
 package com.flowserve.system606.model;
 
+import java.util.Currency;
+
 /**
  *
  * @author kgraves
  */
-public interface Calculable {
+public interface MetricStore {
 
     public Metric getPeriodMetric(FinancialPeriod period, MetricType metricType);
 
@@ -20,6 +22,10 @@ public interface Calculable {
     public boolean metricSetExistsForPeriod(FinancialPeriod period);
 
     public boolean metricExistsForPeriod(FinancialPeriod period, MetricType metricType);
+
+    public Currency getLocalCurrency();
+
+    public Currency getContractCurrency();
 
     public Long getId();
 
