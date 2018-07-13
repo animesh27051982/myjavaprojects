@@ -60,7 +60,74 @@ public class ReportContractEstimate implements Serializable {
         reportsService.generateContractEsimatesReport(inputStream, outputStream, contract);
 
         InputStream inputStreamFromOutputStream = new FileInputStream(new File("Outputs_Summary_v2.xlsx"));
-        file = new DefaultStreamedContent(inputStreamFromOutputStream, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "Outputs_Summary_v2.xlsx");
+        file = new DefaultStreamedContent(inputStreamFromOutputStream, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "Total_Contract_Estimate.xlsx");
+        return file;
+    }
+    
+     public StreamedContent getFileContractInception() throws Exception {
+        try {
+
+            inputStream = RceInput.class.getResourceAsStream("/resources/excel_input_templates/Outputs_Summary_v2.xlsx");
+            outputStream = new FileOutputStream(new File("Outputs_Summary_v2.xlsx"));
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        reportsService.generateReportfromInceptiontoDate(inputStream, outputStream,contract);
+
+        InputStream inputStreamFromOutputStream = new FileInputStream(new File("Outputs_Summary_v2.xlsx"));
+        file = new DefaultStreamedContent(inputStreamFromOutputStream, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "Contract_From_Inception_to_Date.xlsx");
+        return file;
+    }
+     public StreamedContent getFileMonthlyIncomeImpact() throws Exception {
+        try {
+
+            inputStream = RceInput.class.getResourceAsStream("/resources/excel_input_templates/Outputs_Summary_v2.xlsx");
+            outputStream = new FileOutputStream(new File("Outputs_Summary_v2.xlsx"));
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        reportsService.generateReportMonthlyIncomeImpact(inputStream, outputStream,contract);
+
+        InputStream inputStreamFromOutputStream = new FileInputStream(new File("Outputs_Summary_v2.xlsx"));
+        file = new DefaultStreamedContent(inputStreamFromOutputStream, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "Monthly_Income_Statement_Impact.xlsx");
+        return file;
+    }
+     
+      public StreamedContent getFileQuarterlyIncomeImpact() throws Exception {
+        try {
+
+            inputStream = RceInput.class.getResourceAsStream("/resources/excel_input_templates/Outputs_Summary_v2.xlsx");
+            outputStream = new FileOutputStream(new File("Outputs_Summary_v2.xlsx"));
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        reportsService.generateReportQuarterlyIncomeImpact(inputStream, outputStream,contract);
+
+        InputStream inputStreamFromOutputStream = new FileInputStream(new File("Outputs_Summary_v2.xlsx"));
+        file = new DefaultStreamedContent(inputStreamFromOutputStream, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "Quarterly_Income_Statement_Impact.xlsx");
+        return file;
+    }
+      
+      public StreamedContent getFileAnnualIncomeImpact() throws Exception {
+        try {
+
+            inputStream = RceInput.class.getResourceAsStream("/resources/excel_input_templates/Outputs_Summary_v2.xlsx");
+            outputStream = new FileOutputStream(new File("Outputs_Summary_v2.xlsx"));
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        reportsService.generateReportAnnualIncomeImpact(inputStream, outputStream,contract);
+
+        InputStream inputStreamFromOutputStream = new FileInputStream(new File("Outputs_Summary_v2.xlsx"));
+        file = new DefaultStreamedContent(inputStreamFromOutputStream, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "Annual_Income_Statement_Impact.xlsx");
         return file;
     }
 

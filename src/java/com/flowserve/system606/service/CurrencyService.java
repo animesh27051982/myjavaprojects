@@ -8,17 +8,12 @@ package com.flowserve.system606.service;
 import com.flowserve.system606.model.ExchangeRate;
 import com.flowserve.system606.model.FinancialPeriod;
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.Month;
+import java.util.ArrayList;
 import java.util.Currency;
 import java.util.List;
 import java.util.logging.Logger;
@@ -27,8 +22,12 @@ import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.util.CellReference;
+import org.apache.poi.xssf.usermodel.XSSFCell;
+import org.apache.poi.xssf.usermodel.XSSFRow;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 /**
@@ -49,118 +48,6 @@ public class CurrencyService {
     public void persist1(Object object) {
         em.persist(object);
     }
-
-    public void copyFile(String destination, String fileName, InputStream in) {
-        try {
-            // write the inputStream to a FileOutputStream
-            OutputStream out = new FileOutputStream(new File(destination + fileName));
-
-            int read = 0;
-            byte[] bytes = new byte[1024];
-
-            while ((read = in.read(bytes)) != -1) {
-                out.write(bytes, 0, read);
-            }
-
-            in.close();
-            out.flush();
-            out.close();
-
-        } catch (IOException e) {
-            System.out.println(e.getMessage());
-        }
-    }
-
-    public void ReadFile(String folder, String fileName) {
-        try {
-            //Create the input stream from the xlsx/xls file
-            FileInputStream fis = new FileInputStream(folder + fileName);
-
-            File fout = new File(folder + "currency.txt");
-            //Create the file
-            if (fout.exists()) {
-                fout.delete();
-                fout.createNewFile();
-            } else {
-                fout.createNewFile();
-            }
-
-            FileOutputStream fos = new FileOutputStream(fout);
-
-            BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(fos));
-
-            //Create Workbook instance for xlsx/xls file input stream
-            Workbook workbook = null;
-            if (fileName.toLowerCase().endsWith("xlsx")) {
-                workbook = new XSSFWorkbook(fis);
-            }
-            //Get the Specifc sheet in the xlsx file
-            Sheet sheet = workbook.getSheet("Oracle Load Rates");
-            //this.ReadEachRecord(sheet, bw);
-            File file = new File(folder + fileName);
-
-            if (file.delete()) {
-                //System.out.println("File deleted successfully");
-            } else {
-                System.out.println("Failed to delete the file");
-            }
-            bw.close();
-            fis.close();
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-//    public void ReadEachRecord(Sheet sheet, BufferedWriter bw) throws IOException {
-//        //every sheet has rows, iterate over them
-//        Iterator<Row> rowIterator = sheet.iterator();
-//        while (rowIterator.hasNext()) {
-//            String name = "";
-//            String cnt_name = "";
-//            String type = "";
-//            String code = "";
-//            Double usd = null;
-//            //Get the row object
-//            Row row = rowIterator.next();
-//            if (row.getRowNum() == 0) {
-//                continue;
-//            }
-//            //Every row has columns, get the column iterator and iterate over them
-//            Iterator<Cell> cellIterator = row.cellIterator();
-//
-//            while (cellIterator.hasNext()) {
-//                //Get the Cell object
-//                Cell cell = cellIterator.next();
-//
-//                //check the cell type and process accordingly
-//                switch (cell.getCellType()) {
-//                    case Cell.CELL_TYPE_STRING:
-//                        if (cnt_name.equalsIgnoreCase("")) {
-//                            cnt_name = cell.getStringCellValue().trim();
-//                        } else if (name.equalsIgnoreCase("")) {
-//                            //2nd column
-//                            name = cell.getStringCellValue().trim();
-//                        } else if (type.equalsIgnoreCase("")) {
-//                            //3rd column
-//                            type = cell.getStringCellValue().trim();
-//                        } else if (code.equalsIgnoreCase("")) {
-//                            //4th column
-//                            code = cell.getStringCellValue().trim();
-//                        } else {
-//
-//                        }
-//                        break;
-//                    case Cell.CELL_TYPE_NUMERIC:
-//                        //5th column
-//                        usd = cell.getNumericCellValue();
-//                }
-//            } //end of cell iterator
-//
-//            bw.newLine();
-//            bw.write(name + "\t" + cnt_name + "\t" + type + "\t" + code + "\t" + usd);
-//        } //end of rows iterator
-//
-//    }
 
     public List<ExchangeRate> findRatesByPeriod(FinancialPeriod period) throws Exception {
         Query query = em.createQuery("SELECT er FROM ExchangeRate er WHERE er.financialPeriod = :PERIOD");
@@ -253,4 +140,123 @@ public class CurrencyService {
         logger.info("Testing conversion of 500 INR to EUR.  Should be 6.3440521593  result: " + convert(new BigDecimal(500), Currency.getInstance("INR"), Currency.getInstance("EUR"), period));
     }
 
+    public void processExchangeRates(InputStream fis, String filename) throws Exception {  // Need an application exception type defined.
+        final int SCALE = 14;
+        final int ROUNDING_METHOD = BigDecimal.ROUND_HALF_UP;
+        List<ExchangeRate> exchangeRate = new ArrayList<ExchangeRate>();
+        try {
+            XSSFWorkbook workbook = new XSSFWorkbook(fis);
+            XSSFSheet worksheetforPeriod = workbook.getSheet("Currency Rates");//workbook.getSheetAt(0);
+
+            if (worksheetforPeriod == null) {
+                throw new IllegalStateException("Invalid xlsx file.  Currency Rates Sheet can not be found");
+            }
+            XSSFRow rowPeriod;
+            Cell cellPeriod = null;
+
+            rowPeriod = worksheetforPeriod.getRow(0);
+            cellPeriod = rowPeriod.getCell(CellReference.convertColStringToIndex("B"));
+            int month = (int) cellPeriod.getNumericCellValue();
+            rowPeriod = worksheetforPeriod.getRow(1);
+            cellPeriod = rowPeriod.getCell(CellReference.convertColStringToIndex("B"));
+            int year = (int) cellPeriod.getNumericCellValue();
+            if (month == 0 || year == 0) {
+                throw new IllegalStateException("Can't read financial period from Currency Rates Sheet");
+            }
+            String yrStr = Integer.toString(year);
+            String finalYear = yrStr.substring(yrStr.length() - 2);
+            String exPeriod = Month.of(month).name() + "-" + finalYear;
+
+            FinancialPeriod period = financialPeriodService.findById(exPeriod);
+            List<ExchangeRate> er = findRatesByPeriod(period);
+            if (er.isEmpty()) {
+                Cell cellFrom = null;
+                int rowidFrom = 1;
+                XSSFSheet worksheetFrom = workbook.getSheet("Oracle Load Rates");
+                if (worksheetFrom == null) {
+                    throw new IllegalStateException("Invalid xlsx file.  Oracle Load Rates Sheet can not be found");
+                }
+                for (Row rowFrom : worksheetFrom) {
+                    if (rowFrom.getRowNum() < rowidFrom) {
+                        continue;
+                    }
+                    rowFrom = worksheetFrom.getRow(rowidFrom++);
+                    cellFrom = rowFrom.getCell(CellReference.convertColStringToIndex("B"));
+                    if (cellFrom == null || ((XSSFCell) cellFrom).getRawValue() == null) {
+                        continue;
+                    }
+                    cellFrom = rowFrom.getCell(CellReference.convertColStringToIndex("C"));
+                    if (cellFrom == null || ((XSSFCell) cellFrom).getRawValue() == null) {
+                        continue;
+                    }
+                    Cell cellTo = null;
+                    int rowidTo = 1;
+                    XSSFSheet worksheetTo = workbook.getSheet("Oracle Load Rates");
+                    for (Row rowTo : worksheetTo) {
+                        if (rowTo.getRowNum() < rowidTo) {
+                            continue;
+                        }
+                        rowTo = worksheetTo.getRow(rowidTo++);
+                        cellTo = rowTo.getCell(CellReference.convertColStringToIndex("B"));
+                        if (cellTo == null || ((XSSFCell) cellTo).getRawValue() == null) {
+                            continue;
+                        }
+                        cellTo = rowTo.getCell(CellReference.convertColStringToIndex("C"));
+                        if (cellTo == null || ((XSSFCell) cellTo).getRawValue() == null) {
+                            continue;
+                        }
+                        BigDecimal sourceRate;
+                        String type;
+                        Currency fromCurrency;
+                        BigDecimal targetRate;
+                        Currency toCurrency;
+                        BigDecimal usdRate = new BigDecimal("1.0");
+                        try {
+                            cellFrom = rowFrom.getCell(CellReference.convertColStringToIndex("E"));
+                            sourceRate = new BigDecimal(cellFrom.getNumericCellValue());
+                            cellFrom = rowFrom.getCell(CellReference.convertColStringToIndex("C"));
+                            type = cellFrom.getStringCellValue();
+                            cellFrom = rowFrom.getCell(CellReference.convertColStringToIndex("D"));
+                            fromCurrency = Currency.getInstance(cellFrom.getStringCellValue());
+                        } catch (Exception rce) {
+                            throw new Exception("Oracle Load Rates Sheet Row: " + (rowFrom.getRowNum() + 1) + " Cell:" + (cellFrom.getColumnIndex() + 1) + " Massage: " + rce.getMessage());
+                        }
+
+                        try {
+                            cellTo = rowTo.getCell(CellReference.convertColStringToIndex("E"));
+                            targetRate = new BigDecimal(cellTo.getNumericCellValue());
+
+                            cellTo = rowTo.getCell(CellReference.convertColStringToIndex("D"));
+                            toCurrency = Currency.getInstance(cellTo.getStringCellValue());
+                        } catch (Exception rce) {
+                            throw new Exception("Oracle Load Rates Sheet Row: " + (rowTo.getRowNum() + 1) + " Cell:" + (cellTo.getColumnIndex() + 1) + " Massage: " + rce.getMessage());
+                        }
+                        //Currency Conversion Formula
+                        BigDecimal rate = usdRate.divide(sourceRate, SCALE, ROUNDING_METHOD).multiply(targetRate);
+
+                        ExchangeRate exRate = new ExchangeRate();
+                        exRate.setType(type);
+                        exRate.setFromCurrency(fromCurrency);
+                        exRate.setToCurrency(toCurrency);
+                        exRate.setFinancialPeriod(period);
+                        exRate.setConversionRate(rate);
+                        exchangeRate.add(exRate);
+
+                        //logger.info("type: " + type + "  fromCurrency: " + fromCurrency + "   toCurrency" + toCurrency + "   period" + period + "   rate" + rate);
+                    }
+
+                }
+                for (ExchangeRate ex : exchangeRate) {
+                    persist(ex);
+                }
+
+            } else {
+                throw new IllegalStateException("Exchange rate data already exists for this period");
+            }
+        } catch (Exception e) {
+            throw new Exception(e.getMessage());
+        } finally {
+            fis.close();
+        }
+    }
 }

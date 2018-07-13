@@ -6,7 +6,7 @@
 package com.flowserve.system606.view;
 
 import com.flowserve.system606.service.AdminService;
-import com.flowserve.system606.service.TemplateService;
+import com.flowserve.system606.service.CurrencyService;
 import java.io.InputStream;
 import java.io.Serializable;
 import java.util.logging.Level;
@@ -30,7 +30,7 @@ public class inputExchangeRate implements Serializable {
     @Inject
     AdminService adminService;
     @Inject
-    private TemplateService templateService;
+    private CurrencyService curencyService;
     private static Logger logger = Logger.getLogger("com.flowserve.system606");
 
     @PostConstruct
@@ -41,7 +41,7 @@ public class inputExchangeRate implements Serializable {
     public void handleExchangeRates(FileUploadEvent event) {
 
         try {
-            templateService.processExchangeRates((InputStream) event.getFile().getInputstream(), event.getFile().getFileName());
+            curencyService.processExchangeRates((InputStream) event.getFile().getInputstream(), event.getFile().getFileName());
 
             FacesMessage msg = new FacesMessage("Succesful", event.getFile().getFileName() + " is uploaded.");
 

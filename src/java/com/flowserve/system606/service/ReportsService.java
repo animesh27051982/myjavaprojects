@@ -8,6 +8,7 @@ package com.flowserve.system606.service;
 import com.flowserve.system606.model.Contract;
 import com.flowserve.system606.view.ViewSupport;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -78,6 +79,91 @@ public class ReportsService {
 
         workbook.write(outputStream);
         workbook.close();
+        inputStream.close();
+        outputStream.close();
+
+    }
+
+    public void generateReportfromInceptiontoDate(InputStream inputStream, FileOutputStream outputStream, Contract contract) throws IOException {
+        try (XSSFWorkbook workbook = new XSSFWorkbook(inputStream)) {
+            workbook.removeSheetAt(workbook.getSheetIndex("Contract Summary-1"));
+            workbook.removeSheetAt(workbook.getSheetIndex("Contract Summary-3"));
+            workbook.removeSheetAt(workbook.getSheetIndex("Contract Summary-4"));
+            workbook.removeSheetAt(workbook.getSheetIndex("Contract Summary-5"));
+            XSSFSheet worksheet = workbook.getSheet("Contract Summary-2");
+            XSSFRow row;
+            Cell cell = null;
+            //int rowid = HEADER_ROW_COUNT;
+            XSSFRow contract_name = worksheet.getRow(1);
+            cell = contract_name.getCell(0, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
+            cell.setCellValue(contract.getName());
+
+            workbook.write(outputStream);
+        }
+        inputStream.close();
+        outputStream.close();
+
+    }
+
+    public void generateReportMonthlyIncomeImpact(InputStream inputStream, FileOutputStream outputStream, Contract contract) throws IOException {
+        try (XSSFWorkbook workbook = new XSSFWorkbook(inputStream)) {
+            workbook.removeSheetAt(workbook.getSheetIndex("Contract Summary-1"));
+            workbook.removeSheetAt(workbook.getSheetIndex("Contract Summary-2"));
+            workbook.removeSheetAt(workbook.getSheetIndex("Contract Summary-4"));
+            workbook.removeSheetAt(workbook.getSheetIndex("Contract Summary-5"));
+            XSSFSheet worksheet = workbook.getSheet("Contract Summary-3");
+            XSSFRow row;
+            Cell cell = null;
+            //int rowid = HEADER_ROW_COUNT;
+            XSSFRow contract_name = worksheet.getRow(1);
+            cell = contract_name.getCell(0, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
+            cell.setCellValue(contract.getName());
+
+            workbook.write(outputStream);
+        }
+        inputStream.close();
+        outputStream.close();
+
+    }
+
+    public void generateReportQuarterlyIncomeImpact(InputStream inputStream, FileOutputStream outputStream, Contract contract) throws IOException {
+        try (XSSFWorkbook workbook = new XSSFWorkbook(inputStream)) {
+            workbook.removeSheetAt(workbook.getSheetIndex("Contract Summary-1"));
+            workbook.removeSheetAt(workbook.getSheetIndex("Contract Summary-2"));
+            workbook.removeSheetAt(workbook.getSheetIndex("Contract Summary-3"));
+            workbook.removeSheetAt(workbook.getSheetIndex("Contract Summary-5"));
+            XSSFSheet worksheet = workbook.getSheet("Contract Summary-4");
+            XSSFRow row;
+            Cell cell = null;
+            //int rowid = HEADER_ROW_COUNT;
+            XSSFRow contract_name = worksheet.getRow(1);
+            cell = contract_name.getCell(0, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
+            cell.setCellValue(contract.getName());
+
+            workbook.write(outputStream);
+        }
+        inputStream.close();
+        outputStream.close();
+
+    }
+
+    public void generateReportAnnualIncomeImpact(InputStream inputStream, FileOutputStream outputStream, Contract contract) throws IOException {
+        try (XSSFWorkbook workbook = new XSSFWorkbook(inputStream)) {
+            workbook.removeSheetAt(workbook.getSheetIndex("Contract Summary-1"));
+            workbook.removeSheetAt(workbook.getSheetIndex("Contract Summary-2"));
+            workbook.removeSheetAt(workbook.getSheetIndex("Contract Summary-3"));
+            workbook.removeSheetAt(workbook.getSheetIndex("Contract Summary-4"));
+            XSSFSheet worksheet = workbook.getSheet("Contract Summary-5");
+
+            XSSFRow row;
+            Cell cell = null;
+            //int rowid = HEADER_ROW_COUNT;
+            XSSFRow contract_name = worksheet.getRow(1);
+            cell = contract_name.getCell(0, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
+            cell.setCellValue(contract.getName());
+
+            workbook.write(outputStream);
+        }
         inputStream.close();
         outputStream.close();
 
