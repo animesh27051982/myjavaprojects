@@ -6,6 +6,7 @@
 package com.flowserve.system606.view;
 
 import com.flowserve.system606.model.Accumulable;
+import com.flowserve.system606.model.BillingEvent;
 import com.flowserve.system606.model.BusinessUnit;
 import com.flowserve.system606.model.Contract;
 import com.flowserve.system606.model.Metric;
@@ -112,6 +113,27 @@ public class ViewSupport implements Serializable {
                 for (PerformanceObligation pob : contract.getPerformanceObligations()) {
                     Logger.getLogger(WebSession.class.getName()).log(Level.FINER, "Adding to tree POB ID: " + pob.getId());
                     new DefaultTreeNode(pob, contractNode);
+                }
+            }
+        }
+
+        return root;
+    }
+
+    public TreeNode generateNodeTreeForBilling(List<ReportingUnit> reportingUnits) {
+        TreeNode root = new DefaultTreeNode(new BusinessUnit(), null);
+
+        for (ReportingUnit reportingUnit : reportingUnits) {
+            Logger.getLogger(WebSession.class.getName()).log(Level.FINER, "Adding to tree RU Name: " + reportingUnit.getName());
+            TreeNode reportingUnitNode = new DefaultTreeNode(reportingUnit, root);
+            reportingUnitNode.setExpanded(true);
+            for (Contract contract : reportingUnit.getContracts()) {
+                Logger.getLogger(WebSession.class.getName()).log(Level.FINER, "Adding to tree Contract Name: " + contract.getName());
+                TreeNode contractNode = new DefaultTreeNode(contract, reportingUnitNode);
+                contractNode.setExpanded(true);
+                for (BillingEvent billEvent : contract.getBillingEvent()) {
+                    Logger.getLogger(WebSession.class.getName()).log(Level.FINER, "Adding to tree POB ID: " + billEvent.getId());
+                    new DefaultTreeNode(billEvent, contractNode);
                 }
             }
         }

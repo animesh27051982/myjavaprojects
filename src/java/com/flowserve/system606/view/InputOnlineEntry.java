@@ -5,10 +5,12 @@
  */
 package com.flowserve.system606.view;
 
+import com.flowserve.system606.model.BillingEvent;
 import com.flowserve.system606.model.PerformanceObligation;
 import com.flowserve.system606.model.ReportingUnit;
 import com.flowserve.system606.service.AdminService;
 import com.flowserve.system606.service.CalculationService;
+import com.flowserve.system606.service.ContractService;
 import com.flowserve.system606.service.PerformanceObligationService;
 import com.flowserve.system606.service.ReportingUnitService;
 import java.io.Serializable;
@@ -19,10 +21,12 @@ import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
+import javax.faces.event.ActionEvent;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import org.primefaces.event.CellEditEvent;
+import org.primefaces.model.DefaultTreeNode;
 import org.primefaces.model.TreeNode;
 
 /**
@@ -36,6 +40,7 @@ public class InputOnlineEntry implements Serializable {
     private static final Logger logger = Logger.getLogger(InputOnlineEntry.class.getName());
 
     private TreeNode rootTreeNode;
+    private TreeNode billingTreeNode;
     @Inject
     private AdminService adminService;
     @Inject
@@ -47,6 +52,8 @@ public class InputOnlineEntry implements Serializable {
     private ViewSupport viewSupport;
     @Inject
     private ReportingUnitService reportingUnitService;
+    @Inject
+    private ContractService contractService;
     private String contractFilterText;
 
     private List<ReportingUnit> reportingUnits;
@@ -55,6 +62,7 @@ public class InputOnlineEntry implements Serializable {
     public void init() {
         reportingUnits = adminService.getPreparableReportingUnits();
         rootTreeNode = viewSupport.generateNodeTree(reportingUnits);
+        billingTreeNode = viewSupport.generateNodeTreeForBilling(reportingUnits);
     }
 
     public void filterByContractText() {
@@ -63,6 +71,16 @@ public class InputOnlineEntry implements Serializable {
         } else {
             viewSupport.filterNodeTree(rootTreeNode, contractFilterText);
         }
+    }
+
+    public void addChildNodeAction(ActionEvent event) throws Exception {
+        //Logger.getLogger(InputOnlineEntry.class.getName()).log(Level.INFO, "message" + id);
+        if (billingTreeNode == null) {
+            // TODO: añadir excepcion no seleccionado
+        }
+        //Contract contract = contractService.findContractById(id);
+        TreeNode pepe = new DefaultTreeNode(new BillingEvent(null, null, null, null, null, null), billingTreeNode);
+        return;
     }
 
     public void clearFilterByContractText() {
@@ -123,6 +141,10 @@ public class InputOnlineEntry implements Serializable {
 
     public void setContractFilterText(String contractFilterText) {
         this.contractFilterText = contractFilterText;
+    }
+
+    public TreeNode getBillingTreeNode() {
+        return billingTreeNode;
     }
 
 }
