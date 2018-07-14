@@ -5,56 +5,57 @@
       xmlns:ui="http://java.sun.com/jsf/facelets"
       xmlns:p="http://primefaces.org/ui">
 
-<h:head>
-    <f:facet name="first">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
-        <meta name="apple-mobile-web-app-capable" content="yes" />
-    </f:facet>
-    <title>PrimeFaces California</title>
-</h:head>
+    <h:head>
+        <f:facet name="first">
+            <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+            <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+            <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
+            <meta name="apple-mobile-web-app-capable" content="yes" />
+        </f:facet>
+        <title>Revenue Compliance System</title>
+    </h:head>
 
-<div class="login-topbar">
-    <h:link outcome="/dashboard" styleClass="logo">
-        <p:graphicImage name="images/logo.png" library="california-layout" />
-    </h:link>
-</div>
-<p:graphicImage styleClass="login-image" name="images/image-login.png" library="california-layout" />
+    <div class="login-topbar">
+        <h:link outcome="/dashboard" styleClass="logo">
+            <p:graphicImage name="images/logo.png" library="california-layout" />
+        </h:link>
+    </div>
+    <p:graphicImage styleClass="login-image" name="images/image-login.png" library="california-layout" />
 
-<h:body styleClass="login-body">
-    <div class="login-panel ui-fluid">
-        <div class="ui-g">
-            <div class="ui-g-12 login-icon-container">
-                <p:graphicImage styleClass="login-icon" name="images/icon-login.png" library="california-layout" />
-            </div>
-            <div class="ui-g-12 ui-lg-12 ui-md-12 logo-container">
-                <span class="login-summary">Sign in to California</span>
-                <div class="login-detail">
-                    <span>Welcome, please use the form to sign-in network.</span>
+    <h:body styleClass="login-body">
+        <h:form>
+            <div class="login-panel ui-fluid">
+                <div class="ui-g">
+                    <div class="ui-g-12 login-icon-container">
+                        <p:graphicImage styleClass="login-icon" name="images/icon-login.png" library="california-layout" />
+                    </div>
+                    <div class="ui-g-12 ui-lg-12 ui-md-12 logo-container">
+                        <span class="login-summary">Sign in to RCS</span>
+                        <div class="login-detail">
+                            <span>Welcome, please use the form to sign-in.</span>
+                        </div>
+                    </div>
+                    <div class="ui-g-12 ui-lg-12 ui-md-12">
+                        <h:outputText value="Username" />
+                        <p:inputText id="username" value="#{login.username}"/>
+                    </div>
+                    <div class="ui-g-12 ui-lg-12 ui-md-12">
+                        <h:outputText value="Password" />
+                        <p:password id="password" value="#{login.password}" feedback="false"/>
+                    </div>
+                    <div class="ui-g-12 ui-lg-12 ui-md-12 chkbox-container">
+                        <p:selectBooleanCheckbox id="remember-me" />
+                        <p:outputLabel for="remember-me" value="Remember Me" />
+                        <a href="#">Reset Password</a>
+                    </div>
+                    <div class="ui-g-12 ui-lg-12 ui-md-12 button-container">
+                        <p:commandButton value="Sign in" ajax="false" actionListener="#{login.login}"/>
+                    </div>
                 </div>
             </div>
-            <div class="ui-g-12 ui-lg-12 ui-md-12">
-                <h:outputText value="E-mail address" />
-                <p:inputText placeholder="Email" />
-            </div>
-            <div class="ui-g-12 ui-lg-12 ui-md-12">
-                <h:outputText value="Password" />
-                <p:password placeholder="Password" feedback="false" />
-            </div>
-            <div class="ui-g-12 ui-lg-12 ui-md-12 chkbox-container">
-                <p:selectBooleanCheckbox id="remember-me" />
-                <p:outputLabel for="remember-me" value="Remember Me" />
-                <a href="#">Reset Password</a>
-            </div>
-            <div class="ui-g-12 ui-lg-12 ui-md-12 button-container">
-                <p:button outcome="/dashboard" value="Sign in" styleClass="turquoise-btn" />
 
-            </div>
-        </div>
-    </div>
-
-    <h:outputStylesheet name="css/layout-#{guestPreferences.theme}.css" library="california-layout" />
-</h:body>
+            <h:outputStylesheet name="css/layout-#{guestPreferences.theme}.css" library="california-layout" />
+        </h:form>
+    </h:body>
 
 </html>

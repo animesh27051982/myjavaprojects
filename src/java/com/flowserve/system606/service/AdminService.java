@@ -5,6 +5,7 @@
  */
 package com.flowserve.system606.service;
 
+import com.flowserve.system606.model.BillingEvent;
 import com.flowserve.system606.model.BusinessUnit;
 import com.flowserve.system606.model.Company;
 import com.flowserve.system606.model.Contract;
@@ -86,6 +87,10 @@ public class AdminService {
 
     public void persist(BusinessUnit bu) throws Exception {
         em.persist(bu);
+    }
+
+    public void persist(BillingEvent be) throws Exception {
+        em.persist(be);
     }
 
     public void persist(Object object) {

@@ -5,24 +5,31 @@
  */
 package com.flowserve.system606.view;
 
+import com.flowserve.system606.model.BillingEvent;
+import com.flowserve.system606.model.Contract;
 import com.flowserve.system606.model.PerformanceObligation;
 import com.flowserve.system606.model.ReportingUnit;
 import com.flowserve.system606.service.AdminService;
 import com.flowserve.system606.service.CalculationService;
+import com.flowserve.system606.service.ContractService;
 import com.flowserve.system606.service.PerformanceObligationService;
 import com.flowserve.system606.service.ReportingUnitService;
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
+import javax.faces.event.ActionEvent;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import org.primefaces.event.CellEditEvent;
+import org.primefaces.model.DefaultTreeNode;
 import org.primefaces.model.TreeNode;
 
 /**
@@ -36,6 +43,8 @@ public class InputOnlineEntry implements Serializable {
     private static final Logger logger = Logger.getLogger(InputOnlineEntry.class.getName());
 
     private TreeNode rootTreeNode;
+    private TreeNode rootTreeNodeInitialState;
+    private TreeNode billingTreeNode;
     @Inject
     private AdminService adminService;
     @Inject
@@ -47,14 +56,25 @@ public class InputOnlineEntry implements Serializable {
     private ViewSupport viewSupport;
     @Inject
     private ReportingUnitService reportingUnitService;
+    @Inject
+    private ContractService contractService;
     private String contractFilterText;
 
     private List<ReportingUnit> reportingUnits;
+    private List<Contract> contracts;
+    private Contract[] selectedContracts;
 
     @PostConstruct
     public void init() {
         reportingUnits = adminService.getPreparableReportingUnits();
         rootTreeNode = viewSupport.generateNodeTree(reportingUnits);
+        billingTreeNode = viewSupport.generateNodeTreeForBilling(reportingUnits);
+        initContracts(reportingUnits);
+    }
+
+    public void initContracts(List<ReportingUnit> reportingUnits) {
+        contracts = new ArrayList<Contract>();
+        reportingUnits.forEach(reportingUnit -> contracts.addAll(reportingUnit.getContracts()));
     }
 
     public void filterByContractText() {
@@ -65,9 +85,41 @@ public class InputOnlineEntry implements Serializable {
         }
     }
 
+    public void filterByContracts() {
+        rootTreeNode = viewSupport.generateNodeTree(reportingUnits);
+
+        if (selectedContracts.length == 0) {
+            rootTreeNode = viewSupport.generateNodeTree(reportingUnits);
+        } else {
+            viewSupport.filterNodeTreeContracts(rootTreeNode, Arrays.asList(selectedContracts));
+        }
+    }
+
+    public void addChildNodeAction(ActionEvent event) throws Exception {
+        //Logger.getLogger(InputOnlineEntry.class.getName()).log(Level.INFO, "message" + id);
+        if (billingTreeNode == null) {
+            // TODO: añadir excepcion no seleccionado
+        }
+        //Contract contract = contractService.findContractById(id);
+        TreeNode pepe = new DefaultTreeNode(new BillingEvent(null, null, null, null, null, null), billingTreeNode);
+        return;
+    }
+
     public void clearFilterByContractText() {
         contractFilterText = null;
         rootTreeNode = viewSupport.generateNodeTree(reportingUnits);
+    }
+
+    public Contract[] getSelectedContracts() {
+        return selectedContracts;
+    }
+
+    public void setSelectedContracts(Contract[] selectedContracts) {
+        this.selectedContracts = selectedContracts;
+    }
+
+    public List<Contract> getContracts() {
+        return contracts;
     }
 
     private boolean isEmpty(String text) {
@@ -97,7 +149,13 @@ public class InputOnlineEntry implements Serializable {
     }
 
     public void calculateOutputs(PerformanceObligation pob) throws Exception {
-        calculationService.executeBusinessRules(pob);
+        try {
+            calculationService.executeBusinessRules(pob);
+        } catch (Exception e) {
+            FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", e.getCause().getCause().getMessage());
+            FacesContext.getCurrentInstance().addMessage(null, msg);
+            logger.log(Level.SEVERE, "Error calculateOutputs.", e);
+        }
     }
 
     public List<ReportingUnit> getReportingUnits() {
@@ -121,6 +179,10 @@ public class InputOnlineEntry implements Serializable {
 
     public void setContractFilterText(String contractFilterText) {
         this.contractFilterText = contractFilterText;
+    }
+
+    public TreeNode getBillingTreeNode() {
+        return billingTreeNode;
     }
 
 }

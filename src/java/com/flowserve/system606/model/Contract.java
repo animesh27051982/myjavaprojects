@@ -114,6 +114,9 @@ public class Contract extends BaseEntity<Long> implements Accumulable, Comparabl
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "contract", cascade = CascadeType.MERGE)
     private List<PerformanceObligation> performanceObligations = new ArrayList<PerformanceObligation>();
 
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "contract", cascade = CascadeType.MERGE)
+    private List<BillingEvent> billingEvent = new ArrayList<BillingEvent>();
+
     public Contract() {
     }
 
@@ -205,5 +208,9 @@ public class Contract extends BaseEntity<Long> implements Accumulable, Comparabl
 
     public void setContractCurrency(Currency contractCurrency) {
         this.contractCurrency = contractCurrency;
+    }
+
+    public List<BillingEvent> getBillingEvent() {
+        return billingEvent;
     }
 }

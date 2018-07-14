@@ -6,6 +6,7 @@
 package com.flowserve.system606.view;
 
 import com.flowserve.system606.model.Accumulable;
+import com.flowserve.system606.model.BillingEvent;
 import com.flowserve.system606.model.BusinessUnit;
 import com.flowserve.system606.model.Contract;
 import com.flowserve.system606.model.Metric;
@@ -119,6 +120,27 @@ public class ViewSupport implements Serializable {
         return root;
     }
 
+    public TreeNode generateNodeTreeForBilling(List<ReportingUnit> reportingUnits) {
+        TreeNode root = new DefaultTreeNode(new BusinessUnit(), null);
+
+        for (ReportingUnit reportingUnit : reportingUnits) {
+            Logger.getLogger(WebSession.class.getName()).log(Level.FINER, "Adding to tree RU Name: " + reportingUnit.getName());
+            TreeNode reportingUnitNode = new DefaultTreeNode(reportingUnit, root);
+            reportingUnitNode.setExpanded(true);
+            for (Contract contract : reportingUnit.getContracts()) {
+                Logger.getLogger(WebSession.class.getName()).log(Level.FINER, "Adding to tree Contract Name: " + contract.getName());
+                TreeNode contractNode = new DefaultTreeNode(contract, reportingUnitNode);
+                contractNode.setExpanded(true);
+                for (BillingEvent billEvent : contract.getBillingEvent()) {
+                    Logger.getLogger(WebSession.class.getName()).log(Level.FINER, "Adding to tree POB ID: " + billEvent.getId());
+                    new DefaultTreeNode(billEvent, contractNode);
+                }
+            }
+        }
+
+        return root;
+    }
+
     public void filterNodeTree(TreeNode root, String contractFilterText) {
         List<TreeNode> contractsToRemove = new ArrayList<TreeNode>();
 
@@ -153,12 +175,42 @@ public class ViewSupport implements Serializable {
 
     }
 
+    public void filterNodeTreeContracts(TreeNode root, List<Contract> contracts) {
+        List<TreeNode> contractsToRemove = new ArrayList<TreeNode>();
+
+        for (TreeNode reportingUnit : root.getChildren()) {
+            for (TreeNode contract : reportingUnit.getChildren()) {
+                if (!contracts.contains(((Contract) contract.getData()))) {
+                    contractsToRemove.add(contract);
+                }
+            }
+        }
+
+        // Ugly but necessary to prevent ConcurrentModificationException
+        for (TreeNode contract : contractsToRemove) {
+            contract.getParent().getChildren().remove(contract);
+        }
+
+        List<TreeNode> reportingUnitsToRemove = new ArrayList<TreeNode>();
+
+        for (TreeNode reportingUnit : root.getChildren()) {
+            if (reportingUnit.getChildCount() == 0) {
+                reportingUnitsToRemove.add(reportingUnit);
+            }
+        }
+
+        for (TreeNode ru : reportingUnitsToRemove) {
+            ru.getParent().getChildren().remove(ru);
+        }
+
+    }
+
     public String getMetricTypeDescription(String metricTypeId) {
         return metricService.findMetricTypeById(metricTypeId).getDescription();
     }
 
     public BigDecimal getCurrencyMetricValue(String metricTypeId, PerformanceObligation pob) {
-        Logger.getLogger(ViewSupport.class.getName()).log(Level.FINE, "metricTypeId: " + metricTypeId);
+        Logger.getLogger(ViewSupport.class.getName()).log(Level.FINER, "metricTypeId: " + metricTypeId);
         return calculationService.getCurrencyMetricValue(metricTypeId, pob);
     }
 

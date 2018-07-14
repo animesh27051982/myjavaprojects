@@ -47,6 +47,10 @@ public class ReportsService {
     public void generateContractEsimatesReport(InputStream inputStream, FileOutputStream outputStream, Contract contract) throws Exception {
 
         XSSFWorkbook workbook = new XSSFWorkbook(inputStream);
+        workbook.removeSheetAt(workbook.getSheetIndex("Contract Summary-2"));
+        workbook.removeSheetAt(workbook.getSheetIndex("Contract Summary-3"));
+        workbook.removeSheetAt(workbook.getSheetIndex("Contract Summary-4"));
+        workbook.removeSheetAt(workbook.getSheetIndex("Contract Summary-5"));
         XSSFSheet worksheet = workbook.getSheet("Contract Summary-1");
         XSSFRow row;
         Cell cell = null;
