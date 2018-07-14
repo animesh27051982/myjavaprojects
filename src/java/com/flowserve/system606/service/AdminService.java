@@ -18,6 +18,8 @@ import com.flowserve.system606.model.ReportingUnit;
 import com.flowserve.system606.model.User;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Currency;
 import java.util.List;
@@ -44,6 +46,8 @@ public class AdminService {
     private EntityManager em;
     @Inject
     private FinancialPeriodService financialPeriodService;
+    @Inject
+    ContractService contractService;
 
     private static Logger logger = Logger.getLogger("com.flowserve.system606");
 
@@ -154,6 +158,11 @@ public class AdminService {
         return em.find(Company.class, id);
     }
 
+    public List<BillingEvent> findBillingEvents() {
+        Query query = em.createQuery("SELECT b FROM BillingEvent b");
+        return (List<BillingEvent>) query.getResultList();
+    }
+
     public List<ReportingUnit> findAllReportingUnits() {
         Query query = em.createQuery("SELECT ru FROM ReportingUnit ru ORDER BY ru.code");
         return (List<ReportingUnit>) query.getResultList();
@@ -232,6 +241,10 @@ public class AdminService {
 
     public void persist(ReportingUnit ru) throws Exception {
         em.persist(ru);
+    }
+
+    public BillingEvent update(BillingEvent b) throws Exception {
+        return em.merge(b);
     }
 
     public void update(List<ReportingUnit> rus) throws Exception {
@@ -561,6 +574,21 @@ public class AdminService {
             fls.setCurrentPeriod(financialPeriodService.findById("MAY-18"));
 
             update(fls);
+        }
+    }
+
+    public void initBilings() throws Exception {
+        Contract ct = contractService.findContractById(new Long(3822));
+        if (findBillingEvents().isEmpty()) {
+            Logger.getLogger(AdminService.class.getName()).log(Level.INFO, "initBilings");
+            BillingEvent be = new BillingEvent();
+            be.setAmountContractCurrency(new BigDecimal(50));
+            be.setAmountLocalCurrency(new BigDecimal(50));
+            be.setBillingDate(LocalDate.now());
+            be.setContract(ct);
+            be.setDeliveryDate(LocalDate.now());
+            be.setInvoiceNumber("1234");
+            persist(be);
         }
     }
 

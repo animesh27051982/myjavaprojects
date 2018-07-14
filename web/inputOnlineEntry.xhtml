@@ -247,7 +247,7 @@
                             </p:tab>
 
                             <p:tab title="Billing Inputs">
-                                <p:treeTable value="#{inputOnlineEntry.billingTreeNode}" editable="true" id="treeTableId" editMode="cell" var="billEvent">
+                                <p:treeTable value="#{inputOnlineEntry.billingTreeNode}" selectionMode="single" selection="#{inputOnlineEntry.selectedNode}" editable="true" id="treeTableId" editMode="cell" var="billEvent">
                                     <f:facet name="header">
                                         Performance Obligations
                                     </f:facet>
@@ -291,16 +291,11 @@
                                     <p:column style="white-space:pre-line;" headerText="Cumulative Billings">
                                         <h:outputText value="#{billEvent.pobCountRejected}" rendered="#{of:isInstance('com.flowserve.system606.model.BillingEvent', billEvent)}"/>
                                     </p:column>
+                                    <p:ajax event="select"  />
                                     <p:column  headerText="Option" >
-                                        <p:commandButton icon="ui-icon-contact fa fa-plus" process="@this" update="treeTableId" actionListener="#{inputOnlineEntry.addChildNodeAction}" rendered="#{of:isInstance('com.flowserve.system606.model.Contract', billEvent)}"></p:commandButton>
+                                        <p:commandButton icon="fa fa-plus" process="@this" update="treeTableId" actionListener="#{inputOnlineEntry.addChildNodeAction}" rendered="#{of:isInstance('com.flowserve.system606.model.Contract', billEvent)}"></p:commandButton>
+                                        <p:commandButton icon="ui-icon-close" process="@this" update="treeTableId" actionListener="#{inputOnlineEntry.deleteNode}" rendered="#{of:isInstance('com.flowserve.system606.model.BillingEvent', billEvent)}"></p:commandButton>
                                     </p:column>
-
-                                    <!--                                    <f:facet name="footer">
-                                    <p:commandButton value="Add"
-                                      process="@this,#{treeTableId}" update="treeTableId" />
-                         <p:commandButton value="#Delete"
-                                          process="@this,#{treeTableId}" update="treeTableId" />
-                         </f:facet>-->
                                 </p:treeTable>
                             </p:tab>
                         </p:tabView>
