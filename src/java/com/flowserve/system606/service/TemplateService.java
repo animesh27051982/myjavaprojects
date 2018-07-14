@@ -49,6 +49,10 @@ public class TemplateService {
     private CalculationService calculationService;
     @Inject
     private PerformanceObligationService pobService;
+    @Inject
+    FinancialPeriodService financialPeriodService;
+    @Inject
+    CurrencyService currencyService;
     private static final int HEADER_ROW_COUNT = 2;
     private InputStream inputStream;
 
@@ -122,7 +126,7 @@ public class TemplateService {
                 if (row.getRowNum() < HEADER_ROW_COUNT) {
                     continue;
                 }
-                Cell pobIdCell = row.getCell(pobIdColNumber);                
+                Cell pobIdCell = row.getCell(pobIdColNumber);
                 if (pobIdCell == null || pobIdCell.getCellTypeEnum() == CellType.BLANK) {
                     Logger.getLogger(MetricService.class.getName()).log(Level.FINE, "POB input template processing complete.");  // TODO - figure out if we really want to stop here.
                     break;

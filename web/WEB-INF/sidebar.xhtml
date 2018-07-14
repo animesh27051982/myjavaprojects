@@ -137,12 +137,16 @@
                         <p:menuitem id="pob_input" value="POB Input Dashboard" icon="fa fa-fw fa-home" outcome="/inputDashboard"/>
                         <p:menuitem id="pob_calc_review" value="POB Calculation Review" icon="fa fa-fw fa-home" outcome="/pobCalculationReview"/>
                         <p:submenu label="Reports" icon="fa fa-fw fa-gg">
-                            <p:menuitem value="Contract Summary" icon="fa fa-fw fa-sign-in" outcome="/contractList"/>
+                            <p:menuitem value="Contract Level" icon="fa fa-fw fa-sign-in" outcome="/contractList"/>
+                            <p:menuitem value="Reporting Unit Level" icon="fa fa-fw fa-sign-in" outcome="/reportReportingUnitList"/>
+                            <p:menuitem value="Platform Level" icon="fa fa-fw fa-sign-in" outcome="/reportBusinessUnitList"/>
+                            <p:menuitem value="Company Level" icon="fa fa-fw fa-sign-in"/>
                         </p:submenu>
                         <p:submenu label="Administration" icon="fa fa-fw fa-gg">
                             <p:menuitem value="Users" icon="fa fa-fw fa-sign-in" outcome="/userSearch"/>
                             <p:menuitem value="Business Units" icon="fa fa-fw fa-sign-in" outcome="/businessUnitList"/>
                             <p:menuitem value="Reporting Units" icon="fa fa-fw fa-sign-in" outcome="/reportingUnitSearch"/>
+                            <p:menuitem value="Upload Exchange Rates" icon="fa fa-fw fa-sign-in" outcome="/inputExchangeRate"/>
                             <p:menuitem value="Exchange Rates" icon="fa fa-fw fa-sign-in" outcome="/exchangeRateSearch"/>
                             <p:menuitem value="Metric Type List" icon="fa fa-fw fa-sign-in" outcome="/metricTypeList"/>
                             <p:menuitem value="Holidays List" icon="fa fa-fw fa-sign-in" outcome="/holidaysList"/>

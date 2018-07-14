@@ -4,7 +4,8 @@
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:p="http://primefaces.org/ui"
                 xmlns:of="http://omnifaces.org/functions"
-                template="/WEB-INF/template.xhtml">
+                template="/WEB-INF/template.xhtml"
+                xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
 
     <ui:define name="head">
 
@@ -242,48 +243,54 @@
                             </p:tab>
 
                             <p:tab title="Billing Inputs">
-                                <p:treeTable value="#{inputOnlineEntry.rootTreeNode}" editable="true" editMode="cell" var="pob">
+                                <p:treeTable value="#{inputOnlineEntry.billingTreeNode}" selectionMode="single" selection="#{inputOnlineEntry.selectedNode}" editable="true" id="treeTableId" editMode="cell" var="billEvent">
                                     <f:facet name="header">
                                         Performance Obligations
                                     </f:facet>
 
                                     <p:ajax event="cellEdit" listener="#{treeSelectionView.onCellEdit}" />
 
-                                    <p:column style="width: 400px;" headerText="Reporting Unit - Contract - POB" sortBy="#{pob.name}">
-                                        <h:outputText value="#{pob.name}" />
+                                    <p:column style="width: 400px;" headerText="Reporting Unit - Contract - POB" >
+                                        <h:outputText value="#{billEvent.name}" />
                                     </p:column>
+
                                     <p:column style="white-space:pre-line;" headerText="Delivery Date">
-                                        <p:cellEditor>
+                                        <p:cellEditor rendered="#{of:isInstance('com.flowserve.system606.model.BillingEvent', billEvent)}">
                                             <f:facet name="output">
-                                                <p:calendar value="#{pob.pobCountRejected}" timeZone="America/Chicago" navigator="true" mode="popup" styleClass="#{empty pob.pobCountRejected ? 'ui-state-error' : ''}" style="width: 60%;" readonly="true"/>
+                                                <p:calendar value="#{billEvent.pobCountRejected}" timeZone="America/Chicago" navigator="true" mode="popup" styleClass="#{empty billEvent.pobCountRejected ? 'ui-state-error' : ''}" style="width: 60%;" readonly="true"/>
                                             </f:facet>
                                             <f:facet name="input">
-                                                <p:calendar value="#{pob.pobCountRejected}" timeZone="America/Chicago" navigator="true" mode="popup"/>
+                                                <p:calendar value="#{billEvent.pobCountRejected}" timeZone="America/Chicago" navigator="true" mode="popup"/>
                                             </f:facet>
                                         </p:cellEditor>
                                     </p:column>
                                     <p:column style="white-space:pre-line;" headerText="Period Billing Contract Cur">
-                                        <p:cellEditor>
+                                        <p:cellEditor rendered="#{of:isInstance('com.flowserve.system606.model.BillingEvent', billEvent)}">
                                             <f:facet name="output">
-                                                <p:inputText value="#{pob.pobCountRejected}" styleClass="#{empty pob.pobCountRejected ? 'ui-state-error' : ''}" style="width: 90%;" readonly="true"/>
+                                                <p:inputText value="#{billEvent.pobCountRejected}" styleClass="#{empty billEvent.pobCountRejected ? 'ui-state-error' : ''}" style="width: 90%;" readonly="true"/>
                                             </f:facet>
                                             <f:facet name="input">
-                                                <p:inputText value="#{pob.pobCountRejected}"/>
+                                                <p:inputText value="#{billEvent.pobCountRejected}"/>
                                             </f:facet>
                                         </p:cellEditor>
                                     </p:column>
                                     <p:column style="white-space:pre-line;" headerText="Period Billing Local Cur">
-                                        <p:cellEditor>
+                                        <p:cellEditor rendered="#{of:isInstance('com.flowserve.system606.model.BillingEvent', billEvent)}">
                                             <f:facet name="output">
-                                                <p:inputText value="#{pob.pobCountRejected}" styleClass="#{empty pob.pobCountRejected ? 'ui-state-error' : ''}" style="width: 90%;" readonly="true"/>
+                                                <p:inputText value="#{billEvent.pobCountRejected}" styleClass="#{empty billEvent.pobCountRejected ? 'ui-state-error' : ''}" style="width: 90%;" readonly="true"/>
                                             </f:facet>
                                             <f:facet name="input">
-                                                <p:inputText value="#{pob.pobCountRejected}"/>
+                                                <p:inputText value="#{billEvent.pobCountRejected}"/>
                                             </f:facet>
                                         </p:cellEditor>
                                     </p:column>
                                     <p:column style="white-space:pre-line;" headerText="Cumulative Billings">
-                                        <h:outputText value="#{pob.pobCountRejected}" />
+                                        <h:outputText value="#{billEvent.pobCountRejected}" rendered="#{of:isInstance('com.flowserve.system606.model.BillingEvent', billEvent)}"/>
+                                    </p:column>
+                                    <p:ajax event="select"  />
+                                    <p:column  headerText="Option" >
+                                        <p:commandButton icon="fa fa-plus" process="@this" update="treeTableId" actionListener="#{inputOnlineEntry.addChildNodeAction}" rendered="#{of:isInstance('com.flowserve.system606.model.Contract', billEvent)}"></p:commandButton>
+                                        <p:commandButton icon="ui-icon-close" process="@this" update="treeTableId" actionListener="#{inputOnlineEntry.deleteNode}" rendered="#{of:isInstance('com.flowserve.system606.model.BillingEvent', billEvent)}"></p:commandButton>
                                     </p:column>
                                 </p:treeTable>
                             </p:tab>

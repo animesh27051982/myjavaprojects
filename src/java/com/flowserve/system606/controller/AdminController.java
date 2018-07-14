@@ -136,6 +136,16 @@ public class AdminController implements Serializable {
         return "reportingUnitSearch";
     }
 
+    public String generateReportReportingUnit(ReportingUnit u) throws Exception {
+        webSession.setEditReportingUnit(u);
+        return "reportReportingUnit";
+    }
+
+    public String generateReportBusinessUnit(BusinessUnit u) throws Exception {
+        webSession.setEditBusinessUnit(u);
+        return "reportBusinessUnit";
+    }
+
     public String editUser(User u) throws Exception {
         webSession.setEditUser(u);
 
