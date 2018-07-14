@@ -21,7 +21,6 @@ import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
-import javax.faces.event.ActionEvent;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -56,6 +55,8 @@ public class InputOnlineEntry implements Serializable {
     private ContractService contractService;
     private String contractFilterText;
 
+    private TreeNode selectedNode;
+
     private List<ReportingUnit> reportingUnits;
 
     @PostConstruct
@@ -73,14 +74,19 @@ public class InputOnlineEntry implements Serializable {
         }
     }
 
-    public void addChildNodeAction(ActionEvent event) throws Exception {
-        //Logger.getLogger(InputOnlineEntry.class.getName()).log(Level.INFO, "message" + id);
-        if (billingTreeNode == null) {
-            // TODO: añadir excepcion no seleccionado
-        }
+    public void addChildNodeAction() throws Exception {
+
         //Contract contract = contractService.findContractById(id);
-        TreeNode pepe = new DefaultTreeNode(new BillingEvent(null, null, null, null, null, null), billingTreeNode);
+        TreeNode pepe = new DefaultTreeNode(new BillingEvent(null, null, null, null, null, null), selectedNode);
         return;
+    }
+
+    public void deleteNode() {
+        selectedNode.getChildren().clear();
+        selectedNode.getParent().getChildren().remove(selectedNode);
+        selectedNode.setParent(null);
+
+        selectedNode = null;
     }
 
     public void clearFilterByContractText() {
@@ -145,6 +151,14 @@ public class InputOnlineEntry implements Serializable {
 
     public TreeNode getBillingTreeNode() {
         return billingTreeNode;
+    }
+
+    public TreeNode getSelectedNode() {
+        return selectedNode;
+    }
+
+    public void setSelectedNode(TreeNode selectedNode) {
+        this.selectedNode = selectedNode;
     }
 
 }
