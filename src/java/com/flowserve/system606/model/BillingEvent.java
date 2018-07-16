@@ -70,7 +70,11 @@ public class BillingEvent implements Accumulable, Comparable<BillingEvent>, Seri
     }
 
     public String getName() {
-        return "Billing Event " + getId();
+        String name = "Billing Event ";
+        if (getId() != null) {
+            name = "Billing Event " + getId();
+        }
+        return name;
     }
 
     public Long getId() {
