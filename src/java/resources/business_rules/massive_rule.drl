@@ -163,12 +163,11 @@ end
 rule "Projected Gain/Loss"
     when
         pob : PerformanceObligation()
-        costOfGoodsSoldBacklog : Metric(metricType.id == "COST_GOODS_SOLD_BACKLOG_LC", value != null)
-        remainingEACLC : Metric(metricType.id == "REMAINING_ESTIMATE_COMPLETE_LC", value != null)
         transactionPriceNetLDLC : Metric(metricType.id == "TRANSACTION_PRICE_NET_LD_LC", value != null)
+        remainingEACLC : Metric(metricType.id == "REMAINING_ESTIMATE_COMPLETE_LC", value != null)
         projectedGainLossLC : Metric(metricType.id == "PROJECT_GAIN_LOSS_LC")
     then
-        modify (projectedGainLossLC) { value = ((costOfGoodsSoldBacklog.value - remainingEACLC.value) / (transactionPriceNetLDLC.value - remainingEACLC.value))};
+        modify (projectedGainLossLC) { value = (transactionPriceNetLDLC.value - remainingEACLC.value)};
 end
 
 
