@@ -5,6 +5,7 @@
  */
 package com.flowserve.system606.service;
 
+import com.flowserve.system606.model.BillingEvent;
 import com.flowserve.system606.model.Contract;
 import com.flowserve.system606.model.MetricSet;
 import com.flowserve.system606.model.MetricType;
@@ -53,6 +54,8 @@ public class TemplateService {
     FinancialPeriodService financialPeriodService;
     @Inject
     CurrencyService currencyService;
+    @Inject
+    AdminService adminService;
     private static final int HEADER_ROW_COUNT = 2;
     private InputStream inputStream;
 
@@ -139,6 +142,9 @@ public class TemplateService {
                 if (pob == null) {
                     throw new IllegalStateException("Input file invalid.  Invalid POB at row: " + row.getRowNum());
                 }
+                
+                BillingEvent be = new BillingEvent();
+                be.setInvoiceNumber( null );
 
                 for (MetricType inputType : inputTypes) {
                     Cell cell = row.getCell(CellReference.convertColStringToIndex(inputType.getExcelCol()));
@@ -163,6 +169,34 @@ public class TemplateService {
 
                 calculationService.executeBusinessRules(pob);
                 pob = pobService.update(pob);
+                
+                List<MetricType> inputTypesContract = metricService.findActiveMetricTypesContract();
+                for (MetricType inputType : inputTypesContract) {
+                    Cell cell = row.getCell(CellReference.convertColStringToIndex(inputType.getExcelCol()));
+                    try {                    
+                        if ("BILLING_AMOUNT_CC".equals(inputType.getId())) {
+                            if (cell == null || pobIdCell.getCellTypeEnum() == CellType.BLANK || ((XSSFCell) cell).getRawValue() == null) {
+                                Logger.getLogger(MetricService.class.getName()).log(Level.INFO, "processTemplateUpload: there is no value of BILLING_AMOUNT_CC");
+                            } else {
+                                Logger.getLogger(MetricService.class.getName()).log(Level.INFO, "processTemplateUpload: there is value of BILLING_AMOUNT_CC: " 
+                                    + new BigDecimal(NumberToTextConverter.toText(cell.getNumericCellValue()))); 
+                                be.setAmountContractCurrency( new BigDecimal(NumberToTextConverter.toText(cell.getNumericCellValue())) );
+                            }
+                        } else if ("BILLING_INVOICE_NUMBER".equals(inputType.getId())) {
+                            be.setInvoiceNumber( NumberToTextConverter.toText(cell.getNumericCellValue()) );
+                        } else if ("BILLING_AMOUNT_LC".equals(inputType.getId())) {
+                            be.setAmountLocalCurrency( new BigDecimal(NumberToTextConverter.toText(cell.getNumericCellValue())) );
+                        } else if ("BILLING_DATE".equals(inputType.getId())) {
+                            be.setBillingDate( cell.getDateCellValue().toInstant().atZone(ZoneId.systemDefault()).toLocalDate() );
+                        }
+                    } catch (Exception rce) {
+                        throw new Exception("processTemplateUpload row: " + row.getRowNum() + " cell:" + cell.getColumnIndex() + " " + rce.getMessage());
+                    }                        
+                }
+                
+                if(be.getInvoiceNumber() != null) {
+                    be = adminService.update(be);
+                }
             }
         } catch (Exception e) {
             throw new Exception("processTemplateUpload: " + e.getMessage());
@@ -174,7 +208,7 @@ public class TemplateService {
         //inputSet.setInputs(inputList);
         //persist(inputSet);
     }
-
+    
     public void reportingPreparersList() throws Exception {
         Logger.getLogger(MetricService.class.getName()).log(Level.INFO, "Start: ");
         String folder = "D:/Users/shubhamv/Documents/NetBeansProjects/FlowServe/src/java/resources/app_data_init_files/";

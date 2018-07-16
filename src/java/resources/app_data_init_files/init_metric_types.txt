@@ -7,10 +7,10 @@ INPUT|THIRD_PARTY_COSTS_ITD_LC|POB||CurrencyMetric|LC|Cumulative 3rd Party Progr
 INPUT|INTERCOMPANY_COSTS_ITD_LC|POB||CurrencyMetric|LC|Cumulative Interco Progress (Not Received)|Cumulative Interco Progress (Not Received)|POC POB Metrics|T|Group1|5
 INPUT|DELIVERY_DATE|POB||DateMetric||Actual Shipment / Delivery Date (if complete)|Actual Shipment / Delivery Date (if complete)|POC POB Metrics|W|Group1|7
 INPUT|CUMULATIVE_COST_OF_GOODS_SOLD_LC|POB||CurrencyMetric|LC|If partial POB shipped: Enter Cumulative COGS|If partial POB shipped: Enter Cumulative COGS|POC POB Metrics|X|Group1|8
-INPUT|BILLING_AMOUNT_CC|POB||CurrencyMetric|CC|Billing Amount Contract Currency|Billing Amount Contract Currency|POC POB Metrics|Z|Group1|9
-INPUT|BILLING_AMOUNT_LC|POB||CurrencyMetric|LC|Billing Amount|Billing Amount|POC POB Metrics|AA|Group1|10
-INPUT|BILLING_DATE|POB||DateMetric||Billing Date|Billing Date|POC POB Metrics|AB|Group1|11
-INPUT|BILLING_INVOICE_NUMBER|POB||StringMetric||Billing Invoice Number|Billing Invoice Number|POC POB Metrics|AC|Group1|12
+INPUT|BILLING_AMOUNT_CC|Contract||CurrencyMetric|CC|Billing Amount Contract Currency|Billing Amount Contract Currency|POC POB Metrics|Z|Group1|9
+INPUT|BILLING_AMOUNT_LC|Contract||CurrencyMetric|LC|Billing Amount|Billing Amount|POC POB Metrics|AA|Group1|10
+INPUT|BILLING_DATE|Contract||DateMetric||Billing Date|Billing Date|POC POB Metrics|AB|Group1|11
+INPUT|BILLING_INVOICE_NUMBER|Contract||StringMetric||Billing Invoice Number|Billing Invoice Number|POC POB Metrics|AC|Group1|12
 INPUT|TOTAL_TRANS_PRICE_CC|Contract||CurrencyMetric|CC|Total Trans Price Contract Curr|Total Trans Price Contract Curr|POC POB Metrics|J|Group1|18
 INPUT|BOOKING_DATE|Contract||DateMetric||Booking Date (LoA)|Booking Date (LoA)|POC POB Metrics|L|Group1|19
 OUTPUT|ESTIMATED_GROSS_PROFIT_LC|POB||CurrencyMetric|LC|Estimated Gross Profit|Estimated Gross Profit|POC POB Outputs|H|Group1|1
