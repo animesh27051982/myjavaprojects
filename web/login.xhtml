@@ -43,11 +43,6 @@
                         <h:outputText value="Password" />
                         <p:password id="password" value="#{login.password}" feedback="false"/>
                     </div>
-                    <div class="ui-g-12 ui-lg-12 ui-md-12 chkbox-container">
-                        <p:selectBooleanCheckbox id="remember-me" />
-                        <p:outputLabel for="remember-me" value="Remember Me" />
-                        <a href="#">Reset Password</a>
-                    </div>
                     <div class="ui-g-12 ui-lg-12 ui-md-12 button-container">
                         <p:commandButton value="Sign in" ajax="false" actionListener="#{login.login}"/>
                     </div>

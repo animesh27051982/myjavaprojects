@@ -43,7 +43,7 @@
                                         <h:outputText value="#{pob.name}" />
                                     </p:column>
                                     <p:column style="white-space:pre-line;" headerText="ITD Costs">
-                                        <h:outputText value="#{viewSupport.getCurrencyMetricValue('CUMULATIVE_TOTAL_ITD_COSTS_LC', pob)}" rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}" >
+                                        <h:outputText value="#{viewSupport.getCurrencyMetricValue('COST_OF_GOODS_SOLD_ITD_LC', pob)}" rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}" >
                                             <f:convertNumber type="currency" />
                                         </h:outputText>
                                     </p:column>
@@ -188,7 +188,7 @@
                                             <f:convertNumber type="currency" />
                                         </h:outputText>
                                     </p:column>
-                                    <p:column style="white-space:pre-line;" headerText="Liquidated Damages in Backlog - todo calc">
+                                    <p:column style="white-space:pre-line;" headerText="Liquidated Damages in Backlog">
                                         <h:outputText value="#{viewSupport.getCurrencyMetricValue('LIQUIDATED_DAMAGES_BACKLOG_LC', pob)}" rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}">
                                             <f:convertNumber type="currency" />
                                         </h:outputText>
@@ -221,7 +221,7 @@
                                         </h:outputText>
                                     </p:column>
                                     <p:column style="white-space:pre-line;" headerText="Total Transaction Price Net of Liquidated Damages (LC) - convert">
-                                        <h:outputText value="#{viewSupport.getCurrencyMetricValue('TRANSACTION_PRICE_CC', pob)}" rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}">
+                                        <h:outputText value="#{viewSupport.getCurrencyMetricValue('TRANSACTION_PRICE_NET_LD_LC', pob)}" rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}">
                                             <f:convertNumber type="currency" />
                                         </h:outputText>
                                     </p:column>
@@ -241,7 +241,7 @@
                                         </h:outputText>
                                     </p:column>
                                     <p:column style="white-space:pre-line;" headerText="ITD Standard Costs (COGS)">
-                                        <h:outputText value="#{viewSupport.getCurrencyMetricValue('ITD_STANDARD_COSTS_COGS_LC', pob)}" rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}">
+                                        <h:outputText value="#{viewSupport.getCurrencyMetricValue('COST_OF_GOODS_SOLD_ITD_LC', pob)}" rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}">
                                             <f:convertNumber type="currency" />
                                         </h:outputText>
                                     </p:column>

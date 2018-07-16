@@ -36,25 +36,45 @@ rule "EAC Change"
         modify (changeInEstimate) { value = (estimatedCostAtCompletion.value - estimatedCostAtCompletionPriorPeriod.value)};
 end
 
-rule "Total ITD Costs"
+rule "Cost of Goods Sold ITD"
     when
         pob : PerformanceObligation()
-        costIncurred : Metric(metricType.id == "CUMULATIVE_COST_INCURRED_LC", value != null)       // null check means don't run this entire rule if the metric value is null.  We may have to break the rules up and pull the ones that rely on prior period to their own rule but proceed here for now.
-        thirdPartyProgress : Metric(metricType.id == "CUMULATIVE_THIRD_PARTY_PROGRESS_LC", value != null)
-        intercoProgress : Metric(metricType.id == "CUMULATIVE_INTERCOMPANY_PROGRESS_LC", value != null)
-        totalITDCosts : Metric(metricType.id == "CUMULATIVE_TOTAL_ITD_COSTS_LC")               // don't worry about null check here since we setting this as output calc below.  it is null initially.
+        localCostsITD : Metric(metricType.id == "LOCAL_COSTS_ITD_LC", value != null)       // null check means don't run this entire rule if the metric value is null.  We may have to break the rules up and pull the ones that rely on prior period to their own rule but proceed here for now.
+        thirdPartyCostsITD : Metric(metricType.id == "THIRD_PARTY_COSTS_ITD_LC", value != null)
+        intercoCostsITD : Metric(metricType.id == "INTERCOMPANY_COSTS_ITD_LC", value != null)
+        costOfGoodsSoldITD : Metric(metricType.id == "COST_OF_GOODS_SOLD_ITD_LC")               // don't worry about null check here since we setting this as output calc below.  it is null initially.
     then
-        modify (totalITDCosts) { value = (costIncurred.value + thirdPartyProgress.value + intercoProgress.value)};
+        modify (costOfGoodsSoldITD) { value = (localCostsITD.value + thirdPartyCostsITD.value + intercoCostsITD.value)};
+end
+
+rule "Cost of Goods Sold Backlog"
+    when
+        pob : PerformanceObligation()
+        estimatedCostAtCompletion : Metric(metricType.id == "ESTIMATED_COST_AT_COMPLETION_LC", value != null)
+        costOfGoodsSoldITD : Metric(metricType.id == "COST_OF_GOODS_SOLD_ITD_LC", value != null)
+        costOfGoodsSoldBacklog : Metric(metricType.id == "COST_GOODS_SOLD_BACKLOG_LC")
+    then
+        modify (costOfGoodsSoldBacklog) { value = (estimatedCostAtCompletion.value - costOfGoodsSoldITD.value)};
+end
+
+rule "Remaining EAC"
+    when
+        pob : PerformanceObligation()
+        estimatedCostAtCompletion : Metric(metricType.id == "ESTIMATED_COST_AT_COMPLETION_LC", value != null)
+        costOfGoodsSoldITD : Metric(metricType.id == "COST_OF_GOODS_SOLD_ITD_LC", value != null)
+        remainingEACLC : Metric(metricType.id == "REMAINING_ESTIMATE_COMPLETE_LC")
+    then
+        modify (remainingEACLC) { value = (estimatedCostAtCompletion.value - costOfGoodsSoldITD.value)};
 end
 
 rule "Percent Complete"
     when
         pob : PerformanceObligation()
-        totalITDCosts : Metric(metricType.id == "CUMULATIVE_TOTAL_ITD_COSTS_LC", value != null)
+        costOfGoodsSoldITD : Metric(metricType.id == "COST_OF_GOODS_SOLD_ITD_LC", value != null)
         estimatedCostAtCompletion : Metric(metricType.id == "ESTIMATED_COST_AT_COMPLETION_LC", value != null)
         percentComplete : Metric(metricType.id == "PERCENT_COMPLETE")  // don't worry about null check here since we setting this as output calc below.  it is null initially.
     then
-        modify (percentComplete) { value = (totalITDCosts.value / estimatedCostAtCompletion.value)};
+        modify (percentComplete) { value = (costOfGoodsSoldITD.value / estimatedCostAtCompletion.value)};
 end
 
 rule "Revenue to Recognize ITD"
@@ -98,6 +118,17 @@ rule "Liquidated Damages to Recognize in Current Period"
         modify (liquidatedDamagesToRecognizeCurrentPeriod) { value = (liquidatedDamagesToRecognizeITD.value - liquidatedDamagesRecognizedITDPriorPeriod.value)};
 end
 
+rule "Liquidated Damages in Backlog"
+    when
+        pob : PerformanceObligation()
+        liquidatedDamagesITD : Metric(metricType.id == "LIQUIDATED_DAMAGES_ITD_CC", value != null)
+        liquidatedDamagesITDToRecognize : Metric(metricType.id == "LIQUIDATED_DAMAGES_TO_RECOGNIZE_ITD_LC", value != null)
+        liquidatedDamagesBacklog : Metric(metricType.id == "LIQUIDATED_DAMAGES_BACKLOG_LC")
+    then
+        modify (liquidatedDamagesBacklog) { value = (liquidatedDamagesITD.value - liquidatedDamagesITDToRecognize.value)};
+end
+
+
 rule "Net Period Sales"
     when
         pob : PerformanceObligation()
@@ -107,6 +138,40 @@ rule "Net Period Sales"
     then
         modify (netPeriodSales) { value = (revenueToRecognizecCurrentPeriod.value - liquidatedDamagesToRecognizeCurrentPeriod.value)};
 end
+
+rule "Transaction Price in Backlog"
+    when
+        pob : PerformanceObligation()
+        transactionPrice : Metric(metricType.id == "TRANSACTION_PRICE_CC", value != null)
+        revenueToRecognizeITD : Metric(metricType.id == "REVENUE_TO_RECOGNIZE_ITD_LC", value != null)
+        transactionPriceBacklogLC : Metric(metricType.id == "TRANSACTION_PRICE_BACKLOG_LC")
+    then
+        modify (transactionPriceBacklogLC) { value = (transactionPrice.value - revenueToRecognizeITD.value)};
+end
+
+
+rule "Transaction Price Net LD"
+    when
+        pob : PerformanceObligation()
+        transactionPrice : Metric(metricType.id == "TRANSACTION_PRICE_CC", value != null)
+        liquidatedDamagesITD : Metric(metricType.id == "LIQUIDATED_DAMAGES_ITD_CC", value != null)
+        transactionPriceNetLDLC : Metric(metricType.id == "TRANSACTION_PRICE_NET_LD_LC")
+    then
+        modify (transactionPriceNetLDLC) { value = (transactionPrice.value - liquidatedDamagesITD.value)};
+end
+
+rule "Projected Gain/Loss"
+    when
+        pob : PerformanceObligation()
+        costOfGoodsSoldBacklog : Metric(metricType.id == "COST_GOODS_SOLD_BACKLOG_LC", value != null)
+        remainingEACLC : Metric(metricType.id == "REMAINING_ESTIMATE_COMPLETE_LC", value != null)
+        transactionPriceNetLDLC : Metric(metricType.id == "TRANSACTION_PRICE_NET_LD_LC", value != null)
+        projectedGainLossLC : Metric(metricType.id == "PROJECT_GAIN_LOSS_LC")
+    then
+        modify (projectedGainLossLC) { value = ((costOfGoodsSoldBacklog.value - remainingEACLC.value) / (transactionPriceNetLDLC.value - remainingEACLC.value))};
+end
+
+
 
 
 

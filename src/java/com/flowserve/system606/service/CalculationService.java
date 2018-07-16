@@ -200,7 +200,7 @@ public class CalculationService {
     public void executeBusinessRules(MetricStore metricStore) throws Exception {
         Logger.getLogger(CalculationService.class.getName()).log(Level.FINER, "Firing all business rules for: " + metricStore.getId());
 
-        Logger.getLogger(CalculationService.class.getName()).log(Level.INFO, "Running currency conversions");
+        Logger.getLogger(CalculationService.class.getName()).log(Level.FINER, "Running currency conversions");
 
         List<Object> facts = new ArrayList<Object>();
         facts.add(metricStore);

@@ -69,19 +69,21 @@
         <role-name>users</role-name>
     </security-role>
 
-    <security-constraint>
-        <display-name>Restricted to users</display-name>
-        <web-resource-collection>
-            <web-resource-name>Restricted Access</web-resource-name>
-            <url-pattern>/inputDashboard.xhtml</url-pattern>
-        </web-resource-collection>
-        <auth-constraint>
-            <role-name>users</role-name>
-        </auth-constraint>
-        <user-data-constraint>
-            <transport-guarantee>NONE</transport-guarantee>
-        </user-data-constraint>
-    </security-constraint>
+    <!--
+        <security-constraint>
+            <display-name>Restricted to users</display-name>
+            <web-resource-collection>
+                <web-resource-name>Restricted Access</web-resource-name>
+                <url-pattern>/inputDashboard.xhtml</url-pattern>
+            </web-resource-collection>
+            <auth-constraint>
+                <role-name>users</role-name>
+            </auth-constraint>
+            <user-data-constraint>
+                <transport-guarantee>NONE</transport-guarantee>
+            </user-data-constraint>
+        </security-constraint>
+    -->
     <mime-mapping>
         <extension>ttf</extension>
         <mime-type>application/font-sfnt</mime-type>

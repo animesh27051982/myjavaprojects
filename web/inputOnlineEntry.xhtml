@@ -33,7 +33,7 @@
             <div class="ui-g">
                 <div class="ui-g-12 ui-md-12 ui-lg-12">
                     <div class="card card-w-title">
-                        <p:growl id="messages" showDetail="true" life="1600" />
+                        <p:growl id="messages" showDetail="true" life="7000" />
                         <h4 style="margin: 2px;"><strong>MAY-18 Performance Obligation Inputs (4 Workdays Remaining)</strong></h4>
                         <p:panelGrid columns="2" columnClasses="ui-grid-col-3,ui-grid-col-3" layout="grid" styleClass="ui-panelgrid-blank form-group" style="border:0px none; background-color:transparent; margin-bottom: 10px;">
                             <p:outputLabel for="preparer" value="Preparer:"/>
@@ -132,7 +132,7 @@
                                             </f:facet>
                                             <f:facet name="input">
                                                 <p:inputText value="#{viewSupport.getCurrencyMetric('ESTIMATED_COST_AT_COMPLETION_LC', pob).value}">
-                                                    <p:ajax event="change" update="estGrossProfit, estGrossMargin, eacPrior, eacChange" process="@this" listener="#{inputOnlineEntry.calculateOutputs(pob)}"/>
+                                                    <p:ajax event="change" update="estGrossProfit, estGrossMargin, eacPrior, eacChange, :form:messages" process="@this" listener="#{inputOnlineEntry.calculateOutputs(pob)}"/>
                                                 </p:inputText>
                                             </f:facet>
                                         </p:cellEditor>
@@ -174,23 +174,23 @@
 
                                     <p:ajax event="cellEdit" listener="#{inputOnlineEntry.onCellEdit}" />
 
-                                    <p:column style="width: 400px;" headerText="Reporting Unit - Contract - POB" sortBy="#{pob.name}">
+                                    <p:column style="width: 350px; text-overflow: ellipsis;" headerText="Reporting Unit - Contract - POB" sortBy="#{pob.name}">
                                         <h:outputText value="#{pob.name}" />
                                     </p:column>
 
                                     <p:column style="white-space:pre-line;">
                                         <f:facet name="header">
-                                            <h:outputText value="#{viewSupport.getMetricTypeDescription('CUMULATIVE_COST_INCURRED_LC')}" />
+                                            <h:outputText value="#{viewSupport.getMetricTypeDescription('LOCAL_COSTS_ITD_LC')}" />
                                         </f:facet>
                                         <p:cellEditor rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}">
                                             <f:facet name="output">
-                                                <p:inputText value="#{viewSupport.getCurrencyMetricValue('CUMULATIVE_COST_INCURRED_LC', pob)}" styleClass="#{empty viewSupport.getCurrencyMetricValue('CUMULATIVE_COST_INCURRED_LC', pob) ? 'ui-state-error' : ''}" readonly="true">
+                                                <p:inputText value="#{viewSupport.getCurrencyMetricValue('LOCAL_COSTS_ITD_LC', pob)}" styleClass="#{empty viewSupport.getCurrencyMetricValue('LOCAL_COSTS_ITD_LC', pob) ? 'ui-state-error' : ''}" readonly="true">
                                                     <f:validateDoubleRange/>
                                                     <f:convertNumber type="currency" />
                                                 </p:inputText>
                                             </f:facet>
                                             <f:facet name="input">
-                                                <p:inputText value="#{viewSupport.getCurrencyMetric('CUMULATIVE_COST_INCURRED_LC', pob).value}">
+                                                <p:inputText value="#{viewSupport.getCurrencyMetric('LOCAL_COSTS_ITD_LC', pob).value}">
                                                     <p:ajax event="change" update="totalITD" process="@this" listener="#{inputOnlineEntry.calculateOutputs(pob)}"/>
                                                 </p:inputText>
                                             </f:facet>
@@ -199,17 +199,17 @@
 
                                     <p:column style="white-space:pre-line;">
                                         <f:facet name="header">
-                                            <h:outputText value="#{viewSupport.getMetricTypeDescription('CUMULATIVE_THIRD_PARTY_PROGRESS_LC')}" />
+                                            <h:outputText value="#{viewSupport.getMetricTypeDescription('THIRD_PARTY_COSTS_ITD_LC')}" />
                                         </f:facet>
                                         <p:cellEditor rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}">
                                             <f:facet name="output">
-                                                <p:inputText value="#{viewSupport.getCurrencyMetricValue('CUMULATIVE_THIRD_PARTY_PROGRESS_LC', pob)}" styleClass="#{empty viewSupport.getCurrencyMetricValue('CUMULATIVE_THIRD_PARTY_PROGRESS_LC', pob) ? 'ui-state-error' : ''}" readonly="true">
+                                                <p:inputText value="#{viewSupport.getCurrencyMetricValue('THIRD_PARTY_COSTS_ITD_LC', pob)}" styleClass="#{empty viewSupport.getCurrencyMetricValue('THIRD_PARTY_COSTS_ITD_LC', pob) ? 'ui-state-error' : ''}" readonly="true">
                                                     <f:validateDoubleRange/>
                                                     <f:convertNumber type="currency" />
                                                 </p:inputText>
                                             </f:facet>
                                             <f:facet name="input">
-                                                <p:inputText value="#{viewSupport.getCurrencyMetric('CUMULATIVE_THIRD_PARTY_PROGRESS_LC', pob).value}">
+                                                <p:inputText value="#{viewSupport.getCurrencyMetric('THIRD_PARTY_COSTS_ITD_LC', pob).value}">
                                                     <p:ajax event="change" update="totalITD" process="@this" listener="#{inputOnlineEntry.calculateOutputs(pob)}"/>
                                                 </p:inputText>
                                             </f:facet>
@@ -218,17 +218,17 @@
 
                                     <p:column style="white-space:pre-line;">
                                         <f:facet name="header">
-                                            <h:outputText value="#{viewSupport.getMetricTypeDescription('CUMULATIVE_INTERCOMPANY_PROGRESS_LC')}" />
+                                            <h:outputText value="#{viewSupport.getMetricTypeDescription('INTERCOMPANY_COSTS_ITD_LC')}" />
                                         </f:facet>
                                         <p:cellEditor rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}">
                                             <f:facet name="output">
-                                                <p:inputText value="#{viewSupport.getCurrencyMetricValue('CUMULATIVE_INTERCOMPANY_PROGRESS_LC', pob)}" styleClass="#{empty viewSupport.getCurrencyMetricValue('CUMULATIVE_INTERCOMPANY_PROGRESS_LC', pob) ? 'ui-state-error' : ''}" readonly="true">
+                                                <p:inputText value="#{viewSupport.getCurrencyMetricValue('INTERCOMPANY_COSTS_ITD_LC', pob)}" styleClass="#{empty viewSupport.getCurrencyMetricValue('INTERCOMPANY_COSTS_ITD_LC', pob) ? 'ui-state-error' : ''}" readonly="true">
                                                     <f:validateDoubleRange/>
                                                     <f:convertNumber type="currency" />
                                                 </p:inputText>
                                             </f:facet>
                                             <f:facet name="input">
-                                                <p:inputText value="#{viewSupport.getCurrencyMetric('CUMULATIVE_INTERCOMPANY_PROGRESS_LC', pob).value}">
+                                                <p:inputText value="#{viewSupport.getCurrencyMetric('INTERCOMPANY_COSTS_ITD_LC', pob).value}">
                                                     <p:ajax event="change" update="totalITD" process="@this" listener="#{inputOnlineEntry.calculateOutputs(pob)}"/>
                                                 </p:inputText>
                                             </f:facet>
@@ -237,9 +237,9 @@
 
                                     <p:column style="white-space:pre-line;">
                                         <f:facet name="header">
-                                            <h:outputText value="#{viewSupport.getMetricTypeDescription('CUMULATIVE_TOTAL_ITD_COSTS_LC')}" />
+                                            <h:outputText value="#{viewSupport.getMetricTypeDescription('COST_OF_GOODS_SOLD_ITD_LC')}" />
                                         </f:facet>
-                                        <h:outputText id="totalITD" value="#{viewSupport.getCurrencyMetricValue('CUMULATIVE_TOTAL_ITD_COSTS_LC', pob)}" rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}">
+                                        <h:outputText id="totalITD" value="#{viewSupport.getCurrencyMetricValue('COST_OF_GOODS_SOLD_ITD_LC', pob)}" rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}">
                                             <f:convertNumber type="currency" />
                                         </h:outputText>
                                     </p:column>
@@ -247,12 +247,13 @@
                             </p:tab>
 
                             <p:tab title="Billing Inputs">
-                                <p:treeTable value="#{inputOnlineEntry.billingTreeNode}" selectionMode="single" selection="#{inputOnlineEntry.selectedNode}" editable="true" id="treeTableId" editMode="cell" var="billEvent">
+                                <!--<p:treeTable value="#{inputOnlineEntry.billingTreeNode}" selectionMode="single" selection="#{inputOnlineEntry.selectedNode}" editable="true" id="treeTableId" editMode="cell" var="billEvent">-->
+                                <p:treeTable value="#{inputOnlineEntry.billingTreeNode}" editable="true" id="treeTableId" editMode="cell" var="billEvent">
                                     <f:facet name="header">
                                         Performance Obligations
                                     </f:facet>
 
-                                    <p:ajax event="cellEdit" listener="#{treeSelectionView.onCellEdit}" />
+                                    <p:ajax event="cellEdit" listener="#{inputOnlineEntry.onCellEdit}" />
 
                                     <p:column style="width: 400px;" headerText="Reporting Unit - Contract - POB" >
                                         <h:outputText value="#{billEvent.name}" />
@@ -261,39 +262,44 @@
                                     <p:column style="white-space:pre-line;" headerText="Delivery Date">
                                         <p:cellEditor rendered="#{of:isInstance('com.flowserve.system606.model.BillingEvent', billEvent)}">
                                             <f:facet name="output">
-                                                <p:calendar value="#{billEvent.pobCountRejected}" timeZone="America/Chicago" navigator="true" mode="popup" styleClass="#{empty billEvent.pobCountRejected ? 'ui-state-error' : ''}" style="width: 60%;" readonly="true"/>
+                                                <p:inputText value="#{billEvent.billingDate}" styleClass="#{empty billEvent.billingDate ? 'ui-state-error' : ''}" readonly="true">
+                                                    <f:convertDateTime pattern="MM/dd/yyyy" type="localDate" />
+                                                </p:inputText>
                                             </f:facet>
                                             <f:facet name="input">
-                                                <p:calendar value="#{billEvent.pobCountRejected}" timeZone="America/Chicago" navigator="true" mode="popup"/>
+                                                <p:calendar value="#{billEvent.billingDate}" converter="localDateConverter" pattern="MM/dd/yyyy" navigator="true" mode="popup"/>
                                             </f:facet>
                                         </p:cellEditor>
                                     </p:column>
                                     <p:column style="white-space:pre-line;" headerText="Period Billing Contract Cur">
                                         <p:cellEditor rendered="#{of:isInstance('com.flowserve.system606.model.BillingEvent', billEvent)}">
                                             <f:facet name="output">
-                                                <p:inputText value="#{billEvent.pobCountRejected}" styleClass="#{empty billEvent.pobCountRejected ? 'ui-state-error' : ''}" style="width: 90%;" readonly="true"/>
+                                                <p:inputText value="#{billEvent.amountContractCurrency}" styleClass="#{empty billEvent.amountContractCurrency ? 'ui-state-error' : ''}" readonly="true"/>
                                             </f:facet>
                                             <f:facet name="input">
-                                                <p:inputText value="#{billEvent.pobCountRejected}"/>
+                                                <p:inputText value="#{billEvent.amountContractCurrency}"/>
                                             </f:facet>
                                         </p:cellEditor>
                                     </p:column>
                                     <p:column style="white-space:pre-line;" headerText="Period Billing Local Cur">
                                         <p:cellEditor rendered="#{of:isInstance('com.flowserve.system606.model.BillingEvent', billEvent)}">
                                             <f:facet name="output">
-                                                <p:inputText value="#{billEvent.pobCountRejected}" styleClass="#{empty billEvent.pobCountRejected ? 'ui-state-error' : ''}" style="width: 90%;" readonly="true"/>
+                                                <p:inputText value="#{billEvent.amountLocalCurrency}" styleClass="#{empty billEvent.amountLocalCurrency ? 'ui-state-error' : ''}" readonly="true"/>
                                             </f:facet>
                                             <f:facet name="input">
-                                                <p:inputText value="#{billEvent.pobCountRejected}"/>
+                                                <p:inputText value="#{billEvent.amountLocalCurrency}"/>
                                             </f:facet>
                                         </p:cellEditor>
                                     </p:column>
+                                    <!--
                                     <p:column style="white-space:pre-line;" headerText="Cumulative Billings">
                                         <h:outputText value="#{billEvent.pobCountRejected}" rendered="#{of:isInstance('com.flowserve.system606.model.BillingEvent', billEvent)}"/>
                                     </p:column>
                                     <p:ajax event="select"  />
+                                    -->
+
                                     <p:column  headerText="Option" >
-                                        <p:commandButton icon="fa fa-plus" process="@this" update="treeTableId" actionListener="#{inputOnlineEntry.addChildNodeAction}" rendered="#{of:isInstance('com.flowserve.system606.model.Contract', billEvent)}"></p:commandButton>
+                                        <p:commandButton icon="fa fa-plus" process="@this" update="treeTableId" actionListener="#{inputOnlineEntry.addBillingEvent(billEvent)}" rendered="#{of:isInstance('com.flowserve.system606.model.Contract', billEvent)}"></p:commandButton>
                                         <p:commandButton icon="ui-icon-close" process="@this" update="treeTableId" actionListener="#{inputOnlineEntry.deleteNode}" rendered="#{of:isInstance('com.flowserve.system606.model.BillingEvent', billEvent)}"></p:commandButton>
                                     </p:column>
                                 </p:treeTable>

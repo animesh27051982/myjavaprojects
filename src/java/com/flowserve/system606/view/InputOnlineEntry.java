@@ -28,7 +28,6 @@ import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import org.primefaces.event.CellEditEvent;
-import org.primefaces.model.DefaultTreeNode;
 import org.primefaces.model.TreeNode;
 
 /**
@@ -96,11 +95,12 @@ public class InputOnlineEntry implements Serializable {
         }
     }
 
-    public void addChildNodeAction() throws Exception {
+    public void addBillingEvent(Contract contract) throws Exception {
+        BillingEvent billingEvent = new BillingEvent();
+        billingEvent.setContract(contract);
+        contract.getBillingEvent().add(billingEvent);
 
-        //Contract contract = contractService.findContractById(id);
-        TreeNode pepe = new DefaultTreeNode(new BillingEvent(null, null, null, null, null, null), selectedNode);
-        return;
+        billingTreeNode = viewSupport.generateNodeTreeForBilling(reportingUnits);
     }
 
     public void deleteNode() {
