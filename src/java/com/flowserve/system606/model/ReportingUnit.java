@@ -22,7 +22,6 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
@@ -44,7 +43,7 @@ public class ReportingUnit extends BaseEntity<Long> implements Accumulable, Comp
     @ManyToOne
     @JoinColumn(name = "BUSINESS_UNIT_ID")
     private BusinessUnit businessUnit;
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "COUNTRY_ID")
     private Country country;
     @Column(name = "LOCAL_CURRENCY")

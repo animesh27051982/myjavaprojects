@@ -125,6 +125,26 @@ public class Contract extends BaseEntity<Long> implements Accumulable, Comparabl
         return this.id.compareTo(obj.getId());
     }
 
+    public BigDecimal getCumulativeLocalCurrency() {
+        BigDecimal localCur = BigDecimal.ZERO;
+        for (BillingEvent be : billingEvent) {
+            if (be.getAmountLocalCurrency() != null && be.getAmountLocalCurrency().compareTo(BigDecimal.ZERO) != 0) {
+                localCur = localCur.add(be.getAmountLocalCurrency());
+            }
+        }
+        return localCur;
+    }
+
+    public BigDecimal getCumulativeContractCurrency() {
+        BigDecimal contractCur = BigDecimal.ZERO;
+        for (BillingEvent be : billingEvent) {
+            if (be.getAmountContractCurrency() != null && be.getAmountContractCurrency().compareTo(BigDecimal.ZERO) != 0) {
+                contractCur = contractCur.add(be.getAmountContractCurrency());
+            }
+        }
+        return contractCur;
+    }
+
     public Long getId() {
         return id;
     }

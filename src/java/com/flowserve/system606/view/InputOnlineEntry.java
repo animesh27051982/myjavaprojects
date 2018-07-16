@@ -103,12 +103,14 @@ public class InputOnlineEntry implements Serializable {
         billingTreeNode = viewSupport.generateNodeTreeForBilling(reportingUnits);
     }
 
-    public void deleteNode() {
-        selectedNode.getChildren().clear();
-        selectedNode.getParent().getChildren().remove(selectedNode);
-        selectedNode.setParent(null);
+    public void removeBillingEvent(BillingEvent bEvent) {
+        Contract contract = bEvent.getContract();
+        contract.getBillingEvent().remove(bEvent);
+        billingTreeNode = viewSupport.generateNodeTreeForBilling(reportingUnits);
+    }
 
-        selectedNode = null;
+    public void updateCumulativeCurrencies() {
+        billingTreeNode = viewSupport.generateNodeTreeForBilling(reportingUnits);
     }
 
     public void clearFilterByContractText() {
