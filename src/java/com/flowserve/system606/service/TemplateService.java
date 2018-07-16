@@ -64,7 +64,7 @@ public class TemplateService {
 
     public void processTemplateDownload(InputStream inputStream, FileOutputStream outputStream, List<ReportingUnit> reportingUnits) throws Exception {
 
-        List<MetricType> inputTypes = metricService.findActiveMetricTypesPob();
+        List<MetricType> metricTypes = metricService.getAllPobExcelInputMetricTypes();
         XSSFWorkbook workbook = new XSSFWorkbook(inputStream);
         XSSFSheet worksheet = workbook.getSheetAt(0);
         XSSFRow row;
@@ -88,13 +88,11 @@ public class TemplateService {
                     row.getCell(6).setCellValue(pob.getId());
                     row.getCell(7).setCellValue(pob.getRevRecMethod());
 
-                    for (MetricType inputType : inputTypes) {
-                        cell = row.getCell(CellReference.convertColStringToIndex(inputType.getExcelCol()));
-                        if ("com.flowserve.system606.model.CurrencyMetric".equals(inputType.getMetricClass())) {
-                            //if (pob.getCurrencyMetric(inputType.getName()) != null) {
-                            if (calculationService.getCurrencyMetric(inputType.getId(), pob) != null) {
-                                //cell.setCellValue(pob.getCurrencyMetricValue(inputType.getName()).doubleValue());
-                                cell.setCellValue(calculationService.getCurrencyMetricValue(inputType.getId(), pob).doubleValue());
+                    for (MetricType metricType : metricTypes) {
+                        cell = row.getCell(CellReference.convertColStringToIndex(metricType.getExcelCol()));
+                        if ("CurrencyMetric".equals(metricType.getMetricClass())) {
+                            if (currencyMetricIsNotNull(metricType, pob)) {
+                                cell.setCellValue(calculationService.getCurrencyMetricValue(metricType.getId(), pob).doubleValue());
                             }
                         }
                     }
@@ -149,13 +147,13 @@ public class TemplateService {
                             // TODO - figure out what to do in this blank case.  It will depend on the situation.
                             continue;
                         }
-                        if ("com.flowserve.system606.model.CurrencyMetric".equals(inputType.getMetricClass())) {
+                        if ("CurrencyMetric".equals(inputType.getMetricClass())) {
                             calculationService.getCurrencyMetric(inputType.getId(), pob).setValue(new BigDecimal(NumberToTextConverter.toText(cell.getNumericCellValue())));
                         }
-                        if ("com.flowserve.system606.model.StringMetric".equals(inputType.getMetricClass())) {
+                        if ("StringMetric".equals(inputType.getMetricClass())) {
                             calculationService.getStringMetric(inputType.getId(), pob).setValue(cell.getStringCellValue());
                         }
-                        if ("com.flowserve.system606.model.DateMetric".equals(inputType.getMetricClass())) {
+                        if ("DateMetric".equals(inputType.getMetricClass())) {
                             calculationService.getDateMetric(inputType.getId(), pob).setValue(cell.getDateCellValue().toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
                         }
                     } catch (Exception rce) {
@@ -272,5 +270,9 @@ public class TemplateService {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    private boolean currencyMetricIsNotNull(MetricType metricType, PerformanceObligation pob) {
+        return calculationService.getCurrencyMetric(metricType.getId(), pob) != null && calculationService.getCurrencyMetricValue(metricType.getId(), pob) != null;
     }
 }

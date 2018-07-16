@@ -11,8 +11,7 @@
         <script type="text/javascript">
             $(document).on("keydown", ".ui-cell-editor-input input", function (event) {
                 if (event.keyCode == 13) {
-                    event.preventDefault();
-                    $(this).closest("td").next("td").nextAll("div").nextAll("div").next("div").nextAll("input").focus();
+                    $(this).closest("tr").find(".ui-row-editor .ui-icon-check").click();
                 }
             });
         </script>
