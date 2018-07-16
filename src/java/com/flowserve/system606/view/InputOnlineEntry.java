@@ -179,6 +179,13 @@ public class InputOnlineEntry implements Serializable {
         reportingUnitService.calculateAndSave(reportingUnits);
     }
 
+    public void cancelEdits() throws Exception {
+        Logger.getLogger(InputOnlineEntry.class.getName()).log(Level.FINE, "Current edits canceled.");
+        FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Current edits canceled.", ""));
+
+        init();
+    }
+
     public String getContractFilterText() {
         return contractFilterText;
     }
