@@ -1,9 +1,14 @@
 package com.flowserve.system606.model;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 @Entity
@@ -17,6 +22,9 @@ public class Country extends BaseEntity<String> implements Comparable<Country>, 
     private String code;
     @Column(name = "NAME")
     private String name;
+
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "country", cascade = CascadeType.MERGE)
+    private List<ReportingUnit> reportingUnit = new ArrayList<ReportingUnit>();
 
     public Country() {
     }
@@ -64,5 +72,13 @@ public class Country extends BaseEntity<String> implements Comparable<Country>, 
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    public List<ReportingUnit> getReportingUnit() {
+        return reportingUnit;
+    }
+
+    public void setReportingUnit(List<ReportingUnit> reportingUnit) {
+        this.reportingUnit = reportingUnit;
     }
 }

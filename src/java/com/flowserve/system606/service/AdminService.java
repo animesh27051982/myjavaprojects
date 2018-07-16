@@ -265,6 +265,10 @@ public class AdminService {
         em.persist(u);
     }
 
+    public void update(Country country) throws Exception {
+        em.merge(country);
+    }
+
     public List<ReportingUnit> searchReportingUnits(String searchString) throws Exception {  // Need an application exception type defined.
         if (searchString == null || searchString.trim().length() < 2) {
             throw new Exception("Please supply a search string with at least 2 characters.");
@@ -410,6 +414,15 @@ public class AdminService {
                 }
                 ru.setActive(true);
                 persist(ru);
+                //initializing RUs in Countries
+                if (values.length > 2) {
+                    Country cnt = findCountryByName(values[2]);
+                    if (cnt != null) {
+                        ReportingUnit addRU = findReportingUnitByCode(values[1].trim());
+                        cnt.getReportingUnit().add(addRU);
+                        update(cnt);
+                    }
+                }
             }
             reader.close();
             Logger.getLogger(AdminService.class.getName()).log(Level.INFO, "Finished initializing Reporting Units.");
