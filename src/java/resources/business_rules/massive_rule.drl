@@ -170,7 +170,22 @@ rule "Projected Gain/Loss"
         modify (projectedGainLossLC) { value = (transactionPriceNetLDLC.value - remainingEACLC.value)};
 end
 
+rule "Contract Level Estimated Gross Profit and Margin"
 
+    when
 
+        contract : Contract()    // or maybe even --- accumulable : Accumulable() if the engine will support this.  This way we can reuse rules at multiple levels.
+        transactionPrice : Metric(metricType.id == "TRANSACTION_PRICE_CC", value != null)  // if this metric exists and is not null, initialize variable.
+        liquidatedDamagesITD : Metric(metricType.id == "LIQUIDATED_DAMAGES_ITD_CC", value != null)
+        estimatedCostAtCompletion : Metric(metricType.id == "ESTIMATED_COST_AT_COMPLETION_LC", value != null)
 
+        estimatedGrossProfit : Metric(metricType.id == "ESTIMATED_GROSS_PROFIT_LC")
+        estimatedGrossMargin : Metric(metricType.id == "ESTIMATED_GROSS_MARGIN_LC")
 
+    then
+
+        // Calculate all outputs possible using these inputs.
+        modify (estimatedGrossProfit) { value = (transactionPrice.value - liquidatedDamagesITD.value - estimatedCostAtCompletion.value)};
+        modify (estimatedGrossMargin) { value = (estimatedGrossProfit.value / (transactionPrice.value -liquidatedDamagesITD.value) )};
+
+end

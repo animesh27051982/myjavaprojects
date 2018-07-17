@@ -220,6 +220,29 @@ public class CalculationService {
         }
     }
 
+    public void executeBusinessRulesForContract(Accumulable accumulable) throws Exception {   // Pass in the contract as the accumulable.
+
+        List<Object> facts = new ArrayList<Object>();
+
+        facts.add(accumulable);
+        Collection<Metric> currentPeriodMetrics = getAccumulated(accumulable);
+        facts.addAll(currentPeriodMetrics);
+
+        kSession.execute(facts);
+
+    }
+
+    public Collection<Metric> getAccumulated(Accumulable accumulable) {
+
+        BigDecimal accPrice = getAccumulatedCurrencyMetricValue("TRANSACTION_PRICE_CC", accumulable);
+        BigDecimal accLiquidatedDamages = getAccumulatedCurrencyMetricValue("LIQUIDATED_DAMAGES_ITD_CC", accumulable);
+        BigDecimal accEAC = getAccumulatedCurrencyMetricValue("ESTIMATED_COST_AT_COMPLETION_LC", accumulable);
+        List<Metric> metrics = new ArrayList<Metric>();
+        metrics.add(getMetric("TRANSACTION_PRICE_CC", ((PerformanceObligation) accumulable)));
+        return metrics;
+
+    }
+
     private Collection<Metric> getAllCurrentPeriodMetrics(MetricStore metricStore) throws Exception {
         FinancialPeriod period = financialPeriodService.getCurrentFinancialPeriod();
 

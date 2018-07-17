@@ -45,7 +45,7 @@ public class ReportsService {
     private static final int HEADER_ROW_COUNT = 10;
 
     public void generateContractEsimatesReport(InputStream inputStream, FileOutputStream outputStream, Contract contract) throws Exception {
-
+        calculationService.executeBusinessRulesForContract(contract);
         XSSFWorkbook workbook = new XSSFWorkbook(inputStream);
         workbook.removeSheetAt(workbook.getSheetIndex("Contract Summary-2"));
         workbook.removeSheetAt(workbook.getSheetIndex("Contract Summary-3"));
@@ -59,10 +59,10 @@ public class ReportsService {
         cell = rowTitle.getCell(0, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
         cell.setCellValue(contract.getName());
 
-        BigDecimal trancationPrice = viewSupport.getAccumulatedCurrencyMetricValue("TRANSACTION_PRICE", contract);
-        BigDecimal loquidatedDamage = viewSupport.getAccumulatedCurrencyMetricValue("LIQUIDATED_DAMAGES", contract);
-        BigDecimal EAC = viewSupport.getAccumulatedCurrencyMetricValue("ESTIMATED_COST_AT_COMPLETION", contract);
-        BigDecimal estimatedGrossProfit = viewSupport.getAccumulatedCurrencyMetricValue("ESTIMATED_GROSS_PROFIT", contract);
+        BigDecimal trancationPrice = viewSupport.getAccumulatedCurrencyMetricValue("TRANSACTION_PRICE_CC", contract);
+        BigDecimal loquidatedDamage = viewSupport.getAccumulatedCurrencyMetricValue("LIQUIDATED_DAMAGES_ITD_CC", contract);
+        BigDecimal EAC = viewSupport.getAccumulatedCurrencyMetricValue("ESTIMATED_COST_AT_COMPLETION_LC", contract);
+        BigDecimal estimatedGrossProfit = viewSupport.getAccumulatedCurrencyMetricValue("ESTIMATED_GROSS_PROFIT_LC", contract);
         //BigDecimal estimatedGrossMargin = viewSupport.getAccumulatedCurrencyMetricValue("ESTIMATED_GROSS_MARGIN", contract);
         BigDecimal estimatedGrossMargin = new BigDecimal(0);
         if (estimatedGrossProfit.compareTo(BigDecimal.ZERO) > 0) {
