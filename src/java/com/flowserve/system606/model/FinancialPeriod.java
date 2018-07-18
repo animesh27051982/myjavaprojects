@@ -66,7 +66,7 @@ public class FinancialPeriod extends BaseEntity<String> implements Comparable<Fi
 
     @Override
     public int compareTo(FinancialPeriod obj) {
-        return this.number.compareTo(obj.getNumber());
+        return this.endDate.compareTo(obj.getEndDate());
     }
 
     public String getName() {

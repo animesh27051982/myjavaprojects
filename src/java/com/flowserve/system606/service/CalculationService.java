@@ -6,7 +6,9 @@
 package com.flowserve.system606.service;
 
 import com.flowserve.system606.model.Accumulable;
+import com.flowserve.system606.model.BillingEvent;
 import com.flowserve.system606.model.BusinessRule;
+import com.flowserve.system606.model.Contract;
 import com.flowserve.system606.model.CurrencyMetric;
 import com.flowserve.system606.model.DateMetric;
 import com.flowserve.system606.model.FinancialPeriod;
@@ -25,7 +27,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.annotation.PostConstruct;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
@@ -34,7 +35,6 @@ import javax.persistence.Query;
 import org.kie.api.KieServices;
 import org.kie.api.builder.KieBuilder;
 import org.kie.api.builder.KieFileSystem;
-import org.kie.api.builder.KieRepository;
 import org.kie.api.builder.Message;
 import org.kie.api.runtime.StatelessKieSession;
 
@@ -52,17 +52,19 @@ public class CalculationService {
     @Inject
     private CurrencyService currencyService;
     @Inject
+    private AdminService adminService;
+    @Inject
     private MetricService metricService;
     private StatelessKieSession kSession = null;
     private static final String PACKAGE_PREFIX = "com.flowserve.system606.model.";
 
-    @PostConstruct
+    //@PostConstruct
     public void initBusinessRulesEngine() {
         Logger.getLogger(CalculationService.class.getName()).log(Level.INFO, "initBusinessRulesEngine");
 
         try {
             KieServices ks = KieServices.Factory.get();
-            KieRepository kr = ks.getRepository();
+            //KieRepository kr = ks.getRepository();
             KieFileSystem kfs = ks.newKieFileSystem();
 
             //kfs.write("src/main/resources/DroolsTest.drl", "");
@@ -202,6 +204,10 @@ public class CalculationService {
 
         Logger.getLogger(CalculationService.class.getName()).log(Level.FINER, "Running currency conversions");
 
+        if (kSession == null) {
+            initBusinessRulesEngine();
+        }
+
         List<Object> facts = new ArrayList<Object>();
         facts.add(metricStore);
         Collection<Metric> currentPeriodMetrics = getAllCurrentPeriodMetrics(metricStore);
@@ -220,7 +226,11 @@ public class CalculationService {
         }
     }
 
-    public void executeBusinessRulesForContract(Accumulable accumulable) throws Exception {   // Pass in the contract as the accumulable.
+    public void executeBusinessRulesForAccumulable(Accumulable accumulable) throws Exception {   // Pass in the contract as the accumulable.
+
+        if (kSession == null) {
+            initBusinessRulesEngine();
+        }
 
         List<Object> facts = new ArrayList<Object>();
 
@@ -234,11 +244,23 @@ public class CalculationService {
 
     public Collection<Metric> getAccumulated(Accumulable accumulable) {
 
-        BigDecimal accPrice = getAccumulatedCurrencyMetricValue("TRANSACTION_PRICE_CC", accumulable);
-        BigDecimal accLiquidatedDamages = getAccumulatedCurrencyMetricValue("LIQUIDATED_DAMAGES_ITD_CC", accumulable);
-        BigDecimal accEAC = getAccumulatedCurrencyMetricValue("ESTIMATED_COST_AT_COMPLETION_LC", accumulable);
+        // Init the input Metrics.  KG TODO - Needs work to make generic.
+        CurrencyMetric accPrice = getAccumulatedCurrencyMetric("TRANSACTION_PRICE_CC", accumulable);
+        CurrencyMetric accLiquidatedDamages = getAccumulatedCurrencyMetric("LIQUIDATED_DAMAGES_ITD_CC", accumulable);
+        CurrencyMetric accEAC = getAccumulatedCurrencyMetric("ESTIMATED_COST_AT_COMPLETION_LC", accumulable);
+
+        // Init the output Metrics.  KG TODO - Needs work to make generic.
+        CurrencyMetric egp = new CurrencyMetric();
+        egp.setMetricType(metricService.findMetricTypeById("ESTIMATED_GROSS_PROFIT_LC"));
+        CurrencyMetric egm = new CurrencyMetric();
+        egm.setMetricType(metricService.findMetricTypeById("ESTIMATED_GROSS_MARGIN_LC"));
+
         List<Metric> metrics = new ArrayList<Metric>();
-        metrics.add(getMetric("TRANSACTION_PRICE_CC", ((PerformanceObligation) accumulable)));
+        metrics.add(accPrice);
+        metrics.add(accLiquidatedDamages);
+        metrics.add(accEAC);
+        metrics.add(egp);
+        metrics.add(egm);
         return metrics;
 
     }
@@ -319,6 +341,40 @@ public class CalculationService {
         }
 
         return sum;
+    }
+
+    public BigDecimal getAccumulatedBilledValue(Accumulable accumulable) {
+
+        BigDecimal sum = new BigDecimal("0.0");
+        List<BillingEvent> bEvents = adminService.findBillingEventsByContract((Contract) accumulable);
+        for (BillingEvent be : bEvents) {
+            sum = sum.add(be.getAmountContractCurrency());
+        }
+        return sum;
+    }
+
+    public CurrencyMetric getAccumulatedCurrencyMetric(String metricTypeId, Accumulable accumulable) {
+
+        BigDecimal sum = new BigDecimal("0.0");
+        CurrencyMetric metric = new CurrencyMetric();
+        metric.setMetricType(metricService.findMetricTypeById(metricTypeId));
+        metric.setValue(sum);
+        if (accumulable.getChildAccumulables().isEmpty()) {
+            // TODO - We can abstract this further instead of hard cast to pob.
+            BigDecimal value = getCurrencyMetric(metricTypeId, ((PerformanceObligation) accumulable)).getValue();
+            if (value != null) {
+                sum = sum.add(value);
+            }
+            metric.setValue(sum);
+            return metric;
+        }
+
+        for (Accumulable childAccumulable : accumulable.getChildAccumulables()) {
+            sum = sum.add(getAccumulatedCurrencyMetricValue(metricTypeId, childAccumulable));
+        }
+
+        metric.setValue(sum);
+        return metric;
     }
 
     public void initBusinessRules() throws Exception {

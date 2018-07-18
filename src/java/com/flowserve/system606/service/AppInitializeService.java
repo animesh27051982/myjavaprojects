@@ -74,7 +74,7 @@ public class AppInitializeService {
 //            pobService.initPOBs();
 
             calculationService.initBusinessRules();
-            calculationService.initBusinessRulesEngine();
+            //calculationService.initBusinessRulesEngine();
 
             // businessRuleService.executePOBCalculations(pob);// TODO - Remove
             //DroolsTest.execute();
@@ -87,34 +87,33 @@ public class AppInitializeService {
 
     public void initContract(String msAccDB) throws Exception {
         Logger.getLogger(AppInitializeService.class.getName()).log(Level.INFO, "Processing initContract: " + msAccDB);
- 
+
         Connection connection = null;
         Statement statement = null;
         ResultSet resultSet = null;
- 
+
         // Step 1: Loading or registering Oracle JDBC driver class
         try {
- 
+
             Class.forName("net.ucanaccess.jdbc.UcanaccessDriver");
-        }
-        catch(ClassNotFoundException cnfex) {
- 
+        } catch (ClassNotFoundException cnfex) {
+
             System.out.println("Problem in loading or "
                     + "registering MS Access JDBC driver");
             cnfex.printStackTrace();
         }
- 
+
         // Step 2: Opening database connection
         try {
- 
-            String dbURL = "jdbc:ucanaccess://" + msAccDB; 
- 
+
+            String dbURL = "jdbc:ucanaccess://" + msAccDB;
+
             // Step 2.A: Create and get connection using DriverManager class
-            connection = DriverManager.getConnection(dbURL); 
- 
-            // Step 2.B: Creating JDBC Statement 
+            connection = DriverManager.getConnection(dbURL);
+
+            // Step 2.B: Creating JDBC Statement
             statement = connection.createStatement();
- 
+
             // Step 2.C: Executing SQL &amp; retrieve data into ResultSet
 
             initContracts(connection, statement);
@@ -123,23 +122,21 @@ public class AppInitializeService {
         }
         catch(SQLException sqlex){
             sqlex.printStackTrace();
-        }
-        finally {
- 
+        } finally {
+
             // Step 3: Closing database connection
             try {
-                if(null != connection) {
- 
+                if (null != connection) {
+
                     // cleanup resources, once after processing
                     if(resultSet != null)
                         resultSet.close();
                     statement.close();
- 
+
                     // and then finally close connection
                     connection.close();
                 }
-            }
-            catch (SQLException sqlex) {
+            } catch (SQLException sqlex) {
                 sqlex.printStackTrace();
             }
         }

@@ -28,8 +28,12 @@
                                     <p:outputLabel id="id" value="#{companyEdit.company.id}"/>
                                     <p:outputLabel for="name" value="Name"/>
                                     <p:outputLabel id="name" value="#{companyEdit.company.name}" />
-                                    <p:outputLabel for="type" value="Type"/>
+                                    <p:outputLabel for="currency" value="Reporting Currency"/>
+                                    <p:outputLabel id="currency" value="#{companyEdit.company.reportingCurrency}" />
+                                    <p:outputLabel for="type" value="Input Freeze Workday"/>
                                     <p:inputText id="type" value="#{companyEdit.company.inputFreezeWorkday}"/>
+                                    <p:outputLabel for="pociDueWorkday" value="POCI Due Workday"/>
+                                    <p:inputText id="pociDueWorkday" value="#{companyEdit.company.pociDueWorkday}"/>
                                     <p:outputLabel for="description" value="Description"/>
                                     <p:outputLabel id="description" value="#{companyEdit.company.description}"/>
 
