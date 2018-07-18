@@ -163,6 +163,12 @@ public class AdminService {
         return (List<BillingEvent>) query.getResultList();
     }
 
+    public List<BillingEvent> findBillingEventsByContract(Contract contract) {
+        Query query = em.createQuery("SELECT b FROM BillingEvent b WHERE b.contract = :CNT");
+        query.setParameter("CNT", contract);
+        return (List<BillingEvent>) query.getResultList();
+    }
+
     public List<ReportingUnit> findAllReportingUnits() {
         Query query = em.createQuery("SELECT ru FROM ReportingUnit ru ORDER BY ru.code");
         return (List<ReportingUnit>) query.getResultList();
@@ -584,6 +590,8 @@ public class AdminService {
             fls.setName("Flowserve");
             fls.setDescription("Flowserve");
             fls.setInputFreezeWorkday(15);
+            fls.setReportingCurrency(Currency.getInstance(new Locale("en", "US")));
+            fls.setPociDueWorkday(10);
             fls.setCurrentPeriod(financialPeriodService.findById("MAY-18"));
 
             update(fls);

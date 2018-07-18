@@ -97,10 +97,25 @@ public class ReportsService {
             XSSFSheet worksheet = workbook.getSheet("Contract Summary-2");
             XSSFRow row;
             Cell cell = null;
-            //int rowid = HEADER_ROW_COUNT;
+            int rowid = HEADER_ROW_COUNT;
             XSSFRow contract_name = worksheet.getRow(1);
             cell = contract_name.getCell(0, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
             cell.setCellValue(contract.getName());
+
+            BigDecimal loquidatedDamage = viewSupport.getAccumulatedCurrencyMetricValue("LIQUIDATED_DAMAGES_ITD_CC", contract);
+            BigDecimal localCostITDLC = viewSupport.getAccumulatedCurrencyMetricValue("LOCAL_COSTS_ITD_LC", contract);
+//        BigDecimal EAC = viewSupport.getAccumulatedCurrencyMetricValue("ESTIMATED_COST_AT_COMPLETION_LC", contract);
+//        BigDecimal estimatedGrossProfit = viewSupport.getAccumulatedCurrencyMetricValue("ESTIMATED_GROSS_PROFIT_LC", contract);
+            //BigDecimal estimatedGrossMargin = viewSupport.getAccumulatedCurrencyMetricValue("ESTIMATED_GROSS_MARGIN", contract);
+            BigDecimal billToDate = calculationService.getAccumulatedBilledValue(contract);
+
+            row = worksheet.getRow(rowid++);
+            cell = row.getCell(3, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
+            cell.setCellValue(loquidatedDamage.doubleValue());
+            cell = row.getCell(4, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
+            cell.setCellValue(localCostITDLC.doubleValue());
+            cell = row.getCell(9, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
+            cell.setCellValue(billToDate.doubleValue());
 
             workbook.write(outputStream);
         }
@@ -118,10 +133,27 @@ public class ReportsService {
             XSSFSheet worksheet = workbook.getSheet("Contract Summary-3");
             XSSFRow row;
             Cell cell = null;
-            //int rowid = HEADER_ROW_COUNT;
+            int rowid = HEADER_ROW_COUNT;
             XSSFRow contract_name = worksheet.getRow(1);
             cell = contract_name.getCell(0, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
             cell.setCellValue(contract.getName());
+
+            BigDecimal revenueToRecognize = viewSupport.getAccumulatedCurrencyMetricValue("REVENUE_TO_RECOGNIZE_ITD_LC", contract);
+            BigDecimal loquidatedDamage = viewSupport.getAccumulatedCurrencyMetricValue("LIQUIDATED_DAMAGES_ITD_CC", contract);
+            BigDecimal cumulativeCostGoodsSoldLC = viewSupport.getAccumulatedCurrencyMetricValue("CUMULATIVE_COST_OF_GOODS_SOLD_LC", contract);
+            BigDecimal EstimatedGrossProfitLC = viewSupport.getAccumulatedCurrencyMetricValue("ESTIMATED_GROSS_PROFIT_LC", contract);
+
+            row = worksheet.getRow(rowid++);
+            cell = row.getCell(1, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
+            cell.setCellValue(revenueToRecognize.doubleValue());
+            cell = row.getCell(2, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
+            cell.setCellValue(loquidatedDamage.doubleValue());
+            cell = row.getCell(3, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
+            cell.setCellValue(cumulativeCostGoodsSoldLC.doubleValue());
+//          cell = row.getCell(4, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
+//          cell.setCellValue(EstimatedGrossProfitLC.doubleValue());
+            cell = row.getCell(5, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
+            cell.setCellValue(EstimatedGrossProfitLC.doubleValue());
 
             workbook.write(outputStream);
         }
@@ -139,10 +171,27 @@ public class ReportsService {
             XSSFSheet worksheet = workbook.getSheet("Contract Summary-4");
             XSSFRow row;
             Cell cell = null;
-            //int rowid = HEADER_ROW_COUNT;
+            int rowid = HEADER_ROW_COUNT;
             XSSFRow contract_name = worksheet.getRow(1);
             cell = contract_name.getCell(0, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
             cell.setCellValue(contract.getName());
+
+            BigDecimal revenueToRecognize = viewSupport.getAccumulatedCurrencyMetricValue("REVENUE_TO_RECOGNIZE_ITD_LC", contract);
+            BigDecimal loquidatedDamage = viewSupport.getAccumulatedCurrencyMetricValue("LIQUIDATED_DAMAGES_ITD_CC", contract);
+            BigDecimal cumulativeCostGoodsSoldLC = viewSupport.getAccumulatedCurrencyMetricValue("CUMULATIVE_COST_OF_GOODS_SOLD_LC", contract);
+            BigDecimal EstimatedGrossProfitLC = viewSupport.getAccumulatedCurrencyMetricValue("ESTIMATED_GROSS_PROFIT_LC", contract);
+
+            row = worksheet.getRow(rowid++);
+            cell = row.getCell(1, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
+            cell.setCellValue(revenueToRecognize.doubleValue());
+            cell = row.getCell(2, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
+            cell.setCellValue(loquidatedDamage.doubleValue());
+            cell = row.getCell(3, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
+            cell.setCellValue(cumulativeCostGoodsSoldLC.doubleValue());
+//          cell = row.getCell(4, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
+//          cell.setCellValue(EstimatedGrossProfitLC.doubleValue());
+            cell = row.getCell(5, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
+            cell.setCellValue(EstimatedGrossProfitLC.doubleValue());
 
             workbook.write(outputStream);
         }
@@ -161,10 +210,27 @@ public class ReportsService {
 
             XSSFRow row;
             Cell cell = null;
-            //int rowid = HEADER_ROW_COUNT;
+            int rowid = HEADER_ROW_COUNT;
             XSSFRow contract_name = worksheet.getRow(1);
             cell = contract_name.getCell(0, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
             cell.setCellValue(contract.getName());
+
+            BigDecimal revenueToRecognize = viewSupport.getAccumulatedCurrencyMetricValue("REVENUE_TO_RECOGNIZE_ITD_LC", contract);
+            BigDecimal loquidatedDamage = viewSupport.getAccumulatedCurrencyMetricValue("LIQUIDATED_DAMAGES_ITD_CC", contract);
+            BigDecimal cumulativeCostGoodsSoldLC = viewSupport.getAccumulatedCurrencyMetricValue("CUMULATIVE_COST_OF_GOODS_SOLD_LC", contract);
+            BigDecimal EstimatedGrossProfitLC = viewSupport.getAccumulatedCurrencyMetricValue("ESTIMATED_GROSS_PROFIT_LC", contract);
+
+            row = worksheet.getRow(rowid++);
+            cell = row.getCell(1, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
+            cell.setCellValue(revenueToRecognize.doubleValue());
+            cell = row.getCell(2, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
+            cell.setCellValue(loquidatedDamage.doubleValue());
+            cell = row.getCell(3, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
+            cell.setCellValue(cumulativeCostGoodsSoldLC.doubleValue());
+//          cell = row.getCell(4, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
+//          cell.setCellValue(EstimatedGrossProfitLC.doubleValue());
+            cell = row.getCell(5, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
+            cell.setCellValue(EstimatedGrossProfitLC.doubleValue());
 
             workbook.write(outputStream);
         }

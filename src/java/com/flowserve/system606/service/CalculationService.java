@@ -6,7 +6,9 @@
 package com.flowserve.system606.service;
 
 import com.flowserve.system606.model.Accumulable;
+import com.flowserve.system606.model.BillingEvent;
 import com.flowserve.system606.model.BusinessRule;
+import com.flowserve.system606.model.Contract;
 import com.flowserve.system606.model.CurrencyMetric;
 import com.flowserve.system606.model.DateMetric;
 import com.flowserve.system606.model.FinancialPeriod;
@@ -49,6 +51,8 @@ public class CalculationService {
     private FinancialPeriodService financialPeriodService;
     @Inject
     private CurrencyService currencyService;
+    @Inject
+    private AdminService adminService;
     @Inject
     private MetricService metricService;
     private StatelessKieSession kSession = null;
@@ -336,6 +340,16 @@ public class CalculationService {
             sum = sum.add(getAccumulatedCurrencyMetricValue(metricTypeId, childAccumulable));
         }
 
+        return sum;
+    }
+
+    public BigDecimal getAccumulatedBilledValue(Accumulable accumulable) {
+
+        BigDecimal sum = new BigDecimal("0.0");
+        List<BillingEvent> bEvents = adminService.findBillingEventsByContract((Contract) accumulable);
+        for (BillingEvent be : bEvents) {
+            sum = sum.add(be.getAmountContractCurrency());
+        }
         return sum;
     }
 

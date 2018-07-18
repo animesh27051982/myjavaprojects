@@ -7,6 +7,7 @@ package com.flowserve.system606.model;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Currency;
 import java.util.List;
 import java.util.logging.Logger;
 import javax.persistence.CascadeType;
@@ -38,8 +39,12 @@ public class Company extends BaseEntity<String> implements Comparable<Company>, 
     @OneToOne
     @JoinColumn(name = "PERIOD_ID")
     private FinancialPeriod currentPeriod;
+    @Column(name = "REPORTING_CURRENCY")
+    private Currency reportingCurrency;
     @Column(name = "INPUT_FREEZE_WORKDAY")
     private Integer inputFreezeWorkday;
+    @Column(name = "POCI_DUE_WORKDAY")
+    private Integer pociDueWorkday;
 
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "company", cascade = CascadeType.MERGE)
     private List<ReportingUnit> reportingUnit = new ArrayList<ReportingUnit>();
@@ -111,5 +116,21 @@ public class Company extends BaseEntity<String> implements Comparable<Company>, 
     @Override
     public List<Accumulable> getChildAccumulables() {
         return new ArrayList<Accumulable>(reportingUnit);
+    }
+
+    public Currency getReportingCurrency() {
+        return reportingCurrency;
+    }
+
+    public void setReportingCurrency(Currency reportingCurrency) {
+        this.reportingCurrency = reportingCurrency;
+    }
+
+    public Integer getPociDueWorkday() {
+        return pociDueWorkday;
+    }
+
+    public void setPociDueWorkday(Integer pociDueWorkday) {
+        this.pociDueWorkday = pociDueWorkday;
     }
 }
