@@ -252,6 +252,7 @@ public class AppInitializeService {
                 contractName = resultSet.getString(2);
                 String ruStr = StringUtils.substringBefore(resultSet.getString(3).trim(), "-");
                 ru = ruStr.replace("RU", "").trim();
+                Logger.getLogger(AppInitializeService.class.getName()).log(Level.INFO, "RU:\t" + ru);
                 salesOrderNumber = resultSet.getString(4);
                 contractCurrencyCode = resultSet.getString(5);
 
@@ -262,7 +263,7 @@ public class AppInitializeService {
                 contract.setSalesOrderNumber(salesOrderNumber);
                 contract.setContractCurrency(Currency.getInstance(contractCurrencyCode));
 
-//                ReportingUnit reportingUnit = adminService.findReportingUnitByCode(ru);
+                ReportingUnit reportingUnit = adminService.findReportingUnitByCode(ru);
 
                 if (contract == null) {
                     throw new IllegalStateException("Countract refers to a non-existent RU.  Invalid.");
@@ -273,15 +274,19 @@ public class AppInitializeService {
 //                if (reportingUnit == null) {
 //                    reportingUnit = new ReportingUnit();
 //                    reportingUnit.setCode(ru);
+//                    reportingUnit.setId( (long)1100 ); //TODO: need remove after test
 //                }
-//                contract.setReportingUnit(reportingUnit);
+                if (reportingUnit != null)
+                    contract.setReportingUnit(reportingUnit);
                 //persist(contract);
 
                 //update(contract);
                 // KJG Adding code
                 contract = contractService.update(contract);   // this gives us the JPA managed object.
-//                reportingUnit.getContracts().add(contract);
-//                adminService.update(reportingUnit);
+                if (reportingUnit != null) {
+                    reportingUnit.getContracts().add(contract);
+                    adminService.update(reportingUnit);
+                }
 
                 count++;
                 if(count > 100) //only do 100 for now
