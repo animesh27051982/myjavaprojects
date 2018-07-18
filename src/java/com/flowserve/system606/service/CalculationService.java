@@ -327,7 +327,7 @@ public class CalculationService {
 
         BigDecimal sum = new BigDecimal("0.0");
 
-        if (accumulable.getChildAccumulables().isEmpty()) {
+        if (accumulable.getChildAccumulables().isEmpty() && accumulable instanceof PerformanceObligation) {
             // TODO - We can abstract this further instead of hard cast to pob.
             BigDecimal value = getCurrencyMetric(metricTypeId, ((PerformanceObligation) accumulable)).getValue();
             if (value != null) {

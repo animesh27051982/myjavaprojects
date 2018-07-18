@@ -321,7 +321,7 @@
                                 <p:commandButton value="Return to Dashboard" icon="ui-icon-arrowthick-1-w" ajax="false" action="#{inputController.inputDashboard()}"/>
                                 <p:commandButton value="Cancel Current Edits" icon="ui-icon-cancel" ajax="false" action="#{inputOnlineEntry.cancelEdits()}"/>
                                 <p:commandButton value="Save Inputs" icon="ui-icon-disk" ajax="true" update="form" actionListener="#{inputOnlineEntry.saveInputs()}"/>
-                                <p:commandButton value="Save and Proceed to Calculation Review" icon="ui-icon-arrowthick-1-e" ajax="false" actionListener="#{inputOnlineEntry.saveInputs()}" action="#{calcReviewController.reviewCalculations()}" disabled="true"/>
+                                <p:commandButton value="Save and Proceed to Calculation Review" icon="ui-icon-arrowthick-1-e" ajax="false" actionListener="#{inputOnlineEntry.saveInputs()}" action="#{calcReviewController.reviewCalculations()}"/>
                             </f:facet>
                         </p:toolbar>
                     </div>
