@@ -45,7 +45,7 @@ public class ReportsService {
     private static final int HEADER_ROW_COUNT = 10;
 
     public void generateContractEsimatesReport(InputStream inputStream, FileOutputStream outputStream, Contract contract) throws Exception {
-        calculationService.executeBusinessRulesForContract(contract);
+        calculationService.executeBusinessRulesForAccumulable(contract);
         XSSFWorkbook workbook = new XSSFWorkbook(inputStream);
         workbook.removeSheetAt(workbook.getSheetIndex("Contract Summary-2"));
         workbook.removeSheetAt(workbook.getSheetIndex("Contract Summary-3"));

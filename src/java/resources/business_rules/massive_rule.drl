@@ -2,6 +2,7 @@ dialect "mvel"
 
 import java.math.BigDecimal;
 import com.flowserve.system606.model.PerformanceObligation;
+import com.flowserve.system606.model.Contract;
 import com.flowserve.system606.model.Metric;
 import com.flowserve.system606.model.MetricPriorPeriod;
 import java.util.logging.Logger;
@@ -178,14 +179,14 @@ rule "Contract Level Estimated Gross Profit and Margin"
         transactionPrice : Metric(metricType.id == "TRANSACTION_PRICE_CC", value != null)  // if this metric exists and is not null, initialize variable.
         liquidatedDamagesITD : Metric(metricType.id == "LIQUIDATED_DAMAGES_ITD_CC", value != null)
         estimatedCostAtCompletion : Metric(metricType.id == "ESTIMATED_COST_AT_COMPLETION_LC", value != null)
-
         estimatedGrossProfit : Metric(metricType.id == "ESTIMATED_GROSS_PROFIT_LC")
-        estimatedGrossMargin : Metric(metricType.id == "ESTIMATED_GROSS_MARGIN_LC")
+        estimatedGrossMargin : Metric(metricType.id == "ESTIMATED_GROSS_MARGIN_LC") 
 
     then
 
         // Calculate all outputs possible using these inputs.
         modify (estimatedGrossProfit) { value = (transactionPrice.value - liquidatedDamagesITD.value - estimatedCostAtCompletion.value)};
         modify (estimatedGrossMargin) { value = (estimatedGrossProfit.value / (transactionPrice.value -liquidatedDamagesITD.value) )};
-
+        logger.info("From buiness rule - gross profit: " + estimatedGrossProfit.value);
+        logger.info("From buiness rule - gross margin: " + estimatedGrossMargin.value);
 end
