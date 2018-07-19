@@ -60,8 +60,8 @@ public class AppInitializeService {
             adminService.initCoEtoParentRU();
             adminService.initCompaniesInRUs();
             adminService.initPreparersReviewerForRU();
-            contractService.initContracts();
-            pobService.initPOBs();
+            //contractService.initContracts();
+            //pobService.initPOBs();
 
             calculationService.initBusinessRules();
             //calculationService.initBusinessRulesEngine();

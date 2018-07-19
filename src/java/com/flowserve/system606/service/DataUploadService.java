@@ -40,6 +40,8 @@ public class DataUploadService {
     private PerformanceObligationService pobService;
     @Inject
     private AdminService adminService;
+    @Inject
+    private CalculationService calculationService;
 
     private Map<String, String> methodMap = new HashMap<String, String>();
 
@@ -84,10 +86,35 @@ public class DataUploadService {
 
             // processing returned data and printing into console
             while (resultSet.next()) {
-                Logger.getLogger(DataUploadService.class.getName()).log(Level.INFO, resultSet.getString(1) + "\t"
-                        + resultSet.getString(2) + "\t"
-                        + resultSet.getInt(3) + "\t"
-                        + resultSet.getString(4));
+//                Logger.getLogger(DataUploadService.class.getName()).log(Level.INFO, resultSet.getString(1) + "\t"
+//                        + resultSet.getString(2) + "\t"
+//                        + resultSet.getInt(3) + "\t"
+//                        + resultSet.getString(4));
+                //resultSet.getString(21);
+                if (resultSet.getString(1).equalsIgnoreCase("2018-5")) {
+                    String id = resultSet.getString(21);
+                    if (id != null) {
+                        String[] sp = id.split("-");
+                        String lastId = sp[sp.length - 1].trim();
+                        try {
+                            // checking valid integer using parseInt() method
+                            Integer.parseInt(lastId);
+                            PerformanceObligation pob = pobService.findPerformanceObligationById(new Long(lastId));
+                            if (pob != null) {
+                                calculationService.putCurrencyMetricValue("TRANSACTION_PRICE_CC", pob, resultSet.getBigDecimal(9));
+                                calculationService.putCurrencyMetricValue("ESTIMATED_COST_AT_COMPLETION_LC", pob, resultSet.getBigDecimal(10));
+
+                            } else {
+                                Logger.getLogger(DataUploadService.class.getName()).log(Level.INFO, "These POBs not found : " + id);
+                            }
+                        } catch (NumberFormatException e) {
+                            Logger.getLogger(DataUploadService.class.getName()).log(Level.INFO, "Error " + e);
+                        }
+                    }
+
+                } else {
+                    Logger.getLogger(DataUploadService.class.getName()).log(Level.INFO, "Other Financial Period : " + resultSet.getString(1));
+                }
             }
         } catch (SQLException sqlex) {
             sqlex.printStackTrace();
