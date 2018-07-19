@@ -1,5 +1,5 @@
 INPUT|REVENUE_RECOGNITION_METHOD|POB||StringMetric||Revenue Recognition Method|Revenue Recognition Method|POC POB Metrics|H|Group1|1
-INPUT|TRANSACTION_PRICE_CC|POB|REQUIRED|CurrencyMetric|CC|Transaction Price|Transaction Price|POC POB Metrics|O|Group1|2
+INPUT|TRANSACTION_PRICE_CC|POB|REQUIRED|CurrencyMetric|CC|Allocated Transaction Price|Allocated Transaction Price|POC POB Metrics|O|Group1|2
 INPUT|LIQUIDATED_DAMAGES_ITD_CC|POB|REQUIRED|CurrencyMetric|CC|Total Liquidated Damages|Total LD Penalty Included in Transaction Price|POC POB Metrics|P|Group1|2
 INPUT|ESTIMATED_COST_AT_COMPLETION_LC|POB|REQUIRED|CurrencyMetric|LC|Estimated Cost at Completion|Estimated Cost at Completion|POC POB Metrics|Q|Group1|3
 INPUT|LOCAL_COSTS_ITD_LC|POB||CurrencyMetric|LC|Cumulative Cost Incurred / Received|Cumulative Cost Incurred / Received|POC POB Metrics|S|Group1|4

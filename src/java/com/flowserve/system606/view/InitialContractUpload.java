@@ -5,7 +5,7 @@
  */
 package com.flowserve.system606.view;
 
-import com.flowserve.system606.service.AppInitializeService;
+import com.flowserve.system606.service.DataUploadService;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -30,19 +30,19 @@ import org.primefaces.event.FileUploadEvent;
 public class InitialContractUpload implements Serializable {
 
     @Inject
-    private AppInitializeService appInitializeService;
-    
+    private DataUploadService dataUploadService;
+
     public static final String PREFIX = "msaccess";
-    public static final String SUFFIX = ".tmp";    
+    public static final String SUFFIX = ".tmp";
 
     private static Logger logger = Logger.getLogger("com.flowserve.system606");
 
     public void handleInitialContractUpload(FileUploadEvent event) {
-        
+
         try {
             File accessFile = stream2file((InputStream) event.getFile().getInputstream());
             String fileName = accessFile.getAbsolutePath();
-            appInitializeService.initContract(fileName);
+            dataUploadService.initContract(fileName);
 
             FacesMessage msg = new FacesMessage("Succesful", event.getFile().getFileName() + " is uploaded.");
 
@@ -54,7 +54,7 @@ public class InitialContractUpload implements Serializable {
         }
     }
 
-    public File stream2file (InputStream in) throws IOException {
+    public File stream2file(InputStream in) throws IOException {
         final File tempFile = File.createTempFile(PREFIX, SUFFIX);
         tempFile.deleteOnExit();
         try (FileOutputStream out = new FileOutputStream(tempFile)) {

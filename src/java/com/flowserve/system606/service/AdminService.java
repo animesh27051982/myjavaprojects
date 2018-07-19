@@ -641,8 +641,8 @@ public class AdminService {
     public List<ReportingUnit> getPreparableReportingUnits() {   // TODO - Move this to UserService.
         // TODO - figure out logged in user.
         List<ReportingUnit> rus = new ArrayList<ReportingUnit>();
-        rus.add(findReportingUnitByCode("1015"));
-        rus.add(findReportingUnitByCode("1100"));
+        rus.add(findReportingUnitByCode("8279"));
+        //rus.add(findReportingUnitByCode("1100"));
 
         return rus;
     }

@@ -142,37 +142,66 @@ public class ViewSupport implements Serializable {
     }
 
     public void filterNodeTree(TreeNode root, String contractFilterText) {
-        List<TreeNode> contractsToRemove = new ArrayList<TreeNode>();
+        //List<TreeNode> contractsToRemove = new ArrayList<TreeNode>();
+        List<TreeNode> pobsToRemove = new ArrayList<TreeNode>();
 
         for (TreeNode reportingUnit : root.getChildren()) {
+            String ruName = ((ReportingUnit) reportingUnit.getData()).getName();
+            if (Pattern.compile(Pattern.quote(contractFilterText), Pattern.CASE_INSENSITIVE).matcher(ruName).find()
+                    || Pattern.compile(Pattern.quote(contractFilterText), Pattern.CASE_INSENSITIVE).matcher(ruName).find()) {
+                continue;
+            }
+
             for (TreeNode contract : reportingUnit.getChildren()) {
                 String contractName = ((Contract) contract.getData()).getName();
                 String contractId = ((Contract) contract.getData()).getId().toString();
 
-                if (!Pattern.compile(Pattern.quote(contractFilterText), Pattern.CASE_INSENSITIVE).matcher(contractName).find()
-                        && !Pattern.compile(Pattern.quote(contractFilterText), Pattern.CASE_INSENSITIVE).matcher(contractId).find()) {
-                    contractsToRemove.add(contract);
+                if (Pattern.compile(Pattern.quote(contractFilterText), Pattern.CASE_INSENSITIVE).matcher(contractName).find()
+                        || Pattern.compile(Pattern.quote(contractFilterText), Pattern.CASE_INSENSITIVE).matcher(contractId).find()) {
+                    continue;
+                }
+
+                for (TreeNode pob : contract.getChildren()) {
+                    String pobName = ((PerformanceObligation) pob.getData()).getName();
+                    String pobId = ((PerformanceObligation) pob.getData()).getId().toString();
+
+                    if (!Pattern.compile(Pattern.quote(contractFilterText), Pattern.CASE_INSENSITIVE).matcher(pobName).find()
+                            && !Pattern.compile(Pattern.quote(contractFilterText), Pattern.CASE_INSENSITIVE).matcher(pobId).find()) {
+                        pobsToRemove.add(pob);
+                    }
                 }
             }
         }
 
         // Ugly but necessary to prevent ConcurrentModificationException
-        for (TreeNode contract : contractsToRemove) {
-            contract.getParent().getChildren().remove(contract);
+        for (TreeNode pob : pobsToRemove) {
+            pob.getParent().getChildren().remove(pob);
         }
+//        for (TreeNode contract : contractsToRemove) {
+//            contract.getParent().getChildren().remove(contract);
+//        }
 
         List<TreeNode> reportingUnitsToRemove = new ArrayList<TreeNode>();
+        List<TreeNode> contractsToRemove = new ArrayList<TreeNode>();
 
         for (TreeNode reportingUnit : root.getChildren()) {
             if (reportingUnit.getChildCount() == 0) {
                 reportingUnitsToRemove.add(reportingUnit);
             }
+            for (TreeNode contract : reportingUnit.getChildren()) {
+                if (contract.getChildCount() == 0) {
+                    contractsToRemove.add(contract);
+                }
+            }
+
         }
 
         for (TreeNode ru : reportingUnitsToRemove) {
             ru.getParent().getChildren().remove(ru);
         }
-
+        for (TreeNode contract : contractsToRemove) {
+            contract.getParent().getChildren().remove(contract);
+        }
     }
 
     public void filterNodeTreeContracts(TreeNode root, List<Contract> contracts) {
