@@ -184,19 +184,20 @@ public class AppInitializeService {
 
 
                 Contract contract = contractService.findContractById(contractId);
-//
-//                if (contract == null) {
-//                    throw new IllegalStateException("POB refers to non-existent contract.  Invalid.  POB ID: " + pobId);
-//                }
 
                 if (contract == null) {
-                    contract = new Contract();
-                    contract.setId(contractId);
-                    contract.setName(customerName + '-' + contractId);
-                    contract.setSalesOrderNumber(salesOrderNumber);
+                    //throw new IllegalStateException("POB refers to non-existent contract.  Invalid.  POB ID: " + pobId);
+                    Logger.getLogger(AppInitializeService.class.getName()).log(Level.WARNING, "POB refers to non-existent contract.  Invalid.  POB ID: " + pobId);
                 }
-
-                pob.setContract(contract);
+//                if (contract == null) {
+//                    contract = new Contract();
+//                    contract.setId(contractId);
+//                    contract.setName(customerName + '-' + contractId);
+//                    contract.setSalesOrderNumber(salesOrderNumber);
+//                }
+                else {
+                    pob.setContract(contract);
+                }
                 pob.setName(pobName);
                 pob.setId(pobId);
                 pob.setRevRecMethod(revRecMethod);
@@ -207,8 +208,8 @@ public class AppInitializeService {
 //                contractService.update(contract);
 
                 count++;
-                if(count > 100) //only do 100 for now
-                    break;
+//                if(count > 100) //only do 100 for now
+//                    break;
             }   
             resultSet.close();
             
@@ -261,7 +262,8 @@ public class AppInitializeService {
                 contract.setId(contractId);
                 contract.setName(contractName);
                 contract.setSalesOrderNumber(salesOrderNumber);
-                contract.setContractCurrency(Currency.getInstance(contractCurrencyCode));
+                if(contractCurrencyCode != null &&  !contractCurrencyCode.isEmpty())
+                    contract.setContractCurrency(Currency.getInstance(contractCurrencyCode));
 
                 ReportingUnit reportingUnit = adminService.findReportingUnitByCode(ru);
 
@@ -289,8 +291,8 @@ public class AppInitializeService {
                 }
 
                 count++;
-                if(count > 100) //only do 100 for now
-                    break;
+//                if(count > 100) //only do 100 for now
+//                    break;
             }   
             resultSet.close();
             
