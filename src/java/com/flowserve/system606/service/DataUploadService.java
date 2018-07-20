@@ -49,7 +49,7 @@ public class DataUploadService {
         em.persist(object);
     }
 
-    public void processUploadedCalculationData(String msAccDB) {
+    public void processUploadedCalculationData(String msAccDB) throws Exception {
         Logger.getLogger(DataUploadService.class.getName()).log(Level.INFO, "Processing POCI Data: " + msAccDB);
 
         Connection connection = null;
@@ -79,7 +79,7 @@ public class DataUploadService {
             statement = connection.createStatement();
 
             // Step 2.C: Executing SQL &amp; retrieve data into ResultSet
-            resultSet = statement.executeQuery("SELECT * FROM tbl_POCI");
+            resultSet = statement.executeQuery("SELECT Period,`POb NAME (TAB NAME)`,`Transaction Price/Changes to Trans Price (excl LDs)`,`Estimated at Completion (EAC)/ Changes to EAC (excl TPCs)`,`Cumulative Costs Incurred`,`Liquidated Damages (LDs)/Changes to LDs` FROM `tbl_POCI_1_POb Changes`");
 
             Logger.getLogger(DataUploadService.class.getName()).log(Level.INFO, "Period\tPOCC File Name\tC Page Number\tReporting Unit Number");
             Logger.getLogger(DataUploadService.class.getName()).log(Level.INFO, "==\t================\t===\t=======");
@@ -88,11 +88,14 @@ public class DataUploadService {
             while (resultSet.next()) {
 //                Logger.getLogger(DataUploadService.class.getName()).log(Level.INFO, resultSet.getString(1) + "\t"
 //                        + resultSet.getString(2) + "\t"
-//                        + resultSet.getInt(3) + "\t"
-//                        + resultSet.getString(4));
-                //resultSet.getString(21);
+//                        + resultSet.getBigDecimal(3)+ "\t"
+//                        + resultSet.getBigDecimal(4)+ "\t"
+//                        + resultSet.getBigDecimal(5)+ "\t"
+//                        + resultSet.getBigDecimal(6)+ "\t"
+//                );
+
                 if (resultSet.getString(1).equalsIgnoreCase("2018-5")) {
-                    String id = resultSet.getString(21);
+                    String id = resultSet.getString(2);
                     if (id != null) {
                         String[] sp = id.split("-");
                         String lastId = sp[sp.length - 1].trim();
@@ -101,8 +104,13 @@ public class DataUploadService {
                             Integer.parseInt(lastId);
                             PerformanceObligation pob = pobService.findPerformanceObligationById(new Long(lastId));
                             if (pob != null) {
-                                calculationService.putCurrencyMetricValue("TRANSACTION_PRICE_CC", pob, resultSet.getBigDecimal(9));
-                                calculationService.putCurrencyMetricValue("ESTIMATED_COST_AT_COMPLETION_LC", pob, resultSet.getBigDecimal(10));
+                                calculationService.putCurrencyMetricValue("TRANSACTION_PRICE_CC", pob, resultSet.getBigDecimal(3));
+                                calculationService.putCurrencyMetricValue("ESTIMATED_COST_AT_COMPLETION_LC", pob, resultSet.getBigDecimal(4));
+                                calculationService.putCurrencyMetricValue("LOCAL_COSTS_ITD_LC", pob, resultSet.getBigDecimal(5));
+                                calculationService.putCurrencyMetricValue("LIQUIDATED_DAMAGES_ITD_CC", pob, resultSet.getBigDecimal(6));
+//                                if (pob.getContract().getReportingUnit().getCode().equalsIgnoreCase("8025")) {
+//                                    calculationService.executeBusinessRules(pob);
+//                                }
 
                             } else {
                                 Logger.getLogger(DataUploadService.class.getName()).log(Level.INFO, "These POBs not found : " + id);
@@ -111,7 +119,6 @@ public class DataUploadService {
                             Logger.getLogger(DataUploadService.class.getName()).log(Level.INFO, "Error " + e);
                         }
                     }
-
                 } else {
                     Logger.getLogger(DataUploadService.class.getName()).log(Level.INFO, "Other Financial Period : " + resultSet.getString(1));
                 }

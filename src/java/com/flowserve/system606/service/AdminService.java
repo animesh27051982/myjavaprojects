@@ -643,6 +643,7 @@ public class AdminService {
         List<ReportingUnit> rus = new ArrayList<ReportingUnit>();
         rus.add(findReportingUnitByCode("1225"));
         //rus.add(findReportingUnitByCode("1100"));
+        rus.add(findReportingUnitByCode("8025"));
 
         return rus;
     }
