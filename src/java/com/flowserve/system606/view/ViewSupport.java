@@ -5,11 +5,12 @@
  */
 package com.flowserve.system606.view;
 
-import com.flowserve.system606.model.Accumulable;
 import com.flowserve.system606.model.BillingEvent;
 import com.flowserve.system606.model.BusinessUnit;
 import com.flowserve.system606.model.Contract;
-import com.flowserve.system606.model.Metric;
+import com.flowserve.system606.model.CurrencyMetric;
+import com.flowserve.system606.model.DecimalMetric;
+import com.flowserve.system606.model.Measurable;
 import com.flowserve.system606.model.PerformanceObligation;
 import com.flowserve.system606.model.ReportingUnit;
 import com.flowserve.system606.model.User;
@@ -19,7 +20,6 @@ import com.flowserve.system606.service.MetricService;
 import com.flowserve.system606.service.PerformanceObligationService;
 import com.flowserve.system606.web.WebSession;
 import java.io.Serializable;
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Currency;
@@ -131,7 +131,7 @@ public class ViewSupport implements Serializable {
                 Logger.getLogger(WebSession.class.getName()).log(Level.FINER, "Adding to tree Contract Name: " + contract.getName());
                 TreeNode contractNode = new DefaultTreeNode(contract, reportingUnitNode);
                 contractNode.setExpanded(true);
-                for (BillingEvent billEvent : contract.getBillingEvent()) {
+                for (BillingEvent billEvent : contract.getBillingEvents()) {
                     Logger.getLogger(WebSession.class.getName()).log(Level.FINER, "Adding to tree POB ID: " + billEvent.getId());
                     new DefaultTreeNode(billEvent, contractNode);
                 }
@@ -238,20 +238,23 @@ public class ViewSupport implements Serializable {
         return metricService.findMetricTypeById(metricTypeId).getDescription();
     }
 
-    public BigDecimal getCurrencyMetricValue(String metricTypeId, PerformanceObligation pob) {
-        Logger.getLogger(ViewSupport.class.getName()).log(Level.FINER, "metricTypeId: " + metricTypeId);
-        return calculationService.getCurrencyMetricValue(metricTypeId, pob);
+//    public BigDecimal getCurrencyMetricValue(String metricTypeId, PerformanceObligation pob) {
+//        return calculationService.getCurrencyMetricValue(metricTypeId, pob);
+//    }
+//    public BigDecimal getAccumulatedCurrencyMetricValue(String metricTypeId, Accumulable measurable) throws Exception {
+//        return calculationService.getCurrencyMetric(metricTypeId, measurable).getValue();
+//    }
+    public CurrencyMetric getCurrencyMetric(String metricTypeId, Measurable measurable) throws Exception {
+        return calculationService.getCurrencyMetric(metricTypeId, measurable);
     }
 
-    public BigDecimal getAccumulatedCurrencyMetricValue(String metricTypeId, Accumulable accumulable) {
-        return calculationService.getAccumulatedCurrencyMetricValue(metricTypeId, accumulable);
+    public DecimalMetric getDecimalMetric(String metricTypeId, Measurable measurable) throws Exception {
+        return calculationService.getDecimalMetric(metricTypeId, measurable);
     }
 
-    public Metric getCurrencyMetric(String metricTypeId, PerformanceObligation pob) {
-        return calculationService.getCurrencyMetric(metricTypeId, pob);
-    }
-
-    public BigDecimal getCurrencyMetricValuePriorPeriod(String outputTypeId, PerformanceObligation pob) {
-        return calculationService.getCurrencyMetricValuePriorPeriod(outputTypeId, pob);
+    public CurrencyMetric getCurrencyMetricPriorPeriod(String metricTypeId, Measurable measurable) throws Exception {
+        return calculationService.getCurrencyMetric(metricTypeId, measurable);
+        // TODO
+        //return calculationService.getCurrencyMetricValuePriorPeriod(outputTypeId, measurable);
     }
 }

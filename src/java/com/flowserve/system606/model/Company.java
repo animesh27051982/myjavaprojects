@@ -10,7 +10,6 @@ import java.util.ArrayList;
 import java.util.Currency;
 import java.util.List;
 import java.util.logging.Logger;
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -22,7 +21,7 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name = "COMPANIES")
-public class Company extends BaseEntity<String> implements Comparable<Company>, Accumulable, Serializable {
+public class Company extends TransientMeasurable<String> implements Comparable<Company>, Measurable, Serializable {
 
     private static final long serialVersionUID = -5428359272400395184L;
     private static final Logger LOG = Logger.getLogger(Company.class.getName());
@@ -46,7 +45,7 @@ public class Company extends BaseEntity<String> implements Comparable<Company>, 
     @Column(name = "POCI_DUE_WORKDAY")
     private Integer pociDueWorkday;
 
-    @OneToMany(fetch = FetchType.EAGER, mappedBy = "company", cascade = CascadeType.MERGE)
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "company")
     private List<ReportingUnit> reportingUnit = new ArrayList<ReportingUnit>();
 
     public Company() {
@@ -114,8 +113,8 @@ public class Company extends BaseEntity<String> implements Comparable<Company>, 
     }
 
     @Override
-    public List<Accumulable> getChildAccumulables() {
-        return new ArrayList<Accumulable>(reportingUnit);
+    public List<Measurable> getChildMeasurables() {
+        return new ArrayList<Measurable>(reportingUnit);
     }
 
     public Currency getReportingCurrency() {
@@ -124,6 +123,14 @@ public class Company extends BaseEntity<String> implements Comparable<Company>, 
 
     public void setReportingCurrency(Currency reportingCurrency) {
         this.reportingCurrency = reportingCurrency;
+    }
+
+    public Currency getContractCurrency() {
+        return reportingCurrency;
+    }
+
+    public Currency getLocalCurrency() {
+        return reportingCurrency;
     }
 
     public Integer getPociDueWorkday() {

@@ -42,12 +42,12 @@ public class MetricSet extends BaseEntity<Long> {
     private WorkflowStatus status;
     @Column(name = "MOST_RECENT")
     private boolean mostRecent;
-    @OneToOne
-    @JoinColumn(name = "POB_ID")
-    private PerformanceObligation performanceObligation;
-    @OneToOne
-    @JoinColumn(name = "CONTRACT_ID")
-    private Contract contract;
+//    @OneToOne
+//    @JoinColumn(name = "POB_ID")
+//    private PerformanceObligation performanceObligation;
+    //@OneToOne
+    //@JoinColumn(name = "CONTRACT_ID")
+    //private Contract contract;
 
     @OneToMany(cascade = {CascadeType.ALL}, fetch = FetchType.EAGER, mappedBy = "metricSet")
     private Map<MetricType, Metric> typeMetricMap = new HashMap<MetricType, Metric>();
@@ -112,24 +112,24 @@ public class MetricSet extends BaseEntity<Long> {
         this.creationDate = creationDate;
     }
 
-    public PerformanceObligation getPerformanceObligation() {
-        return performanceObligation;
-    }
-
-    public void setPerformanceObligation(PerformanceObligation performanceObligation) {
-        this.performanceObligation = performanceObligation;
-    }
-
     public Map<MetricType, Metric> getTypeMetricMap() {
         return typeMetricMap;
     }
 
-    public Contract getContract() {
-        return contract;
-    }
-
-    public void setContract(Contract contract) {
-        this.contract = contract;
-    }
-
+//    public PerformanceObligation getPerformanceObligation() {
+//        return performanceObligation;
+//    }
+//
+//    public void setPerformanceObligation(PerformanceObligation performanceObligation) {
+//        this.performanceObligation = performanceObligation;
+//    }
+//
+//
+//    public Contract getContract() {
+//        return contract;
+//    }
+//
+//    public void setContract(Contract contract) {
+//        this.contract = contract;
+//    }
 }

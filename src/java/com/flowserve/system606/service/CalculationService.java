@@ -5,13 +5,14 @@
  */
 package com.flowserve.system606.service;
 
-import com.flowserve.system606.model.Accumulable;
 import com.flowserve.system606.model.BillingEvent;
 import com.flowserve.system606.model.BusinessRule;
 import com.flowserve.system606.model.Contract;
 import com.flowserve.system606.model.CurrencyMetric;
 import com.flowserve.system606.model.DateMetric;
+import com.flowserve.system606.model.DecimalMetric;
 import com.flowserve.system606.model.FinancialPeriod;
+import com.flowserve.system606.model.Measurable;
 import com.flowserve.system606.model.Metric;
 import com.flowserve.system606.model.MetricPriorPeriod;
 import com.flowserve.system606.model.MetricStore;
@@ -90,25 +91,25 @@ public class CalculationService {
         Logger.getLogger(CalculationService.class.getName()).log(Level.INFO, "Finished initBusinessRulesEngine");
     }
 
-    private void initializeCurrenciesCurrentPeriod(Collection<Metric> metrics, MetricStore metricStore) throws Exception {
+    private void initializeCurrenciesCurrentPeriod(Collection<Metric> metrics, Measurable measurable) throws Exception {
         FinancialPeriod period = financialPeriodService.getCurrentFinancialPeriod();
 
         for (Metric metric : metrics) {
-            initializeCurrencies(metric, metricStore, period);
+            initializeCurrencies(metric, measurable, period);
         }
     }
 
-    private void initializeCurrencies(Metric metric, MetricStore metricStore, FinancialPeriod period) throws Exception {
+    private void initializeCurrencies(Metric metric, Measurable measurable, FinancialPeriod period) throws Exception {
         if (metric.getValue() == null || !(metric instanceof CurrencyMetric)) {
             return;
         }
         if (metric.getMetricType().getMetricCurrencyType() == null) {
             throw new IllegalStateException("There is no currency type defined for the metric type " + metric.getMetricType().getId() + ".  Please contact a system administrator.");
         }
-        if (metricStore.getLocalCurrency() == null) {
+        if (measurable.getLocalCurrency() == null) {
             throw new IllegalStateException("There is no local currency defined for the reporting unit.  Please contact a system administrator.");
         }
-        if (metricStore.getContractCurrency() == null) {
+        if (measurable.getContractCurrency() == null) {
             throw new IllegalStateException("There is no contract currency defined for the contract.  Please contact a system administrator.");
         }
 
@@ -118,7 +119,7 @@ public class CalculationService {
             if (currencyMetric.getValue().equals(BigDecimal.ZERO)) {
                 currencyMetric.setContractCurrencyValue(BigDecimal.ZERO);
             } else {
-                BigDecimal contractCurrencyValue = currencyService.convert(currencyMetric.getValue(), metricStore.getLocalCurrency(), metricStore.getContractCurrency(), period);
+                BigDecimal contractCurrencyValue = currencyService.convert(currencyMetric.getValue(), measurable.getLocalCurrency(), measurable.getContractCurrency(), period);
                 currencyMetric.setContractCurrencyValue(contractCurrencyValue);
             }
         } else if (currencyMetric.isContractCurrencyMetric()) {
@@ -126,48 +127,44 @@ public class CalculationService {
             if (currencyMetric.getValue().equals(BigDecimal.ZERO)) {
                 currencyMetric.setLocalCurrencyValue(BigDecimal.ZERO);
             } else {
-                BigDecimal localCurrencyValue = currencyService.convert(currencyMetric.getValue(), metricStore.getContractCurrency(), metricStore.getLocalCurrency(), period);
+                BigDecimal localCurrencyValue = currencyService.convert(currencyMetric.getValue(), measurable.getContractCurrency(), measurable.getLocalCurrency(), period);
                 currencyMetric.setLocalCurrencyValue(localCurrencyValue);
             }
         }
     }
 
     // intelliGet since this is no ordinary get.  Initialize any missing metrics on the fly.
-    private Metric intelliGetMetric(MetricType metricType, MetricStore metricStore, FinancialPeriod period) {  // TODO - Exception type to be thrown?
-        if (!metricStore.metricSetExistsForPeriod(period)) {
-            metricStore.initializeMetricSetForPeriod(period);
+    private Metric intelliGetMetric(MetricType metricType, Measurable measurable, FinancialPeriod period) {  // TODO - Exception type to be thrown?
+        if (!measurable.metricSetExistsForPeriod(period)) {
+            measurable.initializeMetricSetForPeriod(period);
         }
-        if (!metricStore.metricExistsForPeriod(period, metricType)) {
-            metricStore.initializeMetricForPeriod(period, metricType);
+        if (!measurable.metricExistsForPeriod(period, metricType)) {
+            measurable.initializeMetricForPeriod(period, metricType);
         }
 
-        return metricStore.getPeriodMetric(period, metricType);
+        return measurable.getPeriodMetric(period, metricType);
     }
 
-    private Metric getMetric(String metricTypeId, MetricStore metricStore) {
+    private Metric getMetric(String metricTypeId, Measurable measurable) {
         FinancialPeriod period = financialPeriodService.getCurrentFinancialPeriod();
-        return intelliGetMetric(metricService.findMetricTypeById(metricTypeId), metricStore, period);
+        return intelliGetMetric(metricService.findMetricTypeById(metricTypeId), measurable, period);
     }
 
-    private Metric getMetricPriorPeriod(String metricTypeId, MetricStore metricStore) {
+    private Metric getMetricPriorPeriod(String metricTypeId, Measurable measurable) {
         FinancialPeriod period = financialPeriodService.getPriorFinancialPeriod();
-        return intelliGetMetric(metricService.findMetricTypeById(metricTypeId), metricStore, period);
+        return intelliGetMetric(metricService.findMetricTypeById(metricTypeId), measurable, period);
     }
 
-    public String getStringMetricValue(String metricTypeId, MetricStore metricStore) {
-        return (String) getMetric(metricTypeId, metricStore).getValue();
+    public String getStringMetricValue(String metricTypeId, Measurable measurable) {
+        return (String) getMetric(metricTypeId, measurable).getValue();
     }
 
-    public BigDecimal getDecimalMetricValue(String metricTypeId, PerformanceObligation pob) {
-        return (BigDecimal) getMetric(metricTypeId, pob).getValue();
+    public LocalDate getDateMetricValue(String metricTypeId, Measurable measurable) {
+        return (LocalDate) getMetric(metricTypeId, measurable).getValue();
     }
 
-    public LocalDate getDateMetricValue(String metricTypeId, PerformanceObligation pob) {
-        return (LocalDate) getMetric(metricTypeId, pob).getValue();
-    }
-
-    public BigDecimal getCurrencyMetricValue(String metricTypeId, PerformanceObligation pob) {
-        return (BigDecimal) getMetric(metricTypeId, pob).getValue();
+    public BigDecimal getCurrencyMetricValue(String metricTypeId, Measurable measurable) {
+        return (BigDecimal) getMetric(metricTypeId, measurable).getValue();
     }
 
     public BigDecimal getCurrencyMetricValuePriorPeriod(String metricTypeId, PerformanceObligation pob) {
@@ -178,16 +175,46 @@ public class CalculationService {
         return (StringMetric) getMetric(metricTypeId, pob);
     }
 
-    public DateMetric getDateMetric(String metricTypeId, PerformanceObligation pob) {
-        return (DateMetric) getMetric(metricTypeId, pob);
+    public DecimalMetric getDecimalMetric(String metricTypeId, Measurable measurable) {
+        return (DecimalMetric) getMetric(metricTypeId, measurable);
     }
 
-    public CurrencyMetric getCurrencyMetric(String metricTypeId, PerformanceObligation pob) {  // TODO KJG - This method should be getCurrencyMetric() and the method above should be getCurrencyMetricValue() waiting on this due to impact.
-        return (CurrencyMetric) getMetric(metricTypeId, pob);
+    public BigDecimal getDecimalMetricValue(String metricTypeId, Measurable measurable) {
+        return (BigDecimal) getMetric(metricTypeId, measurable).getValue();
     }
 
-    public void putCurrencyMetricValue(String metricTypeId, PerformanceObligation pob, BigDecimal value) {
-        getMetric(metricTypeId, pob).setValue(value);
+    public DateMetric getDateMetric(String metricTypeId, Measurable measurable) {
+        return (DateMetric) getMetric(metricTypeId, measurable);
+    }
+
+//    public CurrencyMetric getCurrencyMetric(String metricTypeId, PerformanceObligation pob) {
+//        return (CurrencyMetric) getMetric(metricTypeId, pob);
+//    }
+//    public void putCurrencyMetricValue(String metricTypeId, PerformanceObligation pob, BigDecimal value) {
+//        getMetric(metricTypeId, pob).setValue(value);
+//    }
+    public CurrencyMetric getCurrencyMetric(String metricTypeId, Measurable measurable) throws Exception {
+        if (measurable instanceof MetricStore) {
+            CurrencyMetric currencyMetric = (CurrencyMetric) getMetric(metricTypeId, measurable);
+            if (isMetricAvailableAtThisLevel(currencyMetric) || measurable.getChildMeasurables().isEmpty()) {
+                return currencyMetric;
+            }
+        }
+        Logger.getLogger(CalculationService.class.getName()).log(Level.INFO, "Metric not available at level. " + measurable.getClass() + " Returnig accumulated version: " + metricTypeId);
+        return getAccumulatedCurrencyMetric(metricTypeId, measurable);
+    }
+
+    private boolean isMetricAvailableAtThisLevel(Metric metric) {
+        return metric != null;
+    }
+
+    public void putCurrencyMetricValue(String metricTypeId, Contract contract, BigDecimal value) {
+        if (isMetricAvailableAtThisLevel(getMetric(metricTypeId, contract))) {
+            getMetric(metricTypeId, contract).setValue(value);
+        } else {
+            Logger.getLogger(CalculationService.class.getName()).log(Level.INFO, "Metric not available at contract level: " + metricTypeId);
+        }
+
     }
 
 //    public boolean isMetricRequired() {
@@ -199,9 +226,8 @@ public class CalculationService {
 //
 //        return false;
 //    }
-    public void executeBusinessRules(MetricStore metricStore) throws Exception {
-        Logger.getLogger(CalculationService.class.getName()).log(Level.FINER, "Firing all business rules for: " + metricStore.getId());
-
+    public void executeBusinessRules(Measurable measurable) throws Exception {
+        Logger.getLogger(CalculationService.class.getName()).log(Level.FINER, "Firing all business rules");
         Logger.getLogger(CalculationService.class.getName()).log(Level.FINER, "Running currency conversions");
 
         if (kSession == null) {
@@ -209,13 +235,13 @@ public class CalculationService {
         }
 
         List<Object> facts = new ArrayList<Object>();
-        facts.add(metricStore);
-        Collection<Metric> currentPeriodMetrics = getAllCurrentPeriodMetrics(metricStore);
-        initializeCurrenciesCurrentPeriod(currentPeriodMetrics, metricStore);
+        facts.add(measurable);
+        Collection<Metric> currentPeriodMetrics = getAllCurrentPeriodMetrics(measurable);
+        initializeCurrenciesCurrentPeriod(currentPeriodMetrics, measurable);
         facts.addAll(currentPeriodMetrics);
-        facts.addAll(getAllPriorPeriodMetrics(metricStore));
+        facts.addAll(getAllPriorPeriodMetrics(measurable));
         kSession.execute(facts);
-        initializeCurrenciesCurrentPeriod(currentPeriodMetrics, metricStore);
+        initializeCurrenciesCurrentPeriod(currentPeriodMetrics, measurable);
 
         Logger.getLogger(CalculationService.class.getName()).log(Level.FINER, "Firing all business rules complete.");
     }
@@ -226,28 +252,27 @@ public class CalculationService {
         }
     }
 
-    public void executeBusinessRulesForAccumulable(Accumulable accumulable) throws Exception {   // Pass in the contract as the accumulable.
-
-        if (kSession == null) {
-            initBusinessRulesEngine();
-        }
-
-        List<Object> facts = new ArrayList<Object>();
-
-        facts.add(accumulable);
-        Collection<Metric> currentPeriodMetrics = getAccumulated(accumulable);
-        facts.addAll(currentPeriodMetrics);
-
-        kSession.execute(facts);
-
-    }
-
-    public Collection<Metric> getAccumulated(Accumulable accumulable) {
+//    public void executeBusinessRulesForAccumulable(Accumulable measurable) throws Exception {   // Pass in the contract as the measurable.
+//
+//        if (kSession == null) {
+//            initBusinessRulesEngine();
+//        }
+//
+//        List<Object> facts = new ArrayList<Object>();
+//
+//        facts.add(measurable);
+//        Collection<Metric> currentPeriodMetrics = getAccumulated(measurable);
+//        facts.addAll(currentPeriodMetrics);
+//
+//        kSession.execute(facts);
+//
+//    }
+    public Collection<Metric> getAccumulated(Measurable measurable) throws Exception {
 
         // Init the input Metrics.  KG TODO - Needs work to make generic.
-        CurrencyMetric accPrice = getAccumulatedCurrencyMetric("TRANSACTION_PRICE_CC", accumulable);
-        CurrencyMetric accLiquidatedDamages = getAccumulatedCurrencyMetric("LIQUIDATED_DAMAGES_ITD_CC", accumulable);
-        CurrencyMetric accEAC = getAccumulatedCurrencyMetric("ESTIMATED_COST_AT_COMPLETION_LC", accumulable);
+        CurrencyMetric accPrice = getAccumulatedCurrencyMetric("TRANSACTION_PRICE_CC", measurable);
+        CurrencyMetric accLiquidatedDamages = getAccumulatedCurrencyMetric("LIQUIDATED_DAMAGES_ITD_CC", measurable);
+        CurrencyMetric accEAC = getAccumulatedCurrencyMetric("ESTIMATED_COST_AT_COMPLETION_LC", measurable);
 
         // Init the output Metrics.  KG TODO - Needs work to make generic.
         CurrencyMetric egp = new CurrencyMetric();
@@ -265,34 +290,45 @@ public class CalculationService {
 
     }
 
-    private Collection<Metric> getAllCurrentPeriodMetrics(MetricStore metricStore) throws Exception {
+    private Collection<Metric> getAllCurrentPeriodMetrics(Measurable measurable) throws Exception {
         FinancialPeriod period = financialPeriodService.getCurrentFinancialPeriod();
 
-        List<MetricType> metricTypes = metricService.findActiveMetricTypesPob();
+        return getAllPeriodMetrics(measurable, period);
+    }
+
+    private Collection<Metric> getAllPeriodMetrics(Measurable measurable, FinancialPeriod period) throws Exception {
+
+        List<MetricType> metricTypes = metricService.findActiveMetricTypes();
         List<Metric> metrics = new ArrayList<Metric>();
-        for (MetricType metricType : metricTypes) {  // TODO - We are getting all pob here, this may not be good long term.
-            metrics.add(intelliGetMetric(metricType, metricStore, period));
+        for (MetricType metricType : metricTypes) {
+
+            if (metricType.isCurrency()) {
+                Metric currencyMetric = getCurrencyMetric(metricType.getId(), measurable);
+                if (currencyMetric != null) {
+                    metrics.add(currencyMetric);
+                }
+            } else {
+                if (measurable instanceof MetricStore) {
+                    Metric metric = intelliGetMetric(metricType, measurable, period);
+                    if (metric != null) {
+                        metrics.add(metric);
+                    }
+                }
+            }
         }
 
         return metrics;
     }
 
-    private Collection<MetricPriorPeriod> getAllPriorPeriodMetrics(MetricStore metricStore) {
-        // TODO - change this to retrieve prior from periodService.  Use current for now.
-        FinancialPeriod priorPeriod = financialPeriodService.getPriorFinancialPeriod();
-
-        List<MetricPriorPeriod> metricsPriorPeriod = new ArrayList<MetricPriorPeriod>();
-        List<MetricType> metricTypes = metricService.findActiveMetricTypesPob();
-
-        for (MetricType metricType : metricTypes) {
-            Metric priorPeriodMetric = intelliGetMetric(metricType, metricStore, priorPeriod);
-            if (priorPeriodMetricDoesNotExist(priorPeriodMetric)) {
-                priorPeriodMetric.setValue(BigDecimal.ZERO);
-            }
-            metricsPriorPeriod.add(new MetricPriorPeriod(priorPeriodMetric));
+    private Collection<MetricPriorPeriod> getAllPriorPeriodMetrics(Measurable measurable) throws Exception {
+        FinancialPeriod period = financialPeriodService.getPriorFinancialPeriod();
+        Collection<Metric> metrics = getAllPeriodMetrics(measurable, period);
+        List<MetricPriorPeriod> priorPeriodMetrics = new ArrayList<MetricPriorPeriod>();
+        for (Metric metric : metrics) {
+            priorPeriodMetrics.add(new MetricPriorPeriod((metric)));
         }
 
-        return metricsPriorPeriod;
+        return priorPeriodMetrics;
     }
 
     private static boolean priorPeriodMetricDoesNotExist(Metric priorPeriodMetric) {
@@ -323,45 +359,44 @@ public class CalculationService {
      * This method will throw an exception if the underlying type does not support BigDecimal summation. We want the exception in the invalid case as it
      * indicates either a programming error or a business rules error. Neither of which is recoverable.
      */
-    public BigDecimal getAccumulatedCurrencyMetricValue(String metricTypeId, Accumulable accumulable) {
+//    public BigDecimal getAccumulatedCurrencyMetricValue(String metricTypeId, Accumulable measurable) {
+//
+//        BigDecimal sum = new BigDecimal("0.0");
+//
+//        if (measurable.getChildAccumulables().isEmpty() && measurable instanceof PerformanceObligation) {
+//            // TODO - We can abstract this further instead of hard cast to pob.
+//            BigDecimal value = getCurrencyMetric(metricTypeId, ((PerformanceObligation) measurable)).getValue();
+//            if (value != null) {
+//                sum = sum.add(value);
+//            }
+//            return sum;
+//        }
+//
+//        for (Accumulable childAccumulable : measurable.getChildAccumulables()) {
+//            sum = sum.add(getAccumulatedCurrencyMetricValue(metricTypeId, childAccumulable));
+//        }
+//
+//        return sum;
+//    }
+    public BigDecimal getAccumulatedBilledValue(Measurable measurable) {
 
         BigDecimal sum = new BigDecimal("0.0");
-
-        if (accumulable.getChildAccumulables().isEmpty() && accumulable instanceof PerformanceObligation) {
-            // TODO - We can abstract this further instead of hard cast to pob.
-            BigDecimal value = getCurrencyMetric(metricTypeId, ((PerformanceObligation) accumulable)).getValue();
-            if (value != null) {
-                sum = sum.add(value);
-            }
-            return sum;
-        }
-
-        for (Accumulable childAccumulable : accumulable.getChildAccumulables()) {
-            sum = sum.add(getAccumulatedCurrencyMetricValue(metricTypeId, childAccumulable));
-        }
-
-        return sum;
-    }
-
-    public BigDecimal getAccumulatedBilledValue(Accumulable accumulable) {
-
-        BigDecimal sum = new BigDecimal("0.0");
-        List<BillingEvent> bEvents = adminService.findBillingEventsByContract((Contract) accumulable);
+        List<BillingEvent> bEvents = adminService.findBillingEventsByContract((Contract) measurable);
         for (BillingEvent be : bEvents) {
             sum = sum.add(be.getAmountContractCurrency());
         }
         return sum;
     }
 
-    public CurrencyMetric getAccumulatedCurrencyMetric(String metricTypeId, Accumulable accumulable) {
+    public CurrencyMetric getAccumulatedCurrencyMetric(String metricTypeId, Measurable measurable) throws Exception {
 
         BigDecimal sum = new BigDecimal("0.0");
         CurrencyMetric metric = new CurrencyMetric();
         metric.setMetricType(metricService.findMetricTypeById(metricTypeId));
         metric.setValue(sum);
-        if (accumulable.getChildAccumulables().isEmpty()) {
+        if (measurable.getChildMeasurables().isEmpty()) {
             // TODO - We can abstract this further instead of hard cast to pob.
-            BigDecimal value = getCurrencyMetric(metricTypeId, ((PerformanceObligation) accumulable)).getValue();
+            BigDecimal value = getCurrencyMetric(metricTypeId, measurable).getValue();
             if (value != null) {
                 sum = sum.add(value);
             }
@@ -369,11 +404,15 @@ public class CalculationService {
             return metric;
         }
 
-        for (Accumulable childAccumulable : accumulable.getChildAccumulables()) {
-            sum = sum.add(getAccumulatedCurrencyMetricValue(metricTypeId, childAccumulable));
+        for (Measurable childMeasurable : measurable.getChildMeasurables()) {
+            sum = sum.add(getAccumulatedCurrencyMetric(metricTypeId, childMeasurable).getValue());
         }
 
         metric.setValue(sum);
+
+        FinancialPeriod period = financialPeriodService.getCurrentFinancialPeriod();
+        initializeCurrencies(metric, measurable, period);
+
         return metric;
     }
 

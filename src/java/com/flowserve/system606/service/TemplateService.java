@@ -7,6 +7,7 @@ package com.flowserve.system606.service;
 
 import com.flowserve.system606.model.BillingEvent;
 import com.flowserve.system606.model.Contract;
+import com.flowserve.system606.model.Measurable;
 import com.flowserve.system606.model.MetricSet;
 import com.flowserve.system606.model.MetricType;
 import com.flowserve.system606.model.PerformanceObligation;
@@ -142,9 +143,6 @@ public class TemplateService {
                 if (pob == null) {
                     throw new IllegalStateException("Input file invalid.  Invalid POB at row: " + row.getRowNum());
                 }
-                
-                BillingEvent be = new BillingEvent();
-                be.setInvoiceNumber( null );
 
                 for (MetricType inputType : inputTypes) {
                     Cell cell = row.getCell(CellReference.convertColStringToIndex(inputType.getExcelCol()));
@@ -163,40 +161,51 @@ public class TemplateService {
                             calculationService.getDateMetric(inputType.getId(), pob).setValue(cell.getDateCellValue().toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
                         }
                     } catch (Exception rce) {
-                        throw new Exception("processTemplateUpload row: " + row.getRowNum() + " cell:" + cell.getColumnIndex() + " " + rce.getMessage());
+                        Logger.getLogger(TemplateService.class.getName()).log(Level.SEVERE, "Error processing " + inputType.getId());
+                        throw new Exception("processTemplateUpload row: " + row.getRowNum() + " cell: " + cell.getColumnIndex() + " " + rce.getMessage());
                     }
                 }
 
-                calculationService.executeBusinessRules(pob);
-                pob = pobService.update(pob);
-                
+                // KJG TODO - Billing Events need to move out of the metric types and into an 'Event' category of data.
+                BillingEvent billingEvent = new BillingEvent();
                 List<MetricType> inputTypesContract = metricService.findActiveMetricTypesContract();
                 for (MetricType inputType : inputTypesContract) {
                     Cell cell = row.getCell(CellReference.convertColStringToIndex(inputType.getExcelCol()));
-                    try {                    
+                    try {
+                        if (cell == null || pobIdCell.getCellTypeEnum() == CellType.BLANK || ((XSSFCell) cell).getRawValue() == null) {
+                            // TODO - figure out what to do in this blank case.  It will depend on the situation.
+                            continue;
+                        }
                         if ("BILLING_AMOUNT_CC".equals(inputType.getId())) {
                             if (cell == null || pobIdCell.getCellTypeEnum() == CellType.BLANK || ((XSSFCell) cell).getRawValue() == null) {
                                 Logger.getLogger(MetricService.class.getName()).log(Level.INFO, "processTemplateUpload: there is no value of BILLING_AMOUNT_CC");
                             } else {
-                                Logger.getLogger(MetricService.class.getName()).log(Level.INFO, "processTemplateUpload: there is value of BILLING_AMOUNT_CC: " 
-                                    + new BigDecimal(NumberToTextConverter.toText(cell.getNumericCellValue()))); 
-                                be.setAmountContractCurrency( new BigDecimal(NumberToTextConverter.toText(cell.getNumericCellValue())) );
+                                Logger.getLogger(MetricService.class.getName()).log(Level.INFO, "processTemplateUpload: there is value of BILLING_AMOUNT_CC: "
+                                        + new BigDecimal(NumberToTextConverter.toText(cell.getNumericCellValue())));
+                                billingEvent.setAmountContractCurrency(new BigDecimal(NumberToTextConverter.toText(cell.getNumericCellValue())));
                             }
                         } else if ("BILLING_INVOICE_NUMBER".equals(inputType.getId())) {
-                            be.setInvoiceNumber( NumberToTextConverter.toText(cell.getNumericCellValue()) );
+                            billingEvent.setInvoiceNumber(NumberToTextConverter.toText(cell.getNumericCellValue()));
                         } else if ("BILLING_AMOUNT_LC".equals(inputType.getId())) {
-                            be.setAmountLocalCurrency( new BigDecimal(NumberToTextConverter.toText(cell.getNumericCellValue())) );
+                            billingEvent.setAmountLocalCurrency(new BigDecimal(NumberToTextConverter.toText(cell.getNumericCellValue())));
                         } else if ("BILLING_DATE".equals(inputType.getId())) {
-                            be.setBillingDate( cell.getDateCellValue().toInstant().atZone(ZoneId.systemDefault()).toLocalDate() );
+                            billingEvent.setBillingDate(cell.getDateCellValue().toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
                         }
                     } catch (Exception rce) {
                         throw new Exception("processTemplateUpload row: " + row.getRowNum() + " cell:" + cell.getColumnIndex() + " " + rce.getMessage());
-                    }                        
+                    }
                 }
-                
-                if(be.getInvoiceNumber() != null) {
-                    be = adminService.update(be);
+                // We only support one billing event via the Excel.  Clear any prior events.
+
+                if (billingEvent.getInvoiceNumber() != null) {
+                    billingEvent.setContract(pob.getContract());
+                    billingEvent = adminService.update(billingEvent);
+                    pob.getContract().getBillingEvents().clear();
+                    pob.getContract().getBillingEvents().add(billingEvent);
                 }
+
+                calculationService.executeBusinessRules(pob);
+                pob = pobService.update(pob);
             }
         } catch (Exception e) {
             throw new Exception("processTemplateUpload: " + e.getMessage());
@@ -208,7 +217,7 @@ public class TemplateService {
         //inputSet.setInputs(inputList);
         //persist(inputSet);
     }
-    
+
     public void reportingPreparersList() throws Exception {
         Logger.getLogger(MetricService.class.getName()).log(Level.INFO, "Start: ");
         String folder = "D:/Users/shubhamv/Documents/NetBeansProjects/FlowServe/src/java/resources/app_data_init_files/";
@@ -306,7 +315,7 @@ public class TemplateService {
         }
     }
 
-    private boolean currencyMetricIsNotNull(MetricType metricType, PerformanceObligation pob) {
-        return calculationService.getCurrencyMetric(metricType.getId(), pob) != null && calculationService.getCurrencyMetricValue(metricType.getId(), pob) != null;
+    private boolean currencyMetricIsNotNull(MetricType metricType, Measurable measurable) throws Exception {
+        return calculationService.getCurrencyMetric(metricType.getId(), measurable) != null && calculationService.getCurrencyMetric(metricType.getId(), measurable).getValue() != null;
     }
 }

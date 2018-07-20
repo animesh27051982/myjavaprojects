@@ -10,7 +10,10 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Currency;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -18,6 +21,7 @@ import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
@@ -25,10 +29,11 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name = "CONTRACTS")
-public class Contract extends BaseEntity<Long> implements Accumulable, Comparable<Contract>, Serializable {
+public class Contract extends BaseEntity<Long> implements MetricStore, Measurable, Comparable<Contract>, Serializable {
 
     private static final long serialVersionUID = -1990764230607265489L;
     private static final Logger LOG = Logger.getLogger(Contract.class.getName());
+
     @Id
     @Column(name = "CONTRACT_ID")
     private Long id;
@@ -38,10 +43,6 @@ public class Contract extends BaseEntity<Long> implements Accumulable, Comparabl
 
     @Column(name = "CONTRACT_TYPE_ID")
     private ContractType contractType;
-
-    @OneToOne
-    @JoinColumn(name = "PREPARER_USER_ID")
-    private User preparer;
 
     @ManyToOne
     @JoinColumn(name = "REPORTING_UNIT_ID")
@@ -86,9 +87,6 @@ public class Contract extends BaseEntity<Long> implements Accumulable, Comparabl
     @Column(name = "FORMAL_ACCEPTANCE_DATE")
     private LocalDate formalAcceptanceDate;
 
-    @Column(name = "FUNCTIONAL_CURRENCY")
-    private Currency functionalCurrency;
-
     @Column(name = "CONTRACT_CURRENCY")
     private Currency contractCurrency;
 
@@ -114,8 +112,12 @@ public class Contract extends BaseEntity<Long> implements Accumulable, Comparabl
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "contract", cascade = CascadeType.MERGE)
     private List<PerformanceObligation> performanceObligations = new ArrayList<PerformanceObligation>();
 
-    @OneToMany(fetch = FetchType.EAGER, mappedBy = "contract", cascade = CascadeType.MERGE)
-    private List<BillingEvent> billingEvent = new ArrayList<BillingEvent>();
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinTable(name = "CONTRACT_METRIC_SET", joinColumns = @JoinColumn(name = "CONTRACT_ID"), inverseJoinColumns = @JoinColumn(name = "METRIC_SET_ID"))
+    private Map<FinancialPeriod, MetricSet> periodMetricSetMap = new HashMap<FinancialPeriod, MetricSet>();
+
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "contract", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<BillingEvent> billingEvents = new ArrayList<BillingEvent>();
 
     public Contract() {
     }
@@ -127,7 +129,7 @@ public class Contract extends BaseEntity<Long> implements Accumulable, Comparabl
 
     public BigDecimal getCumulativeLocalCurrency() {
         BigDecimal localCur = BigDecimal.ZERO;
-        for (BillingEvent be : billingEvent) {
+        for (BillingEvent be : billingEvents) {
             if (be.getAmountLocalCurrency() != null && be.getAmountLocalCurrency().compareTo(BigDecimal.ZERO) != 0) {
                 localCur = localCur.add(be.getAmountLocalCurrency());
             }
@@ -137,12 +139,47 @@ public class Contract extends BaseEntity<Long> implements Accumulable, Comparabl
 
     public BigDecimal getCumulativeContractCurrency() {
         BigDecimal contractCur = BigDecimal.ZERO;
-        for (BillingEvent be : billingEvent) {
+        for (BillingEvent be : billingEvents) {
             if (be.getAmountContractCurrency() != null && be.getAmountContractCurrency().compareTo(BigDecimal.ZERO) != 0) {
                 contractCur = contractCur.add(be.getAmountContractCurrency());
             }
         }
         return contractCur;
+    }
+
+    public boolean metricSetExistsForPeriod(FinancialPeriod period) {
+        return periodMetricSetMap.get(period) != null;
+    }
+
+    public boolean metricExistsForPeriod(FinancialPeriod period, MetricType metricType) {
+        return periodMetricSetMap.get(period).getTypeMetricMap().get(metricType) != null;
+    }
+
+    public void initializeMetricSetForPeriod(FinancialPeriod period) {
+        periodMetricSetMap.put(period, new MetricSet());
+    }
+
+    public Metric getPeriodMetric(FinancialPeriod period, MetricType metricType) {
+        return periodMetricSetMap.get(period).getTypeMetricMap().get(metricType);
+    }
+
+    public void initializeMetricForPeriod(FinancialPeriod period, MetricType metricType) {
+        try {
+            if (metricType.isContractLevel()) {
+                Class<?> clazz = Class.forName(MetricType.PACKAGE_PREFIX + metricType.getMetricClass());
+                Metric metric = (Metric) clazz.newInstance();
+                metric.setMetricType(metricType);
+                metric.setMetricSet(periodMetricSetMap.get(period));
+                periodMetricSetMap.get(period).getTypeMetricMap().put(metricType, metric);
+            }
+        } catch (Exception e) {
+            Logger.getLogger(Contract.class.getName()).log(Level.SEVERE, "Severe exception initializing metricTypeId: " + metricType.getId(), e);
+            throw new IllegalStateException("Severe exception initializing metricTypeId: " + metricType.getId(), e);
+        }
+    }
+
+    public Currency getLocalCurrency() {
+        return this.getReportingUnit().getLocalCurrency();
     }
 
     public Long getId() {
@@ -213,8 +250,8 @@ public class Contract extends BaseEntity<Long> implements Accumulable, Comparabl
         return performanceObligations;
     }
 
-    public List<Accumulable> getChildAccumulables() {
-        return new ArrayList<Accumulable>(performanceObligations);
+    public List<Measurable> getChildMeasurables() {
+        return new ArrayList<Measurable>(performanceObligations);
     }
 
     // TODO - KJG - Remove.  Temp code for calc pages.
@@ -230,7 +267,7 @@ public class Contract extends BaseEntity<Long> implements Accumulable, Comparabl
         this.contractCurrency = contractCurrency;
     }
 
-    public List<BillingEvent> getBillingEvent() {
-        return billingEvent;
+    public List<BillingEvent> getBillingEvents() {
+        return billingEvents;
     }
 }

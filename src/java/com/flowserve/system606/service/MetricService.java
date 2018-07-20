@@ -46,8 +46,8 @@ public class MetricService {
     public List<MetricType> findActiveMetricTypesPob() {
         return findActiveMetricTypesByOwnerEntityType("POB");
     }
-    
-    public List<MetricType>  getAllPobExcelInputMetricTypes() {
+
+    public List<MetricType> getAllPobExcelInputMetricTypes() {
         return findActiveMetricTypesByOwnerEntityTypeDirection("POB", MetricDirection.INPUT);
     }
 
@@ -55,12 +55,17 @@ public class MetricService {
         return findActiveMetricTypesByOwnerEntityType("Contract");
     }
 
+    public List<MetricType> findActiveMetricTypes() {
+        Query query = em.createQuery("SELECT it FROM MetricType it WHERE it.active = TRUE");
+        return (List<MetricType>) query.getResultList();
+    }
+
     private List<MetricType> findActiveMetricTypesByOwnerEntityType(String ownerEntityType) {
         Query query = em.createQuery("SELECT it FROM MetricType it WHERE it.ownerEntityType = :OET AND it.active = TRUE");
         query.setParameter("OET", ownerEntityType);
         return (List<MetricType>) query.getResultList();
     }
-    
+
     private List<MetricType> findActiveMetricTypesByOwnerEntityTypeDirection(String ownerEntityType, MetricDirection direction) {
         Query query = em.createQuery("SELECT it FROM MetricType it WHERE it.ownerEntityType = :OET AND it.direction = :DIR AND it.active = TRUE AND it.excelCol != NULL");
         query.setParameter("OET", ownerEntityType);

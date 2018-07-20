@@ -17,6 +17,9 @@ public class MetricType extends BaseEntity<String> implements Comparable<MetricT
 
     private static final long serialVersionUID = -8382719960002472187L;
     private static final String CURRENCY_METRIC = "CurrencyMetric";
+    public static final String PACKAGE_PREFIX = "com.flowserve.system606.model.";
+    private static final String OWNER_ENTITY_TYPE_CONTRACT = "Contract";
+    private static final String OWNER_ENTITY_TYPE_POB = "POB";
 
     @Id
     @Column(name = "METRIC_TYPE_ID")
@@ -192,5 +195,13 @@ public class MetricType extends BaseEntity<String> implements Comparable<MetricT
 
     public boolean isCurrency() {
         return CURRENCY_METRIC.equals(this.getMetricClass());
+    }
+
+    public boolean isContractLevel() {
+        return OWNER_ENTITY_TYPE_CONTRACT.equals(this.ownerEntityType);
+    }
+
+    public boolean isPobLevel() {
+        return OWNER_ENTITY_TYPE_POB.equals((this.ownerEntityType));
     }
 }

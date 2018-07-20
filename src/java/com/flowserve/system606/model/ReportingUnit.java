@@ -27,7 +27,7 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name = "REPORTING_UNITS")
-public class ReportingUnit extends BaseEntity<Long> implements Accumulable, Comparable<ReportingUnit>, Serializable {
+public class ReportingUnit extends TransientMeasurable<Long> implements Measurable, Comparable<ReportingUnit>, Serializable {
 
     private static final long serialVersionUID = 8757812203684986897L;
     private static final Logger LOG = Logger.getLogger(ReportingUnit.class.getName());
@@ -90,6 +90,10 @@ public class ReportingUnit extends BaseEntity<Long> implements Accumulable, Comp
         return localCurrency;
     }
 
+    public Currency getContractCurrency() {
+        return localCurrency;
+    }
+
     public void setLocalCurrency(Currency localCurrency) {
         this.localCurrency = localCurrency;
     }
@@ -146,8 +150,8 @@ public class ReportingUnit extends BaseEntity<Long> implements Accumulable, Comp
         return contracts;
     }
 
-    public List<Accumulable> getChildAccumulables() {
-        return new ArrayList<Accumulable>(contracts);
+    public List<Measurable> getChildMeasurables() {
+        return new ArrayList<Measurable>(contracts);
     }
 
     public BigDecimal getPobCountRejected() {  // TODO - Remove. Temp code for UI.

@@ -22,6 +22,7 @@ import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
@@ -31,11 +32,10 @@ import static javax.persistence.TemporalType.TIMESTAMP;
 
 @Entity
 @Table(name = "PERFORMANCE_OBLIGATIONS")
-public class PerformanceObligation extends BaseEntity<Long> implements MetricStore, Accumulable, Comparable<PerformanceObligation>, Serializable {
+public class PerformanceObligation extends BaseEntity<Long> implements MetricStore, Measurable, Comparable<PerformanceObligation>, Serializable {
 
     private static final long serialVersionUID = 4995349370717535419L;
     private static final Logger LOG = Logger.getLogger(PerformanceObligation.class.getName());
-    private static final String PACKAGE_PREFIX = "com.flowserve.system606.model.";
 
     @Id
     @Column(name = "POB_ID")
@@ -63,7 +63,8 @@ public class PerformanceObligation extends BaseEntity<Long> implements MetricSto
     private LocalDateTime lastUpdateDate;
 
     //private String deactivationReason;  // create type class
-    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "performanceObligation")
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinTable(name = "POB_METRIC_SET", joinColumns = @JoinColumn(name = "POB_ID"), inverseJoinColumns = @JoinColumn(name = "METRIC_SET_ID"))
     private Map<FinancialPeriod, MetricSet> periodMetricSetMap = new HashMap<FinancialPeriod, MetricSet>();
 
     public PerformanceObligation() {
@@ -159,23 +160,25 @@ public class PerformanceObligation extends BaseEntity<Long> implements MetricSto
         return periodMetricSetMap.get(period).getTypeMetricMap().get(metricType);
     }
 
-    public List<Accumulable> getChildAccumulables() {
-        return new ArrayList<Accumulable>();
+    public List<Measurable> getChildMeasurables() {
+        return new ArrayList<Measurable>();
     }
 
     public void initializeMetricSetForPeriod(FinancialPeriod period) {
         MetricSet metricSet = new MetricSet();
-        metricSet.setPerformanceObligation(this);
+        //metricSet.setPerformanceObligation(this);
         periodMetricSetMap.put(period, metricSet);
     }
 
     public void initializeMetricForPeriod(FinancialPeriod period, MetricType metricType) {
         try {
-            Class<?> clazz = Class.forName(PACKAGE_PREFIX + metricType.getMetricClass());
-            Metric metric = (Metric) clazz.newInstance();
-            metric.setMetricType(metricType);
-            metric.setMetricSet(periodMetricSetMap.get(period));
-            periodMetricSetMap.get(period).getTypeMetricMap().put(metricType, metric);
+            if (metricType.isPobLevel()) {
+                Class<?> clazz = Class.forName(MetricType.PACKAGE_PREFIX + metricType.getMetricClass());
+                Metric metric = (Metric) clazz.newInstance();
+                metric.setMetricType(metricType);
+                metric.setMetricSet(periodMetricSetMap.get(period));
+                periodMetricSetMap.get(period).getTypeMetricMap().put(metricType, metric);
+            }
         } catch (Exception e) {
             Logger.getLogger(PerformanceObligationService.class.getName()).log(Level.SEVERE, "Severe exception initializing metricTypeId: " + metricType.getId(), e);
             throw new IllegalStateException("Severe exception initializing metricTypeId: " + metricType.getId(), e);

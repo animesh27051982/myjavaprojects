@@ -13,7 +13,7 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name = "COUNTRIES")
-public class Country extends BaseEntity<String> implements Comparable<Country>, Serializable {
+public class Country extends TransientMeasurable<String> implements Comparable<Country>, Serializable {
 
     @Id
     @Column(name = "COUNTRY_ID")

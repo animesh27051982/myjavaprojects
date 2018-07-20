@@ -83,7 +83,7 @@
                                         </f:facet>
                                         <p:cellEditor rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}">
                                             <f:facet name="output">
-                                                <p:inputText value="#{viewSupport.getCurrencyMetricValue('TRANSACTION_PRICE_CC', pob)}" styleClass="#{empty viewSupport.getCurrencyMetricValue('TRANSACTION_PRICE_CC', pob) ? 'ui-state-error' : ''}" readonly="true">
+                                                <p:inputText value="#{viewSupport.getCurrencyMetric('TRANSACTION_PRICE_CC', pob).value}" styleClass="#{empty viewSupport.getCurrencyMetric('TRANSACTION_PRICE_CC', pob).value ? 'ui-state-error' : ''}" readonly="true">
                                                     <f:validateDoubleRange/>
                                                     <f:convertNumber type="currency" />
                                                 </p:inputText>
@@ -102,7 +102,7 @@
                                         </f:facet>
                                         <p:cellEditor rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}">
                                             <f:facet name="output">
-                                                <p:inputText value="#{viewSupport.getCurrencyMetricValue('LIQUIDATED_DAMAGES_ITD_CC', pob)}" styleClass="#{empty viewSupport.getCurrencyMetricValue('LIQUIDATED_DAMAGES_ITD_CC', pob) ? 'ui-state-error' : ''}" readonly="true">
+                                                <p:inputText value="#{viewSupport.getCurrencyMetric('LIQUIDATED_DAMAGES_ITD_CC', pob).value}" styleClass="#{empty viewSupport.getCurrencyMetric('LIQUIDATED_DAMAGES_ITD_CC', pob).value ? 'ui-state-error' : ''}" readonly="true">
                                                     <f:validateDoubleRange/>
                                                     <f:convertNumber type="currency" />
                                                 </p:inputText>
@@ -121,7 +121,7 @@
                                         </f:facet>
                                         <p:cellEditor rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}">
                                             <f:facet name="output">
-                                                <p:inputText value="#{viewSupport.getCurrencyMetricValue('ESTIMATED_COST_AT_COMPLETION_LC', pob)}" styleClass="#{empty viewSupport.getCurrencyMetricValue('ESTIMATED_COST_AT_COMPLETION_LC', pob) ? 'ui-state-error' : ''}" readonly="true">
+                                                <p:inputText value="#{viewSupport.getCurrencyMetric('ESTIMATED_COST_AT_COMPLETION_LC', pob).value}" styleClass="#{empty viewSupport.getCurrencyMetric('ESTIMATED_COST_AT_COMPLETION_LC', pob).value ? 'ui-state-error' : ''}" readonly="true">
                                                     <f:validateDoubleRange/>
                                                     <f:convertNumber type="currency" />
                                                 </p:inputText>
@@ -137,7 +137,7 @@
                                         <f:facet name="header">
                                             <h:outputText value="#{viewSupport.getMetricTypeDescription('ESTIMATED_GROSS_PROFIT_LC')}" />
                                         </f:facet>
-                                        <h:outputText id="estGrossProfit" value="#{viewSupport.getCurrencyMetricValue('ESTIMATED_GROSS_PROFIT_LC', pob)}" rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}">
+                                        <h:outputText id="estGrossProfit" value="#{viewSupport.getCurrencyMetric('ESTIMATED_GROSS_PROFIT_LC', pob).value}" rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}">
                                             <f:convertNumber type="currency" />
                                         </h:outputText>
                                     </p:column>
@@ -145,17 +145,17 @@
                                         <f:facet name="header">
                                             <h:outputText value="#{viewSupport.getMetricTypeDescription('ESTIMATED_GROSS_MARGIN_LC')}" />
                                         </f:facet>
-                                        <h:outputText id="estGrossMargin" value="#{viewSupport.getCurrencyMetricValue('ESTIMATED_GROSS_MARGIN_LC', pob)}" rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}">
+                                        <h:outputText id="estGrossMargin" value="#{viewSupport.getCurrencyMetric('ESTIMATED_GROSS_MARGIN_LC', pob).value}" rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}">
                                             <f:convertNumber type="percent" />
                                         </h:outputText>
                                     </p:column>
                                     <p:column style="white-space:pre-line;" headerText="Prior Period Estimate at Completion">
-                                        <h:outputText id="eacPrior" value="#{viewSupport.getCurrencyMetricValuePriorPeriod('ESTIMATED_COST_AT_COMPLETION_LC', pob)}" rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}">
+                                        <h:outputText id="eacPrior" value="#{viewSupport.getCurrencyMetricPriorPeriod('ESTIMATED_COST_AT_COMPLETION_LC', pob).value}" rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}">
                                             <f:convertNumber type="currency" />
                                         </h:outputText>
                                     </p:column>
                                     <p:column style="white-space:pre-line;" headerText="Change in Estimate">
-                                        <h:outputText id="eacChange" value="#{viewSupport.getCurrencyMetricValue('CHANGE_IN_EAC_LC', pob)}" rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}">
+                                        <h:outputText id="eacChange" value="#{viewSupport.getCurrencyMetric('CHANGE_IN_EAC_LC', pob).value}" rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}">
                                             <f:convertNumber type="currency" />
                                         </h:outputText>
                                     </p:column>
@@ -180,7 +180,7 @@
                                         </f:facet>
                                         <p:cellEditor rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}">
                                             <f:facet name="output">
-                                                <p:inputText value="#{viewSupport.getCurrencyMetricValue('LOCAL_COSTS_ITD_LC', pob)}" styleClass="#{empty viewSupport.getCurrencyMetricValue('LOCAL_COSTS_ITD_LC', pob) ? 'ui-state-error' : ''}" readonly="true">
+                                                <p:inputText value="#{viewSupport.getCurrencyMetric('LOCAL_COSTS_ITD_LC', pob).value}" styleClass="#{empty viewSupport.getCurrencyMetric('LOCAL_COSTS_ITD_LC', pob).value ? 'ui-state-error' : ''}" readonly="true">
                                                     <f:validateDoubleRange/>
                                                     <f:convertNumber type="currency" />
                                                 </p:inputText>
@@ -199,7 +199,7 @@
                                         </f:facet>
                                         <p:cellEditor rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}">
                                             <f:facet name="output">
-                                                <p:inputText value="#{viewSupport.getCurrencyMetricValue('THIRD_PARTY_COSTS_ITD_LC', pob)}" styleClass="#{empty viewSupport.getCurrencyMetricValue('THIRD_PARTY_COSTS_ITD_LC', pob) ? 'ui-state-error' : ''}" readonly="true">
+                                                <p:inputText value="#{viewSupport.getCurrencyMetric('THIRD_PARTY_COSTS_ITD_LC', pob).value}" styleClass="#{empty viewSupport.getCurrencyMetric('THIRD_PARTY_COSTS_ITD_LC', pob).value ? 'ui-state-error' : ''}" readonly="true">
                                                     <f:validateDoubleRange/>
                                                     <f:convertNumber type="currency" />
                                                 </p:inputText>
@@ -218,7 +218,7 @@
                                         </f:facet>
                                         <p:cellEditor rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}">
                                             <f:facet name="output">
-                                                <p:inputText value="#{viewSupport.getCurrencyMetricValue('INTERCOMPANY_COSTS_ITD_LC', pob)}" styleClass="#{empty viewSupport.getCurrencyMetricValue('INTERCOMPANY_COSTS_ITD_LC', pob) ? 'ui-state-error' : ''}" readonly="true">
+                                                <p:inputText value="#{viewSupport.getCurrencyMetric('INTERCOMPANY_COSTS_ITD_LC', pob).value}" styleClass="#{empty viewSupport.getCurrencyMetric('INTERCOMPANY_COSTS_ITD_LC', pob).value ? 'ui-state-error' : ''}" readonly="true">
                                                     <f:validateDoubleRange/>
                                                     <f:convertNumber type="currency" />
                                                 </p:inputText>
@@ -235,7 +235,7 @@
                                         <f:facet name="header">
                                             <h:outputText value="#{viewSupport.getMetricTypeDescription('COST_OF_GOODS_SOLD_ITD_LC')}" />
                                         </f:facet>
-                                        <h:outputText id="totalITD" value="#{viewSupport.getCurrencyMetricValue('COST_OF_GOODS_SOLD_ITD_LC', pob)}" rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}">
+                                        <h:outputText id="totalITD" value="#{viewSupport.getCurrencyMetric('COST_OF_GOODS_SOLD_ITD_LC', pob).value}" rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}">
                                             <f:convertNumber type="currency" />
                                         </h:outputText>
                                     </p:column>
@@ -254,6 +254,16 @@
                                         <h:outputText value="#{billEvent.name}" />
                                     </p:column>
 
+                                    <p:column style="white-space:pre-line;" headerText="Invoice Number">
+                                        <p:cellEditor rendered="#{of:isInstance('com.flowserve.system606.model.BillingEvent', billEvent)}">
+                                            <f:facet name="output">
+                                                <p:inputText value="#{billEvent.invoiceNumber}" styleClass="#{empty billEvent.invoiceNumber ? 'ui-state-error' : ''}" readonly="true"/>
+                                            </f:facet>
+                                            <f:facet name="input">
+                                                <p:inputText value="#{billEvent.invoiceNumber}"/>
+                                            </f:facet>
+                                        </p:cellEditor>
+                                    </p:column>
                                     <p:column style="white-space:pre-line;" headerText="Delivery Date">
                                         <p:cellEditor rendered="#{of:isInstance('com.flowserve.system606.model.BillingEvent', billEvent)}">
                                             <f:facet name="output">
@@ -262,7 +272,7 @@
                                                 </p:inputText>
                                             </f:facet>
                                             <f:facet name="input">
-                                                <p:calendar value="#{billEvent.billingDate}" converter="localDateConverter" pattern="dd-MMM-yyyy" navigator="true" mode="popup"/>
+                                                <p:calendar value="#{billEvent.billingDate}" converter="localDateConverter" pattern="MM/dd/yyyy" navigator="true" mode="popup"/>
                                             </f:facet>
                                         </p:cellEditor>
                                     </p:column>
@@ -303,6 +313,40 @@
                                     </p:column>
                                 </p:treeTable>
                             </p:tab>
+
+                            <p:tab title="Status">
+                                <p:treeTable value="#{inputOnlineEntry.rootTreeNode}" var="pob">
+                                    <f:facet name="header">
+                                        Performance Obligations
+                                    </f:facet>
+
+                                    <p:column style="min-width: 500px; text-overflow: ellipsis;" headerText="Reporting Unit - Contract - POB" sortBy="#{pob.name}">
+                                        <h:outputText value="#{pob.name}" />
+                                    </p:column>
+
+                                    <p:column style="white-space:pre-line;">
+                                        <f:facet name="header">
+                                            <h:outputText value="Last Modified By" />
+                                        </f:facet>
+                                        <h:outputText value="admin" />
+                                    </p:column>
+
+                                    <p:column style="white-space:pre-line;">
+                                        <f:facet name="header">
+                                            <h:outputText value="Last Modified Date" />
+                                        </f:facet>
+                                        <h:outputText value="18-Jul-2018" />
+                                    </p:column>
+
+                                    <p:column style="white-space:pre-line;">
+                                        <f:facet name="header">
+                                            <h:outputText value="Status" />
+                                        </f:facet>
+                                        <h:outputText value="Draft" />
+                                    </p:column>
+                                </p:treeTable>
+                            </p:tab>
+
                         </p:tabView>
 
                         <p:toolbar>

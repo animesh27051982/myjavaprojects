@@ -21,7 +21,7 @@ import javax.persistence.Table;
 @Entity
 @Table(name = "BUSINESS_UNITS")
 
-public class BusinessUnit implements Comparable<BusinessUnit>, Serializable {
+public class BusinessUnit extends TransientMeasurable<String> implements Comparable<BusinessUnit>, Serializable {
 
     private static final long serialVersionUID = -5428359272300395184L;
     private static final Logger LOG = Logger.getLogger(BusinessUnit.class.getName());

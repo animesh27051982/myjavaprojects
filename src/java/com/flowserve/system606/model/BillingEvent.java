@@ -8,8 +8,6 @@ package com.flowserve.system606.model;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.logging.Logger;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -23,7 +21,7 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name = "BILLING_EVENTS")
-public class BillingEvent implements Accumulable, Comparable<BillingEvent>, Serializable {
+public class BillingEvent implements Comparable<BillingEvent>, Serializable {
 
     private static final long serialVersionUID = -1990764230607265489L;
     private static final Logger LOG = Logger.getLogger(Contract.class.getName());
@@ -132,14 +130,4 @@ public class BillingEvent implements Accumulable, Comparable<BillingEvent>, Seri
     public void setContract(Contract contract) {
         this.contract = contract;
     }
-
-    @Override
-    public List<Accumulable> getChildAccumulables() {
-        return new ArrayList<Accumulable>();
-    }
-
-    public BigDecimal getPobCountRejected() {
-        return new BigDecimal("10.0");
-    }
-
 }

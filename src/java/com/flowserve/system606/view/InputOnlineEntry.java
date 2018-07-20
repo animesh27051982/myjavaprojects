@@ -98,14 +98,14 @@ public class InputOnlineEntry implements Serializable {
     public void addBillingEvent(Contract contract) throws Exception {
         BillingEvent billingEvent = new BillingEvent();
         billingEvent.setContract(contract);
-        contract.getBillingEvent().add(billingEvent);
+        contract.getBillingEvents().add(billingEvent);
 
         billingTreeNode = viewSupport.generateNodeTreeForBilling(reportingUnits);
     }
 
     public void removeBillingEvent(BillingEvent bEvent) {
         Contract contract = bEvent.getContract();
-        contract.getBillingEvent().remove(bEvent);
+        contract.getBillingEvents().remove(bEvent);
         billingTreeNode = viewSupport.generateNodeTreeForBilling(reportingUnits);
     }
 
