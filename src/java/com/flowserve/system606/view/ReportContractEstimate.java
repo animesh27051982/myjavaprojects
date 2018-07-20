@@ -34,7 +34,7 @@ public class ReportContractEstimate implements Serializable {
     private InputStream inputStream;
     private FileOutputStream outputStream;
     private Contract contract = new Contract();
-
+          
     @Inject
     AdminService adminService;
     @Inject
@@ -44,7 +44,7 @@ public class ReportContractEstimate implements Serializable {
 
     @PostConstruct
     public void init() {
-        contract = webSession.getEditContract();
+        contract = webSession.getEditContract();      
     }
 
     public StreamedContent getFile() throws Exception {
