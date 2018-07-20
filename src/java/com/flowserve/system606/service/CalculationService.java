@@ -208,9 +208,9 @@ public class CalculationService {
         return metric != null;
     }
 
-    public void putCurrencyMetricValue(String metricTypeId, Contract contract, BigDecimal value) {
-        if (isMetricAvailableAtThisLevel(getMetric(metricTypeId, contract))) {
-            getMetric(metricTypeId, contract).setValue(value);
+    public void putCurrencyMetricValue(String metricTypeId, Measurable measurable, BigDecimal value) {
+        if (isMetricAvailableAtThisLevel(getMetric(metricTypeId, measurable))) {
+            getMetric(metricTypeId, measurable).setValue(value);
         } else {
             Logger.getLogger(CalculationService.class.getName()).log(Level.INFO, "Metric not available at contract level: " + metricTypeId);
         }
