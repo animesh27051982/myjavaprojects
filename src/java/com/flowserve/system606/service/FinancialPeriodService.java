@@ -61,6 +61,26 @@ public class FinancialPeriodService {
             FinancialPeriod period = new FinancialPeriod("MAY-18", "MAY-18", LocalDate.of(2018, Month.MAY, 1), LocalDate.of(2018, Month.MAY, 31), 2018, 5, PeriodStatus.OPENED);
             persist(period);
         }
+        if (findById("NOV-17") == null) {
+            FinancialPeriod period = new FinancialPeriod("NOV-17", "NOV-17", LocalDate.of(2017, Month.NOVEMBER, 1), LocalDate.of(2017, Month.NOVEMBER, 30), 2018, 11, PeriodStatus.OPENED);
+            persist(period);
+        }
+        if (findById("DEC-17") == null) {
+            FinancialPeriod period = new FinancialPeriod("DEC-17", "DEC-17", LocalDate.of(2017, Month.DECEMBER, 12), LocalDate.of(2017, Month.DECEMBER, 31), 2017, 12, PeriodStatus.OPENED);
+            persist(period);
+        }
+        if (findById("JAN-18") == null) {
+            FinancialPeriod period = new FinancialPeriod("JAN-18", "JAN-18", LocalDate.of(2018, Month.JANUARY, 1), LocalDate.of(2018, Month.JANUARY, 31), 2018, 1, PeriodStatus.OPENED);
+            persist(period);
+        }
+        if (findById("FAB-18") == null) {
+            FinancialPeriod period = new FinancialPeriod("FEB-18", "FEB-18", LocalDate.of(2018, Month.FEBRUARY, 1), LocalDate.of(2018, Month.FEBRUARY, 28), 2018, 2, PeriodStatus.OPENED);
+            persist(period);
+        }
+        if (findById("MAR-18") == null) {
+            FinancialPeriod period = new FinancialPeriod("MAR-18", "MAR-18", LocalDate.of(2018, Month.MARCH, 3), LocalDate.of(2018, Month.MARCH, 31), 2018, 3, PeriodStatus.OPENED);
+            persist(period);
+        }
         logger.info("Finished initializing FinancialPeriods.");
     }
 
