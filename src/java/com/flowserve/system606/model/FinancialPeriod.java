@@ -60,7 +60,7 @@ public class FinancialPeriod extends BaseEntity<String> implements Comparable<Fi
         this.startDate = startDate;
         this.endDate = endDate;
         this.periodYear = periodYear;
-        this.number = number;
+        this.number = compare;
         this.status = status;
     }
 

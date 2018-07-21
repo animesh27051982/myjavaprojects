@@ -7,6 +7,7 @@ import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.Month;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -26,6 +27,8 @@ public class FinancialPeriodService {
 
     @Inject
     private AdminService adminService;
+    @Inject
+    private CurrencyService currencyService;
     private static final Logger logger = Logger.getLogger(FinancialPeriodService.class.getName());
 
     @PersistenceContext(unitName = "FlowServePU")
@@ -49,35 +52,25 @@ public class FinancialPeriodService {
 
     public void initFinancialPeriods() throws Exception {
         logger.info("Initializing FinancialPeriods");
-        if (findById("APR-18") == null) {
-            FinancialPeriod period = new FinancialPeriod("APR-18", "APR-18", LocalDate.of(2018, Month.APRIL, 1), LocalDate.of(2018, Month.APRIL, 30), 2018, 4, PeriodStatus.OPENED);
-            persist(period);
-        }
-        if (findById("MAY-18") == null) {
-            logger.info("Initializing FinancialPeriods");
-            FinancialPeriod period = new FinancialPeriod("MAY-18", "MAY-18", LocalDate.of(2018, Month.MAY, 1), LocalDate.of(2018, Month.MAY, 31), 2018, 5, PeriodStatus.OPENED);
-            persist(period);
+        String[] shortMonth = {"JAN", "FEB",
+            "MAR", "APR", "MAY", "JUN", "JUL",
+            "AUG", "SEP", "OCT", "NOV",
+            "DEC"};
+        Integer[] totalYear = {2017, 2018};
+        for (int i = 0; i < totalYear.length; i++) {
 
-        }
-        if (findById("NOV-17") == null) {
-            FinancialPeriod period = new FinancialPeriod("NOV-17", "NOV-17", LocalDate.of(2017, Month.NOVEMBER, 1), LocalDate.of(2017, Month.NOVEMBER, 30), 2018, 11, PeriodStatus.OPENED);
-            persist(period);
-        }
-        if (findById("DEC-17") == null) {
-            FinancialPeriod period = new FinancialPeriod("DEC-17", "DEC-17", LocalDate.of(2017, Month.DECEMBER, 12), LocalDate.of(2017, Month.DECEMBER, 31), 2017, 12, PeriodStatus.OPENED);
-            persist(period);
-        }
-        if (findById("JAN-18") == null) {
-            FinancialPeriod period = new FinancialPeriod("JAN-18", "JAN-18", LocalDate.of(2018, Month.JANUARY, 1), LocalDate.of(2018, Month.JANUARY, 31), 2018, 1, PeriodStatus.OPENED);
-            persist(period);
-        }
-        if (findById("FAB-18") == null) {
-            FinancialPeriod period = new FinancialPeriod("FEB-18", "FEB-18", LocalDate.of(2018, Month.FEBRUARY, 1), LocalDate.of(2018, Month.FEBRUARY, 28), 2018, 2, PeriodStatus.OPENED);
-            persist(period);
-        }
-        if (findById("MAR-18") == null) {
-            FinancialPeriod period = new FinancialPeriod("MAR-18", "MAR-18", LocalDate.of(2018, Month.MARCH, 3), LocalDate.of(2018, Month.MARCH, 31), 2018, 3, PeriodStatus.OPENED);
-            persist(period);
+            for (int j = 1; j <= 12; j++) {
+
+                String yrStr = Integer.toString(totalYear[i]);
+                String shortYear = yrStr.substring(yrStr.length() - 2);
+                String exPeriod = shortMonth[j - 1] + "-" + shortYear;
+                if (findById(exPeriod) == null) {
+                    LocalDate date = LocalDate.of(totalYear[i], Month.of(j), 1);
+                    LocalDate lastOfMonth = date.with(TemporalAdjusters.lastDayOfMonth());
+                    FinancialPeriod fPeriod = new FinancialPeriod(exPeriod, exPeriod, LocalDate.of(totalYear[i], Month.of(j), 1), lastOfMonth, totalYear[i], j, PeriodStatus.OPENED);
+                    persist(fPeriod);
+                }
+            }
         }
         logger.info("Finished initializing FinancialPeriods.");
     }

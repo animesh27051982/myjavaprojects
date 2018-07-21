@@ -32,13 +32,18 @@
                                     <p:outputLabel id="endDate" value="#{financialPeriodEdit.financialPeriod.endDate}"/>
                                     <p:outputLabel for="status" value="Status"/>
                                     <p:outputLabel id="status" value="#{financialPeriodEdit.financialPeriod.status}"/>
-
-                                    <p:outputLabel for="btnOpen" value="" />
-                                    <p:commandButton id="btnOpen" value="#{financialPeriodEdit.financialPeriod.getId() == null ? 'Add' : 'Open' }" icon="ui-icon-edit" action="#{financialPeriodEdit.addOpenCondition()}" style="max-width:150px;"/>
-                                    <p:outputLabel for="btnFreeze" value="" />
-                                    <p:commandButton id="btnFreeze" value="#{financialPeriodEdit.financialPeriod.getId() == null ? 'Add' : 'Freeze' }" icon="ui-icon-edit" action="#{financialPeriodEdit.addFreezeCondition()}" style="max-width:150px;"/>
-                                    <p:outputLabel for="btnClose" value="" />
-                                    <p:commandButton id="btnClose" value="#{financialPeriodEdit.financialPeriod.getId() == null ? 'Add' : 'Close' }" icon="ui-icon-edit" action="#{financialPeriodEdit.addCloseCondition()}" style="max-width:150px;"/>
+                                    <f:facet name="footer">
+                                        <p:toolbar>
+                                            <f:facet name="left">
+                                                <p:outputLabel for="btnOpen" value="" />
+                                                <p:commandButton id="btnOpen" value="#{financialPeriodEdit.financialPeriod.getId() == null ? 'Add' : 'Open' }" icon="ui-icon-folder-open" action="#{financialPeriodEdit.addOpenCondition()}" style="max-width:100px;"/>
+                                                <p:outputLabel for="btnFreeze" value="" />
+                                                <p:commandButton id="btnFreeze" value="#{financialPeriodEdit.financialPeriod.getId() == null ? 'Add' : 'Freeze' }" icon="fa fa-fw fa-gg" action="#{financialPeriodEdit.addFreezeCondition()}" style="max-width:100px;"/>
+                                                <p:outputLabel for="btnClose" value="" />
+                                                <p:commandButton id="btnClose" value="#{financialPeriodEdit.financialPeriod.getId() == null ? 'Add' : 'Close' }" icon="fa fa-fw fa-sign-in" action="#{financialPeriodEdit.addCloseCondition()}" style="max-width:100px;"/>
+                                            </f:facet>
+                                        </p:toolbar>
+                                    </f:facet>
                                 </p:panelGrid>
                             </div>
                         </div>
