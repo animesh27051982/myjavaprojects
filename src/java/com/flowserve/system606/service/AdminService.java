@@ -638,6 +638,18 @@ public class AdminService {
         return (List<ExchangeRate>) query.getResultList();
     }
 
+    public ExchangeRate findExchangeRatesByFinancialPeriod(FinancialPeriod fp) {
+        Query query = em.createQuery("SELECT er FROM ExchangeRate er WHERE er.financialPeriod = :fPeriod");
+        query.setParameter("fPeriod", fp);
+
+        List<ExchangeRate> er = query.getResultList();
+        if (er.size() > 0) {
+            return er.get(0);
+        }
+        return null;
+
+    }
+
     public List<ReportingUnit> getPreparableReportingUnits() {   // TODO - Move this to UserService.
         // TODO - figure out logged in user.
         List<ReportingUnit> rus = new ArrayList<ReportingUnit>();

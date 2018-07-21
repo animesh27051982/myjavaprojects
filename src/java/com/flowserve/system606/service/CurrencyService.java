@@ -11,11 +11,18 @@ import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.math.BigDecimal;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.time.LocalDate;
 import java.time.Month;
 import java.util.ArrayList;
 import java.util.Currency;
 import java.util.List;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
@@ -44,6 +51,8 @@ public class CurrencyService {
     private EntityManager em;
     @Inject
     FinancialPeriodService financialPeriodService;
+    @Inject
+    AdminService adminService;
 
     public void persist1(Object object) {
         em.persist(object);
@@ -257,6 +266,134 @@ public class CurrencyService {
             throw new Exception(e.getMessage());
         } finally {
             fis.close();
+        }
+    }
+
+    public void processLegacyExchangeRates(String msAccDB) throws Exception {  // Need an application exception type defined.
+        final int SCALE = 14;
+        final int ROUNDING_METHOD = BigDecimal.ROUND_HALF_UP;
+        Logger.getLogger(DataUploadService.class.getName()).log(Level.INFO, "Processing POCI Data: " + msAccDB);
+
+        Connection connection = null;
+        Statement statement = null;
+        ResultSet resultSet = null;
+        ResultSet resultSet1 = null;
+        ResultSet resultSet2 = null;
+        FinancialPeriod period = null;
+        List<ExchangeRate> exchangeRate = new ArrayList<ExchangeRate>();
+        // Step 1: Loading or registering Oracle JDBC driver class
+        try {
+
+            Class.forName("net.ucanaccess.jdbc.UcanaccessDriver");
+        } catch (ClassNotFoundException cnfex) {
+            Logger.getLogger(CurrencyService.class.getName()).log(Level.INFO, "Problem in loading or registering MS Access JDBC driver");
+            cnfex.printStackTrace();
+        }
+        // Step 2: Opening database connection
+        try {
+            String dbURL = "jdbc:ucanaccess://" + msAccDB;
+            // Step 2.A: Create and get connection using DriverManager class
+            connection = DriverManager.getConnection(dbURL);
+            // Step 2.B: Creating JDBC Statement
+            statement = connection.createStatement();
+            // Step 2.C: Executing SQL &amp; retrieve data into ResultSet
+            resultSet = statement.executeQuery("SELECT Period FROM `tbl_ExchangeRates` GROUP BY Period");
+
+            // processing returned data and printing into console
+            while (resultSet.next()) {
+//                Logger.getLogger(DataUploadService.class.getName()).log(Level.INFO, resultSet.getString(1) + "\t"
+//                        + resultSet.getString(2) + "\t"
+//                        + resultSet.getBigDecimal(3)+ "\t"
+//                        + resultSet.getBigDecimal(4)+ "\t"
+//                        + resultSet.getBigDecimal(5)+ "\t"
+//                        + resultSet.getBigDecimal(6)+ "\t"
+//                );
+                if (!resultSet.getString(1).equalsIgnoreCase("2018-5")) {
+                    String periodDate = resultSet.getString(1);
+                    String[] sp = periodDate.split("-");
+                    try {
+                        String[] monthName = {"JAN", "FEB",
+                            "MAR", "APR", "MAY", "JUN", "JUL",
+                            "AUG", "SEP", "OCT", "NOV",
+                            "DEC"};
+                        // checking valid integer using parseInt() method
+                        int year = Integer.parseInt(sp[0]);
+                        int month = Integer.parseInt(sp[1]);
+                        String yrStr = Integer.toString(year);
+                        String finalYear = yrStr.substring(yrStr.length() - 2);
+                        String exPeriod = monthName[month - 1] + "-" + finalYear;
+
+                        period = financialPeriodService.findById(exPeriod);
+                    } catch (NumberFormatException e) {
+                        Logger.getLogger(DataUploadService.class.getName()).log(Level.INFO, "Error " + e);
+                    }
+                    if (adminService.findExchangeRatesByFinancialPeriod(period) == null) {
+                        PreparedStatement statement1 = connection.prepareStatement("SELECT Currency,ISOCodeAlpha,CUSDPeriodEndRate FROM `tbl_ExchangeRates` WHERE Period = ?");
+                        statement1.setString(1, resultSet.getString(1));
+                        resultSet1 = statement1.executeQuery();
+                        while (resultSet1.next()) {
+                            BigDecimal sourceRate;
+                            String type;
+                            Currency fromCurrency;
+                            BigDecimal targetRate;
+                            Currency toCurrency;
+                            BigDecimal usdRate = new BigDecimal("1.0");
+
+                            PreparedStatement statement2 = connection.prepareStatement("SELECT ISOCodeAlpha,CUSDPeriodEndRate FROM `tbl_ExchangeRates` WHERE Period = ?");
+                            statement2.setString(1, resultSet.getString(1));
+                            resultSet2 = statement2.executeQuery();
+                            while (resultSet2.next()) {
+
+                                sourceRate = resultSet1.getBigDecimal(3);
+                                type = resultSet1.getString(1);
+                                fromCurrency = Currency.getInstance(resultSet1.getString(2));
+
+                                targetRate = resultSet2.getBigDecimal(2);
+                                if (targetRate == null && resultSet2.getString(1).equalsIgnoreCase("USD")) {
+                                    targetRate = usdRate;
+                                }
+                                if (sourceRate == null && resultSet1.getString(2).equalsIgnoreCase("USD")) {
+                                    sourceRate = usdRate;
+                                    type = "(Dollar)";
+                                }
+                                toCurrency = Currency.getInstance(resultSet2.getString(1));
+
+                                //Currency Conversion Formula
+                                BigDecimal rate = usdRate.divide(sourceRate, SCALE, ROUNDING_METHOD).multiply(targetRate);
+                                ExchangeRate exRate = new ExchangeRate();
+                                exRate.setType(type);
+                                exRate.setFromCurrency(fromCurrency);
+                                exRate.setToCurrency(toCurrency);
+                                exRate.setFinancialPeriod(period);
+                                exRate.setConversionRate(rate);
+                                exchangeRate.add(exRate);
+                            }
+                        }
+                        for (ExchangeRate ex : exchangeRate) {
+                            persist(ex);
+                        }
+                    }
+                }
+
+            }
+        } catch (SQLException sqlex) {
+            sqlex.printStackTrace();
+        } finally {
+
+            // Step 3: Closing database connection
+            try {
+                if (null != connection) {
+
+                    // cleanup resources, once after processing
+                    resultSet.close();
+                    statement.close();
+
+                    // and then finally close connection
+                    connection.close();
+                }
+            } catch (SQLException sqlex) {
+                sqlex.printStackTrace();
+            }
         }
     }
 }
