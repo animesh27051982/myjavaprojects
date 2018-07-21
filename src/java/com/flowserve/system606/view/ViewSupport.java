@@ -10,14 +10,15 @@ import com.flowserve.system606.model.BusinessUnit;
 import com.flowserve.system606.model.Contract;
 import com.flowserve.system606.model.CurrencyMetric;
 import com.flowserve.system606.model.DecimalMetric;
+import com.flowserve.system606.model.FinancialPeriod;
 import com.flowserve.system606.model.Measurable;
 import com.flowserve.system606.model.PerformanceObligation;
 import com.flowserve.system606.model.ReportingUnit;
 import com.flowserve.system606.model.User;
 import com.flowserve.system606.service.AdminService;
 import com.flowserve.system606.service.CalculationService;
+import com.flowserve.system606.service.FinancialPeriodService;
 import com.flowserve.system606.service.MetricService;
-import com.flowserve.system606.service.PerformanceObligationService;
 import com.flowserve.system606.web.WebSession;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -27,9 +28,10 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
-import javax.enterprise.context.ApplicationScoped;
+import javax.annotation.PostConstruct;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
+import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import org.primefaces.model.DefaultTreeNode;
@@ -40,7 +42,7 @@ import org.primefaces.model.TreeNode;
  * @author shubhamv
  */
 @Named(value = "viewSupport")
-@ApplicationScoped
+@ViewScoped
 public class ViewSupport implements Serializable {
 
     private static Logger logger = Logger.getLogger("com.flowserve.system606");
@@ -51,14 +53,24 @@ public class ViewSupport implements Serializable {
     private MetricService metricService;
     private String searchString = "";
     @Inject
-    private PerformanceObligationService pobService;
+    private FinancialPeriodService financialPeriodService;
     @Inject
     private CalculationService calculationService;
+
+    FinancialPeriod period = null;
+    FinancialPeriod priorPeriod = null;
 
     /**
      * Creates a new instance of ViewSupport
      */
     public ViewSupport() {
+    }
+
+    @PostConstruct
+    public void init() {
+        // TODO - need to pull from elsewhre.
+        period = financialPeriodService.getCurrentFinancialPeriod();
+        priorPeriod = financialPeriodService.getPriorFinancialPeriod();
     }
 
     public List<User> completeUser(String searchString) {
@@ -177,10 +189,10 @@ public class ViewSupport implements Serializable {
         for (TreeNode pob : pobsToRemove) {
             pob.getParent().getChildren().remove(pob);
         }
+
 //        for (TreeNode contract : contractsToRemove) {
 //            contract.getParent().getChildren().remove(contract);
 //        }
-
         List<TreeNode> reportingUnitsToRemove = new ArrayList<TreeNode>();
         List<TreeNode> contractsToRemove = new ArrayList<TreeNode>();
 
@@ -245,16 +257,14 @@ public class ViewSupport implements Serializable {
 //        return calculationService.getCurrencyMetric(metricTypeId, measurable).getValue();
 //    }
     public CurrencyMetric getCurrencyMetric(String metricTypeId, Measurable measurable) throws Exception {
-        return calculationService.getCurrencyMetric(metricTypeId, measurable);
+        return calculationService.getCurrencyMetric(metricTypeId, measurable, period);
     }
 
     public DecimalMetric getDecimalMetric(String metricTypeId, Measurable measurable) throws Exception {
-        return calculationService.getDecimalMetric(metricTypeId, measurable);
+        return calculationService.getDecimalMetric(metricTypeId, measurable, period);
     }
 
     public CurrencyMetric getCurrencyMetricPriorPeriod(String metricTypeId, Measurable measurable) throws Exception {
-        return calculationService.getCurrencyMetric(metricTypeId, measurable);
-        // TODO
-        //return calculationService.getCurrencyMetricValuePriorPeriod(outputTypeId, measurable);
+        return calculationService.getCurrencyMetric(metricTypeId, measurable, priorPeriod);
     }
 }

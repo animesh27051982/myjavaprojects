@@ -6,6 +6,7 @@
 package com.flowserve.system606.service;
 
 import com.flowserve.system606.model.Contract;
+import com.flowserve.system606.model.FinancialPeriod;
 import com.flowserve.system606.model.PerformanceObligation;
 import com.flowserve.system606.model.ReportingUnit;
 import java.sql.Connection;
@@ -42,6 +43,8 @@ public class DataUploadService {
     private AdminService adminService;
     @Inject
     private CalculationService calculationService;
+    @Inject
+    private FinancialPeriodService financialPeriodService;
 
     private Map<String, String> methodMap = new HashMap<String, String>();
 
@@ -95,6 +98,7 @@ public class DataUploadService {
 //                );
 
                 if (resultSet.getString(1).equalsIgnoreCase("2018-5")) {
+                    FinancialPeriod period = financialPeriodService.getCurrentFinancialPeriod();
                     String id = resultSet.getString(2);
                     if (id != null) {
                         String[] sp = id.split("-");
@@ -104,10 +108,10 @@ public class DataUploadService {
                             Integer.parseInt(lastId);
                             PerformanceObligation pob = pobService.findPerformanceObligationById(new Long(lastId));
                             if (pob != null) {
-                                calculationService.putCurrencyMetricValue("TRANSACTION_PRICE_CC", pob, resultSet.getBigDecimal(3));
-                                calculationService.putCurrencyMetricValue("ESTIMATED_COST_AT_COMPLETION_LC", pob, resultSet.getBigDecimal(4));
-                                calculationService.putCurrencyMetricValue("LOCAL_COSTS_ITD_LC", pob, resultSet.getBigDecimal(5));
-                                calculationService.putCurrencyMetricValue("LIQUIDATED_DAMAGES_ITD_CC", pob, resultSet.getBigDecimal(6));
+                                calculationService.getCurrencyMetric("TRANSACTION_PRICE_CC", pob, period).setValue(resultSet.getBigDecimal(3));
+                                calculationService.getCurrencyMetric("ESTIMATED_COST_AT_COMPLETION_LC", pob, period).setValue(resultSet.getBigDecimal(4));
+                                calculationService.getCurrencyMetric("LOCAL_COSTS_ITD_LC", pob, period).setValue(resultSet.getBigDecimal(5));
+                                calculationService.getCurrencyMetric("LIQUIDATED_DAMAGES_ITD_CC", pob, period).setValue(resultSet.getBigDecimal(6));
 //                                if (pob.getContract().getReportingUnit().getCode().equalsIgnoreCase("8025")) {
 //                                    calculationService.executeBusinessRules(pob);
 //                                }

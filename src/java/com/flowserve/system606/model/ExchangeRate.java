@@ -15,7 +15,6 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.OneToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
@@ -36,7 +35,6 @@ public class ExchangeRate implements Serializable, Comparable<ExchangeRate> {
     private Currency fromCurrency;
     @Column(name = "TO_CURRENCY")
     private Currency toCurrency;
-    @OneToOne
     @JoinColumn(name = "FINANCIAL_PERIOD_ID")
     private FinancialPeriod financialPeriod;
     @Column(name = "CONVERSION_RATE", precision = 38, scale = 14)

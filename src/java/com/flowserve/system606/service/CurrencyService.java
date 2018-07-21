@@ -83,18 +83,20 @@ public class CurrencyService {
         return amount.multiply(er.getConversionRate()).setScale(SCALE, BigDecimal.ROUND_HALF_UP);
     }
 
-    public void initCurrencyConverter() throws Exception {
-        FinancialPeriod period = financialPeriodService.findById("MAY-18");
+    public void initCurrencyConverter(FinancialPeriod period) throws Exception {
+
         List<ExchangeRate> er = findRatesByPeriod(period);
+        //Logger.getLogger(CurrencyService.class.getName()).log(Level.INFO, "rate count: " + er.size());
+        //Logger.getLogger(CurrencyService.class.getName()).log(Level.INFO, "period: " + period.getId());
 
         final int SCALE = 14;
         final int ROUNDING_METHOD = BigDecimal.ROUND_HALF_UP;
 
         if (er.isEmpty()) {
-            logger.info("Initializing exchange rates.");
+            logger.info("Initializing exchange rates for: " + period.getId());
 
             BufferedReader reader = new BufferedReader(new InputStreamReader(AppInitializeService.class.getResourceAsStream("/resources/currency_rate_file/currency.txt"), "UTF-8"));
-            deleteExchangeRate();
+            //deleteExchangeRate();
             String line = null;
 
             while ((line = reader.readLine()) != null) {

@@ -49,21 +49,23 @@ public class FinancialPeriodService {
 
     public void initFinancialPeriods() throws Exception {
         logger.info("Initializing FinancialPeriods");
+        if (findById("MAR-18") == null) {
+            FinancialPeriod period = new FinancialPeriod("MAR-18", "MAR-18", LocalDate.of(2018, Month.MARCH, 1), LocalDate.of(2018, Month.MARCH, 30), 2018, 3, PeriodStatus.OPENED);
+            persist(period);
+        }
         if (findById("APR-18") == null) {
             FinancialPeriod period = new FinancialPeriod("APR-18", "APR-18", LocalDate.of(2018, Month.APRIL, 1), LocalDate.of(2018, Month.APRIL, 30), 2018, 4, PeriodStatus.OPENED);
             persist(period);
         }
         if (findById("MAY-18") == null) {
-            logger.info("Initializing FinancialPeriods");
             FinancialPeriod period = new FinancialPeriod("MAY-18", "MAY-18", LocalDate.of(2018, Month.MAY, 1), LocalDate.of(2018, Month.MAY, 31), 2018, 5, PeriodStatus.OPENED);
             persist(period);
-
         }
         logger.info("Finished initializing FinancialPeriods.");
     }
 
     public FinancialPeriod getCurrentFinancialPeriod() {
-        return findById("MAY-18");
+        return findById("MAR-18");
     }
 
     public FinancialPeriod getPriorFinancialPeriod() {

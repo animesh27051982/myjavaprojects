@@ -7,6 +7,7 @@ package com.flowserve.system606.service;
 
 import com.flowserve.system606.model.BillingEvent;
 import com.flowserve.system606.model.Contract;
+import com.flowserve.system606.model.FinancialPeriod;
 import com.flowserve.system606.model.Measurable;
 import com.flowserve.system606.model.MetricSet;
 import com.flowserve.system606.model.MetricType;
@@ -74,6 +75,9 @@ public class TemplateService {
         XSSFRow row;
         Cell cell = null;
 
+        // TODO - This needs to be read from the file and then checked to make sure it's open.
+        FinancialPeriod period = financialPeriodService.getCurrentFinancialPeriod();
+
         int rowid = HEADER_ROW_COUNT;
         for (ReportingUnit ru : reportingUnits) {
             List<Contract> contracts = ru.getContracts();
@@ -95,8 +99,8 @@ public class TemplateService {
                     for (MetricType metricType : metricTypes) {
                         cell = row.getCell(CellReference.convertColStringToIndex(metricType.getExcelCol()));
                         if ("CurrencyMetric".equals(metricType.getMetricClass())) {
-                            if (currencyMetricIsNotNull(metricType, pob)) {
-                                cell.setCellValue(calculationService.getCurrencyMetricValue(metricType.getId(), pob).doubleValue());
+                            if (currencyMetricIsNotNull(metricType, pob, period)) {
+                                cell.setCellValue(calculationService.getCurrencyMetric(metricType.getId(), pob, period).getValue().doubleValue());
                             }
                         }
                     }
@@ -112,6 +116,10 @@ public class TemplateService {
 
     public void processTemplateUpload(InputStream fis, String filename) throws Exception {  // Need an application exception type defined.
         try {
+
+            // TODO - This needs to be read from the file and then checked to make sure it's open.
+            FinancialPeriod period = financialPeriodService.getCurrentFinancialPeriod();
+
             List<MetricType> inputTypes = metricService.getAllPobExcelInputMetricTypes();
             XSSFWorkbook workbook = new XSSFWorkbook(fis);
             XSSFSheet worksheet = workbook.getSheetAt(0);
@@ -152,13 +160,13 @@ public class TemplateService {
                             continue;
                         }
                         if ("CurrencyMetric".equals(inputType.getMetricClass())) {
-                            calculationService.getCurrencyMetric(inputType.getId(), pob).setValue(new BigDecimal(NumberToTextConverter.toText(cell.getNumericCellValue())));
+                            calculationService.getCurrencyMetric(inputType.getId(), pob, period).setValue(new BigDecimal(NumberToTextConverter.toText(cell.getNumericCellValue())));
                         }
                         if ("StringMetric".equals(inputType.getMetricClass())) {
-                            calculationService.getStringMetric(inputType.getId(), pob).setValue(cell.getStringCellValue());
+                            calculationService.getStringMetric(inputType.getId(), pob, period).setValue(cell.getStringCellValue());
                         }
                         if ("DateMetric".equals(inputType.getMetricClass())) {
-                            calculationService.getDateMetric(inputType.getId(), pob).setValue(cell.getDateCellValue().toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
+                            calculationService.getDateMetric(inputType.getId(), pob, period).setValue(cell.getDateCellValue().toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
                         }
                     } catch (Exception rce) {
                         Logger.getLogger(TemplateService.class.getName()).log(Level.SEVERE, "Error processing " + inputType.getId());
@@ -315,7 +323,8 @@ public class TemplateService {
         }
     }
 
-    private boolean currencyMetricIsNotNull(MetricType metricType, Measurable measurable) throws Exception {
-        return calculationService.getCurrencyMetric(metricType.getId(), measurable) != null && calculationService.getCurrencyMetric(metricType.getId(), measurable).getValue() != null;
+    private boolean currencyMetricIsNotNull(MetricType metricType, Measurable measurable, FinancialPeriod period) throws Exception {
+        return calculationService.getCurrencyMetric(metricType.getId(), measurable, period) != null
+                && calculationService.getCurrencyMetric(metricType.getId(), measurable, period).getValue() != null;
     }
 }
