@@ -217,7 +217,7 @@ public class FinancialPeriodService {
 
     }
 
-    public static boolean isXWorkday(LocalDate date, int workday, List<Holiday> holidays) throws Exception {
+    public  boolean isXWorkday(LocalDate date, int workday, List<Holiday> holidays) throws Exception {
 
         LocalDate date1 = LocalDate.of(date.getYear(), date.getMonthValue(), 1);
         int workdayCount = isWorkday(date1, holidays) ? 1 : 0;
@@ -254,13 +254,56 @@ public class FinancialPeriodService {
         return workdayCount;
     }
 
-    public static boolean isWorkday(LocalDate date, List<Holiday> holidays) {
-
-        if (date.getDayOfWeek() != DayOfWeek.SATURDAY && date.getDayOfWeek() != DayOfWeek.SUNDAY && !holidays.contains(date)) {
-            return true;
-        } else {
-            return false;
+   public boolean isWorkday(LocalDate date, List<Holiday> holidays) throws Exception {
+        LocalDate holidaydate = null;
+        boolean bol = false;
+        if(holidays.isEmpty())
+        {
+         if (date.getDayOfWeek() != DayOfWeek.SATURDAY && date.getDayOfWeek() != DayOfWeek.SUNDAY ) {
+         return true;
+         }
+         else
+         {
+             return false;
+         }
         }
+       int count=holidays.size();
+       int sert=holidays.size();
+                    
+            if (date.getDayOfWeek() != DayOfWeek.SATURDAY && date.getDayOfWeek() != DayOfWeek.SUNDAY  ) {
+                for (int i=0;i<count;i++) {
+               holidaydate = holidays.get(i).getHolidayDate();
+                if(!holidaydate.isEqual(date)){
+                sert--;
+                if(sert==0)
+                {
+                    return true;
+                }}
+                }
+                
+        }
+            
+   
+         
+        return false;
+    }
+    public LocalDate CalcInputFreezeWorkday(LocalDate date, List<Holiday> holidays,int workday) throws Exception {
+        LocalDate temp = null;
+        int count = 0;
+        LocalDate freezeDay = LocalDate.of(date.getYear(), date.getMonthValue(), 1);
+       
+        for (int i = 0; i <= 31; i++) {
+            freezeDay = freezeDay.plusDays(1);
+            if (isWorkday(freezeDay, holidays) == true) {
+                count++;
+                if (count == workday) {
+                    return freezeDay;
+                }
+                temp=freezeDay;
+            }
+     
+    }
+    return temp;
     }
 
 //                private static SortedSet<KeyDate> getAllHolidays() throws Exception {
