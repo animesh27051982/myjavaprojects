@@ -4,189 +4,275 @@ import java.math.BigDecimal;
 import com.flowserve.system606.model.PerformanceObligation;
 import com.flowserve.system606.model.Contract;
 import com.flowserve.system606.model.Metric;
-import com.flowserve.system606.model.MetricPriorPeriod;
+import com.flowserve.system606.model.DecimalMetric;
+import com.flowserve.system606.model.CurrencyMetric;
+import com.flowserve.system606.model.CurrencyMetricPriorPeriod;
 import java.util.logging.Logger;
 global Logger logger;
 
 rule "Estimated Gross Profit and Margin"
-
-    // Needed only to support tab-out ajax requests on the UI.
     when
         // Pull input values needed for this calculation.
         pob : PerformanceObligation()  // If a pob exists
-        transactionPrice : Metric(metricType.id == "TRANSACTION_PRICE_CC", value != null)  // if this metric exists and is not null, initialize variable.
-        estimatedCostAtCompletion : Metric(metricType.id == "ESTIMATED_COST_AT_COMPLETION_LC", value != null)
-        estimatedGrossProfit : Metric(metricType.id == "ESTIMATED_GROSS_PROFIT_LC")  // Initialize variable for calc result.
-        estimatedGrossMargin : Metric(metricType.id == "ESTIMATED_GROSS_MARGIN_LC")
+        transactionPrice : CurrencyMetric(metricType.id == "TRANSACTION_PRICE_CC", lcValue != null)  // if this metric exists and is not null, initialize variable.
+        estimatedCostAtCompletion : CurrencyMetric(metricType.id == "ESTIMATED_COST_AT_COMPLETION_LC", lcValue != null)
+        estimatedGrossProfit : CurrencyMetric(metricType.id == "ESTIMATED_GROSS_PROFIT_LC")  // Initialize variable for calc result.
+        estimatedGrossMargin : Metric(metricType.id == "ESTIMATED_GROSS_MARGIN")
     then
         // Calculate all outputs possible using these inputs.
-        modify (estimatedGrossProfit) { value = (transactionPrice.value - estimatedCostAtCompletion.value)};
-        modify (estimatedGrossMargin) { value = (estimatedGrossProfit.value / transactionPrice.value)};
+        logger.info("Caculating EGP/EGM");
+        modify (estimatedGrossProfit) { lcValue = (transactionPrice.lcValue - estimatedCostAtCompletion.lcValue)};
+        modify (estimatedGrossMargin) { value = (estimatedGrossProfit.lcValue == 0B ? 0B : estimatedGrossProfit.lcValue / transactionPrice.lcValue)};
 end
 
 rule "EAC Change"
-
-    // Needed only to support tab-out ajax requests on the UI.
     when
         // Pull input values needed for this calculation.
         pob : PerformanceObligation()
-        estimatedCostAtCompletion : Metric(metricType.id == "ESTIMATED_COST_AT_COMPLETION_LC", value != null)
-        estimatedCostAtCompletionPriorPeriod : MetricPriorPeriod(metricType.id == "ESTIMATED_COST_AT_COMPLETION_LC", value != null)
-        changeInEstimate : Metric(metricType.id == "CHANGE_IN_EAC_LC")
+        estimatedCostAtCompletion : CurrencyMetric(metricType.id == "ESTIMATED_COST_AT_COMPLETION_LC", lcValue != null)
+        estimatedCostAtCompletionPriorPeriod : CurrencyMetricPriorPeriod(metricType.id == "ESTIMATED_COST_AT_COMPLETION_LC", lcValue != null)
+        changeInEstimate : CurrencyMetric(metricType.id == "CHANGE_IN_EAC_LC")
     then
-        modify (changeInEstimate) { value = (estimatedCostAtCompletion.value - estimatedCostAtCompletionPriorPeriod.value)};
+        logger.info("Caculating Change in EAC");
+        modify (changeInEstimate) { lcValue = (estimatedCostAtCompletion.lcValue - estimatedCostAtCompletionPriorPeriod.lcValue)};
 end
 
 rule "Cost of Goods Sold ITD"
     when
         pob : PerformanceObligation()
-        localCostsITD : Metric(metricType.id == "LOCAL_COSTS_ITD_LC", value != null)       // null check means don't run this entire rule if the metric value is null.  We may have to break the rules up and pull the ones that rely on prior period to their own rule but proceed here for now.
-        thirdPartyCostsITD : Metric(metricType.id == "THIRD_PARTY_COSTS_ITD_LC", value != null)
-        intercoCostsITD : Metric(metricType.id == "INTERCOMPANY_COSTS_ITD_LC", value != null)
-        costOfGoodsSoldITD : Metric(metricType.id == "COST_OF_GOODS_SOLD_ITD_LC")               // don't worry about null check here since we setting this as output calc below.  it is null initially.
+        localCostsITD : CurrencyMetric(metricType.id == "LOCAL_COSTS_ITD_LC", lcValue != null)
+        thirdPartyCostsITD : CurrencyMetric(metricType.id == "THIRD_PARTY_COSTS_ITD_LC", lcValue != null)
+        intercoCostsITD : CurrencyMetric(metricType.id == "INTERCOMPANY_COSTS_ITD_LC", lcValue != null)
+        costOfGoodsSoldITD : CurrencyMetric(metricType.id == "COST_OF_GOODS_SOLD_ITD_LC")
     then
-        modify (costOfGoodsSoldITD) { value = (localCostsITD.value + thirdPartyCostsITD.value + intercoCostsITD.value)};
+        logger.info("Caculating COGS ITD");
+        modify (costOfGoodsSoldITD) { lcValue = (localCostsITD.lcValue + thirdPartyCostsITD.lcValue + intercoCostsITD.lcValue)};
+end
+
+
+rule "Contract Cost to Complete"
+    when
+        contract : Contract()
+        estimatedCostAtCompletion : CurrencyMetric(metricType.id == "ESTIMATED_COST_AT_COMPLETION_LC", lcValue != null)
+        costOfGoodsSoldITD : CurrencyMetric(metricType.id == "COST_OF_GOODS_SOLD_ITD_LC", lcValue != null)
+        costToComplete : CurrencyMetric(metricType.id == "CONTRACT_COST_TO_COMPLETE_LC")
+    then
+        modify (costToComplete) { lcValue = (estimatedCostAtCompletion.lcValue - costOfGoodsSoldITD.lcValue)};
 end
 
 rule "Cost of Goods Sold Backlog"
     when
         pob : PerformanceObligation()
-        estimatedCostAtCompletion : Metric(metricType.id == "ESTIMATED_COST_AT_COMPLETION_LC", value != null)
-        costOfGoodsSoldITD : Metric(metricType.id == "COST_OF_GOODS_SOLD_ITD_LC", value != null)
-        costOfGoodsSoldBacklog : Metric(metricType.id == "COST_GOODS_SOLD_BACKLOG_LC")
+        estimatedCostAtCompletion : CurrencyMetric(metricType.id == "ESTIMATED_COST_AT_COMPLETION_LC", lcValue != null)
+        costOfGoodsSoldITD : CurrencyMetric(metricType.id == "COST_OF_GOODS_SOLD_ITD_LC", lcValue != null)
+        costOfGoodsSoldBacklog : CurrencyMetric(metricType.id == "COST_GOODS_SOLD_BACKLOG_LC")
     then
-        modify (costOfGoodsSoldBacklog) { value = (estimatedCostAtCompletion.value - costOfGoodsSoldITD.value)};
+        modify (costOfGoodsSoldBacklog) { lcValue = (estimatedCostAtCompletion.lcValue - costOfGoodsSoldITD.lcValue)};
 end
 
 rule "Remaining EAC"
     when
         pob : PerformanceObligation()
-        estimatedCostAtCompletion : Metric(metricType.id == "ESTIMATED_COST_AT_COMPLETION_LC", value != null)
-        costOfGoodsSoldITD : Metric(metricType.id == "COST_OF_GOODS_SOLD_ITD_LC", value != null)
-        remainingEACLC : Metric(metricType.id == "REMAINING_ESTIMATE_COMPLETE_LC")
+        estimatedCostAtCompletion : CurrencyMetric(metricType.id == "ESTIMATED_COST_AT_COMPLETION_LC", lcValue != null)
+        costOfGoodsSoldITD : CurrencyMetric(metricType.id == "COST_OF_GOODS_SOLD_ITD_LC", lcValue != null)
+        remainingEAC : CurrencyMetric(metricType.id == "REMAINING_ESTIMATE_COMPLETE_LC")
     then
-        modify (remainingEACLC) { value = (estimatedCostAtCompletion.value - costOfGoodsSoldITD.value)};
+        modify (remainingEAC) { lcValue = (estimatedCostAtCompletion.lcValue - costOfGoodsSoldITD.lcValue)};
 end
 
-rule "Percent Complete"
+rule "Percent Complete POB"
     when
         pob : PerformanceObligation()
-        costOfGoodsSoldITD : Metric(metricType.id == "COST_OF_GOODS_SOLD_ITD_LC", value != null)
-        estimatedCostAtCompletion : Metric(metricType.id == "ESTIMATED_COST_AT_COMPLETION_LC", value != null)
-        percentComplete : Metric(metricType.id == "PERCENT_COMPLETE")  // don't worry about null check here since we setting this as output calc below.  it is null initially.
+        costOfGoodsSoldITD : CurrencyMetric(metricType.id == "COST_OF_GOODS_SOLD_ITD_LC", lcValue != null)
+        estimatedCostAtCompletion : CurrencyMetric(metricType.id == "ESTIMATED_COST_AT_COMPLETION_LC", lcValue != null)
+        percentComplete : Metric(metricType.id == "PERCENT_COMPLETE")
     then
-        modify (percentComplete) { value = (costOfGoodsSoldITD.value / estimatedCostAtCompletion.value)};
+        modify (percentComplete) { value = (costOfGoodsSoldITD.lcValue / estimatedCostAtCompletion.lcValue)};
+end
+
+rule "Percent Complete Contract"
+    when
+        contract : Contract()
+        costOfGoodsSoldITD : CurrencyMetric(metricType.id == "COST_OF_GOODS_SOLD_ITD_LC", lcValue != null && lcValue != 0B)
+        estimatedCostAtCompletion : CurrencyMetric(metricType.id == "ESTIMATED_COST_AT_COMPLETION_LC", lcValue != null && lcValue != 0B)
+        contractPercentComplete : Metric(metricType.id == "CONTRACT_PERCENT_COMPLETE")
+    then
+        modify (contractPercentComplete) { value = (costOfGoodsSoldITD.lcValue / estimatedCostAtCompletion.lcValue)};
+end
+
+rule "Contract Revenue Earned to Date"
+    when
+        contract : Contract()
+        transactionPrice : CurrencyMetric(metricType.id == "TRANSACTION_PRICE_CC", lcValue != null)
+        contractPercentComplete : Metric(metricType.id == "CONTRACT_PERCENT_COMPLETE", value != null)
+        contractRevenueToRecognizeITD : CurrencyMetric(metricType.id == "CONTRACT_REVENUE_TO_RECOGNIZE_ITD_LC")
+    then
+        modify (contractRevenueToRecognizeITD) { lcValue = (transactionPrice.lcValue * contractPercentComplete.value)};
+end
+
+rule "Contract Billings In Excess"
+    when
+        contract : Contract()
+        contractRevenueToRecognizeITD : CurrencyMetric(metricType.id == "CONTRACT_REVENUE_TO_RECOGNIZE_ITD_LC", lcValue != null)
+        contractBillingsInExcess : CurrencyMetric(metricType.id == "CONTRACT_BILLINGS_IN_EXCESS_LC")
+    then
+        modify (contractBillingsInExcess) { lcValue = (contract.getTotalBillingsLocalCurrency() <= contractRevenueToRecognizeITD.lcValue ? 0B : contract.getTotalBillingsLocalCurrency() - contractRevenueToRecognizeITD.lcValue)};
+end
+
+rule "Contract Revenue In Excess. Thsi is named Costs in Excess on XLS not sure why"
+    when
+        contract : Contract()
+        contractRevenueToRecognizeITD : CurrencyMetric(metricType.id == "CONTRACT_REVENUE_TO_RECOGNIZE_ITD_LC", lcValue != null)
+        contractRevenueInExcess : CurrencyMetric(metricType.id == "CONTRACT_REVENUE_IN_EXCESS_LC")
+    then
+        modify (contractRevenueInExcess) { lcValue = (contract.getTotalBillingsLocalCurrency() >= contractRevenueToRecognizeITD.lcValue ? 0B : contractRevenueToRecognizeITD.lcValue - contract.getTotalBillingsLocalCurrency())};
 end
 
 rule "Revenue to Recognize ITD"
     when
         pob : PerformanceObligation()
         percentComplete : Metric(metricType.id == "PERCENT_COMPLETE", value != null)
-        transactionPrice : Metric(metricType.id == "TRANSACTION_PRICE_CC", value != null)
-        revenueToRecognizeITD : Metric(metricType.id == "REVENUE_TO_RECOGNIZE_ITD_LC")
+        transactionPrice : CurrencyMetric(metricType.id == "TRANSACTION_PRICE_CC", lcValue != null)
+        revenueToRecognizeITD : CurrencyMetric(metricType.id == "REVENUE_TO_RECOGNIZE_ITD_LC")
     then
-        modify (revenueToRecognizeITD) { value = (percentComplete.value * transactionPrice.value)};
+        modify (revenueToRecognizeITD) { lcValue = (percentComplete.value * transactionPrice.lcValue)};
 end
 
 rule "Revenue to Recognize Current Period"
     when
         pob : PerformanceObligation()
-        revenueToRecognizeITD : Metric(metricType.id == "REVENUE_TO_RECOGNIZE_ITD_LC", value != null)
-        revenueToRecognizeITDPriorPeriod : MetricPriorPeriod(metricType.id == "REVENUE_TO_RECOGNIZE_ITD_LC", value != null)
-        revenueToRecognizeCurrentPeriod : Metric(metricType.id == "REVENUE_TO_RECOGNIZE_PERIOD_LC")
+        revenueToRecognizeITD : CurrencyMetric(metricType.id == "REVENUE_TO_RECOGNIZE_ITD_LC", lcValue != null)
+        revenueToRecognizeITDPriorPeriod : CurrencyMetricPriorPeriod(metricType.id == "REVENUE_TO_RECOGNIZE_ITD_LC")
+        revenueToRecognizeCurrentPeriod : CurrencyMetric(metricType.id == "REVENUE_TO_RECOGNIZE_PERIOD_LC")
     then
-        modify (revenueToRecognizeCurrentPeriod) { value = (revenueToRecognizeITD.value - revenueToRecognizeITDPriorPeriod.value)};
+        modify (revenueToRecognizeCurrentPeriod) { lcValue = (revenueToRecognizeITDPriorPeriod.lcValue == null ? revenueToRecognizeITD.lcValue : revenueToRecognizeITD.lcValue - revenueToRecognizeITDPriorPeriod.lcValue)};
 end
 
 
-rule "Liquidated Damages Recognized ITD"  // The amount of LD to recognize inception to date
+rule "Liquidated Damages Recognized ITD"
     when
         pob : PerformanceObligation()
         percentComplete : Metric(metricType.id == "PERCENT_COMPLETE", value != null)
-        liquidatedDamagesITD : Metric(metricType.id == "LIQUIDATED_DAMAGES_ITD_CC", value != null)
-        liquidatedDamagesITDToRecognize : Metric(metricType.id == "LIQUIDATED_DAMAGES_TO_RECOGNIZE_ITD_LC")
+        liquidatedDamagesITD : CurrencyMetric(metricType.id == "LIQUIDATED_DAMAGES_ITD_CC", lcValue != null)
+        liquidatedDamagesITDToRecognize : CurrencyMetric(metricType.id == "LIQUIDATED_DAMAGES_TO_RECOGNIZE_ITD_LC")
     then
-        modify (liquidatedDamagesITDToRecognize) { value = (percentComplete.value * liquidatedDamagesITD.value)};
+        modify (liquidatedDamagesITDToRecognize) { lcValue = (percentComplete.value * liquidatedDamagesITD.lcValue)};
 end
 
 rule "Liquidated Damages to Recognize in Current Period"
     when
         pob : PerformanceObligation()
-        liquidatedDamagesToRecognizeITD : Metric(metricType.id == "LIQUIDATED_DAMAGES_TO_RECOGNIZE_ITD_LC", value != null)
-        liquidatedDamagesRecognizedITDPriorPeriod : MetricPriorPeriod(metricType.id == "LIQUIDATED_DAMAGES_TO_RECOGNIZE_ITD_LC", value != null)
-        liquidatedDamagesToRecognizeCurrentPeriod : Metric(metricType.id == "LIQUIDATED_DAMAGES_TO_RECOGNIZE_PERIOD_LC")
+        liquidatedDamagesToRecognizeITD : CurrencyMetric(metricType.id == "LIQUIDATED_DAMAGES_TO_RECOGNIZE_ITD_LC", lcValue != null)
+        liquidatedDamagesRecognizedITDPriorPeriod : CurrencyMetricPriorPeriod(metricType.id == "LIQUIDATED_DAMAGES_TO_RECOGNIZE_ITD_LC")
+        liquidatedDamagesToRecognizeCurrentPeriod : CurrencyMetric(metricType.id == "LIQUIDATED_DAMAGES_TO_RECOGNIZE_PERIOD_LC")
     then
-        modify (liquidatedDamagesToRecognizeCurrentPeriod) { value = (liquidatedDamagesToRecognizeITD.value - liquidatedDamagesRecognizedITDPriorPeriod.value)};
+        modify (liquidatedDamagesToRecognizeCurrentPeriod) { lcValue = (liquidatedDamagesRecognizedITDPriorPeriod.lcValue == null ? liquidatedDamagesToRecognizeITD.lcValue : liquidatedDamagesToRecognizeITD.lcValue - liquidatedDamagesRecognizedITDPriorPeriod.lcValue)};
 end
 
 rule "Liquidated Damages in Backlog"
     when
         pob : PerformanceObligation()
-        liquidatedDamagesITD : Metric(metricType.id == "LIQUIDATED_DAMAGES_ITD_CC", value != null)
-        liquidatedDamagesITDToRecognize : Metric(metricType.id == "LIQUIDATED_DAMAGES_TO_RECOGNIZE_ITD_LC", value != null)
-        liquidatedDamagesBacklog : Metric(metricType.id == "LIQUIDATED_DAMAGES_BACKLOG_LC")
+        liquidatedDamagesITD : CurrencyMetric(metricType.id == "LIQUIDATED_DAMAGES_ITD_CC", lcValue != null)
+        liquidatedDamagesITDToRecognize : CurrencyMetric(metricType.id == "LIQUIDATED_DAMAGES_TO_RECOGNIZE_ITD_LC", lcValue != null)
+        liquidatedDamagesBacklog : CurrencyMetric(metricType.id == "LIQUIDATED_DAMAGES_BACKLOG_LC")
     then
-        modify (liquidatedDamagesBacklog) { value = (liquidatedDamagesITD.value - liquidatedDamagesITDToRecognize.value)};
+        modify (liquidatedDamagesBacklog) { lcValue = (liquidatedDamagesITD.lcValue - liquidatedDamagesITDToRecognize.lcValue)};
 end
 
 
 rule "Net Period Sales"
     when
         pob : PerformanceObligation()
-        revenueToRecognizecCurrentPeriod : Metric(metricType.id == "REVENUE_TO_RECOGNIZE_PERIOD_LC", value != null)
-        liquidatedDamagesToRecognizeCurrentPeriod : Metric(metricType.id == "LIQUIDATED_DAMAGES_TO_RECOGNIZE_PERIOD_LC", value != null)
-        netPeriodSales : Metric(metricType.id == "NET_PERIOD_SALES_LC")
+        revenueToRecognizecCurrentPeriod : CurrencyMetric(metricType.id == "REVENUE_TO_RECOGNIZE_PERIOD_LC", lcValue != null)
+        liquidatedDamagesToRecognizeCurrentPeriod : CurrencyMetric(metricType.id == "LIQUIDATED_DAMAGES_TO_RECOGNIZE_PERIOD_LC", lcValue != null)
+        netPeriodSales : CurrencyMetric(metricType.id == "NET_PERIOD_SALES_LC")
     then
-        modify (netPeriodSales) { value = (revenueToRecognizecCurrentPeriod.value - liquidatedDamagesToRecognizeCurrentPeriod.value)};
+        modify (netPeriodSales) { lcValue = (revenueToRecognizecCurrentPeriod.lcValue - liquidatedDamagesToRecognizeCurrentPeriod.lcValue)};
 end
 
 rule "Transaction Price in Backlog"
     when
         pob : PerformanceObligation()
-        transactionPrice : Metric(metricType.id == "TRANSACTION_PRICE_CC", value != null)
-        revenueToRecognizeITD : Metric(metricType.id == "REVENUE_TO_RECOGNIZE_ITD_LC", value != null)
-        transactionPriceBacklogLC : Metric(metricType.id == "TRANSACTION_PRICE_BACKLOG_LC")
+        transactionPrice : CurrencyMetric(metricType.id == "TRANSACTION_PRICE_CC", lcValue != null)
+        revenueToRecognizeITD : CurrencyMetric(metricType.id == "REVENUE_TO_RECOGNIZE_ITD_LC", lcValue != null)
+        transactionPriceBacklog : CurrencyMetric(metricType.id == "TRANSACTION_PRICE_BACKLOG_LC")
     then
-        modify (transactionPriceBacklogLC) { value = (transactionPrice.value - revenueToRecognizeITD.value)};
+        modify (transactionPriceBacklog) { lcValue = (transactionPrice.lcValue - revenueToRecognizeITD.lcValue)};
 end
 
 
 rule "Transaction Price Net LD"
     when
         pob : PerformanceObligation()
-        transactionPrice : Metric(metricType.id == "TRANSACTION_PRICE_CC", value != null)
-        liquidatedDamagesITD : Metric(metricType.id == "LIQUIDATED_DAMAGES_ITD_CC", value != null)
-        transactionPriceNetLDLC : Metric(metricType.id == "TRANSACTION_PRICE_NET_LD_LC")
+        transactionPrice : CurrencyMetric(metricType.id == "TRANSACTION_PRICE_CC", lcValue != null)
+        liquidatedDamagesITD : CurrencyMetric(metricType.id == "LIQUIDATED_DAMAGES_ITD_CC", lcValue != null)
+        transactionPriceNetLD : CurrencyMetric(metricType.id == "TRANSACTION_PRICE_NET_LD_LC")
     then
-        modify (transactionPriceNetLDLC) { value = (transactionPrice.value - liquidatedDamagesITD.value)};
+        modify (transactionPriceNetLD) { lcValue = (transactionPrice.lcValue - liquidatedDamagesITD.lcValue)};
 end
 
 rule "Projected Gain/Loss"
     when
         pob : PerformanceObligation()
-        transactionPriceNetLDLC : Metric(metricType.id == "TRANSACTION_PRICE_NET_LD_LC", value != null)
-        remainingEACLC : Metric(metricType.id == "REMAINING_ESTIMATE_COMPLETE_LC", value != null)
-        projectedGainLossLC : Metric(metricType.id == "PROJECT_GAIN_LOSS_LC")
+        transactionPriceNetLD : CurrencyMetric(metricType.id == "TRANSACTION_PRICE_NET_LD_LC", lcValue != null)
+        remainingEAC : CurrencyMetric(metricType.id == "REMAINING_ESTIMATE_COMPLETE_LC", lcValue != null)
+        projectedGainLoss : CurrencyMetric(metricType.id == "PROJECT_GAIN_LOSS_LC")
     then
-        modify (projectedGainLossLC) { value = (transactionPriceNetLDLC.value - remainingEACLC.value)};
+        modify (projectedGainLoss) { lcValue = (transactionPriceNetLD.lcValue - remainingEAC.lcValue)};
 end
 
 rule "Contract Level Estimated Gross Profit and Margin"
-
     when
-
-        contract : Contract()    // or maybe even --- measurable : Measurable() if the engine will support this.  This way we can reuse rules at multiple levels.
-        transactionPrice : Metric(metricType.id == "TRANSACTION_PRICE_CC", value != null)  // if this metric exists and is not null, initialize variable.
-        liquidatedDamagesITD : Metric(metricType.id == "LIQUIDATED_DAMAGES_ITD_CC", value != null)
-        estimatedCostAtCompletion : Metric(metricType.id == "ESTIMATED_COST_AT_COMPLETION_LC", value != null)
-        estimatedGrossProfit : Metric(metricType.id == "CONTRACT_ESTIMATED_GROSS_PROFIT_LC")
-        estimatedGrossMargin : Metric(metricType.id == "CONTRACT_ESTIMATED_GROSS_MARGIN_LC")
-
+        contract : Contract()
+        transactionPrice : CurrencyMetric(metricType.id == "TRANSACTION_PRICE_CC", lcValue != null)
+        contractLiquidatedDamagesITD : CurrencyMetric(metricType.id == "LIQUIDATED_DAMAGES_ITD_CC", lcValue != null)
+        estimatedCostAtCompletion : CurrencyMetric(metricType.id == "ESTIMATED_COST_AT_COMPLETION_LC", lcValue != null)
+        estimatedGrossProfit : CurrencyMetric(metricType.id == "CONTRACT_ESTIMATED_GROSS_PROFIT_LC")
+        estimatedGrossMargin : Metric(metricType.id == "CONTRACT_ESTIMATED_GROSS_MARGIN")
     then
+        modify (estimatedGrossProfit) { lcValue = (transactionPrice.lcValue - contractLiquidatedDamagesITD.lcValue - estimatedCostAtCompletion.lcValue)};
+        modify (estimatedGrossMargin) { value = (estimatedGrossProfit.lcValue == 0B || (transactionPrice.lcValue - contractLiquidatedDamagesITD.lcValue) == 0B ? 0B : estimatedGrossProfit.lcValue / (transactionPrice.lcValue - contractLiquidatedDamagesITD.lcValue) )};
+end
 
-        // Calculate all outputs possible using these inputs.
-        modify (estimatedGrossProfit) { value = (transactionPrice.value - liquidatedDamagesITD.value - estimatedCostAtCompletion.value)};
-        modify (estimatedGrossMargin) { value = (estimatedGrossProfit.value / (transactionPrice.value -liquidatedDamagesITD.value) )};
-        logger.info("From buiness rule - gross profit: " + estimatedGrossProfit.value);
-        logger.info("From buiness rule - gross margin: " + estimatedGrossMargin.value);
+rule "Contract Gross Profit and Margin ITD"
+    when
+        contract : Contract()
+        contractRevenueITD : CurrencyMetric(metricType.id == "CONTRACT_REVENUE_TO_RECOGNIZE_ITD_LC", lcValue != null)
+        contractLiquidatedDamagesITD : CurrencyMetric(metricType.id == "LIQUIDATED_DAMAGES_ITD_CC", lcValue != null)
+        contractCOGSITD : CurrencyMetric(metricType.id == "COST_OF_GOODS_SOLD_ITD_LC", lcValue != null)
+        contractLossReserve : CurrencyMetric(metricType.id == "LOSS_RESERVE_ITD_LC", lcValue != null)
+        contractGrossProfit : CurrencyMetric(metricType.id == "CONTRACT_GROSS_PROFIT_LC")
+        contractGrossMargin : Metric(metricType.id == "CONTRACT_GROSS_MARGIN")
+    then
+        modify (contractGrossProfit) { lcValue = (contractRevenueITD.lcValue - contractLiquidatedDamagesITD.value - contractCOGSITD.lcValue + contractLossReserve.lcValue)};
+        modify (contractGrossMargin) { value = (contractGrossProfit.lcValue == 0B || (contractRevenueITD.lcValue - contractLiquidatedDamagesITD.lcValue) == 0B ? 0B : contractGrossProfit.lcValue / (contractRevenueITD.lcValue - contractLiquidatedDamagesITD.lcValue) )};
+end
+
+rule "Loss Reserve"
+    when
+        contract : Contract()
+        gainLoss : CurrencyMetric(metricType.id == "PROJECT_GAIN_LOSS_LC", value != null)
+        lossReserve : CurrencyMetric(metricType.id == "LOSS_RESERVE_ITD_LC")
+    then
+        modify (lossReserve) { value = (gainLoss.value >= 0B ? 0B : gainLoss.value) };
+end
+
+rule "Loss Reserve Adjustment"
+    when
+        contract : Contract()
+        lossReserve : CurrencyMetric(metricType.id == "LOSS_RESERVE_ITD_LC", lcValue != null)
+        priorPeriodLossReserve : CurrencyMetricPriorPeriod(metricType.id == "LOSS_RESERVE_ITD_LC")
+        lossReserveAdjustment : CurrencyMetric(metricType.id == "LOSS_RESERVE_PERIOD_ADJ_LC")
+    then
+        modify (lossReserveAdjustment) { lcValue = (priorPeriodLossReserve.lcValue == null ? lossReserve.lcValue : lossReserve.lcValue - priorPeriodLossReserve.lcValue) };
+end
+
+rule "Cost of Goods Sold Adjusted"
+    when
+        contract : Contract()
+        lossReserveAdjustment : CurrencyMetric(metricType.id == "LOSS_RESERVE_PERIOD_ADJ_LC", lcValue != null)
+        costOfGoodsSoldITD : CurrencyMetric(metricType.id == "COST_OF_GOODS_SOLD_ITD_LC", lcValue != null)
+        costOfGoodsSoldAdjusted : CurrencyMetric(metricType.id == "TOTAL_COST_GOODS_SOLD_LC")
+    then
+        modify (costOfGoodsSoldAdjusted) { lcValue = (costOfGoodsSoldITD.lcValue - lossReserveAdjustment.lcValue)};
 end

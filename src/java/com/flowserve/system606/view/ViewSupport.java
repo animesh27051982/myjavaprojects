@@ -17,6 +17,7 @@ import com.flowserve.system606.model.ReportingUnit;
 import com.flowserve.system606.model.User;
 import com.flowserve.system606.service.AdminService;
 import com.flowserve.system606.service.CalculationService;
+import com.flowserve.system606.service.CurrencyService;
 import com.flowserve.system606.service.FinancialPeriodService;
 import com.flowserve.system606.service.MetricService;
 import com.flowserve.system606.web.WebSession;
@@ -50,27 +51,31 @@ public class ViewSupport implements Serializable {
     @Inject
     private AdminService adminService;
     @Inject
+    private WebSession webSession;
+    @Inject
     private MetricService metricService;
     private String searchString = "";
     @Inject
     private FinancialPeriodService financialPeriodService;
     @Inject
     private CalculationService calculationService;
+    @Inject
+    private CurrencyService currencyService;
 
-    FinancialPeriod period = null;
-    FinancialPeriod priorPeriod = null;
+    private List<FinancialPeriod> allPeriods = new ArrayList<FinancialPeriod>();
 
-    /**
-     * Creates a new instance of ViewSupport
-     */
+    //FinancialPeriod period = null;
+    //FinancialPeriod priorPeriod = null;
     public ViewSupport() {
     }
 
     @PostConstruct
     public void init() {
         // TODO - need to pull from elsewhre.
-        period = financialPeriodService.getCurrentFinancialPeriod();
-        priorPeriod = financialPeriodService.getPriorFinancialPeriod();
+        //period = financialPeriodService.getCurrentFinancialPeriod();
+        //priorPeriod = financialPeriodService.getPriorFinancialPeriod();
+        allPeriods = financialPeriodService.findAllPeriods();
+
     }
 
     public List<User> completeUser(String searchString) {
@@ -250,21 +255,24 @@ public class ViewSupport implements Serializable {
         return metricService.findMetricTypeById(metricTypeId).getDescription();
     }
 
-//    public BigDecimal getCurrencyMetricValue(String metricTypeId, PerformanceObligation pob) {
-//        return calculationService.getCurrencyMetricValue(metricTypeId, pob);
-//    }
-//    public BigDecimal getAccumulatedCurrencyMetricValue(String metricTypeId, Accumulable measurable) throws Exception {
-//        return calculationService.getCurrencyMetric(metricTypeId, measurable).getValue();
-//    }
     public CurrencyMetric getCurrencyMetric(String metricTypeId, Measurable measurable) throws Exception {
-        return calculationService.getCurrencyMetric(metricTypeId, measurable, period);
+
+        return calculationService.getCurrencyMetric(metricTypeId, measurable, webSession.getCurrentPeriod());
     }
 
     public DecimalMetric getDecimalMetric(String metricTypeId, Measurable measurable) throws Exception {
-        return calculationService.getDecimalMetric(metricTypeId, measurable, period);
+        return calculationService.getDecimalMetric(metricTypeId, measurable, webSession.getCurrentPeriod());
     }
 
     public CurrencyMetric getCurrencyMetricPriorPeriod(String metricTypeId, Measurable measurable) throws Exception {
-        return calculationService.getCurrencyMetric(metricTypeId, measurable, priorPeriod);
+        return calculationService.getCurrencyMetric(metricTypeId, measurable, webSession.getPriorPeriod());
+    }
+
+    public List<FinancialPeriod> getAllPeriods() {
+        return allPeriods;
+    }
+
+    public String getExchangeRate(Contract contract) throws Exception {
+        return currencyService.findRateByFromToPeriod(contract.getContractCurrency(), contract.getLocalCurrency(), webSession.getCurrentPeriod()).getConversionRate().toPlainString();
     }
 }

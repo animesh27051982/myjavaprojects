@@ -48,8 +48,8 @@ public class AppInitializeService {
 
         try {
             adminService.initUsers();
-            financialPeriodService.initFinancialPeriods();
             adminService.initCompanies();
+            financialPeriodService.initFinancialPeriods();
             currencyService.initCurrencyConverter(financialPeriodService.findById("MAR-18"));
             currencyService.initCurrencyConverter(financialPeriodService.findById("APR-18"));
             currencyService.initCurrencyConverter(financialPeriodService.findById("MAY-18"));

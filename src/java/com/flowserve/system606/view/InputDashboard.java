@@ -52,6 +52,8 @@ public class InputDashboard implements Serializable {
     private WebSession webSession;
     @Inject
     private ReportingUnitService reportingUnitService;
+    @Inject
+    private ViewSupport viewSupport;
 
     private List<ReportingUnit> reportingUnits;
 
@@ -59,6 +61,13 @@ public class InputDashboard implements Serializable {
     public void init() {
         reportingUnits = adminService.getPreparableReportingUnits();
         //rootTreeNode = viewSupport.generateNodeTree(reportingUnits);
+//        for (ReportingUnit reportingUnit : reportingUnits) {
+//            try {
+//                viewSupport.getCurrencyMetric("ESTIMATED_COST_AT_COMPLETION_LC", reportingUnit).getValue();
+//            } catch (Exception ex) {
+//                Logger.getLogger(InputDashboard.class.getName()).log(Level.SEVERE, null, ex);
+//            }
+//        }
     }
 
     public List<ReportingUnit> getReportingUnits() {

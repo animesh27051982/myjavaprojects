@@ -36,8 +36,11 @@ public class Company extends TransientMeasurable<String> implements Comparable<C
     @Column(name = "DESCRIPTION")
     private String description;
     @OneToOne
-    @JoinColumn(name = "PERIOD_ID")
+    @JoinColumn(name = "CURRENT_PERIOD_ID")
     private FinancialPeriod currentPeriod;
+    @OneToOne
+    @JoinColumn(name = "PRIOR_PERIOD_ID")
+    private FinancialPeriod priorPeriod;
     @Column(name = "REPORTING_CURRENCY")
     private Currency reportingCurrency;
     @Column(name = "INPUT_FREEZE_WORKDAY")
@@ -139,5 +142,13 @@ public class Company extends TransientMeasurable<String> implements Comparable<C
 
     public void setPociDueWorkday(Integer pociDueWorkday) {
         this.pociDueWorkday = pociDueWorkday;
+    }
+
+    public FinancialPeriod getPriorPeriod() {
+        return priorPeriod;
+    }
+
+    public void setPriorPeriod(FinancialPeriod priorPeriod) {
+        this.priorPeriod = priorPeriod;
     }
 }

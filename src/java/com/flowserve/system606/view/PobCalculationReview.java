@@ -8,6 +8,7 @@ package com.flowserve.system606.view;
 import com.flowserve.system606.model.PerformanceObligation;
 import com.flowserve.system606.service.AdminService;
 import com.flowserve.system606.service.CalculationService;
+import com.flowserve.system606.web.WebSession;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.logging.Level;
@@ -38,6 +39,8 @@ public class PobCalculationReview implements Serializable {
     private ViewSupport viewSupport;
     @Inject
     private AdminService adminService;
+    @Inject
+    private WebSession webSession;
 
     @PostConstruct
     public void init() {
@@ -75,7 +78,7 @@ public class PobCalculationReview implements Serializable {
 
     public void calculateOutputs(PerformanceObligation pob) throws Exception {
         printInputs(pob);
-        calculationService.executeBusinessRules(pob);
+        calculationService.executeBusinessRules(pob, webSession.getCurrentPeriod());
     }
 
     public TreeNode getRootTreeNode() {

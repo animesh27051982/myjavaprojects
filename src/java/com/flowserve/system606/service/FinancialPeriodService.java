@@ -1,5 +1,6 @@
 package com.flowserve.system606.service;
 
+import com.flowserve.system606.model.Company;
 import com.flowserve.system606.model.FinancialPeriod;
 import com.flowserve.system606.model.Holiday;
 import com.flowserve.system606.model.PeriodStatus;
@@ -10,12 +11,15 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
+import javax.persistence.TypedQuery;
 
 /**
  *
@@ -26,6 +30,8 @@ public class FinancialPeriodService {
 
     @Inject
     private AdminService adminService;
+    private Company company;
+
     private static final Logger logger = Logger.getLogger(FinancialPeriodService.class.getName());
 
     @PersistenceContext(unitName = "FlowServePU")
@@ -34,6 +40,7 @@ public class FinancialPeriodService {
 
     @PostConstruct
     public void init() {
+        company = adminService.findCompanyById("FLS");
     }
 
 //    public String getPeriodIdByDate(LocalDate date) {
@@ -47,20 +54,13 @@ public class FinancialPeriodService {
         em.persist(fp);
     }
 
+    public List<FinancialPeriod> findAllPeriods() {
+        Query query = em.createQuery("SELECT p FROM FinancialPeriod p ORDER BY p.sequence DESC");
+        return (List<FinancialPeriod>) query.getResultList();
+    }
+
     public void initFinancialPeriods() throws Exception {
         logger.info("Initializing FinancialPeriods");
-        if (findById("MAR-18") == null) {
-            FinancialPeriod period = new FinancialPeriod("MAR-18", "MAR-18", LocalDate.of(2018, Month.MARCH, 1), LocalDate.of(2018, Month.MARCH, 30), 2018, 3, PeriodStatus.OPENED);
-            persist(period);
-        }
-        if (findById("APR-18") == null) {
-            FinancialPeriod period = new FinancialPeriod("APR-18", "APR-18", LocalDate.of(2018, Month.APRIL, 1), LocalDate.of(2018, Month.APRIL, 30), 2018, 4, PeriodStatus.OPENED);
-            persist(period);
-        }
-        if (findById("MAY-18") == null) {
-            FinancialPeriod period = new FinancialPeriod("MAY-18", "MAY-18", LocalDate.of(2018, Month.MAY, 1), LocalDate.of(2018, Month.MAY, 31), 2018, 5, PeriodStatus.OPENED);
-            persist(period);
-        }
         if (findById("NOV-17") == null) {
             FinancialPeriod period = new FinancialPeriod("NOV-17", "NOV-17", LocalDate.of(2017, Month.NOVEMBER, 1), LocalDate.of(2017, Month.NOVEMBER, 30), 2018, 11, PeriodStatus.OPENED);
             persist(period);
@@ -73,23 +73,46 @@ public class FinancialPeriodService {
             FinancialPeriod period = new FinancialPeriod("JAN-18", "JAN-18", LocalDate.of(2018, Month.JANUARY, 1), LocalDate.of(2018, Month.JANUARY, 31), 2018, 1, PeriodStatus.OPENED);
             persist(period);
         }
-        if (findById("FAB-18") == null) {
+        if (findById("FEB-18") == null) {
             FinancialPeriod period = new FinancialPeriod("FEB-18", "FEB-18", LocalDate.of(2018, Month.FEBRUARY, 1), LocalDate.of(2018, Month.FEBRUARY, 28), 2018, 2, PeriodStatus.OPENED);
             persist(period);
         }
         if (findById("MAR-18") == null) {
-            FinancialPeriod period = new FinancialPeriod("MAR-18", "MAR-18", LocalDate.of(2018, Month.MARCH, 3), LocalDate.of(2018, Month.MARCH, 31), 2018, 3, PeriodStatus.OPENED);
+            FinancialPeriod period = new FinancialPeriod("MAR-18", "MAR-18", LocalDate.of(2018, Month.MARCH, 1), LocalDate.of(2018, Month.MARCH, 30), 2018, 3, PeriodStatus.OPENED);
             persist(period);
         }
+        if (findById("APR-18") == null) {
+            FinancialPeriod period = new FinancialPeriod("APR-18", "APR-18", LocalDate.of(2018, Month.APRIL, 1), LocalDate.of(2018, Month.APRIL, 30), 2018, 4, PeriodStatus.OPENED);
+            persist(period);
+        }
+        if (findById("MAY-18") == null) {
+            FinancialPeriod period = new FinancialPeriod("MAY-18", "MAY-18", LocalDate.of(2018, Month.MAY, 1), LocalDate.of(2018, Month.MAY, 31), 2018, 5, PeriodStatus.OPENED);
+            persist(period);
+        }
+
+        Company fls = adminService.findCompanyById("FLS");
+
+        fls.setCurrentPeriod(findById("MAY-18"));
+        fls.setPriorPeriod(findById("APR-18"));
+
         logger.info("Finished initializing FinancialPeriods.");
     }
 
     public FinancialPeriod getCurrentFinancialPeriod() {
-        return findById("MAR-18");
+        return company.getCurrentPeriod();
+    }
+
+    public FinancialPeriod calculateNextPeriodUntilCurrent(FinancialPeriod period) {
+        FinancialPeriod nextPeriod = calculateNextPeriod(period);
+        if (nextPeriod == null || nextPeriod.isAfter(getCurrentFinancialPeriod())) {
+            return null;
+        }
+
+        return nextPeriod;
     }
 
     public FinancialPeriod getPriorFinancialPeriod() {
-        return findById("APR-18");
+        return company.getPriorPeriod();
     }
 
     private static List<Integer> months = null;
@@ -115,16 +138,43 @@ public class FinancialPeriodService {
         return Collections.unmodifiableList(months);
     }
 
-    public static LocalDate getLastPeriod(int versionYear, int versionMonth) throws Exception {
+    public FinancialPeriod calculatePriorPeriod(FinancialPeriod currentPeriod) {
+        Logger.getLogger(FinancialPeriodService.class.getName()).log(Level.FINER, "current period: " + currentPeriod.getId());
+        LocalDate date = LocalDate.of(currentPeriod.getPeriodYear(), currentPeriod.getPeriodMonth(), 1);
+        date = date.minusMonths(1);
 
-        LocalDate datetime = LocalDate.of(versionYear, versionMonth, 1);
-        if (versionMonth != (Month.JANUARY.getValue())) {
-            datetime = datetime.minusMonths(1);
-        }
-
-        return datetime;
+        return findPeriodByLocalDate(date);
     }
 
+    public FinancialPeriod calculateNextPeriod(FinancialPeriod currentPeriod) {
+        Logger.getLogger(FinancialPeriodService.class.getName()).log(Level.FINER, "current period: " + currentPeriod.getId());
+        LocalDate date = LocalDate.of(currentPeriod.getPeriodYear(), currentPeriod.getPeriodMonth(), 1);
+        date = date.plusMonths(1);
+
+        return findPeriodByLocalDate(date);
+    }
+
+    public FinancialPeriod findPeriodByLocalDate(LocalDate date) {
+        Query query = em.createQuery("SELECT p FROM FinancialPeriod p WHERE :DT BETWEEN p.startDate and p.endDate");
+        query.setParameter("DT", date);
+        List<FinancialPeriod> resultList = query.getResultList();
+        if (resultList.size() != 1) {
+            Logger.getLogger(FinancialPeriodService.class.getName()).log(Level.FINER, "Period not found by date: " + date.toString());
+            return null;
+        }
+
+        return resultList.get(0);
+    }
+
+//    public static LocalDate getLastPeriod(int versionYear, int versionMonth) throws Exception {
+//
+//        LocalDate datetime = LocalDate.of(versionYear, versionMonth, 1);
+//        if (versionMonth != (Month.JANUARY.getValue())) {
+//            datetime = datetime.minusMonths(1);
+//        }
+//
+//        return datetime;
+//    }
     public static int getTodaysYear() {
         return LocalDate.now().getYear();
     }
@@ -272,58 +322,6 @@ public class FinancialPeriodService {
         }
     }
 
-//                private static SortedSet<KeyDate> getAllHolidays() throws Exception {
-//		String userQuery = "select holiday_date, holiday_desc from xxfc_holiday order by holiday_date";
-//
-//		List<KeyDate> holidays = JdbcTemplateManager.getJdbcTemplate().query(userQuery, new Object[] {}, new int[] {}, new RowMapper<KeyDate>() {
-//
-//			public KeyDate mapRow(ResultSet rs, int rowNum) throws SQLException {
-//				return new KeyDate(new DateTime(rs.getDate("holiday_date")), rs.getString("holiday_desc"));
-//			}
-//		});
-//
-//		SortedSet<KeyDate> sortedHolidays = new TreeSet<KeyDate>(DateTimeComparator.getDateOnlyInstance());
-//		sortedHolidays.addAll(holidays);
-//		return sortedHolidays;
-//	}
-//                public static void updateCurrentClosePeriod(Division division) throws Exception {
-//		/**
-//		 * KG - Oct2010 - Lost XA capabilities due to port from WebSphere to Tomcat.
-//		 */
-//		// JtaTransactionManager txManager = new JtaTransactionManager((TransactionManager)(new WebSphereTransactionManagerFactoryBean().getObject()));
-//		// DefaultTransactionDefinition def = new DefaultTransactionDefinition();
-//		// def.setName("currentPeriodUpdate");
-//		// def.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRED);
-//		// TransactionStatus status = txManager.getTransaction(def);
-//
-//		logger.debug("Updating current period for " + division.getName());
-//
-//		try {
-//			MutableDateTime closeMonth = null;
-//			int currentWorkday = FlowcastCalendar.getWorkday(new DateTime());
-//			// Current close is always one month behind the system date. unless we are Pumps, then on day 10 we flip to new month.
-//			if (division.getName().matches("Pumps|EPO|IPO|AMSS") && currentWorkday >= 10) {
-//				closeMonth = new MutableDateTime();
-//			} else {
-//				closeMonth = new MutableDateTime();
-//				closeMonth.addMonths(-1);
-//			}
-//
-//			JdbcTemplateManager.getJdbcTemplate().update(
-//					"update xxfc_general_status set version_year = ?, version_month = ?, current_workday = ? WHERE group_id = '" + division.getId() + "'",
-//					new Object[] { new Integer(closeMonth.getYear()), new Integer(closeMonth.getMonthOfYear()), new Integer(currentWorkday) });
-//			// Update the Default row along with any group that gets updated as the entire company is on the same schedule
-//			// TODO - This can probably be safely removed at this point. Pretty sure all depedencies on the default division have been removed (a legacy
-//			// concept.)
-//			JdbcTemplateManager.getJdbcTemplate().update(
-//					"update xxfc_general_status set version_year = ?, version_month = ?, current_workday = ? WHERE group_id = '0'",
-//					new Object[] { new Integer(closeMonth.getYear()), new Integer(closeMonth.getMonthOfYear()), new Integer(currentWorkday) });
-//		} catch (Exception ex) {
-//			// txManager.rollback(status);
-//			throw ex;
-//		}
-//		// txManager.commit(status);
-//	}
     public static int getCurrentClosePeriodYear() {
         return 2018;
     }
@@ -371,6 +369,15 @@ public class FinancialPeriodService {
 
         return 0;
 
+    }
+
+    public List<FinancialPeriod> findFinancialPeriods() {
+        TypedQuery<FinancialPeriod> query = em.createQuery("SELECT b FROM FinancialPeriod b", FinancialPeriod.class);
+        return (List<FinancialPeriod>) query.getResultList();
+    }
+
+    public void updateFinancialPeriod(FinancialPeriod financialPeriod) {
+        em.merge(financialPeriod);
     }
 
 }

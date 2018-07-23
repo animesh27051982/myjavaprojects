@@ -93,8 +93,16 @@
                     <div class="ui-g-12">
                         <div class="card card-w-title">
                             <p:messages id="messages" showDetail="true" />
-                            <h1>Reporting Units Needing Action (4 Workdays Remaining)</h1>
+                            <p:panelGrid columns="2" columnClasses="ui-grid-col-6,ui-grid-col-4" layout="grid" styleClass="ui-panelgrid-blank form-group" style="float: right; border:0px none; background-color:transparent;">
+                                <h:outputLabel style="vertical-align: sub; white-space: nowrap;" value="Switch Period: "/>
+                                <p:selectOneMenu style="margin-top: 0px;" id="period" value="#{webSession.currentPeriod}" converter="periodConverter">
+                                    <p:ajax event="change" update=":form" process="@this" listener="#{webSession.switchPeriod(webSession.currentPeriod)}"/>
+                                    <f:selectItems var="period" value="#{viewSupport.allPeriods}" itemLabel="#{period.id}"/>
+                                </p:selectOneMenu>
+                            </p:panelGrid>
+                            <h1>#{webSession.currentPeriod.id} Reporting Units Needing Action</h1>
                             <h4>Please note that this is a preview environment for general user feedback on page flow, etc.  Full user testing has not yet begun.</h4>
+
                             <p:dataTable value="#{inputDashboard.reportingUnits}" var="ru" >
                                 <f:facet name="header">
                                     Reporting Units
@@ -105,11 +113,14 @@
                                 <p:column headerText="Platform">
                                     <h:outputText value="N/A" />
                                 </p:column>
+
+                                <!--
                                 <p:column style="white-space:pre-line;" headerText="Estimate at Completion">
                                     <h:outputText id="eac" value="#{viewSupport.getCurrencyMetric('ESTIMATED_COST_AT_COMPLETION_LC', ru).getValue()}">
                                         <f:convertNumber type="currency" />
                                     </h:outputText>
                                 </p:column>
+                                -->
                                 <p:column headerText="Total POB Count">
                                     <h:outputText value="#{ru.pobCount}" />
                                 </p:column>

@@ -31,7 +31,6 @@ public abstract class Metric<T> extends BaseEntity<Long> {
     @OneToOne
     @JoinColumn(name = "METRIC_TYPE_ID")
     private MetricType metricType;
-
     @OneToOne
     @JoinColumn(name = "PERIOD_ID")
     private FinancialPeriod financialPeriod;

@@ -8,9 +8,10 @@ import com.flowserve.system606.model.FinancialPeriod;
 import com.flowserve.system606.model.Holiday;
 import com.flowserve.system606.model.ReportingUnit;
 import com.flowserve.system606.model.User;
-import com.flowserve.system606.service.AdminService;
-import com.flowserve.system606.service.PerformanceObligationService;
+import com.flowserve.system606.service.FinancialPeriodService;
 import java.io.Serializable;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.SessionScoped;
 import javax.inject.Inject;
@@ -25,8 +26,10 @@ import org.primefaces.model.TreeNode;
 @SessionScoped
 public class WebSession implements Serializable {
 
+    @Inject
+    private FinancialPeriodService financialPeriodService;
+
     private BusinessUnit editBusinessUnit;
-    //private List<ReportingUnit> reportingUnits = new ArrayList<ReportingUnit>();  // this is temp for calculatin testing.
     private TreeNode reportingUnitTreeNode = new DefaultTreeNode();  // this is temp for calculatin testing.
     private ReportingUnit editReportingUnit;
     private User editUser;
@@ -34,14 +37,21 @@ public class WebSession implements Serializable {
     private Holiday editHolidays;
     private Company editCompany;
     private Contract editContract;
-    @Inject
-    private PerformanceObligationService performanceObligationService;
-    @Inject
-    private AdminService adminService;
     private FinancialPeriod editFinancialPeriod;
+    private FinancialPeriod currentPeriod;
+    private FinancialPeriod priorPeriod;
 
     @PostConstruct
-    public void init() {   // this is temp for calculatin testing.
+    public void init() {
+        currentPeriod = financialPeriodService.getCurrentFinancialPeriod();
+        priorPeriod = financialPeriodService.getPriorFinancialPeriod();
+        Logger.getLogger(WebSession.class.getName()).log(Level.INFO, "WebSession current: " + currentPeriod.getId());
+        Logger.getLogger(WebSession.class.getName()).log(Level.INFO, "WebSession prior: " + priorPeriod.getId());
+    }
+
+    public void switchPeriod(FinancialPeriod newCurrentPeriod) {
+        currentPeriod = newCurrentPeriod;
+        priorPeriod = financialPeriodService.calculatePriorPeriod(currentPeriod);
     }
 
     public BusinessUnit getEditBusinessUnit() {
@@ -110,6 +120,22 @@ public class WebSession implements Serializable {
 
     public void setEditContract(Contract editContract) {
         this.editContract = editContract;
+    }
+
+    public FinancialPeriod getCurrentPeriod() {
+        return currentPeriod;
+    }
+
+    public void setCurrentPeriod(FinancialPeriod currentPeriod) {
+        this.currentPeriod = currentPeriod;
+    }
+
+    public FinancialPeriod getPriorPeriod() {
+        return priorPeriod;
+    }
+
+    public void setPriorPeriod(FinancialPeriod priorPeriod) {
+        this.priorPeriod = priorPeriod;
     }
 
 }

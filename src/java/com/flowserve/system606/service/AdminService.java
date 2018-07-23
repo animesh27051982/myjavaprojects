@@ -592,7 +592,6 @@ public class AdminService {
             fls.setInputFreezeWorkday(15);
             fls.setReportingCurrency(Currency.getInstance(new Locale("en", "US")));
             fls.setPociDueWorkday(10);
-            fls.setCurrentPeriod(financialPeriodService.findById("MAY-18"));
 
             update(fls);
         }
@@ -658,15 +657,6 @@ public class AdminService {
         rus.add(findReportingUnitByCode("8025"));
 
         return rus;
-    }
-
-    public List<FinancialPeriod> findFinancialPeriods() {
-        TypedQuery<FinancialPeriod> query = em.createQuery("SELECT b FROM FinancialPeriod b", FinancialPeriod.class);
-        return (List<FinancialPeriod>) query.getResultList();
-    }
-
-    public void updateFinancialPeriod(FinancialPeriod financialPeriod) {
-        em.merge(financialPeriod);
     }
 
     public List<Company> findAllCompany() throws Exception {  // Need an application exception type defined.

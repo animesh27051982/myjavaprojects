@@ -1,7 +1,7 @@
 package com.flowserve.system606.view;
 
 import com.flowserve.system606.model.FinancialPeriod;
-import com.flowserve.system606.service.AdminService;
+import com.flowserve.system606.service.FinancialPeriodService;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -17,7 +17,7 @@ public class FinancialPeriodSearch implements Serializable {
     // private static final long serialVersionUID = -1438027991420003830L;
     List<FinancialPeriod> financialPeriods = new ArrayList<FinancialPeriod>();
     @Inject
-    private AdminService adminService;
+    private FinancialPeriodService financialPeriodService;
     private String searchString = "";
 
     public void search() throws Exception {
@@ -34,7 +34,7 @@ public class FinancialPeriodSearch implements Serializable {
 
     public List<FinancialPeriod> getFinancialPeriods() throws Exception {
         System.out.println("getFinancialPeriods");
-        financialPeriods = adminService.findFinancialPeriods();
+        financialPeriods = financialPeriodService.findFinancialPeriods();
         Collections.sort(financialPeriods);
         return financialPeriods;
     }

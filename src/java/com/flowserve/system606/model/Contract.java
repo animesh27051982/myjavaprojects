@@ -127,7 +127,7 @@ public class Contract extends BaseEntity<Long> implements MetricStore, Measurabl
         return this.id.compareTo(obj.getId());
     }
 
-    public BigDecimal getCumulativeLocalCurrency() {
+    public BigDecimal getTotalBillingsLocalCurrency() {
         BigDecimal localCur = BigDecimal.ZERO;
         for (BillingEvent be : billingEvents) {
             if (be.getAmountLocalCurrency() != null && be.getAmountLocalCurrency().compareTo(BigDecimal.ZERO) != 0) {
@@ -137,7 +137,7 @@ public class Contract extends BaseEntity<Long> implements MetricStore, Measurabl
         return localCur;
     }
 
-    public BigDecimal getCumulativeContractCurrency() {
+    public BigDecimal getTotalBillingsContractCurrency() {
         BigDecimal contractCur = BigDecimal.ZERO;
         for (BillingEvent be : billingEvents) {
             if (be.getAmountContractCurrency() != null && be.getAmountContractCurrency().compareTo(BigDecimal.ZERO) != 0) {
@@ -180,6 +180,10 @@ public class Contract extends BaseEntity<Long> implements MetricStore, Measurabl
 
     public Currency getLocalCurrency() {
         return this.getReportingUnit().getLocalCurrency();
+    }
+
+    public Currency getReportingCurrency() {
+        return this.getReportingUnit().getCompany().getReportingCurrency();
     }
 
     public Long getId() {
@@ -252,11 +256,6 @@ public class Contract extends BaseEntity<Long> implements MetricStore, Measurabl
 
     public List<Measurable> getChildMeasurables() {
         return new ArrayList<Measurable>(performanceObligations);
-    }
-
-    // TODO - KJG - Remove.  Temp code for calc pages.
-    public BigDecimal getPobCountRejected() {
-        return new BigDecimal("10.0");
     }
 
     public Currency getContractCurrency() {

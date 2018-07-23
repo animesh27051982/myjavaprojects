@@ -197,6 +197,10 @@ public class PerformanceObligation extends BaseEntity<Long> implements MetricSto
         return this.getContract().getReportingUnit().getLocalCurrency();
     }
 
+    public Currency getReportingCurrency() {
+        return this.getContract().getReportingUnit().getCompany().getReportingCurrency();
+    }
+
     public Currency getContractCurrency() {
         return this.getContract().getContractCurrency();
     }

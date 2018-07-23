@@ -20,6 +20,8 @@ public interface Measurable {
 
     public Currency getContractCurrency();
 
+    public Currency getReportingCurrency();
+
     public Metric getPeriodMetric(FinancialPeriod period, MetricType metricType);
 
     public void initializeMetricSetForPeriod(FinancialPeriod period);

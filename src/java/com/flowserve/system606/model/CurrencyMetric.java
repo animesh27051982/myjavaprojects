@@ -1,6 +1,7 @@
 package com.flowserve.system606.model;
 
 import java.math.BigDecimal;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.persistence.AttributeOverride;
 import javax.persistence.Column;
@@ -15,58 +16,45 @@ public class CurrencyMetric extends Metric<BigDecimal> {
     private static final Logger logger = Logger.getLogger(CurrencyMetric.class.getName());
 
     private BigDecimal value;
-    @Column(name = "LOCAL_CURRENCY_VALUE", precision = 38, scale = 14)
-    private BigDecimal localCurrencyValue;
-    @Column(name = "CONTRACT_CURRENCY_VALUE", precision = 38, scale = 14)
-    private BigDecimal contractCurrencyValue;
-    @Column(name = "REPORTING_CURRENCY_VALUE", precision = 38, scale = 14)
-    private BigDecimal reportingCurrencyValue;
+    @Column(name = "LC_VALUE", precision = 38, scale = 14)
+    private BigDecimal lcValue;
+    @Column(name = "CC_VALUE", precision = 38, scale = 14)
+    private BigDecimal ccValue;
+    @Column(name = "RC_VALUE", precision = 38, scale = 14)
+    private BigDecimal rcValue;
 
     public CurrencyMetric() {
     }
 
     public BigDecimal getValue() {
-        return value;
-    }
-
-    public BigDecimal getlcValue() {
-        return localCurrencyValue;
-    }
-
-    public BigDecimal getccValue() {
-        return contractCurrencyValue;
-    }
-
-    public BigDecimal getrcValue() {
-        return reportingCurrencyValue;
+        switch (getMetricType().getMetricCurrencyType()) {
+            case LOCAL:
+                return lcValue;
+            case CONTRACT:
+                return ccValue;
+            case REPORTING:
+                return rcValue;
+            default:
+                Logger.getLogger(CurrencyMetric.class.getName()).log(Level.INFO, "Error: Metric type: " + getMetricType().getId() + " CurrencyType: " + getMetricType().getMetricCurrencyType());
+                throw new IllegalArgumentException("Invalid CurrencyType");
+        }
     }
 
     public void setValue(BigDecimal value) {
-        this.value = value;
-    }
-
-    public BigDecimal getLocalCurrencyValue() {
-        return localCurrencyValue;
-    }
-
-    public void setLocalCurrencyValue(BigDecimal localCurrencyValue) {
-        this.localCurrencyValue = localCurrencyValue;
-    }
-
-    public BigDecimal getContractCurrencyValue() {
-        return contractCurrencyValue;
-    }
-
-    public void setContractCurrencyValue(BigDecimal contractCurrencyValue) {
-        this.contractCurrencyValue = contractCurrencyValue;
-    }
-
-    public BigDecimal getReportingCurrencyValue() {
-        return reportingCurrencyValue;
-    }
-
-    public void setReportingCurrencyValue(BigDecimal reportingCurrencyValue) {
-        this.reportingCurrencyValue = reportingCurrencyValue;
+        switch (getMetricType().getMetricCurrencyType()) {
+            case LOCAL:
+                lcValue = value;
+                return;
+            case CONTRACT:
+                ccValue = value;
+                return;
+            case REPORTING:
+                rcValue = value;
+                return;
+            default:
+                Logger.getLogger(CurrencyMetric.class.getName()).log(Level.INFO, "Error: Metric type: " + getMetricType().getId() + " CurrencyType: " + getMetricType().getMetricCurrencyType());
+                throw new IllegalArgumentException("Invalid CurrencyType");
+        }
     }
 
     public boolean isLocalCurrencyMetric() {
@@ -77,4 +65,27 @@ public class CurrencyMetric extends Metric<BigDecimal> {
         return this.getMetricType().getMetricCurrencyType().equals(CurrencyType.CONTRACT);
     }
 
+    public BigDecimal getLcValue() {
+        return lcValue;
+    }
+
+    public void setLcValue(BigDecimal lcValue) {
+        this.lcValue = lcValue;
+    }
+
+    public BigDecimal getCcValue() {
+        return ccValue;
+    }
+
+    public void setCcValue(BigDecimal ccValue) {
+        this.ccValue = ccValue;
+    }
+
+    public BigDecimal getRcValue() {
+        return rcValue;
+    }
+
+    public void setRcValue(BigDecimal rcValue) {
+        this.rcValue = rcValue;
+    }
 }

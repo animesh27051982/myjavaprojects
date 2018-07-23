@@ -14,6 +14,7 @@ import com.flowserve.system606.model.MetricType;
 import com.flowserve.system606.model.PerformanceObligation;
 import com.flowserve.system606.model.ReportingUnit;
 import com.flowserve.system606.view.PobInput;
+import com.flowserve.system606.web.WebSession;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -60,6 +61,8 @@ public class TemplateService {
     AdminService adminService;
     private static final int HEADER_ROW_COUNT = 2;
     private InputStream inputStream;
+    @Inject
+    private WebSession webSession;
 
     private static Logger logger = Logger.getLogger("com.flowserve.system606");
 
@@ -212,7 +215,7 @@ public class TemplateService {
                     pob.getContract().getBillingEvents().add(billingEvent);
                 }
 
-                calculationService.executeBusinessRules(pob);
+                calculationService.executeBusinessRules(pob, webSession.getCurrentPeriod());
                 pob = pobService.update(pob);
             }
         } catch (Exception e) {

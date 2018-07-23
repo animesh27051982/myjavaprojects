@@ -5,19 +5,19 @@
  */
 package com.flowserve.system606.service;
 
-import com.flowserve.system606.model.BillingEvent;
 import com.flowserve.system606.model.BusinessRule;
 import com.flowserve.system606.model.Contract;
 import com.flowserve.system606.model.CurrencyMetric;
+import com.flowserve.system606.model.CurrencyMetricPriorPeriod;
 import com.flowserve.system606.model.DateMetric;
 import com.flowserve.system606.model.DecimalMetric;
 import com.flowserve.system606.model.FinancialPeriod;
 import com.flowserve.system606.model.Measurable;
 import com.flowserve.system606.model.Metric;
-import com.flowserve.system606.model.MetricPriorPeriod;
 import com.flowserve.system606.model.MetricStore;
 import com.flowserve.system606.model.MetricType;
 import com.flowserve.system606.model.PerformanceObligation;
+import com.flowserve.system606.model.ReportingUnit;
 import com.flowserve.system606.model.StringMetric;
 import com.flowserve.system606.model.TransientMeasurable;
 import java.math.BigDecimal;
@@ -82,7 +82,6 @@ public class CalculationService {
 
             kSession = ks.newKieContainer(ks.getRepository().getDefaultReleaseId()).newStatelessKieSession();
             kSession.setGlobal("logger", Logger.getLogger(CalculationService.class.getName()));
-            //kSession.setGlobal("calcService", calculationService);
 
         } catch (Exception exception) {
             throw new IllegalStateException(exception);
@@ -91,44 +90,50 @@ public class CalculationService {
         Logger.getLogger(CalculationService.class.getName()).log(Level.INFO, "Finished initBusinessRulesEngine");
     }
 
-    private void initializeCurrenciesCurrentPeriod(Collection<Metric> metrics, Measurable measurable) throws Exception {
-        FinancialPeriod period = financialPeriodService.getCurrentFinancialPeriod();
-
+    private void convertCurrencies(Collection<Metric> metrics, Measurable measurable, FinancialPeriod period) throws Exception {
         for (Metric metric : metrics) {
-            initializeCurrencies(metric, measurable, period);
+            convertCurrency(metric, measurable, period);
         }
     }
 
-    private void initializeCurrencies(Metric metric, Measurable measurable, FinancialPeriod period) throws Exception {
-        if (metric.getValue() == null || !(metric instanceof CurrencyMetric)) {
+    private void convertCurrency(Metric metric, Measurable measurable, FinancialPeriod period) throws Exception {
+        if (!(metric instanceof CurrencyMetric)) {
             return;
         }
+        CurrencyMetric currencyMetric = (CurrencyMetric) metric;
+
+        if (currencyMetric.getLcValue() == null && currencyMetric.getCcValue() == null) {
+            return;
+        }
+
         if (metric.getMetricType().getMetricCurrencyType() == null) {
             throw new IllegalStateException("There is no currency type defined for the metric type " + metric.getMetricType().getId() + ".  Please contact a system administrator.");
         }
         if (measurable.getLocalCurrency() == null) {
-            throw new IllegalStateException("There is no local currency defined for the reporting unit.  Please contact a system administrator.");
+            throw new IllegalStateException("There is no local currency defined.  Please contact a system administrator.");
         }
         if (measurable.getContractCurrency() == null) {
-            throw new IllegalStateException("There is no contract currency defined for the contract.  Please contact a system administrator.");
+            throw new IllegalStateException("There is no contract currency defined.  Please contact a system administrator.");
+        }
+        if (measurable.getReportingCurrency() == null) {
+            throw new IllegalStateException("There is no reporting currency defined.  Please contact a system administrator.");
         }
 
-        CurrencyMetric currencyMetric = (CurrencyMetric) metric;
         if (currencyMetric.isLocalCurrencyMetric()) {
-            currencyMetric.setLocalCurrencyValue(currencyMetric.getValue());
-            if (currencyMetric.getValue().equals(BigDecimal.ZERO)) {
-                currencyMetric.setContractCurrencyValue(BigDecimal.ZERO);
+            if (BigDecimal.ZERO.equals(currencyMetric.getLcValue())) {
+                currencyMetric.setCcValue(BigDecimal.ZERO);
+                currencyMetric.setRcValue(BigDecimal.ZERO);
             } else {
-                BigDecimal contractCurrencyValue = currencyService.convert(currencyMetric.getValue(), measurable.getLocalCurrency(), measurable.getContractCurrency(), period);
-                currencyMetric.setContractCurrencyValue(contractCurrencyValue);
+                currencyMetric.setCcValue(currencyService.convert(currencyMetric.getLcValue(), measurable.getLocalCurrency(), measurable.getContractCurrency(), period));
+                currencyMetric.setRcValue(currencyService.convert(currencyMetric.getLcValue(), measurable.getLocalCurrency(), measurable.getReportingCurrency(), period));
             }
         } else if (currencyMetric.isContractCurrencyMetric()) {
-            currencyMetric.setContractCurrencyValue(currencyMetric.getValue());
-            if (currencyMetric.getValue().equals(BigDecimal.ZERO)) {
-                currencyMetric.setLocalCurrencyValue(BigDecimal.ZERO);
+            if (BigDecimal.ZERO.equals(currencyMetric.getCcValue())) {
+                currencyMetric.setLcValue(BigDecimal.ZERO);
+                currencyMetric.setRcValue(BigDecimal.ZERO);
             } else {
-                BigDecimal localCurrencyValue = currencyService.convert(currencyMetric.getValue(), measurable.getContractCurrency(), measurable.getLocalCurrency(), period);
-                currencyMetric.setLocalCurrencyValue(localCurrencyValue);
+                currencyMetric.setLcValue(currencyService.convert(currencyMetric.getCcValue(), measurable.getContractCurrency(), measurable.getLocalCurrency(), period));
+                currencyMetric.setRcValue(currencyService.convert(currencyMetric.getCcValue(), measurable.getContractCurrency(), measurable.getReportingCurrency(), period));
             }
         }
     }
@@ -150,22 +155,6 @@ public class CalculationService {
         return intelliGetMetric(metricService.findMetricTypeById(metricTypeId), measurable, period);
     }
 
-//    private Metric getMetricPriorPeriod(String metricTypeId, Measurable measurable) {
-//        FinancialPeriod period = financialPeriodService.getPriorFinancialPeriod();
-//        return intelliGetMetric(metricService.findMetricTypeById(metricTypeId), measurable, period);
-//    }
-//    public String getStringMetricValue(String metricTypeId, Measurable measurable) {
-//        return (String) getMetricCurrentPeriod(metricTypeId, measurable).getValue();
-//    }
-//    public LocalDate getDateMetricValue(String metricTypeId, Measurable measurable) {
-//        return (LocalDate) getMetricCurrentPeriod(metricTypeId, measurable).getValue();
-//    }
-//    public BigDecimal getCurrencyMetricValue(String metricTypeId, Measurable measurable) {
-//        return (BigDecimal) getMetricCurrentPeriod(metricTypeId, measurable).getValue();
-//    }
-//    public BigDecimal getCurrencyMetricValuePriorPeriod(String metricTypeId, PerformanceObligation pob) {
-//        return (BigDecimal) getMetricPriorPeriod(metricTypeId, pob).getValue();
-//    }
     public StringMetric getStringMetric(String metricTypeId, PerformanceObligation pob, FinancialPeriod period) {
         return (StringMetric) getMetric(metricTypeId, pob, period);
     }
@@ -174,15 +163,8 @@ public class CalculationService {
         return (DecimalMetric) getMetric(metricTypeId, measurable, period);
     }
 
-//    public BigDecimal getDecimalMetricValue(String metricTypeId, Measurable measurable) {
-//        return (BigDecimal) getMetricCurrentPeriod(metricTypeId, measurable).getValue();
-//    }
     public DateMetric getDateMetric(String metricTypeId, Measurable measurable, FinancialPeriod period) {
         return (DateMetric) getMetric(metricTypeId, measurable, period);
-    }
-
-    private FinancialPeriod getCurrentPeriod() {
-        return financialPeriodService.getCurrentFinancialPeriod();
     }
 
     public CurrencyMetric getCurrencyMetric(String metricTypeId, Measurable measurable, FinancialPeriod period) throws Exception {
@@ -193,7 +175,7 @@ public class CalculationService {
                 return currencyMetric;
             }
         }
-        Logger.getLogger(CalculationService.class.getName()).log(Level.INFO, "Metric not available at level. " + measurable.getClass() + " Returnig accumulated version: " + metricTypeId);
+        Logger.getLogger(CalculationService.class.getName()).log(Level.FINER, "Metric not available at level. " + measurable.getClass() + " Returnig accumulated version: " + metricTypeId);
         return getAccumulatedCurrencyMetric(metricTypeId, measurable, period);
     }
 
@@ -201,26 +183,48 @@ public class CalculationService {
         return metric != null;
     }
 
-//    public void putCurrencyMetricValue(String metricTypeId, Measurable measurable, BigDecimal value) {
-//        if (isMetricAvailableAtThisLevel(getMetricCurrentPeriod(metricTypeId, measurable))) {
-//            getMetricCurrentPeriod(metricTypeId, measurable).setValue(value);
-//        } else {
-//            Logger.getLogger(CalculationService.class.getName()).log(Level.INFO, "Metric not available at contract level: " + metricTypeId);
-//        }
-//
-//    }
-//    public boolean isMetricRequired() {
-//        for (Metric metric : periodMetricSets.values()) {
-//            if (metric.getMetricType().isRequired() && metric.getValue() == null) {
-//                return true;
-//            }
-//        }
-//
-//        return false;
-//    }
-    public void executeBusinessRules(Measurable measurable) throws Exception {
-        Logger.getLogger(CalculationService.class.getName()).log(Level.FINER, "Firing all business rules");
-        Logger.getLogger(CalculationService.class.getName()).log(Level.FINER, "Running currency conversions");
+    public void calculateAndSave(List<ReportingUnit> reportingUnits, FinancialPeriod period) throws Exception {
+
+        for (ReportingUnit reportingUnit : reportingUnits) {
+
+            for (Contract contract : reportingUnit.getContracts()) {
+                FinancialPeriod calculationPeriod = period;
+                List<PerformanceObligation> pobs = contract.getPerformanceObligations();
+                List<PerformanceObligation> validPobs = new ArrayList<PerformanceObligation>();
+                for (PerformanceObligation pob : pobs) {
+                    if (!isInputRequired(pob, period)) {
+                        validPobs.add(pob);
+                    }
+                }
+
+                executeBusinessRules((new ArrayList<Measurable>(validPobs)), calculationPeriod);
+                while ((calculationPeriod = financialPeriodService.calculateNextPeriodUntilCurrent(calculationPeriod)) != null) {
+                    executeBusinessRules((new ArrayList<Measurable>(validPobs)), calculationPeriod);
+                }
+                if (validPobs.size() > 0) {
+                    calculationPeriod = period;
+                    executeBusinessRules(contract, calculationPeriod);
+                    while ((calculationPeriod = financialPeriodService.calculateNextPeriodUntilCurrent(calculationPeriod)) != null) {
+                        executeBusinessRules(contract, calculationPeriod);
+                    }
+                }
+            }
+        }
+
+        adminService.update(reportingUnits);
+    }
+
+    // More validity work needed.
+    private boolean isInputRequired(PerformanceObligation pob, FinancialPeriod period) throws Exception {
+        if (getCurrencyMetric("TRANSACTION_PRICE_CC", pob, period).getCcValue() == null) {
+            return true;
+        }
+
+        return false;
+    }
+
+    public void executeBusinessRules(Measurable measurable, FinancialPeriod period) throws Exception {
+        Logger.getLogger(CalculationService.class.getName()).log(Level.INFO, "Firing all business rules: " + period.getId() + " " + measurable.getClass().getName());
 
         if (kSession == null) {
             initBusinessRulesEngine();
@@ -228,61 +232,24 @@ public class CalculationService {
 
         List<Object> facts = new ArrayList<Object>();
         facts.add(measurable);
-        Collection<Metric> currentPeriodMetrics = getAllCurrentPeriodMetrics(measurable);
-        initializeCurrenciesCurrentPeriod(currentPeriodMetrics, measurable);
-        facts.addAll(currentPeriodMetrics);
-        facts.addAll(getAllPriorPeriodMetrics(measurable));
+        Collection<Metric> periodMetrics = getAllCurrentPeriodMetrics(measurable, period);
+        convertCurrencies(periodMetrics, measurable, period);
+        facts.addAll(periodMetrics);
+        facts.addAll(getAllPriorPeriodMetrics(measurable, period));
         kSession.execute(facts);
-        initializeCurrenciesCurrentPeriod(currentPeriodMetrics, measurable);
+        convertCurrencies(periodMetrics, measurable, period);
 
         Logger.getLogger(CalculationService.class.getName()).log(Level.FINER, "Firing all business rules complete.");
     }
 
-    public void executeBusinessRules(List<PerformanceObligation> pobs) throws Exception {
-        for (PerformanceObligation pob : pobs) {
-            executeBusinessRules(pob);
+    public void executeBusinessRules(List<Measurable> measurables, FinancialPeriod period) throws Exception {
+        for (Measurable measurable : measurables) {
+            executeBusinessRules(measurable, period);
         }
     }
 
-//    public void executeBusinessRulesForAccumulable(Accumulable measurable) throws Exception {   // Pass in the contract as the measurable.
-//
-//        if (kSession == null) {
-//            initBusinessRulesEngine();
-//        }
-//
-//        List<Object> facts = new ArrayList<Object>();
-//
-//        facts.add(measurable);
-//        Collection<Metric> currentPeriodMetrics = getAccumulated(measurable);
-//        facts.addAll(currentPeriodMetrics);
-//
-//        kSession.execute(facts);
-//
-//    }
-//    public Collection<Metric> getAccumulated(Measurable measurable) throws Exception {
-//
-//        // Init the input Metrics.  KG TODO - Needs work to make generic.
-//        CurrencyMetric accPrice = getAccumulatedCurrencyMetric("TRANSACTION_PRICE_CC", measurable);
-//        CurrencyMetric accLiquidatedDamages = getAccumulatedCurrencyMetric("LIQUIDATED_DAMAGES_ITD_CC", measurable);
-//        CurrencyMetric accEAC = getAccumulatedCurrencyMetric("ESTIMATED_COST_AT_COMPLETION_LC", measurable);
-//
-//        // Init the output Metrics.  KG TODO - Needs work to make generic.
-//        CurrencyMetric egp = new CurrencyMetric();
-//        egp.setMetricType(metricService.findMetricTypeById("ESTIMATED_GROSS_PROFIT_LC"));
-//        CurrencyMetric egm = new CurrencyMetric();
-//        egm.setMetricType(metricService.findMetricTypeById("ESTIMATED_GROSS_MARGIN_LC"));
-//
-//        List<Metric> metrics = new ArrayList<Metric>();
-//        metrics.add(accPrice);
-//        metrics.add(accLiquidatedDamages);
-//        metrics.add(accEAC);
-//        metrics.add(egp);
-//        metrics.add(egm);
-//        return metrics;
-//
-//    }
-    private Collection<Metric> getAllCurrentPeriodMetrics(Measurable measurable) throws Exception {
-        FinancialPeriod period = financialPeriodService.getCurrentFinancialPeriod();
+    private Collection<Metric> getAllCurrentPeriodMetrics(Measurable measurable, FinancialPeriod period) throws Exception {
+        //FinancialPeriod period = financialPeriodService.getCurrentFinancialPeriod();
 
         return getAllMetrics(measurable, period);
     }
@@ -311,19 +278,17 @@ public class CalculationService {
         return metrics;
     }
 
-    private Collection<MetricPriorPeriod> getAllPriorPeriodMetrics(Measurable measurable) throws Exception {
-        FinancialPeriod period = financialPeriodService.getPriorFinancialPeriod();
-        Collection<Metric> metrics = getAllMetrics(measurable, period);
-        List<MetricPriorPeriod> priorPeriodMetrics = new ArrayList<MetricPriorPeriod>();
+    private Collection<CurrencyMetricPriorPeriod> getAllPriorPeriodMetrics(Measurable measurable, FinancialPeriod currentPeriod) throws Exception {
+        FinancialPeriod priorPeriod = financialPeriodService.calculatePriorPeriod(currentPeriod);
+        Collection<Metric> metrics = getAllMetrics(measurable, priorPeriod);
+        List<CurrencyMetricPriorPeriod> priorPeriodMetrics = new ArrayList<CurrencyMetricPriorPeriod>();
         for (Metric metric : metrics) {
-            priorPeriodMetrics.add(new MetricPriorPeriod((metric)));
+            if (metric instanceof CurrencyMetric) {
+                priorPeriodMetrics.add(new CurrencyMetricPriorPeriod((CurrencyMetric) metric));
+            }
         }
 
         return priorPeriodMetrics;
-    }
-
-    private static boolean priorPeriodMetricDoesNotExist(Metric priorPeriodMetric) {
-        return priorPeriodMetric.getValue() == null && priorPeriodMetric instanceof CurrencyMetric;
     }
 
     public BusinessRule findByRuleKey(String ruleKey) {
@@ -346,41 +311,8 @@ public class CalculationService {
         return (List<BusinessRule>) query.getResultList();
     }
 
-    /**
-     * This method will throw an exception if the underlying type does not support BigDecimal summation. We want the exception in the invalid case as it
-     * indicates either a programming error or a business rules error. Neither of which is recoverable.
-     */
-//    public BigDecimal getAccumulatedCurrencyMetricValue(String metricTypeId, Accumulable measurable) {
-//
-//        BigDecimal sum = new BigDecimal("0.0");
-//
-//        if (measurable.getChildAccumulables().isEmpty() && measurable instanceof PerformanceObligation) {
-//            // TODO - We can abstract this further instead of hard cast to pob.
-//            BigDecimal value = getCurrencyMetric(metricTypeId, ((PerformanceObligation) measurable)).getValue();
-//            if (value != null) {
-//                sum = sum.add(value);
-//            }
-//            return sum;
-//        }
-//
-//        for (Accumulable childAccumulable : measurable.getChildAccumulables()) {
-//            sum = sum.add(getAccumulatedCurrencyMetricValue(metricTypeId, childAccumulable));
-//        }
-//
-//        return sum;
-//    }
-    public BigDecimal getAccumulatedBilledValue(Measurable measurable) {
-
-        BigDecimal sum = new BigDecimal("0.0");
-        List<BillingEvent> bEvents = adminService.findBillingEventsByContract((Contract) measurable);
-        for (BillingEvent be : bEvents) {
-            sum = sum.add(be.getAmountContractCurrency());
-        }
-        return sum;
-    }
-
     private CurrencyMetric getAccumulatedCurrencyMetric(String metricTypeId, Measurable measurable, FinancialPeriod period) throws Exception {
-        Logger.getLogger(CalculationService.class.getName()).log(Level.INFO, "getAccumulatedCurrencyMetric()");
+        Logger.getLogger(CalculationService.class.getName()).log(Level.FINER, "getAccumulatedCurrencyMetric() " + metricTypeId + " measurable: " + measurable.getClass().getName());
         BigDecimal sum = new BigDecimal("0.0");
         CurrencyMetric metric = new CurrencyMetric();
         metric.setMetricType(metricService.findMetricTypeById(metricTypeId));
@@ -402,9 +334,7 @@ public class CalculationService {
         }
 
         metric.setValue(sum);
-
-        //FinancialPeriod period = financialPeriodService.getCurrentFinancialPeriod();
-        initializeCurrencies(metric, measurable, period);
+        convertCurrency(metric, measurable, period);
 
         return metric;
     }

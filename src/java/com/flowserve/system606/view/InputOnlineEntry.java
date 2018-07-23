@@ -14,6 +14,7 @@ import com.flowserve.system606.service.CalculationService;
 import com.flowserve.system606.service.ContractService;
 import com.flowserve.system606.service.PerformanceObligationService;
 import com.flowserve.system606.service.ReportingUnitService;
+import com.flowserve.system606.web.WebSession;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -56,6 +57,8 @@ public class InputOnlineEntry implements Serializable {
     private ReportingUnitService reportingUnitService;
     @Inject
     private ContractService contractService;
+    @Inject
+    private WebSession webSession;
     private String contractFilterText;
 
     private TreeNode selectedNode;
@@ -158,7 +161,7 @@ public class InputOnlineEntry implements Serializable {
 
     public void calculateOutputs(PerformanceObligation pob) throws Exception {
         try {
-            calculationService.executeBusinessRules(pob);
+            calculationService.executeBusinessRules(pob, webSession.getCurrentPeriod());
         } catch (Exception e) {
             FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", e.getCause().getCause().getMessage());
             FacesContext.getCurrentInstance().addMessage(null, msg);
@@ -178,7 +181,7 @@ public class InputOnlineEntry implements Serializable {
         Logger.getLogger(InputOnlineEntry.class.getName()).log(Level.FINE, "Saving inputs.");
         FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Inputs saved.", ""));
 
-        reportingUnitService.calculateAndSave(reportingUnits);
+        calculationService.calculateAndSave(reportingUnits, webSession.getCurrentPeriod());
     }
 
     public void cancelEdits() throws Exception {

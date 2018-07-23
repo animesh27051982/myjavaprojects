@@ -11,9 +11,12 @@ import java.time.LocalDateTime;
 import java.util.logging.Logger;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import static javax.persistence.TemporalType.TIMESTAMP;
@@ -26,7 +29,11 @@ public class FinancialPeriod extends BaseEntity<String> implements Comparable<Fi
     private static final Logger LOG = Logger.getLogger(FinancialPeriod.class.getName());
     @Id
     @Column(name = "FINANCIAL_PERIOD_ID")
-    private String id;   // MAY-18
+    private String id;
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "FLS_SEQ")
+    @SequenceGenerator(name = "FLS_SEQ", sequenceName = "FLS_SEQ", allocationSize = 1)
+    @Column(name = "PERIOD_SEQ")
+    private Long sequence;
     @Column(name = "NAME")
     private String name;
     @Column(name = "START_DATE")
@@ -35,8 +42,8 @@ public class FinancialPeriod extends BaseEntity<String> implements Comparable<Fi
     private LocalDate endDate;
     @Column(name = "PERIOD_YEAR")
     private int periodYear;
-    @Column(name = "PERIOD_NUMBER")  // TODO - Change to comparable int
-    private Integer number;
+    @Column(name = "PERIOD_MONTH")  // TODO - Change to comparable int
+    private Integer periodMonth;
     private PeriodStatus status;
     @OneToOne
     @JoinColumn(name = "CREATED_BY_ID")
@@ -54,19 +61,23 @@ public class FinancialPeriod extends BaseEntity<String> implements Comparable<Fi
     public FinancialPeriod() {
     }
 
-    public FinancialPeriod(String id, String name, LocalDate startDate, LocalDate endDate, int periodYear, int compare, PeriodStatus status) {
+    public FinancialPeriod(String id, String name, LocalDate startDate, LocalDate endDate, int periodYear, int periodMonth, PeriodStatus status) {
         this.id = id;
         this.name = name;
         this.startDate = startDate;
         this.endDate = endDate;
         this.periodYear = periodYear;
-        this.number = number;
+        this.periodMonth = periodMonth;
         this.status = status;
     }
 
     @Override
     public int compareTo(FinancialPeriod obj) {
         return this.endDate.compareTo(obj.getEndDate());
+    }
+
+    public boolean isAfter(FinancialPeriod period) {
+        return this.endDate.compareTo(period.getEndDate()) > 0;
     }
 
     public String getName() {
@@ -149,12 +160,20 @@ public class FinancialPeriod extends BaseEntity<String> implements Comparable<Fi
         this.id = id;
     }
 
-    public Integer getNumber() {
-        return number;
+    public Integer getPeriodMonth() {
+        return periodMonth;
     }
 
-    public void setNumber(Integer number) {
-        this.number = number;
+    public void setPeriodMonth(Integer periodMonth) {
+        this.periodMonth = periodMonth;
+    }
+
+    public Long getSequence() {
+        return sequence;
+    }
+
+    public void setSequence(Long sequence) {
+        this.sequence = sequence;
     }
 
 }

@@ -94,6 +94,10 @@ public class ReportingUnit extends TransientMeasurable<Long> implements Measurab
         return localCurrency;
     }
 
+    public Currency getReportingCurrency() {
+        return company.getReportingCurrency();
+    }
+
     public void setLocalCurrency(Currency localCurrency) {
         this.localCurrency = localCurrency;
     }

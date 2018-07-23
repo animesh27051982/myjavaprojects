@@ -15,12 +15,12 @@ import java.math.BigDecimal;
  *
  * @author kgraves
  */
-public class MetricPriorPeriod {
+public class CurrencyMetricPriorPeriod {
 
-    private Metric metric;
+    private CurrencyMetric metric;
     private MetricType metricType;
 
-    public MetricPriorPeriod(Metric priorPeriodMetric) {
+    public CurrencyMetricPriorPeriod(CurrencyMetric priorPeriodMetric) {
         this.metric = priorPeriodMetric;
         this.metricType = priorPeriodMetric.getMetricType();
     }
@@ -29,11 +29,15 @@ public class MetricPriorPeriod {
         return metricType;
     }
 
-    public Object getValue() {
-        return metric.getValue();
+    public BigDecimal getLcValue() {
+        return metric.getLcValue();
     }
 
-    public void setValue(BigDecimal b) {
-        metric.setValue(b);
+    public BigDecimal getCcValue() {
+        return metric.getCcValue();
+    }
+
+    public BigDecimal getRcValue() {
+        return metric.getRcValue();
     }
 }

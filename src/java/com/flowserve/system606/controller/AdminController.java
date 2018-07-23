@@ -13,6 +13,7 @@ import com.flowserve.system606.model.Holiday;
 import com.flowserve.system606.model.ReportingUnit;
 import com.flowserve.system606.model.User;
 import com.flowserve.system606.service.AdminService;
+import com.flowserve.system606.service.FinancialPeriodService;
 import com.flowserve.system606.web.WebSession;
 import java.io.Serializable;
 import java.util.Currency;
@@ -36,6 +37,8 @@ public class AdminController implements Serializable {
     private static Logger logger = Logger.getLogger("com.flowserve.system606");
     @Inject
     private AdminService adminService;
+    @Inject
+    private FinancialPeriodService financialPeriodService;
     @Inject
     private WebSession webSession;
 
@@ -192,7 +195,7 @@ public class AdminController implements Serializable {
     public String updateFinancialPeriod(FinancialPeriod financialPeriod) {
         FacesContext context = FacesContext.getCurrentInstance();
         try {
-            adminService.updateFinancialPeriod(financialPeriod);
+            financialPeriodService.updateFinancialPeriod(financialPeriod);
         } catch (Exception e) {
             logger.log(Level.SEVERE, e.getMessage(), e);
             context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Error saving", e.getMessage()));

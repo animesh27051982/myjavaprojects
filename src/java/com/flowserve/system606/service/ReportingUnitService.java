@@ -5,8 +5,6 @@
  */
 package com.flowserve.system606.service;
 
-import com.flowserve.system606.model.ReportingUnit;
-import java.util.List;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 
@@ -21,13 +19,5 @@ public class ReportingUnitService {
     private AdminService adminService;
     @Inject
     private CalculationService calculationService;
-
-    public void calculateAndSave(List<ReportingUnit> reportingUnits) throws Exception {
-        for (ReportingUnit reportingUnit : reportingUnits) {
-            calculationService.executeBusinessRules(reportingUnit.getPerformanceObligations());
-        }
-
-        adminService.update(reportingUnits);
-    }
 
 }

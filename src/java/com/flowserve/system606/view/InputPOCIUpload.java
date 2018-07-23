@@ -54,7 +54,8 @@ public class InputPOCIUpload implements Serializable {
 
             //get reporting unit to calculate business rules on the POBs
             List<ReportingUnit> reportingUnits = adminService.getPreparableReportingUnits();
-            reportingUnitService.calculateAndSave(reportingUnits);
+            // KJG - TODO - Need to calculate all periods.
+            //reportingUnitService.calculateAndSave(reportingUnits);
 
             FacesMessage msg = new FacesMessage("Succesful", event.getFile().getFileName() + " is uploaded.");
 
