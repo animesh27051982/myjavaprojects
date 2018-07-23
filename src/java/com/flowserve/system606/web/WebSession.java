@@ -4,6 +4,7 @@ import com.flowserve.system606.model.BusinessUnit;
 import com.flowserve.system606.model.Company;
 import com.flowserve.system606.model.Contract;
 import com.flowserve.system606.model.Country;
+import com.flowserve.system606.model.DataImportFile;
 import com.flowserve.system606.model.FinancialPeriod;
 import com.flowserve.system606.model.Holiday;
 import com.flowserve.system606.model.ReportingUnit;
@@ -41,6 +42,7 @@ public class WebSession implements Serializable {
     private FinancialPeriod currentPeriod;
     private FinancialPeriod priorPeriod;
     private ReportingUnit currentReportingUnit;
+    private DataImportFile dataImportFile;
 
     @PostConstruct
     public void init() {
@@ -145,6 +147,14 @@ public class WebSession implements Serializable {
 
     public void setCurrentReportingUnit(ReportingUnit currentReportingUnit) {
         this.currentReportingUnit = currentReportingUnit;
+    }
+
+    public DataImportFile getDataImportFile() {
+        return dataImportFile;
+    }
+
+    public void setDataImportFile(DataImportFile dataImportFile) {
+        this.dataImportFile = dataImportFile;
     }
 
 }

@@ -10,6 +10,7 @@ import com.flowserve.system606.model.BusinessUnit;
 import com.flowserve.system606.model.Company;
 import com.flowserve.system606.model.Contract;
 import com.flowserve.system606.model.Country;
+import com.flowserve.system606.model.DataImportFile;
 import com.flowserve.system606.model.ExchangeRate;
 import com.flowserve.system606.model.FinancialPeriod;
 import com.flowserve.system606.model.Holiday;
@@ -79,6 +80,12 @@ public class AdminService {
     public BusinessUnit findBusinessUnitById(String id) {
 
         return em.find(BusinessUnit.class, id);
+    }
+
+    public List<DataImportFile> findDataImportFile() throws Exception {  // Need an application exception type defined.
+
+        TypedQuery<DataImportFile> query = em.createQuery("SELECT b FROM DataImportFile b", DataImportFile.class);
+        return (List<DataImportFile>) query.getResultList();
     }
 
     public void updateUser(User u) throws Exception {
@@ -243,6 +250,10 @@ public class AdminService {
 
     public void persist(Country country) throws Exception {
         em.persist(country);
+    }
+
+    public void persist(DataImportFile importFile) throws Exception {
+        em.persist(importFile);
     }
 
     public void persist(ReportingUnit ru) throws Exception {

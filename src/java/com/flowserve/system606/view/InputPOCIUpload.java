@@ -5,6 +5,7 @@
  */
 package com.flowserve.system606.view;
 
+import com.flowserve.system606.model.DataImportFile;
 import com.flowserve.system606.service.AdminService;
 import com.flowserve.system606.service.DataUploadService;
 import com.flowserve.system606.service.ReportingUnitService;
@@ -13,6 +14,9 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.enterprise.context.RequestScoped;
@@ -37,6 +41,7 @@ public class InputPOCIUpload implements Serializable {
     private AdminService adminService;
     @Inject
     private ReportingUnitService reportingUnitService;
+    List<DataImportFile> dataImportFile = new ArrayList<DataImportFile>();
 
     public static final String PREFIX = "msaccess";
     public static final String SUFFIX = ".tmp";
@@ -48,7 +53,7 @@ public class InputPOCIUpload implements Serializable {
         try {
             File accessFile = stream2file((InputStream) event.getFile().getInputstream());
             String fileName = accessFile.getAbsolutePath();
-            dataUploadService.processUploadedCalculationData(fileName);
+            dataUploadService.processUploadedCalculationData(fileName, event.getFile().getFileName());
 
             //get reporting unit to calculate business rules on the POBs
             //List<ReportingUnit> reportingUnits = adminService.getPreparableReportingUnits();
@@ -58,7 +63,7 @@ public class InputPOCIUpload implements Serializable {
 
             FacesContext.getCurrentInstance().addMessage(null, msg);
         } catch (Exception e) {
-            FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", "Error handleInputPOCIUpload: " + e.getMessage());
+            FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", "POCI Data Upload: " + e.getMessage());
             FacesContext.getCurrentInstance().addMessage(null, msg);
             logger.log(Level.SEVERE, "Error handleInputPOCIUpload.", e);
         }
@@ -71,6 +76,16 @@ public class InputPOCIUpload implements Serializable {
             IOUtils.copy(in, out);
         }
         return tempFile;
+    }
+
+    public List<DataImportFile> getDataImportFile() throws Exception {
+        dataImportFile = adminService.findDataImportFile();
+        Collections.sort(dataImportFile);
+        return dataImportFile;
+    }
+
+    public void setDataImportFile(List<DataImportFile> dataImportFile) {
+        this.dataImportFile = dataImportFile;
     }
 
 }

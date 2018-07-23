@@ -8,6 +8,7 @@ package com.flowserve.system606.controller;
 import com.flowserve.system606.model.BusinessUnit;
 import com.flowserve.system606.model.Company;
 import com.flowserve.system606.model.Contract;
+import com.flowserve.system606.model.DataImportFile;
 import com.flowserve.system606.model.FinancialPeriod;
 import com.flowserve.system606.model.Holiday;
 import com.flowserve.system606.model.ReportingUnit;
@@ -42,11 +43,12 @@ public class AdminController implements Serializable {
     @Inject
     private WebSession webSession;
 
-//    @Inject
-//    private BusinessUnitSession businessUnitSession;
-//    @ManagedProperty(value = "#{reportingUnitSession}")
-//    private ReportingUnitSession reportingUnitSession;
     public AdminController() {
+    }
+
+    public String detailMessage(DataImportFile d) throws Exception {
+        webSession.setDataImportFile(d);
+        return "importMessageList";
     }
 
     public String editBusinessUnit(BusinessUnit u) throws Exception {

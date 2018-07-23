@@ -1,0 +1,45 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                template="/WEB-INF/template.xhtml">
+
+    <ui:define name="head">
+        <style type="text/css">
+
+        </style>
+    </ui:define>
+
+    <ui:define name="title">POCI Data Upload Message</ui:define>
+
+    <ui:define name="viewname">POCI Data Upload Message</ui:define>
+
+    <ui:define name="content">
+        <div style="min-height: calc(100vh - 235px);">
+            <h:form id="mainForm">
+                <p:growl id="messages" showDetail="true" />
+
+                <div class="ui-g">
+
+                    <div class="ui-g-12">
+                        <div class="card card-w-title">
+                            <h1>POCI Data Upload Message</h1>
+                            <p:dataTable id="userTable" var="import" value="#{importMessageList.message}"  paginator="true" rows="30">
+
+                                <p:column headerText="Name" >
+                                    <h:outputText value="#{importMessageList.name}" />
+                                </p:column>
+
+                                <p:column headerText="Message" >
+                                    <h:outputText value="#{import}" />
+                                </p:column>
+                            </p:dataTable>
+                        </div>
+                    </div>
+                </div>
+            </h:form>
+        </div>
+    </ui:define>
+
+</ui:composition>
