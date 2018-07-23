@@ -5,7 +5,6 @@
  */
 package com.flowserve.system606.view;
 
-import com.flowserve.system606.model.ReportingUnit;
 import com.flowserve.system606.service.AdminService;
 import com.flowserve.system606.service.DataUploadService;
 import com.flowserve.system606.service.ReportingUnitService;
@@ -14,7 +13,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
-import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.enterprise.context.RequestScoped;
@@ -53,10 +51,9 @@ public class InputPOCIUpload implements Serializable {
             dataUploadService.processUploadedCalculationData(fileName);
 
             //get reporting unit to calculate business rules on the POBs
-            List<ReportingUnit> reportingUnits = adminService.getPreparableReportingUnits();
+            //List<ReportingUnit> reportingUnits = adminService.getPreparableReportingUnits();
             // KJG - TODO - Need to calculate all periods.
             //reportingUnitService.calculateAndSave(reportingUnits);
-
             FacesMessage msg = new FacesMessage("Succesful", event.getFile().getFileName() + " is uploaded.");
 
             FacesContext.getCurrentInstance().addMessage(null, msg);

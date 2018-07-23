@@ -8,8 +8,10 @@ package com.flowserve.system606.view;
 import com.flowserve.system606.model.ReportingUnit;
 import com.flowserve.system606.service.AdminService;
 import com.flowserve.system606.service.TemplateService;
+import com.flowserve.system606.web.WebSession;
 import java.io.InputStream;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -33,17 +35,20 @@ public class InputTemplateUpload implements Serializable {
     AdminService adminService;
     @Inject
     private TemplateService templateService;
-    private List<ReportingUnit> reportingUnits;
+    @Inject
+    private WebSession webSession;
+    private List<ReportingUnit> reportingUnits = new ArrayList<ReportingUnit>();
 
     private static Logger logger = Logger.getLogger("com.flowserve.system606");
-        
+
     @PostConstruct
     public void init() {
-        reportingUnits = adminService.getPreparableReportingUnits();
+        //reportingUnits = adminService.getPreparableReportingUnits();
+        reportingUnits.add(webSession.getCurrentReportingUnit());
     }
 
     public void handleTemplateUpload(FileUploadEvent event) {
-        
+
         try {
             templateService.processTemplateUpload((InputStream) event.getFile().getInputstream(), event.getFile().getFileName());
 

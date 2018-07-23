@@ -19,21 +19,17 @@ rule "Estimated Gross Profit and Margin"
         estimatedGrossProfit : CurrencyMetric(metricType.id == "ESTIMATED_GROSS_PROFIT_LC")  // Initialize variable for calc result.
         estimatedGrossMargin : Metric(metricType.id == "ESTIMATED_GROSS_MARGIN")
     then
-        // Calculate all outputs possible using these inputs.
-        logger.info("Caculating EGP/EGM");
         modify (estimatedGrossProfit) { lcValue = (transactionPrice.lcValue - estimatedCostAtCompletion.lcValue)};
         modify (estimatedGrossMargin) { value = (estimatedGrossProfit.lcValue == 0B ? 0B : estimatedGrossProfit.lcValue / transactionPrice.lcValue)};
 end
 
 rule "EAC Change"
     when
-        // Pull input values needed for this calculation.
         pob : PerformanceObligation()
         estimatedCostAtCompletion : CurrencyMetric(metricType.id == "ESTIMATED_COST_AT_COMPLETION_LC", lcValue != null)
         estimatedCostAtCompletionPriorPeriod : CurrencyMetricPriorPeriod(metricType.id == "ESTIMATED_COST_AT_COMPLETION_LC", lcValue != null)
         changeInEstimate : CurrencyMetric(metricType.id == "CHANGE_IN_EAC_LC")
     then
-        logger.info("Caculating Change in EAC");
         modify (changeInEstimate) { lcValue = (estimatedCostAtCompletion.lcValue - estimatedCostAtCompletionPriorPeriod.lcValue)};
 end
 
@@ -45,7 +41,6 @@ rule "Cost of Goods Sold ITD"
         intercoCostsITD : CurrencyMetric(metricType.id == "INTERCOMPANY_COSTS_ITD_LC", lcValue != null)
         costOfGoodsSoldITD : CurrencyMetric(metricType.id == "COST_OF_GOODS_SOLD_ITD_LC")
     then
-        logger.info("Caculating COGS ITD");
         modify (costOfGoodsSoldITD) { lcValue = (localCostsITD.lcValue + thirdPartyCostsITD.lcValue + intercoCostsITD.lcValue)};
 end
 

@@ -275,4 +275,17 @@ public class ViewSupport implements Serializable {
     public String getExchangeRate(Contract contract) throws Exception {
         return currencyService.findRateByFromToPeriod(contract.getContractCurrency(), contract.getLocalCurrency(), webSession.getCurrentPeriod()).getConversionRate().toPlainString();
     }
+
+    public List<ReportingUnit> completeReportingUnit(String searchString) {
+        List<ReportingUnit> rUnit = null;
+
+        try {
+            rUnit = adminService.searchReportingUnits(searchString);
+        } catch (Exception e) {
+            FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", " RU search error  " + e.getMessage());
+            FacesContext.getCurrentInstance().addMessage(null, msg);
+            logger.log(Level.SEVERE, "Error ru search.", e);
+        }
+        return rUnit;
+    }
 }

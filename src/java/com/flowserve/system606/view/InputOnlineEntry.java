@@ -63,13 +63,14 @@ public class InputOnlineEntry implements Serializable {
 
     private TreeNode selectedNode;
 
-    private List<ReportingUnit> reportingUnits;
+    private List<ReportingUnit> reportingUnits = new ArrayList<ReportingUnit>();
     private List<Contract> contracts;
     private Contract[] selectedContracts;
 
     @PostConstruct
     public void init() {
-        reportingUnits = adminService.getPreparableReportingUnits();
+        //reportingUnits = adminService.getPreparableReportingUnits();
+        reportingUnits.add(webSession.getCurrentReportingUnit());
         rootTreeNode = viewSupport.generateNodeTree(reportingUnits);
         billingTreeNode = viewSupport.generateNodeTreeForBilling(reportingUnits);
         initContracts(reportingUnits);

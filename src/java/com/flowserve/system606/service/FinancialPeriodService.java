@@ -8,6 +8,7 @@ import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.Month;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -61,25 +62,25 @@ public class FinancialPeriodService {
 
     public void initFinancialPeriods() throws Exception {
         logger.info("Initializing FinancialPeriods");
-        if (findById("NOV-17") == null) {
-            FinancialPeriod period = new FinancialPeriod("NOV-17", "NOV-17", LocalDate.of(2017, Month.NOVEMBER, 1), LocalDate.of(2017, Month.NOVEMBER, 30), 2018, 11, PeriodStatus.OPENED);
-            persist(period);
-        }
-        if (findById("DEC-17") == null) {
-            FinancialPeriod period = new FinancialPeriod("DEC-17", "DEC-17", LocalDate.of(2017, Month.DECEMBER, 12), LocalDate.of(2017, Month.DECEMBER, 31), 2017, 12, PeriodStatus.OPENED);
-            persist(period);
-        }
-        if (findById("JAN-18") == null) {
-            FinancialPeriod period = new FinancialPeriod("JAN-18", "JAN-18", LocalDate.of(2018, Month.JANUARY, 1), LocalDate.of(2018, Month.JANUARY, 31), 2018, 1, PeriodStatus.OPENED);
-            persist(period);
-        }
-        if (findById("FEB-18") == null) {
-            FinancialPeriod period = new FinancialPeriod("FEB-18", "FEB-18", LocalDate.of(2018, Month.FEBRUARY, 1), LocalDate.of(2018, Month.FEBRUARY, 28), 2018, 2, PeriodStatus.OPENED);
-            persist(period);
-        }
-        if (findById("MAR-18") == null) {
-            FinancialPeriod period = new FinancialPeriod("MAR-18", "MAR-18", LocalDate.of(2018, Month.MARCH, 1), LocalDate.of(2018, Month.MARCH, 30), 2018, 3, PeriodStatus.OPENED);
-            persist(period);
+        String[] shortMonth = {"JAN", "FEB",
+            "MAR", "APR", "MAY", "JUN", "JUL",
+            "AUG", "SEP", "OCT", "NOV",
+            "DEC"};
+        Integer[] totalYear = {2017, 2018};
+        for (int i = 0; i < totalYear.length; i++) {
+
+            for (int j = 1; j <= 12; j++) {
+
+                String yrStr = Integer.toString(totalYear[i]);
+                String shortYear = yrStr.substring(yrStr.length() - 2);
+                String exPeriod = shortMonth[j - 1] + "-" + shortYear;
+                if (findById(exPeriod) == null) {
+                    LocalDate date = LocalDate.of(totalYear[i], Month.of(j), 1);
+                    LocalDate lastOfMonth = date.with(TemporalAdjusters.lastDayOfMonth());
+                    FinancialPeriod fPeriod = new FinancialPeriod(exPeriod, exPeriod, LocalDate.of(totalYear[i], Month.of(j), 1), lastOfMonth, totalYear[i], j, PeriodStatus.OPENED);
+                    persist(fPeriod);
+                }
+            }
         }
         if (findById("APR-18") == null) {
             FinancialPeriod period = new FinancialPeriod("APR-18", "APR-18", LocalDate.of(2018, Month.APRIL, 1), LocalDate.of(2018, Month.APRIL, 30), 2018, 4, PeriodStatus.OPENED);
@@ -276,7 +277,7 @@ public class FinancialPeriodService {
 
     }
 
-    public static boolean isXWorkday(LocalDate date, int workday, List<Holiday> holidays) throws Exception {
+    public boolean isXWorkday(LocalDate date, int workday, List<Holiday> holidays) throws Exception {
 
         LocalDate date1 = LocalDate.of(date.getYear(), date.getMonthValue(), 1);
         int workdayCount = isWorkday(date1, holidays) ? 1 : 0;
@@ -313,13 +314,52 @@ public class FinancialPeriodService {
         return workdayCount;
     }
 
-    public static boolean isWorkday(LocalDate date, List<Holiday> holidays) {
-
-        if (date.getDayOfWeek() != DayOfWeek.SATURDAY && date.getDayOfWeek() != DayOfWeek.SUNDAY && !holidays.contains(date)) {
-            return true;
-        } else {
-            return false;
+    public boolean isWorkday(LocalDate date, List<Holiday> holidays) throws Exception {
+        LocalDate holidaydate = null;
+        boolean bol = false;
+        if (holidays.isEmpty()) {
+            if (date.getDayOfWeek() != DayOfWeek.SATURDAY && date.getDayOfWeek() != DayOfWeek.SUNDAY) {
+                return true;
+            } else {
+                return false;
+            }
         }
+        int count = holidays.size();
+        int sert = holidays.size();
+
+        if (date.getDayOfWeek() != DayOfWeek.SATURDAY && date.getDayOfWeek() != DayOfWeek.SUNDAY) {
+            for (int i = 0; i < count; i++) {
+                holidaydate = holidays.get(i).getHolidayDate();
+                if (!holidaydate.isEqual(date)) {
+                    sert--;
+                    if (sert == 0) {
+                        return true;
+                    }
+                }
+            }
+
+        }
+
+        return false;
+    }
+
+    public LocalDate CalcInputFreezeWorkday(LocalDate date, List<Holiday> holidays, int workday) throws Exception {
+        LocalDate temp = null;
+        int count = 0;
+        LocalDate freezeDay = LocalDate.of(date.getYear(), date.getMonthValue(), 1);
+
+        for (int i = 0; i <= 31; i++) {
+            freezeDay = freezeDay.plusDays(1);
+            if (isWorkday(freezeDay, holidays) == true) {
+                count++;
+                if (count == workday) {
+                    return freezeDay;
+                }
+                temp = freezeDay;
+            }
+
+        }
+        return temp;
     }
 
     public static int getCurrentClosePeriodYear() {
@@ -366,9 +406,7 @@ public class FinancialPeriodService {
 
     public static int getCurrentWorkday() throws Exception {
         //	return JdbcTemplateManager.getJdbcTemplate().queryForInt("select current_workday from xxfc_general_status where group_id = '0'");
-
         return 0;
-
     }
 
     public List<FinancialPeriod> findFinancialPeriods() {

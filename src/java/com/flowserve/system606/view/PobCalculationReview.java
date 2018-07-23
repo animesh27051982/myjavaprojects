@@ -6,11 +6,14 @@
 package com.flowserve.system606.view;
 
 import com.flowserve.system606.model.PerformanceObligation;
+import com.flowserve.system606.model.ReportingUnit;
 import com.flowserve.system606.service.AdminService;
 import com.flowserve.system606.service.CalculationService;
 import com.flowserve.system606.web.WebSession;
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
@@ -45,6 +48,8 @@ public class PobCalculationReview implements Serializable {
     @PostConstruct
     public void init() {
         try {
+            List<ReportingUnit> reportingUnits = new ArrayList<ReportingUnit>();
+            reportingUnits.add(webSession.getCurrentReportingUnit());
             rootTreeNode = viewSupport.generateNodeTree(adminService.getPreparableReportingUnits());
         } catch (Exception e) {
             logger.log(Level.SEVERE, "Error init pobs", e);

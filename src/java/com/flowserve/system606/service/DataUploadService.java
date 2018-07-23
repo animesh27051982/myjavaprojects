@@ -9,6 +9,7 @@ import com.flowserve.system606.model.Contract;
 import com.flowserve.system606.model.FinancialPeriod;
 import com.flowserve.system606.model.PerformanceObligation;
 import com.flowserve.system606.model.ReportingUnit;
+import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -111,20 +112,28 @@ public class DataUploadService {
                                 calculationService.getCurrencyMetric("TRANSACTION_PRICE_CC", pob, period).setValue(resultSet.getBigDecimal(3));
                                 calculationService.getCurrencyMetric("ESTIMATED_COST_AT_COMPLETION_LC", pob, period).setValue(resultSet.getBigDecimal(4));
                                 calculationService.getCurrencyMetric("LOCAL_COSTS_ITD_LC", pob, period).setValue(resultSet.getBigDecimal(5));
-                                calculationService.getCurrencyMetric("LIQUIDATED_DAMAGES_ITD_CC", pob, period).setValue(resultSet.getBigDecimal(6));
+                                if (isGreaterThanZero(resultSet.getBigDecimal(5))) {
+                                    calculationService.getCurrencyMetric("THIRD_PARTY_COSTS_ITD_LC", pob, period).setValue(BigDecimal.ZERO);
+                                    calculationService.getCurrencyMetric("INTERCOMPANY_COSTS_ITD_LC", pob, period).setValue(BigDecimal.ZERO);
+                                }
+                                if (isGreaterThanZero(resultSet.getBigDecimal(3)) && resultSet.getBigDecimal(6) == null) {
+                                    calculationService.getCurrencyMetric("LIQUIDATED_DAMAGES_ITD_CC", pob, period).setValue(BigDecimal.ZERO);
+                                } else {
+                                    calculationService.getCurrencyMetric("LIQUIDATED_DAMAGES_ITD_CC", pob, period).setValue(resultSet.getBigDecimal(6));
+                                }
 //                                if (pob.getContract().getReportingUnit().getCode().equalsIgnoreCase("8025")) {
 //                                    calculationService.executeBusinessRules(pob);
 //                                }
 
                             } else {
-                                Logger.getLogger(DataUploadService.class.getName()).log(Level.INFO, "These POBs not found : " + id);
+                                Logger.getLogger(DataUploadService.class.getName()).log(Level.FINER, "These POBs not found : " + id);
                             }
                         } catch (NumberFormatException e) {
                             Logger.getLogger(DataUploadService.class.getName()).log(Level.INFO, "Error " + e);
                         }
                     }
                 } else {
-                    Logger.getLogger(DataUploadService.class.getName()).log(Level.INFO, "Other Financial Period : " + resultSet.getString(1));
+                    Logger.getLogger(DataUploadService.class.getName()).log(Level.FINER, "Other Financial Period : " + resultSet.getString(1));
                 }
             }
         } catch (SQLException sqlex) {
@@ -146,6 +155,14 @@ public class DataUploadService {
                 sqlex.printStackTrace();
             }
         }
+    }
+
+    private boolean isGreaterThanZero(BigDecimal value) {
+        if (value != null && value.compareTo(BigDecimal.ZERO) == 1) {
+            return true;
+        }
+
+        return false;
     }
 
     public void initContract(String msAccDB) throws Exception {

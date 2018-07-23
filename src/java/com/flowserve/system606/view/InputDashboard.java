@@ -22,6 +22,7 @@ import javax.security.enterprise.authentication.mechanism.http.CustomFormAuthent
 import javax.security.enterprise.authentication.mechanism.http.LoginToContinue;
 import org.glassfish.soteria.identitystores.annotation.Credentials;
 import org.glassfish.soteria.identitystores.annotation.EmbeddedIdentityStoreDefinition;
+import org.primefaces.event.SelectEvent;
 import org.primefaces.model.TreeNode;
 
 /**
@@ -55,23 +56,23 @@ public class InputDashboard implements Serializable {
     @Inject
     private ViewSupport viewSupport;
 
-    private List<ReportingUnit> reportingUnits;
+    private List<ReportingUnit> reportingUnits = new ArrayList<ReportingUnit>();
 
     @PostConstruct
     public void init() {
-        reportingUnits = adminService.getPreparableReportingUnits();
-        //rootTreeNode = viewSupport.generateNodeTree(reportingUnits);
-//        for (ReportingUnit reportingUnit : reportingUnits) {
-//            try {
-//                viewSupport.getCurrencyMetric("ESTIMATED_COST_AT_COMPLETION_LC", reportingUnit).getValue();
-//            } catch (Exception ex) {
-//                Logger.getLogger(InputDashboard.class.getName()).log(Level.SEVERE, null, ex);
-//            }
-//        }
+        if (webSession.getCurrentReportingUnit() != null) {
+            reportingUnits.clear();
+            reportingUnits.add(webSession.getCurrentReportingUnit());
+        }
     }
 
     public List<ReportingUnit> getReportingUnits() {
         return reportingUnits;
+    }
+
+    public void onReportingUnitSelect(SelectEvent event) {
+        webSession.setCurrentReportingUnit((ReportingUnit) event.getObject());
+        init();
     }
 
     public int getReportingUnitCount() {
@@ -80,7 +81,11 @@ public class InputDashboard implements Serializable {
 
     public int getContractCount() {
         List<Contract> contracts = new ArrayList<Contract>();
-        reportingUnits.forEach(reportingUnit -> contracts.addAll(reportingUnit.getContracts()));
+        if (reportingUnits.size() > 0) {
+            for (ReportingUnit reportingUnit : reportingUnits) {
+                contracts.addAll(reportingUnit.getContracts());
+            }
+        }
         return contracts.size();
     }
 

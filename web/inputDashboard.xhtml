@@ -93,7 +93,22 @@
                     <div class="ui-g-12">
                         <div class="card card-w-title">
                             <p:messages id="messages" showDetail="true" />
-                            <p:panelGrid columns="2" columnClasses="ui-grid-col-6,ui-grid-col-4" layout="grid" styleClass="ui-panelgrid-blank form-group" style="float: right; border:0px none; background-color:transparent;">
+                            <p:panelGrid columns="4" columnClasses="ui-grid-col-6,ui-grid-col-4,ui-grid-col-6,ui-grid-col-4" layout="grid" styleClass="ui-panelgrid-blank form-group" style="float: right; border:0px none; background-color:transparent;">
+                                <h:outputLabel style="margin-left: 75px; vertical-align: sub; white-space: nowrap;" value="Switch RU: "/>
+                                <p:autoComplete
+                                    id="ru"
+                                    var="ru"
+                                    maxResults="10"
+                                    required="#{false}"
+                                    forceSelection="#{true}"
+                                    value="#{webSession.currentReportingUnit}"
+                                    completeMethod="#{viewSupport.completeReportingUnit}"
+                                    itemLabel="#{ru.name}"
+                                    itemValue="#{ru}"
+                                    converter="reportingUnitConverter"
+                                    >
+                                    <p:ajax event="itemSelect" listener="#{inputDashboard.onReportingUnitSelect}" update=":form" />
+                                </p:autoComplete>
                                 <h:outputLabel style="vertical-align: sub; white-space: nowrap;" value="Switch Period: "/>
                                 <p:selectOneMenu style="margin-top: 0px;" id="period" value="#{webSession.currentPeriod}" converter="periodConverter">
                                     <p:ajax event="change" update=":form" process="@this" listener="#{webSession.switchPeriod(webSession.currentPeriod)}"/>

@@ -25,7 +25,9 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.ejb.Stateless;
@@ -185,32 +187,33 @@ public class CalculationService {
 
     public void calculateAndSave(List<ReportingUnit> reportingUnits, FinancialPeriod period) throws Exception {
 
+        Set<Contract> contractsToCalc = new HashSet<Contract>();
+
         for (ReportingUnit reportingUnit : reportingUnits) {
 
-            for (Contract contract : reportingUnit.getContracts()) {
-                FinancialPeriod calculationPeriod = period;
-                List<PerformanceObligation> pobs = contract.getPerformanceObligations();
-                List<PerformanceObligation> validPobs = new ArrayList<PerformanceObligation>();
-                for (PerformanceObligation pob : pobs) {
-                    if (!isInputRequired(pob, period)) {
-                        validPobs.add(pob);
-                    }
+            FinancialPeriod calculationPeriod = period;
+            List<PerformanceObligation> pobs = reportingUnit.getPerformanceObligations();
+            List<PerformanceObligation> validPobs = new ArrayList<PerformanceObligation>();
+            for (PerformanceObligation pob : pobs) {
+                if (!isInputRequired(pob, period)) {
+                    validPobs.add(pob);
+                    contractsToCalc.add(pob.getContract());
                 }
+            }
 
+            executeBusinessRules((new ArrayList<Measurable>(validPobs)), calculationPeriod);
+            while ((calculationPeriod = financialPeriodService.calculateNextPeriodUntilCurrent(calculationPeriod)) != null) {
                 executeBusinessRules((new ArrayList<Measurable>(validPobs)), calculationPeriod);
-                while ((calculationPeriod = financialPeriodService.calculateNextPeriodUntilCurrent(calculationPeriod)) != null) {
-                    executeBusinessRules((new ArrayList<Measurable>(validPobs)), calculationPeriod);
-                }
-                if (validPobs.size() > 0) {
-                    calculationPeriod = period;
-                    executeBusinessRules(contract, calculationPeriod);
-                    while ((calculationPeriod = financialPeriodService.calculateNextPeriodUntilCurrent(calculationPeriod)) != null) {
-                        executeBusinessRules(contract, calculationPeriod);
-                    }
-                }
             }
         }
 
+        for (Contract contract : contractsToCalc) {
+            FinancialPeriod calculationPeriod = period;
+            executeBusinessRules(contract, calculationPeriod);
+            while ((calculationPeriod = financialPeriodService.calculateNextPeriodUntilCurrent(calculationPeriod)) != null) {
+                executeBusinessRules(contract, calculationPeriod);
+            }
+        }
         adminService.update(reportingUnits);
     }
 

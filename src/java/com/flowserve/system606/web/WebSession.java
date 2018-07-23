@@ -40,6 +40,7 @@ public class WebSession implements Serializable {
     private FinancialPeriod editFinancialPeriod;
     private FinancialPeriod currentPeriod;
     private FinancialPeriod priorPeriod;
+    private ReportingUnit currentReportingUnit;
 
     @PostConstruct
     public void init() {
@@ -136,6 +137,14 @@ public class WebSession implements Serializable {
 
     public void setPriorPeriod(FinancialPeriod priorPeriod) {
         this.priorPeriod = priorPeriod;
+    }
+
+    public ReportingUnit getCurrentReportingUnit() {
+        return currentReportingUnit;
+    }
+
+    public void setCurrentReportingUnit(ReportingUnit currentReportingUnit) {
+        this.currentReportingUnit = currentReportingUnit;
     }
 
 }

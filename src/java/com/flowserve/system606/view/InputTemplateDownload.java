@@ -8,6 +8,7 @@ package com.flowserve.system606.view;
 import com.flowserve.system606.model.ReportingUnit;
 import com.flowserve.system606.service.AdminService;
 import com.flowserve.system606.service.TemplateService;
+import com.flowserve.system606.web.WebSession;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -39,10 +40,13 @@ public class InputTemplateDownload implements Serializable {
     AdminService adminService;
     @Inject
     TemplateService templateService;
+    @Inject
+    private WebSession webSession;
 
     @PostConstruct
     public void init() {
-        reportingUnits = adminService.getPreparableReportingUnits();
+        //reportingUnits = adminService.getPreparableReportingUnits();
+        reportingUnits.add(webSession.getCurrentReportingUnit());
         selectedReportingUnits = reportingUnits;
     }
 

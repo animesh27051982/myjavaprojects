@@ -5,9 +5,13 @@
  */
 package com.flowserve.system606.view;
 
+import com.flowserve.system606.model.Company;
 import com.flowserve.system606.model.Holiday;
 import com.flowserve.system606.service.AdminService;
+import com.flowserve.system606.service.FinancialPeriodService;
 import java.io.Serializable;
+import java.time.LocalDate;
+import java.time.Month;
 import java.time.ZoneOffset;
 import java.util.Date;
 import java.util.List;
@@ -32,6 +36,8 @@ public class Calendar implements Serializable {
     private ScheduleModel eventModel;
     @Inject
     private AdminService adminService;
+    @Inject
+    private FinancialPeriodService financialPeriodService;
 
     public Calendar() {
     }
@@ -40,12 +46,17 @@ public class Calendar implements Serializable {
     public void init() {
         try {
             List<Holiday> holidays = adminService.findHolidayList();
+            Company company = adminService.findCompanyById("FLS");
+            LocalDate freeze=financialPeriodService.CalcInputFreezeWorkday(LocalDate.now(), holidays,company.getInputFreezeWorkday());
+
             eventModel = new DefaultScheduleModel();
             for (Holiday holiday : holidays) {
-
                 Date date = Date.from(holiday.getHolidayDate().atStartOfDay(ZoneOffset.UTC).toInstant());
-                eventModel.addEvent(new DefaultScheduleEvent(holiday.getName(), date, date, true));
+                 eventModel.addEvent(new DefaultScheduleEvent(holiday.getName(), date, date, true)); 
             }
+            Date Freezeday = Date.from(freeze.atStartOfDay(ZoneOffset.UTC).toInstant());
+            eventModel.addEvent(new DefaultScheduleEvent("Freeze Day", Freezeday, Freezeday, true));
+            
         } catch (Exception ex) {
             Logger.getLogger(Calendar.class.getName()).log(Level.SEVERE, null, ex);
         }
