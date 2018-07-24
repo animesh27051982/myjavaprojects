@@ -6,6 +6,7 @@
 package com.flowserve.system606.service;
 
 import com.flowserve.system606.model.CurrencyMetric;
+import com.flowserve.system606.model.DataImportFile;
 import com.flowserve.system606.model.ExchangeRate;
 import com.flowserve.system606.model.FinancialPeriod;
 import com.flowserve.system606.model.Measurable;
@@ -21,6 +22,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.Month;
 import java.util.ArrayList;
 import java.util.Currency;
@@ -212,11 +214,14 @@ public class CurrencyService {
         final int SCALE = 14;
         final int ROUNDING_METHOD = BigDecimal.ROUND_HALF_UP;
         List<ExchangeRate> exchangeRate = new ArrayList<ExchangeRate>();
+        DataImportFile dataImport = new DataImportFile();
+        List<String> importMSG = new ArrayList<String>();
         try {
             XSSFWorkbook workbook = new XSSFWorkbook(fis);
             XSSFSheet worksheetforPeriod = workbook.getSheet("Currency Rates");//workbook.getSheetAt(0);
 
             if (worksheetforPeriod == null) {
+                importMSG.add("Invalid xlsx file.  Currency Rates Sheet can not be found");
                 throw new IllegalStateException("Invalid xlsx file.  Currency Rates Sheet can not be found");
             }
             XSSFRow rowPeriod;
@@ -229,6 +234,7 @@ public class CurrencyService {
             cellPeriod = rowPeriod.getCell(CellReference.convertColStringToIndex("B"));
             int year = (int) cellPeriod.getNumericCellValue();
             if (month == 0 || year == 0) {
+                importMSG.add("Can't read financial period from Currency Rates Sheet");
                 throw new IllegalStateException("Can't read financial period from Currency Rates Sheet");
             }
             String yrStr = Integer.toString(year);
@@ -242,6 +248,7 @@ public class CurrencyService {
                 int rowidFrom = 1;
                 XSSFSheet worksheetFrom = workbook.getSheet("Oracle Load Rates");
                 if (worksheetFrom == null) {
+                    importMSG.add("Invalid xlsx file.  Oracle Load Rates Sheet can not be found");
                     throw new IllegalStateException("Invalid xlsx file.  Oracle Load Rates Sheet can not be found");
                 }
                 for (Row rowFrom : worksheetFrom) {
@@ -287,6 +294,7 @@ public class CurrencyService {
                             cellFrom = rowFrom.getCell(CellReference.convertColStringToIndex("D"));
                             fromCurrency = Currency.getInstance(cellFrom.getStringCellValue());
                         } catch (Exception rce) {
+                            importMSG.add("Oracle Load Rates Sheet Row: " + (rowFrom.getRowNum() + 1) + " Cell:" + (cellFrom.getColumnIndex() + 1) + " Massage: " + rce.getMessage());
                             throw new Exception("Oracle Load Rates Sheet Row: " + (rowFrom.getRowNum() + 1) + " Cell:" + (cellFrom.getColumnIndex() + 1) + " Massage: " + rce.getMessage());
                         }
 
@@ -297,6 +305,7 @@ public class CurrencyService {
                             cellTo = rowTo.getCell(CellReference.convertColStringToIndex("D"));
                             toCurrency = Currency.getInstance(cellTo.getStringCellValue());
                         } catch (Exception rce) {
+                            importMSG.add("Oracle Load Rates Sheet Row: " + (rowTo.getRowNum() + 1) + " Cell:" + (cellTo.getColumnIndex() + 1) + " Massage: " + rce.getMessage());
                             throw new Exception("Oracle Load Rates Sheet Row: " + (rowTo.getRowNum() + 1) + " Cell:" + (cellTo.getColumnIndex() + 1) + " Massage: " + rce.getMessage());
                         }
                         //Currency Conversion Formula
@@ -319,11 +328,18 @@ public class CurrencyService {
                 }
 
             } else {
+                importMSG.add("Exchange rate data already exists for this period");
                 throw new IllegalStateException("Exchange rate data already exists for this period");
             }
         } catch (Exception e) {
             throw new Exception(e.getMessage());
         } finally {
+            dataImport.setFilename(filename);
+            dataImport.setUploadDate(LocalDateTime.now());
+            dataImport.setCompany(adminService.findCompanyById("FLS"));
+            dataImport.setDataImportMessage(importMSG);
+            dataImport.setType("Exchange Rate");
+            adminService.persist(dataImport);
             fis.close();
         }
     }

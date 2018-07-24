@@ -83,9 +83,10 @@ public class AdminService {
         return em.find(BusinessUnit.class, id);
     }
 
-    public List<DataImportFile> findDataImportFile() throws Exception {  // Need an application exception type defined.
+    public List<DataImportFile> findDataImportFileByType(String type) throws Exception {  // Need an application exception type defined.
 
-        TypedQuery<DataImportFile> query = em.createQuery("SELECT b FROM DataImportFile b", DataImportFile.class);
+        TypedQuery<DataImportFile> query = em.createQuery("SELECT b FROM DataImportFile b  WHERE UPPER(b.type) = :TYPE ORDER BY b.uploadDate DESC", DataImportFile.class);
+        query.setParameter("TYPE", type.toUpperCase());
         return (List<DataImportFile>) query.getResultList();
     }
 

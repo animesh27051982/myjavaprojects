@@ -25,11 +25,39 @@
                         <p:messages id="messages" showDetail="true" closable="true"/>
                         <h1>Upload Exchange Rate</h1>
                         <p:fileUpload fileUploadListener="#{inputExchangeRate.handleExchangeRates}" auto="true" dragDropSupport="true" label="Upload Template (or drag and drop)"
-                                      update="messages" multiple="false" sizeLimit="10000000" allowTypes="/(\.|\/)(xlsx)$/" style="width:75%" />
+                                      update="messages,tblupdate" multiple="false" sizeLimit="10000000" allowTypes="/(\.|\/)(xlsx)$/" style="width:75%" />
                     </div>
                 </div>
 
+                <div class="ui-g-12">
+                    <div class="card card-w-title">
+                        <!--                        <p:messages id="tablemsg" showDetail="true" />-->
 
+                        <h1>Upload History</h1>
+                        <h4>Please click view detail for detail messages for each file import.</h4>
+
+                        <p:dataTable id="tblupdate" value="#{inputExchangeRate.dataImportFile}" var="importMSG">
+                            <f:facet name="header">
+                                Import Files List
+                            </f:facet>
+
+                            <p:column headerText="File Name" >
+                                <h:outputText value="#{importMSG.filename}" />
+                            </p:column>
+                            <p:column headerText="Company">
+                                <h:outputText value="#{importMSG.company.name}" />
+                            </p:column>
+
+                            <p:column headerText="Upload Date" sortBy="#{importMSG.uploadDate}">
+                                <h:outputText value="#{importMSG.uploadDate}" />
+                            </p:column>
+                            <p:column  headerText="Option" >
+                                <h:commandLink value="View Detail" action="#{adminController.detailMessage(importMSG)}" ></h:commandLink>
+                            </p:column>
+                        </p:dataTable>
+
+                    </div>
+                </div>
 
             </div>
         </h:form>

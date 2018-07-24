@@ -35,6 +35,9 @@ public class ImportMessageList implements Serializable {
     public void init() {
         name = webSession.getDataImportFile().getFilename();
         message = webSession.getDataImportFile().getDataImportMessage();
+        if (message.size() == 0) {
+            message.add("Succesful " + name + " is uploaded.");
+        }
     }
 
     public List<String> getMessage() {

@@ -84,7 +84,7 @@ public class InputPOCIUpload implements Serializable {
     }
 
     public List<DataImportFile> getDataImportFile() throws Exception {
-        dataImportFile = adminService.findDataImportFile();
+        dataImportFile = adminService.findDataImportFileByType("POCI DATA");
         Collections.sort(dataImportFile);
         return dataImportFile;
     }

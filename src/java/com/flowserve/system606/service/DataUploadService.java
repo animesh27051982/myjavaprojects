@@ -17,6 +17,7 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Currency;
 import java.util.HashMap;
@@ -73,6 +74,8 @@ public class DataUploadService {
         Statement statement = null;
         ResultSet resultSet = null;
         String exPeriod = null;
+        DataImportFile dataImport = new DataImportFile();
+        List<String> importMSG = new ArrayList<String>();
 
         Class.forName("net.ucanaccess.jdbc.UcanaccessDriver");
 
@@ -86,8 +89,6 @@ public class DataUploadService {
 
             Logger.getLogger(DataUploadService.class.getName()).log(Level.INFO, "Period\tPOCC File Name\tC Page Number\tReporting Unit Number");
             Logger.getLogger(DataUploadService.class.getName()).log(Level.INFO, "==\t================\t===\t=======");
-            DataImportFile dataImport = new DataImportFile();
-            List<String> importMSG = new ArrayList<String>();
 
             int count = 0;
             long timeInterval = System.currentTimeMillis();
@@ -132,7 +133,7 @@ public class DataUploadService {
                                 ReportingUnit ru = pob.getContract().getReportingUnit();
                                 if (ru.getLocalCurrency() == null) {
                                     String msg = "No local currency found for RU: " + ru.getCode();
-                                    //importMSG.add(msg);
+                                    importMSG.add(msg);
                                     //Logger.getLogger(DataUploadService.class.getName()).log(Level.INFO, msg);
                                     continue;
                                 }
@@ -156,7 +157,7 @@ public class DataUploadService {
                                     //rusToSave.add(pob.getContract().getReportingUnit());
                                 }
                             } else {
-                                //importMSG.add("These POBs not found : " + id);
+                                importMSG.add("These POBs not found : " + id);
                                 //Logger.getLogger(DataUploadService.class.getName()).log(Level.FINER, "These POBs not found : " + id);
                             }
                         } catch (NumberFormatException e) {
@@ -183,18 +184,18 @@ public class DataUploadService {
 //            for (ReportingUnit reportingUnit : rusToSave) {
 //                adminService.update(reportingUnit);
 //            }
-//            dataImport.setFilename(fileName + " - tbl_POCI_1_POb Changes");
-//            dataImport.setUploadDate(LocalDate.now());
-//            dataImport.setCompany(adminService.findCompanyById("FLS"));
-//            dataImport.setDataImportMessage(importMSG);
-//            adminService.persist(dataImport);
             Logger.getLogger(DataUploadService.class.getName()).log(Level.INFO, "Import completed.");
         } catch (SQLException sqlex) {
             sqlex.printStackTrace();
         } catch (Exception e) {
             throw new Exception(e.getMessage());
         } finally {
-
+            dataImport.setFilename(fileName + " - tbl_POCI_1_POb Changes");
+            dataImport.setUploadDate(LocalDateTime.now());
+            dataImport.setCompany(adminService.findCompanyById("FLS"));
+            dataImport.setDataImportMessage(importMSG);
+            dataImport.setType("POCI DATA");
+            adminService.persist(dataImport);
             // Step 3: Closing database connection
             try {
                 if (null != connection) {
