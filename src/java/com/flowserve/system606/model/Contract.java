@@ -109,14 +109,14 @@ public class Contract extends BaseEntity<Long> implements MetricStore, Measurabl
     @JoinColumn(name = "SALES_DESTINATION_COUNTRY_ID")
     //private Country salesDestinationCountry;
 
-    @OneToMany(fetch = FetchType.EAGER, mappedBy = "contract", cascade = CascadeType.MERGE)
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "contract", cascade = CascadeType.MERGE)
     private List<PerformanceObligation> performanceObligations = new ArrayList<PerformanceObligation>();
 
-    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinTable(name = "CONTRACT_METRIC_SET", joinColumns = @JoinColumn(name = "CONTRACT_ID"), inverseJoinColumns = @JoinColumn(name = "METRIC_SET_ID"))
     private Map<FinancialPeriod, MetricSet> periodMetricSetMap = new HashMap<FinancialPeriod, MetricSet>();
 
-    @OneToMany(fetch = FetchType.EAGER, mappedBy = "contract", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "contract", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<BillingEvent> billingEvents = new ArrayList<BillingEvent>();
 
     public Contract() {

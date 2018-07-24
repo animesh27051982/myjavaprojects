@@ -76,7 +76,7 @@ public class FinancialPeriodService {
                 String exPeriod = shortMonth[j - 1] + "-" + shortYear;
                 if (findById(exPeriod) == null) {
                     LocalDate date = LocalDate.of(totalYear[i], Month.of(j), 1);
-                    if (i >= 2018 && j > 5) {
+                    if (date.getYear() == 2018 && date.getMonthValue() > 5) {
                         continue;  // KJG Tempoararily only create up to MAY-18
                     }
                     LocalDate lastOfMonth = date.with(TemporalAdjusters.lastDayOfMonth());

@@ -64,10 +64,10 @@ public class ReportingUnit extends TransientMeasurable<Long> implements Measurab
     @JoinColumn(name = "COMPANY_ID")
     private Company company;
 
-    @OneToMany(fetch = FetchType.EAGER, mappedBy = "reportingUnit", cascade = CascadeType.MERGE)
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "reportingUnit", cascade = CascadeType.MERGE)
     private List<Contract> contracts = new ArrayList<Contract>();
 
-    @OneToMany(fetch = FetchType.EAGER, mappedBy = "parent", cascade = CascadeType.MERGE)
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "parent", cascade = CascadeType.MERGE)
     private List<ReportingUnit> childReportingUnits = new ArrayList<ReportingUnit>();
 
     public ReportingUnit() {

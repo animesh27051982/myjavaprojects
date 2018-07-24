@@ -14,6 +14,7 @@ import com.flowserve.system606.model.DataImportFile;
 import com.flowserve.system606.model.ExchangeRate;
 import com.flowserve.system606.model.FinancialPeriod;
 import com.flowserve.system606.model.Holiday;
+import com.flowserve.system606.model.Measurable;
 import com.flowserve.system606.model.MetricType;
 import com.flowserve.system606.model.ReportingUnit;
 import com.flowserve.system606.model.User;
@@ -272,6 +273,10 @@ public class AdminService {
 
     public ReportingUnit update(ReportingUnit ru) throws Exception {
         return em.merge(ru);
+    }
+
+    public Measurable update(Measurable measurable) throws Exception {
+        return em.merge(measurable);
     }
 
     public Company update(Company c) throws Exception {

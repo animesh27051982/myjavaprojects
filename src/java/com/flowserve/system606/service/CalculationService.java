@@ -57,6 +57,8 @@ public class CalculationService {
     @Inject
     private PerformanceObligationService performanceObligationService;
     @Inject
+    private ContractService contractService;
+    @Inject
     private CurrencyService currencyService;
     @Inject
     private AdminService adminService;
@@ -147,8 +149,8 @@ public class CalculationService {
         return metric != null;
     }
 
-    public void calcAllPobsJan2018() throws Exception {
-        FinancialPeriod period = financialPeriodService.findById("JAN-18");
+    public void calcAllPobsApr2018() throws Exception {
+        FinancialPeriod period = financialPeriodService.findById("APR-18");
         Logger.getLogger(CalculationService.class.getName()).log(Level.INFO, "Calculating all POBs...");
         calculateAndSave(adminService.findAllReportingUnits(), period);
     }
@@ -173,16 +175,20 @@ public class CalculationService {
             while ((calculationPeriod = financialPeriodService.calculateNextPeriodUntilCurrent(calculationPeriod)) != null) {
                 executeBusinessRules((new ArrayList<Measurable>(validPobs)), calculationPeriod);
             }
+
+            for (Contract contract : contractsToCalc) {
+                calculationPeriod = period;
+                executeBusinessRules(contract, calculationPeriod);
+                contractService.update(contract);
+                while ((calculationPeriod = financialPeriodService.calculateNextPeriodUntilCurrent(calculationPeriod)) != null) {
+                    executeBusinessRules(contract, calculationPeriod);
+                    contractService.update(contract);
+                }
+            }
+
+            contractsToCalc.clear();
         }
 
-        for (Contract contract : contractsToCalc) {
-            FinancialPeriod calculationPeriod = period;
-            executeBusinessRules(contract, calculationPeriod);
-            while ((calculationPeriod = financialPeriodService.calculateNextPeriodUntilCurrent(calculationPeriod)) != null) {
-                executeBusinessRules(contract, calculationPeriod);
-            }
-        }
-        adminService.update(reportingUnits);
     }
 
     // More validity work needed.
@@ -196,7 +202,7 @@ public class CalculationService {
 
     @TransactionAttribute(NOT_SUPPORTED)
     public void executeBusinessRules(Measurable measurable, FinancialPeriod period) throws Exception {
-        Logger.getLogger(CalculationService.class.getName()).log(Level.FINER, "Firing all business rules: " + period.getId() + " " + measurable.getClass().getName());
+        Logger.getLogger(CalculationService.class.getName()).log(Level.INFO, "Firing all business rules: " + period.getId() + " ts: " + measurable.toString());
 
         if (kSession == null) {
             initBusinessRulesEngine();
@@ -217,6 +223,7 @@ public class CalculationService {
     public void executeBusinessRules(List<Measurable> measurables, FinancialPeriod period) throws Exception {
         for (Measurable measurable : measurables) {
             executeBusinessRules(measurable, period);
+            adminService.update(measurable);
         }
     }
 

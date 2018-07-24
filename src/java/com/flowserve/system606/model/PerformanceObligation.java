@@ -63,7 +63,7 @@ public class PerformanceObligation extends BaseEntity<Long> implements MetricSto
     private LocalDateTime lastUpdateDate;
 
     //private String deactivationReason;  // create type class
-    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinTable(name = "POB_METRIC_SET", joinColumns = @JoinColumn(name = "POB_ID"), inverseJoinColumns = @JoinColumn(name = "METRIC_SET_ID"))
     private Map<FinancialPeriod, MetricSet> periodMetricSetMap = new HashMap<FinancialPeriod, MetricSet>();
 

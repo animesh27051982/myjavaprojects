@@ -48,7 +48,7 @@ public class Company extends TransientMeasurable<String> implements Comparable<C
     @Column(name = "POCI_DUE_WORKDAY")
     private Integer pociDueWorkday;
 
-    @OneToMany(fetch = FetchType.EAGER, mappedBy = "company")
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "company")
     private List<ReportingUnit> reportingUnit = new ArrayList<ReportingUnit>();
 
     public Company() {
