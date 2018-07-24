@@ -7,6 +7,7 @@ package com.flowserve.system606.view;
 
 import com.flowserve.system606.model.DataImportFile;
 import com.flowserve.system606.service.AdminService;
+import com.flowserve.system606.service.CalculationService;
 import com.flowserve.system606.service.DataUploadService;
 import com.flowserve.system606.service.ReportingUnitService;
 import java.io.File;
@@ -41,6 +42,9 @@ public class InputPOCIUpload implements Serializable {
     private AdminService adminService;
     @Inject
     private ReportingUnitService reportingUnitService;
+    @Inject
+    private CalculationService calculationService;
+
     List<DataImportFile> dataImportFile = new ArrayList<DataImportFile>();
 
     public static final String PREFIX = "msaccess";
@@ -54,6 +58,7 @@ public class InputPOCIUpload implements Serializable {
             File accessFile = stream2file((InputStream) event.getFile().getInputstream());
             String fileName = accessFile.getAbsolutePath();
             dataUploadService.processUploadedCalculationData(fileName, event.getFile().getFileName());
+            //calculationService.calcAllPobsJan2018();
 
             //get reporting unit to calculate business rules on the POBs
             //List<ReportingUnit> reportingUnits = adminService.getPreparableReportingUnits();

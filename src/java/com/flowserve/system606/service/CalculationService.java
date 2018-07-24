@@ -31,6 +31,8 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.ejb.Stateless;
+import javax.ejb.TransactionAttribute;
+import static javax.ejb.TransactionAttributeType.NOT_SUPPORTED;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -52,6 +54,8 @@ public class CalculationService {
     private EntityManager em;
     @Inject
     private FinancialPeriodService financialPeriodService;
+    @Inject
+    private PerformanceObligationService performanceObligationService;
     @Inject
     private CurrencyService currencyService;
     @Inject
@@ -94,49 +98,7 @@ public class CalculationService {
 
     private void convertCurrencies(Collection<Metric> metrics, Measurable measurable, FinancialPeriod period) throws Exception {
         for (Metric metric : metrics) {
-            convertCurrency(metric, measurable, period);
-        }
-    }
-
-    private void convertCurrency(Metric metric, Measurable measurable, FinancialPeriod period) throws Exception {
-        if (!(metric instanceof CurrencyMetric)) {
-            return;
-        }
-        CurrencyMetric currencyMetric = (CurrencyMetric) metric;
-
-        if (currencyMetric.getLcValue() == null && currencyMetric.getCcValue() == null) {
-            return;
-        }
-
-        if (metric.getMetricType().getMetricCurrencyType() == null) {
-            throw new IllegalStateException("There is no currency type defined for the metric type " + metric.getMetricType().getId() + ".  Please contact a system administrator.");
-        }
-        if (measurable.getLocalCurrency() == null) {
-            throw new IllegalStateException("There is no local currency defined.  Please contact a system administrator.");
-        }
-        if (measurable.getContractCurrency() == null) {
-            throw new IllegalStateException("There is no contract currency defined.  Please contact a system administrator.");
-        }
-        if (measurable.getReportingCurrency() == null) {
-            throw new IllegalStateException("There is no reporting currency defined.  Please contact a system administrator.");
-        }
-
-        if (currencyMetric.isLocalCurrencyMetric()) {
-            if (BigDecimal.ZERO.equals(currencyMetric.getLcValue())) {
-                currencyMetric.setCcValue(BigDecimal.ZERO);
-                currencyMetric.setRcValue(BigDecimal.ZERO);
-            } else {
-                currencyMetric.setCcValue(currencyService.convert(currencyMetric.getLcValue(), measurable.getLocalCurrency(), measurable.getContractCurrency(), period));
-                currencyMetric.setRcValue(currencyService.convert(currencyMetric.getLcValue(), measurable.getLocalCurrency(), measurable.getReportingCurrency(), period));
-            }
-        } else if (currencyMetric.isContractCurrencyMetric()) {
-            if (BigDecimal.ZERO.equals(currencyMetric.getCcValue())) {
-                currencyMetric.setLcValue(BigDecimal.ZERO);
-                currencyMetric.setRcValue(BigDecimal.ZERO);
-            } else {
-                currencyMetric.setLcValue(currencyService.convert(currencyMetric.getCcValue(), measurable.getContractCurrency(), measurable.getLocalCurrency(), period));
-                currencyMetric.setRcValue(currencyService.convert(currencyMetric.getCcValue(), measurable.getContractCurrency(), measurable.getReportingCurrency(), period));
-            }
+            currencyService.convertCurrency(metric, measurable, period);
         }
     }
 
@@ -185,12 +147,18 @@ public class CalculationService {
         return metric != null;
     }
 
+    public void calcAllPobsJan2018() throws Exception {
+        FinancialPeriod period = financialPeriodService.findById("JAN-18");
+        Logger.getLogger(CalculationService.class.getName()).log(Level.INFO, "Calculating all POBs...");
+        calculateAndSave(adminService.findAllReportingUnits(), period);
+    }
+
     public void calculateAndSave(List<ReportingUnit> reportingUnits, FinancialPeriod period) throws Exception {
 
         Set<Contract> contractsToCalc = new HashSet<Contract>();
 
         for (ReportingUnit reportingUnit : reportingUnits) {
-
+            Logger.getLogger(CalculationService.class.getName()).log(Level.INFO, "Calculating RU: " + reportingUnit.getCode());
             FinancialPeriod calculationPeriod = period;
             List<PerformanceObligation> pobs = reportingUnit.getPerformanceObligations();
             List<PerformanceObligation> validPobs = new ArrayList<PerformanceObligation>();
@@ -226,8 +194,9 @@ public class CalculationService {
         return false;
     }
 
+    @TransactionAttribute(NOT_SUPPORTED)
     public void executeBusinessRules(Measurable measurable, FinancialPeriod period) throws Exception {
-        Logger.getLogger(CalculationService.class.getName()).log(Level.INFO, "Firing all business rules: " + period.getId() + " " + measurable.getClass().getName());
+        Logger.getLogger(CalculationService.class.getName()).log(Level.FINER, "Firing all business rules: " + period.getId() + " " + measurable.getClass().getName());
 
         if (kSession == null) {
             initBusinessRulesEngine();
@@ -337,7 +306,7 @@ public class CalculationService {
         }
 
         metric.setValue(sum);
-        convertCurrency(metric, measurable, period);
+        currencyService.convertCurrency(metric, measurable, period);
 
         return metric;
     }

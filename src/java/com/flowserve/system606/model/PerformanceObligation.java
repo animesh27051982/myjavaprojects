@@ -185,6 +185,23 @@ public class PerformanceObligation extends BaseEntity<Long> implements MetricSto
         }
     }
 
+    public FinancialPeriod getEarliestPeriod() {
+        FinancialPeriod earliestPeriod = null;
+
+        for (FinancialPeriod financialPeriod : periodMetricSetMap.keySet()) {
+            if (earliestPeriod == null) {
+                earliestPeriod = financialPeriod;
+            }
+            if (financialPeriod.isAfter(earliestPeriod)) {
+                continue;
+            } else {
+                earliestPeriod = financialPeriod;
+            }
+        }
+
+        return earliestPeriod;
+    }
+
     public boolean metricSetExistsForPeriod(FinancialPeriod period) {
         return periodMetricSetMap.get(period) != null;
     }

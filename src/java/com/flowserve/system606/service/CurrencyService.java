@@ -5,8 +5,11 @@
  */
 package com.flowserve.system606.service;
 
+import com.flowserve.system606.model.CurrencyMetric;
 import com.flowserve.system606.model.ExchangeRate;
 import com.flowserve.system606.model.FinancialPeriod;
+import com.flowserve.system606.model.Measurable;
+import com.flowserve.system606.model.Metric;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -53,6 +56,60 @@ public class CurrencyService {
     FinancialPeriodService financialPeriodService;
     @Inject
     AdminService adminService;
+
+    public void convertCurrency(Metric metric, Measurable measurable, FinancialPeriod period) throws Exception {
+        if (!(metric instanceof CurrencyMetric)) {
+            return;
+        }
+        CurrencyMetric currencyMetric = (CurrencyMetric) metric;
+
+        if (currencyMetric.getLcValue() == null && currencyMetric.getCcValue() == null) {
+            return;
+        }
+
+        if (metric.getMetricType().getMetricCurrencyType() == null) {
+            throw new IllegalStateException("There is no currency type defined for the metric type " + metric.getMetricType().getId() + ".  Please contact a system administrator.");
+        }
+        if (measurable.getLocalCurrency() == null) {
+            throw new IllegalStateException("There is no local currency defined.  Please contact a system administrator.");
+        }
+        if (measurable.getContractCurrency() == null) {
+            throw new IllegalStateException("There is no contract currency defined.  Please contact a system administrator.");
+        }
+        if (measurable.getReportingCurrency() == null) {
+            throw new IllegalStateException("There is no reporting currency defined.  Please contact a system administrator.");
+        }
+
+        if (currencyMetric.isLocalCurrencyMetric()) {
+
+            // if lcVaue is null then return;
+            if (currencyMetric.getLcValue() == null) {
+                return;
+            }
+
+            if (BigDecimal.ZERO.equals(currencyMetric.getLcValue())) {
+                currencyMetric.setCcValue(BigDecimal.ZERO);
+                currencyMetric.setRcValue(BigDecimal.ZERO);
+            } else {
+                currencyMetric.setCcValue(convert(currencyMetric.getLcValue(), measurable.getLocalCurrency(), measurable.getContractCurrency(), period));
+                currencyMetric.setRcValue(convert(currencyMetric.getLcValue(), measurable.getLocalCurrency(), measurable.getReportingCurrency(), period));
+            }
+        } else if (currencyMetric.isContractCurrencyMetric()) {
+
+            // if ccValue is null then return
+            if (currencyMetric.getCcValue() == null) {
+                return;
+            }
+
+            if (BigDecimal.ZERO.equals(currencyMetric.getCcValue())) {
+                currencyMetric.setLcValue(BigDecimal.ZERO);
+                currencyMetric.setRcValue(BigDecimal.ZERO);
+            } else {
+                currencyMetric.setLcValue(convert(currencyMetric.getCcValue(), measurable.getContractCurrency(), measurable.getLocalCurrency(), period));
+                currencyMetric.setRcValue(convert(currencyMetric.getCcValue(), measurable.getContractCurrency(), measurable.getReportingCurrency(), period));
+            }
+        }
+    }
 
     public void persist1(Object object) {
         em.persist(object);
@@ -397,5 +454,7 @@ public class CurrencyService {
                 sqlex.printStackTrace();
             }
         }
+
+        Logger.getLogger(CurrencyService.class.getName()).log(Level.INFO, "Exchange rate import complete.");
     }
 }

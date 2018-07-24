@@ -50,9 +50,10 @@ public class AppInitializeService {
             adminService.initUsers();
             adminService.initCompanies();
             financialPeriodService.initFinancialPeriods();
-            currencyService.initCurrencyConverter(financialPeriodService.findById("MAR-18"));
+            // TODO - KJG - The legacy file does not contain Oct 17 data but prior period lookups try to find it, so just use dummy rates for now.
+            currencyService.initCurrencyConverter(financialPeriodService.findById("OCT-17"));
             currencyService.initCurrencyConverter(financialPeriodService.findById("APR-18"));
-            currencyService.initCurrencyConverter(financialPeriodService.findById("MAY-18"));
+            //currencyService.initCurrencyConverter(financialPeriodService.findById("MAY-18"));
             //adminService.initBilings();
             metricService.initMetricTypes();
             adminService.initCountries();    // We don't need this as an Entity.  Convert to standard Java object with converters.
@@ -62,8 +63,8 @@ public class AppInitializeService {
             adminService.initCoEtoParentRU();
             adminService.initCompaniesInRUs();
             adminService.initPreparersReviewerForRU();
-            contractService.initContracts();
-            pobService.initPOBs();
+            //contractService.initContracts();
+            //pobService.initPOBs();
 
             calculationService.initBusinessRules();
             //calculationService.initBusinessRulesEngine();

@@ -60,6 +60,15 @@ public class MetricService {
         return (List<MetricType>) query.getResultList();
     }
 
+    // KJG TODO - Remove after go-live!!
+    public int deleteAllMetrics() {
+        return em.createQuery("DELETE FROM Metric").executeUpdate();
+    }
+
+    public int deleteAllMetricSets() {
+        return em.createQuery("DELETE FROM MetricSet").executeUpdate();
+    }
+
     private List<MetricType> findActiveMetricTypesByOwnerEntityType(String ownerEntityType) {
         Query query = em.createQuery("SELECT it FROM MetricType it WHERE it.ownerEntityType = :OET AND it.active = TRUE");
         query.setParameter("OET", ownerEntityType);
