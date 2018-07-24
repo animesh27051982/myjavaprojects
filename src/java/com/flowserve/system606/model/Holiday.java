@@ -22,8 +22,8 @@ import javax.persistence.Table;
 public class Holiday implements Serializable, Comparable<Company> {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "FLS_SEQ")
-    @SequenceGenerator(name = "FLS_SEQ", sequenceName = "FLS_SEQ", allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "HOLIDAY_SEQ")
+    @SequenceGenerator(name = "HOLIDAY_SEQ", sequenceName = "HOLIDAY_SEQ", allocationSize = 50)
     @Column(name = "ID")
     private Long id;
     @Column(name = "NAME")

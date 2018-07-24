@@ -319,7 +319,6 @@ public class FinancialPeriodService {
 
     public boolean isWorkday(LocalDate date, List<Holiday> holidays) throws Exception {
         LocalDate holidaydate = null;
-        boolean bol = false;
         if (holidays.isEmpty()) {
             if (date.getDayOfWeek() != DayOfWeek.SATURDAY && date.getDayOfWeek() != DayOfWeek.SUNDAY) {
                 return true;
@@ -328,14 +327,14 @@ public class FinancialPeriodService {
             }
         }
         int count = holidays.size();
-        int sert = holidays.size();
+        int rev = holidays.size();
 
         if (date.getDayOfWeek() != DayOfWeek.SATURDAY && date.getDayOfWeek() != DayOfWeek.SUNDAY) {
             for (int i = 0; i < count; i++) {
                 holidaydate = holidays.get(i).getHolidayDate();
                 if (!holidaydate.isEqual(date)) {
-                    sert--;
-                    if (sert == 0) {
+                    rev--;
+                    if (rev == 0) {
                         return true;
                     }
                 }

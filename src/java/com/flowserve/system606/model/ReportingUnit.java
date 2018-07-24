@@ -32,8 +32,8 @@ public class ReportingUnit extends TransientMeasurable<Long> implements Measurab
     private static final long serialVersionUID = 8757812203684986897L;
     private static final Logger LOG = Logger.getLogger(ReportingUnit.class.getName());
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "FLS_SEQ")
-    @SequenceGenerator(name = "FLS_SEQ", sequenceName = "FLS_SEQ", allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "REPORTING_UNIT_SEQ")
+    @SequenceGenerator(name = "REPORTING_UNIT_SEQ", sequenceName = "REPORTING_UNIT_SEQ", allocationSize = 50)
     @Column(name = "REPORTING_UNIT_ID")
     private Long id;
     @Column(name = "NAME")

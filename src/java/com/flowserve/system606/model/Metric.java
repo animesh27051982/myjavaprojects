@@ -23,8 +23,8 @@ import static javax.persistence.TemporalType.TIMESTAMP;
 public abstract class Metric<T> extends BaseEntity<Long> {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "FLS_SEQ")
-    @SequenceGenerator(name = "FLS_SEQ", sequenceName = "FLS_SEQ", allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "METRIC_SEQ")
+    @SequenceGenerator(name = "METRIC_SEQ", sequenceName = "METRIC_SEQ", allocationSize = 100)
     @Column(name = "METRIC_ID")
     private Long id;
 

@@ -26,8 +26,8 @@ public class BillingEvent implements Comparable<BillingEvent>, Serializable {
     private static final long serialVersionUID = -1990764230607265489L;
     private static final Logger LOG = Logger.getLogger(Contract.class.getName());
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "FLS_SEQ")
-    @SequenceGenerator(name = "FLS_SEQ", sequenceName = "FLS_SEQ", allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "BILLING_EVENT_SEQ")
+    @SequenceGenerator(name = "BILLING_EVENT_SEQ", sequenceName = "BILLING_EVENT_SEQ", allocationSize = 50)
     @Column(name = "BILL_ID")
     private Long id;
 
