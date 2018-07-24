@@ -41,12 +41,12 @@
                                         required="#{false}"
                                         forceSelection="#{true}"
                                         value="#{businessUnitEdit.businessUnit.parent}"
-                                        completeMethod="#{viewSupport.completeBusinessUnit}"
+                                        completeMethod="#{viewSupport.CompleteParentBusinessUnit}"
                                         itemLabel="#{site.name}"
                                         itemValue="#{site}"
                                         converter="businessUnitConverter"
                                         >
-                                        <h:outputText value="Begin typing site name"/>
+                                        <h:outputText value="Begin typing business unit name"/>
                                     </p:autoComplete>
 
                                     <p:outputLabel for="btn" value="" />

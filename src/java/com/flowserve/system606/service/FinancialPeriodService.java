@@ -349,7 +349,7 @@ public class FinancialPeriodService {
         LocalDate temp = null;
         int count = 0;
         LocalDate freezeDay = LocalDate.of(date.getYear(), date.getMonthValue(), 1);
-
+        count = isWorkday(freezeDay, holidays) ? 1 : 0;
         for (int i = 0; i <= 31; i++) {
             freezeDay = freezeDay.plusDays(1);
             if (isWorkday(freezeDay, holidays) == true) {

@@ -11,7 +11,6 @@ import com.flowserve.system606.service.AdminService;
 import com.flowserve.system606.service.FinancialPeriodService;
 import java.io.Serializable;
 import java.time.LocalDate;
-import java.time.Month;
 import java.time.ZoneOffset;
 import java.util.Date;
 import java.util.List;
@@ -47,19 +46,19 @@ public class Calendar implements Serializable {
         try {
             List<Holiday> holidays = adminService.findHolidayList();
             Company company = adminService.findCompanyById("FLS");
-            LocalDate freeze=financialPeriodService.CalcInputFreezeWorkday(LocalDate.now(), holidays,company.getInputFreezeWorkday());
-            LocalDate poci=financialPeriodService.CalcInputFreezeWorkday(LocalDate.now(), holidays,company.getPociDueWorkday());
+            LocalDate freeze = financialPeriodService.CalcInputFreezeWorkday(LocalDate.now(), holidays, company.getInputFreezeWorkday());
+            LocalDate poci = financialPeriodService.CalcInputFreezeWorkday(LocalDate.now(), holidays, company.getPociDueWorkday());
             eventModel = new DefaultScheduleModel();
             for (Holiday holiday : holidays) {
                 Date date = Date.from(holiday.getHolidayDate().atStartOfDay(ZoneOffset.UTC).toInstant());
-                 eventModel.addEvent(new DefaultScheduleEvent(holiday.getName(), date, date, true)); 
+                eventModel.addEvent(new DefaultScheduleEvent(holiday.getName(), date, date, true));
             }
             Date Freezeday = Date.from(freeze.atStartOfDay(ZoneOffset.UTC).toInstant());
             eventModel.addEvent(new DefaultScheduleEvent("Input Freeze Day", Freezeday, Freezeday, true));
-            
+
             Date Pociworkday = Date.from(poci.atStartOfDay(ZoneOffset.UTC).toInstant());
-            eventModel.addEvent(new DefaultScheduleEvent("POCI Due Workday", Pociworkday, Pociworkday, true)); 
-            
+            eventModel.addEvent(new DefaultScheduleEvent("POCI Due Workday", Pociworkday, Pociworkday, true));
+
         } catch (Exception ex) {
             Logger.getLogger(Calendar.class.getName()).log(Level.SEVERE, null, ex);
         }
