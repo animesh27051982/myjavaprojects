@@ -11,8 +11,8 @@
         </style>
     </ui:define>
 
-    <ui:define name="title">Reporting Unit Level Reports</ui:define>
-    <ui:define name="viewname">Reporting Unit Level Reports</ui:define>
+    <ui:define name="title">FlowServe Reports</ui:define>
+    <ui:define name="viewname">FlowServe Reports</ui:define>
 
     <ui:define name="content">
         <h:form id="form" style="min-height: calc(100vh - 235px);">
@@ -23,23 +23,25 @@
                     <div class="card card-w-title">
                         <p:messages showDetail="true" />
 
-                        <h2><strong>#{reportReportingUnit.ru.name}</strong></h2>
-
-
+                        <h2><strong>#{companyReports.comp.name} Reports</strong></h2>
 
                         <p:toolbar>
-
                             <f:facet name="left">
                                 <p:panelGrid columns="2" style="width:auto" >
-                                <h5>Journal Entry Reports</h5>
-                                 <p:commandButton value="Download  Report" ajax="false" style="width:auto;" icon="ui-icon-arrowthick-1-s">
-                                     <p:fileDownload value="#{reportReportingUnit.fileJournalEntry}" />
-                                </p:commandButton>
-                        
+                                    <h5>FInancial Summary</h5>
+                                    <p:commandButton value="Download  Report" ajax="false" style="width:auto;" icon="ui-icon-arrowthick-1-s">
+                                        <p:fileDownload value="#{companyReports.fileFinancialSummary}" />
+                                    </p:commandButton>
+
+                                   <h5>Disclosures</h5>
+                                    <p:commandButton value="Download  Report" ajax="false" style="width:auto;" icon="ui-icon-arrowthick-1-s">
+                                        <p:fileDownload value="#{companyReports.fileDisclosures}" />
+                                    </p:commandButton>
+
+
                                 </p:panelGrid>
                             </f:facet>
-                            
-                          
+
                         </p:toolbar>
                     </div>
                 </div>
