@@ -309,7 +309,6 @@ public class ViewSupport implements Serializable {
     }
 
     public CurrencyMetric getCurrencyMetric(String metricTypeId, Measurable measurable) throws Exception {
-
         return calculationService.getCurrencyMetric(metricTypeId, measurable, webSession.getCurrentPeriod());
     }
 

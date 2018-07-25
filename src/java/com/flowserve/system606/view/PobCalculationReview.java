@@ -5,6 +5,7 @@
  */
 package com.flowserve.system606.view;
 
+import com.flowserve.system606.model.FinancialPeriod;
 import com.flowserve.system606.model.PerformanceObligation;
 import com.flowserve.system606.model.ReportingUnit;
 import com.flowserve.system606.service.AdminService;
@@ -55,6 +56,11 @@ public class PobCalculationReview implements Serializable {
         } catch (Exception e) {
             logger.log(Level.SEVERE, "Error init pobs", e);
         }
+    }
+
+    public void switchPeriod(FinancialPeriod period) {
+        webSession.switchPeriod(period);
+        init();
     }
 
     public void onCellEdit(CellEditEvent event) {

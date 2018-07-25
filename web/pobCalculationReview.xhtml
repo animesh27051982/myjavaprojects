@@ -21,10 +21,34 @@
             <p:growl id="messages" showDetail="true" />
 
             <div class="ui-g">
-
                 <div class="ui-g-12">
                     <div class="card card-w-title">
+
+                        <p:panelGrid columns="4" columnClasses="ui-grid-col-6,ui-grid-col-4,ui-grid-col-6,ui-grid-col-4" layout="grid" styleClass="ui-panelgrid-blank form-group" style="float: right; border:0px none; background-color:transparent;">
+                            <h:outputLabel style="margin-left: 250px; vertical-align: sub; white-space: nowrap;" value="Switch RU: "/>
+                            <p:autoComplete
+                                id="ru"
+                                var="ru"
+                                maxResults="10"
+                                required="#{false}"
+                                forceSelection="#{true}"
+                                value="#{webSession.currentReportingUnit}"
+                                completeMethod="#{viewSupport.completeReportingUnit}"
+                                itemLabel="#{ru.name}"
+                                itemValue="#{ru}"
+                                converter="reportingUnitConverter"
+                                style="width: 300px;"
+                                >
+                                <p:ajax event="itemSelect" listener="#{pobCalculationReview.init}" update=":form" />
+                            </p:autoComplete>
+                            <h:outputLabel style="vertical-align: sub; white-space: nowrap;" value="Switch Period: "/>
+                            <p:selectOneMenu style="margin-top: 0px;" id="period" value="#{webSession.currentPeriod}" converter="periodConverter">
+                                <p:ajax event="change" update=":form" process="@this" listener="#{pobCalculationReview.switchPeriod(webSession.currentPeriod)}"/>
+                                <f:selectItems var="period" value="#{viewSupport.allPeriods}" itemLabel="#{period.id}"/>
+                            </p:selectOneMenu>
+                        </p:panelGrid>
                         <h1><strong>#{webSession.currentPeriod.id} Calculation Review</strong></h1>
+
 
                         <p:tabView dynamic="true">
                             <p:tab title="Percent Complete / Revenue">

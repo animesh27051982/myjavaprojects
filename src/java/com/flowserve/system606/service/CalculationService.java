@@ -134,12 +134,11 @@ public class CalculationService {
     public CurrencyMetric getCurrencyMetric(String metricTypeId, Measurable measurable, FinancialPeriod period) throws Exception {
         if (measurable instanceof MetricStore) {
             CurrencyMetric currencyMetric = (CurrencyMetric) getMetric(metricTypeId, measurable, period);
-            // TODO The getChildMeasurable needs work.  Could be an empty RU etc.
             if (isMetricAvailableAtThisLevel(currencyMetric) || measurable instanceof PerformanceObligation) {
                 return currencyMetric;
             }
         }
-        Logger.getLogger(CalculationService.class.getName()).log(Level.FINER, "Metric not available at level. " + measurable.getClass() + " Returnig accumulated version: " + metricTypeId);
+        Logger.getLogger(CalculationService.class.getName()).log(Level.FINER, "Metric not directly available at level. " + measurable.getClass() + " Returnig accumulated version: " + metricTypeId);
         return getAccumulatedCurrencyMetric(metricTypeId, measurable, period);
     }
 

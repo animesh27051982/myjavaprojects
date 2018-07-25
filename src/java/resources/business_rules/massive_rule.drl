@@ -210,10 +210,10 @@ rule "Projected Gain/Loss"
     when
         pob : PerformanceObligation()
         transactionPriceNetLD : CurrencyMetric(metricType.id == "TRANSACTION_PRICE_NET_LD_LC", lcValue != null)
-        remainingEAC : CurrencyMetric(metricType.id == "REMAINING_ESTIMATE_COMPLETE_LC", lcValue != null)
+        estimatedCostAtCompletion : CurrencyMetric(metricType.id == "ESTIMATED_COST_AT_COMPLETION_LC", lcValue != null)
         projectedGainLoss : CurrencyMetric(metricType.id == "PROJECT_GAIN_LOSS_LC")
     then
-        modify (projectedGainLoss) { lcValue = (transactionPriceNetLD.lcValue - remainingEAC.lcValue)};
+        modify (projectedGainLoss) { lcValue = (transactionPriceNetLD.lcValue - estimatedCostAtCompletion.lcValue)};
 end
 
 rule "Contract Level Estimated Gross Profit and Margin"
