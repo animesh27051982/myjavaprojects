@@ -51,12 +51,23 @@ public class ReportsService {
 
     public void generateContractEsimatesReport(InputStream inputStream, FileOutputStream outputStream, Contract contract) throws Exception {
         calculationService.executeBusinessRules(contract, webSession.getCurrentPeriod());
-        XSSFWorkbook workbook = new XSSFWorkbook(inputStream);
-        workbook.removeSheetAt(workbook.getSheetIndex("Contract Summary-2"));
-        workbook.removeSheetAt(workbook.getSheetIndex("Contract Summary-3"));
-        workbook.removeSheetAt(workbook.getSheetIndex("Contract Summary-4"));
-        workbook.removeSheetAt(workbook.getSheetIndex("Contract Summary-5"));
-        XSSFSheet worksheet = workbook.getSheet("Contract Summary-1");
+        try (XSSFWorkbook workbook = new XSSFWorkbook(inputStream)) {
+            workbook.removeSheetAt(workbook.getSheetIndex("Contract Summary-2"));
+            workbook.removeSheetAt(workbook.getSheetIndex("Contract Summary-3"));
+            workbook.removeSheetAt(workbook.getSheetIndex("Contract Summary-4"));
+            workbook.removeSheetAt(workbook.getSheetIndex("Contract Summary-5"));
+            XSSFSheet worksheet = workbook.getSheet("Contract Summary-1");
+
+            worksheet = writeContractEsimatesReport(worksheet, contract);
+            workbook.write(outputStream);
+            workbook.close();
+        }
+        inputStream.close();
+        outputStream.close();
+
+    }
+
+    public XSSFSheet writeContractEsimatesReport(XSSFSheet worksheet, Contract contract) throws Exception {
         XSSFRow row;
         Cell cell = null;
         int rowid = HEADER_ROW_COUNT;
@@ -111,42 +122,89 @@ public class ReportsService {
             pobInsertionRow++;
 
         }
-
-        workbook.write(outputStream);
-        workbook.close();
-        inputStream.close();
-        outputStream.close();
-
+        return worksheet;
     }
 
     public void generateReportfromInceptiontoDate(InputStream inputStream, FileOutputStream outputStream, Contract contract) throws Exception {
+        calculationService.executeBusinessRules(contract, webSession.getCurrentPeriod());
         try (XSSFWorkbook workbook = new XSSFWorkbook(inputStream)) {
             workbook.removeSheetAt(workbook.getSheetIndex("Contract Summary-1"));
             workbook.removeSheetAt(workbook.getSheetIndex("Contract Summary-3"));
             workbook.removeSheetAt(workbook.getSheetIndex("Contract Summary-4"));
             workbook.removeSheetAt(workbook.getSheetIndex("Contract Summary-5"));
             XSSFSheet worksheet = workbook.getSheet("Contract Summary-2");
-            XSSFRow row;
-            Cell cell = null;
-            int rowid = HEADER_ROW_COUNT;
-            XSSFRow contract_name = worksheet.getRow(1);
-            cell = contract_name.getCell(0, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
-            cell.setCellValue(contract.getName());
+            worksheet = writefromInceptiontoDate(worksheet, contract);
+            workbook.write(outputStream);
+        }
+        inputStream.close();
+        outputStream.close();
 
-            BigDecimal loquidatedDamage = viewSupport.getCurrencyMetric("LIQUIDATED_DAMAGES_ITD_CC", contract).getValue();
-            BigDecimal localCostITDLC = viewSupport.getCurrencyMetric("COST_OF_GOODS_SOLD_ITD_LC", contract).getValue();
-            BigDecimal percentComplete = viewSupport.getDecimalMetric("CONTRACT_PERCENT_COMPLETE", contract).getValue();
-            BigDecimal revenueITD = viewSupport.getCurrencyMetric("CONTRACT_REVENUE_TO_RECOGNIZE_ITD_LC", contract).getValue();
-            BigDecimal lossReserveITD = viewSupport.getCurrencyMetric("LOSS_RESERVE_ITD_LC", contract).getValue();
-            BigDecimal grossProfitITD = viewSupport.getCurrencyMetric("CONTRACT_GROSS_PROFIT_LC", contract).getValue();
-            BigDecimal grossMarginITD = viewSupport.getDecimalMetric("CONTRACT_GROSS_MARGIN", contract).getValue();
-            BigDecimal costToComplete = viewSupport.getCurrencyMetric("CONTRACT_COST_TO_COMPLETE_LC", contract).getValue();
-            BigDecimal billingsInExcess = viewSupport.getCurrencyMetric("CONTRACT_BILLINGS_IN_EXCESS_LC", contract).getValue();
-            BigDecimal revenueInExcess = viewSupport.getCurrencyMetric("CONTRACT_REVENUE_IN_EXCESS_LC", contract).getValue();
+    }
 
-            BigDecimal billToDate = contract.getTotalBillingsLocalCurrency();
+    public XSSFSheet writefromInceptiontoDate(XSSFSheet worksheet, Contract contract) throws Exception {
+        XSSFRow row;
+        Cell cell = null;
+        int rowid = HEADER_ROW_COUNT;
+        XSSFRow contract_name = worksheet.getRow(1);
+        cell = contract_name.getCell(0, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
+        cell.setCellValue(contract.getName());
 
-            row = worksheet.getRow(rowid++);
+        BigDecimal loquidatedDamage = viewSupport.getCurrencyMetric("LIQUIDATED_DAMAGES_ITD_CC", contract).getValue();
+        BigDecimal localCostITDLC = viewSupport.getCurrencyMetric("COST_OF_GOODS_SOLD_ITD_LC", contract).getValue();
+        BigDecimal percentComplete = viewSupport.getDecimalMetric("CONTRACT_PERCENT_COMPLETE", contract).getValue();
+        BigDecimal revenueITD = viewSupport.getCurrencyMetric("CONTRACT_REVENUE_TO_RECOGNIZE_ITD_LC", contract).getValue();
+        BigDecimal lossReserveITD = viewSupport.getCurrencyMetric("LOSS_RESERVE_ITD_LC", contract).getValue();
+        BigDecimal grossProfitITD = viewSupport.getCurrencyMetric("CONTRACT_GROSS_PROFIT_LC", contract).getValue();
+        BigDecimal grossMarginITD = viewSupport.getDecimalMetric("CONTRACT_GROSS_MARGIN", contract).getValue();
+        BigDecimal costToComplete = viewSupport.getCurrencyMetric("CONTRACT_COST_TO_COMPLETE_LC", contract).getValue();
+        BigDecimal billingsInExcess = viewSupport.getCurrencyMetric("CONTRACT_BILLINGS_IN_EXCESS_LC", contract).getValue();
+        BigDecimal revenueInExcess = viewSupport.getCurrencyMetric("CONTRACT_REVENUE_IN_EXCESS_LC", contract).getValue();
+
+        BigDecimal billToDate = contract.getTotalBillingsLocalCurrency();
+
+        row = worksheet.getRow(rowid++);
+        cell = row.getCell(1, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
+        cell.setCellValue(percentComplete.doubleValue());
+        cell = row.getCell(2, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
+        cell.setCellValue(revenueITD.doubleValue());
+        cell = row.getCell(3, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
+        cell.setCellValue(loquidatedDamage.doubleValue());
+        cell = row.getCell(4, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
+        cell.setCellValue(localCostITDLC.doubleValue());
+        cell = row.getCell(5, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
+        cell.setCellValue(lossReserveITD.doubleValue());
+        cell = row.getCell(6, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
+        cell.setCellValue(grossProfitITD.doubleValue());
+        cell = row.getCell(7, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
+        cell.setCellValue(grossMarginITD.doubleValue());
+        cell = row.getCell(9, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
+        cell.setCellValue(billToDate.doubleValue());
+        cell = row.getCell(10, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
+        cell.setCellValue(costToComplete.doubleValue());
+        cell = row.getCell(11, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
+        cell.setCellValue(billingsInExcess.doubleValue());
+        cell = row.getCell(12, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
+        cell.setCellValue(revenueInExcess.doubleValue());
+
+        int pobInsertionRow = 18;
+
+        List<PerformanceObligation> pobs = contract.getPerformanceObligations();
+        worksheet.shiftRows(18, 24, pobs.size(), true, false);
+
+        for (PerformanceObligation pob : contract.getPerformanceObligations()) {
+            loquidatedDamage = viewSupport.getCurrencyMetric("LIQUIDATED_DAMAGES_ITD_CC", pob).getValue();
+            localCostITDLC = viewSupport.getCurrencyMetric("COST_OF_GOODS_SOLD_ITD_LC", pob).getValue();
+            percentComplete = viewSupport.getDecimalMetric("PERCENT_COMPLETE", pob).getValue();
+            revenueITD = viewSupport.getCurrencyMetric("REVENUE_TO_RECOGNIZE_ITD_LC", pob).getValue();
+            //lossReserveITD = viewSupport.getCurrencyMetric("LOSS_RESERVE_ITD_LC", pob).getValue();
+            grossProfitITD = viewSupport.getCurrencyMetric("ESTIMATED_GROSS_PROFIT_LC", pob).getValue();
+            grossMarginITD = viewSupport.getDecimalMetric("ESTIMATED_GROSS_MARGIN", pob).getValue();
+//            costToComplete = viewSupport.getCurrencyMetric("COST_TO_COMPLETE_LC", pob).getValue();
+//            billingsInExcess = viewSupport.getCurrencyMetric("BILLINGS_IN_EXCESS_LC", pob).getValue();
+//            revenueInExcess = viewSupport.getCurrencyMetric("REVENUE_IN_EXCESS_LC", pob).getValue();
+            row = worksheet.createRow(pobInsertionRow);
+            cell = row.getCell(0, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
+            cell.setCellValue(pob.getName());
             cell = row.getCell(1, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
             cell.setCellValue(percentComplete.doubleValue());
             cell = row.getCell(2, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
@@ -156,103 +214,106 @@ public class ReportsService {
             cell = row.getCell(4, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
             cell.setCellValue(localCostITDLC.doubleValue());
             cell = row.getCell(5, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
-            cell.setCellValue(lossReserveITD.doubleValue());
+            //cell.setCellValue(lossReserveITD.doubleValue());
             cell = row.getCell(6, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
             cell.setCellValue(grossProfitITD.doubleValue());
             cell = row.getCell(7, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
             cell.setCellValue(grossMarginITD.doubleValue());
             cell = row.getCell(9, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
-            cell.setCellValue(billToDate.doubleValue());
+            //cell.setCellValue(billToDate.doubleValue());
             cell = row.getCell(10, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
-            cell.setCellValue(costToComplete.doubleValue());
+            //cell.setCellValue(costToComplete.doubleValue());
             cell = row.getCell(11, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
-            cell.setCellValue(billingsInExcess.doubleValue());
+            //cell.setCellValue(billingsInExcess.doubleValue());
             cell = row.getCell(12, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
-            cell.setCellValue(revenueInExcess.doubleValue());
+            //cell.setCellValue(revenueInExcess.doubleValue());
 
-            int pobInsertionRow = 18;
+            pobInsertionRow++;
 
-            List<PerformanceObligation> pobs = contract.getPerformanceObligations();
-            worksheet.shiftRows(18, 24, pobs.size(), true, false);
-
-            for (PerformanceObligation pob : contract.getPerformanceObligations()) {
-                loquidatedDamage = viewSupport.getCurrencyMetric("LIQUIDATED_DAMAGES_ITD_CC", pob).getValue();
-                localCostITDLC = viewSupport.getCurrencyMetric("COST_OF_GOODS_SOLD_ITD_LC", pob).getValue();
-                percentComplete = viewSupport.getDecimalMetric("PERCENT_COMPLETE", pob).getValue();
-                revenueITD = viewSupport.getCurrencyMetric("REVENUE_TO_RECOGNIZE_ITD_LC", pob).getValue();
-                //lossReserveITD = viewSupport.getCurrencyMetric("LOSS_RESERVE_ITD_LC", pob).getValue();
-                grossProfitITD = viewSupport.getCurrencyMetric("ESTIMATED_GROSS_PROFIT_LC", pob).getValue();
-                grossMarginITD = viewSupport.getDecimalMetric("ESTIMATED_GROSS_MARGIN", pob).getValue();
-//            costToComplete = viewSupport.getCurrencyMetric("COST_TO_COMPLETE_LC", pob).getValue();
-//            billingsInExcess = viewSupport.getCurrencyMetric("BILLINGS_IN_EXCESS_LC", pob).getValue();
-//            revenueInExcess = viewSupport.getCurrencyMetric("REVENUE_IN_EXCESS_LC", pob).getValue();
-                row = worksheet.createRow(pobInsertionRow);
-                cell = row.getCell(0, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
-                cell.setCellValue(pob.getName());
-                cell = row.getCell(1, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
-                cell.setCellValue(percentComplete.doubleValue());
-                cell = row.getCell(2, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
-                cell.setCellValue(revenueITD.doubleValue());
-                cell = row.getCell(3, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
-                cell.setCellValue(loquidatedDamage.doubleValue());
-                cell = row.getCell(4, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
-                cell.setCellValue(localCostITDLC.doubleValue());
-                cell = row.getCell(5, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
-                //cell.setCellValue(lossReserveITD.doubleValue());
-                cell = row.getCell(6, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
-                cell.setCellValue(grossProfitITD.doubleValue());
-                cell = row.getCell(7, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
-                cell.setCellValue(grossMarginITD.doubleValue());
-                cell = row.getCell(9, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
-                //cell.setCellValue(billToDate.doubleValue());
-                cell = row.getCell(10, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
-                //cell.setCellValue(costToComplete.doubleValue());
-                cell = row.getCell(11, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
-                //cell.setCellValue(billingsInExcess.doubleValue());
-                cell = row.getCell(12, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
-                //cell.setCellValue(revenueInExcess.doubleValue());
-
-                pobInsertionRow++;
-
-            }
-
-            workbook.write(outputStream);
         }
-        inputStream.close();
-        outputStream.close();
-
+        return worksheet;
     }
 
     public void generateReportMonthlyIncomeImpact(InputStream inputStream, FileOutputStream outputStream, Contract contract) throws Exception {
+        calculationService.executeBusinessRules(contract, webSession.getCurrentPeriod());
         try (XSSFWorkbook workbook = new XSSFWorkbook(inputStream)) {
             workbook.removeSheetAt(workbook.getSheetIndex("Contract Summary-1"));
             workbook.removeSheetAt(workbook.getSheetIndex("Contract Summary-2"));
             workbook.removeSheetAt(workbook.getSheetIndex("Contract Summary-4"));
             workbook.removeSheetAt(workbook.getSheetIndex("Contract Summary-5"));
             XSSFSheet worksheet = workbook.getSheet("Contract Summary-3");
-            XSSFRow row;
-            Cell cell = null;
-            int rowid = HEADER_ROW_COUNT;
-            XSSFRow contract_name = worksheet.getRow(1);
-            cell = contract_name.getCell(0, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
-            cell.setCellValue(contract.getName());
 
-            BigDecimal revenueToRecognize = viewSupport.getCurrencyMetric("REVENUE_TO_RECOGNIZE_ITD_LC", contract).getValue();
-            BigDecimal loquidatedDamage = viewSupport.getCurrencyMetric("LIQUIDATED_DAMAGES_ITD_CC", contract).getValue();
-            BigDecimal cumulativeCostGoodsSoldLC = viewSupport.getCurrencyMetric("CUMULATIVE_COST_OF_GOODS_SOLD_LC", contract).getValue();
-            BigDecimal EstimatedGrossProfitLC = viewSupport.getCurrencyMetric("ESTIMATED_GROSS_PROFIT_LC", contract).getValue();
+            worksheet = writeMonthlyIncomeImpact(worksheet, contract);
+            workbook.write(outputStream);
+        }
+        inputStream.close();
+        outputStream.close();
 
-            row = worksheet.getRow(rowid++);
+    }
+
+    public XSSFSheet writeMonthlyIncomeImpact(XSSFSheet worksheet, Contract contract) throws Exception {
+        XSSFRow row;
+        Cell cell = null;
+        int rowid = HEADER_ROW_COUNT;
+        XSSFRow contract_name = worksheet.getRow(1);
+        cell = contract_name.getCell(0, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
+        cell.setCellValue(contract.getName());
+
+        BigDecimal revenueToRecognize = viewSupport.getCurrencyMetric("REVENUE_TO_RECOGNIZE_ITD_LC", contract).getValue();
+        BigDecimal loquidatedDamage = viewSupport.getCurrencyMetric("LIQUIDATED_DAMAGES_ITD_CC", contract).getValue();
+        BigDecimal cumulativeCostGoodsSoldLC = viewSupport.getCurrencyMetric("CUMULATIVE_COST_OF_GOODS_SOLD_LC", contract).getValue();
+        BigDecimal EstimatedGrossProfitLC = viewSupport.getCurrencyMetric("ESTIMATED_GROSS_PROFIT_LC", contract).getValue();
+
+        row = worksheet.getRow(rowid++);
+        cell = row.getCell(1, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
+        cell.setCellValue(revenueToRecognize.doubleValue());
+        cell = row.getCell(2, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
+        cell.setCellValue(loquidatedDamage.doubleValue());
+        cell = row.getCell(3, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
+        cell.setCellValue(cumulativeCostGoodsSoldLC.doubleValue());
+//          cell = row.getCell(4, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
+//          cell.setCellValue(EstimatedGrossProfitLC.doubleValue());
+        cell = row.getCell(5, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
+        cell.setCellValue(EstimatedGrossProfitLC.doubleValue());
+
+        int pobInsertionRow = 18;
+
+        List<PerformanceObligation> pobs = contract.getPerformanceObligations();
+        worksheet.shiftRows(18, 24, pobs.size(), true, false);
+
+        for (PerformanceObligation pob : contract.getPerformanceObligations()) {
+            revenueToRecognize = viewSupport.getCurrencyMetric("REVENUE_TO_RECOGNIZE_ITD_LC", pob).getValue();
+            loquidatedDamage = viewSupport.getCurrencyMetric("LIQUIDATED_DAMAGES_ITD_CC", pob).getValue();
+            cumulativeCostGoodsSoldLC = viewSupport.getCurrencyMetric("CUMULATIVE_COST_OF_GOODS_SOLD_LC", pob).getValue();
+            EstimatedGrossProfitLC = viewSupport.getCurrencyMetric("ESTIMATED_GROSS_PROFIT_LC", pob).getValue();
+
+            row = worksheet.createRow(pobInsertionRow);
             cell = row.getCell(1, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
             cell.setCellValue(revenueToRecognize.doubleValue());
             cell = row.getCell(2, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
             cell.setCellValue(loquidatedDamage.doubleValue());
             cell = row.getCell(3, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
-            cell.setCellValue(cumulativeCostGoodsSoldLC.doubleValue());
-//          cell = row.getCell(4, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
-//          cell.setCellValue(EstimatedGrossProfitLC.doubleValue());
+            //below throwing NullPointerException
+            //cell.setCellValue(cumulativeCostGoodsSoldLC.doubleValue());
             cell = row.getCell(5, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
             cell.setCellValue(EstimatedGrossProfitLC.doubleValue());
+
+            pobInsertionRow++;
+
+        }
+        return worksheet;
+    }
+
+    public void generateReportQuarterlyIncomeImpact(InputStream inputStream, FileOutputStream outputStream, Contract contract) throws Exception {
+        calculationService.executeBusinessRules(contract, webSession.getCurrentPeriod());
+        try (XSSFWorkbook workbook = new XSSFWorkbook(inputStream)) {
+            workbook.removeSheetAt(workbook.getSheetIndex("Contract Summary-1"));
+            workbook.removeSheetAt(workbook.getSheetIndex("Contract Summary-2"));
+            workbook.removeSheetAt(workbook.getSheetIndex("Contract Summary-3"));
+            workbook.removeSheetAt(workbook.getSheetIndex("Contract Summary-5"));
+            XSSFSheet worksheet = workbook.getSheet("Contract Summary-4");
+
+            worksheet = writeQuarterlyIncomeImpact(worksheet, contract);
 
             workbook.write(outputStream);
         }
@@ -261,42 +322,57 @@ public class ReportsService {
 
     }
 
-    public void generateReportQuarterlyIncomeImpact(InputStream inputStream, FileOutputStream outputStream, Contract contract) throws Exception {
-        try (XSSFWorkbook workbook = new XSSFWorkbook(inputStream)) {
-            workbook.removeSheetAt(workbook.getSheetIndex("Contract Summary-1"));
-            workbook.removeSheetAt(workbook.getSheetIndex("Contract Summary-2"));
-            workbook.removeSheetAt(workbook.getSheetIndex("Contract Summary-3"));
-            workbook.removeSheetAt(workbook.getSheetIndex("Contract Summary-5"));
-            XSSFSheet worksheet = workbook.getSheet("Contract Summary-4");
-            XSSFRow row;
-            Cell cell = null;
-            int rowid = HEADER_ROW_COUNT;
-            XSSFRow contract_name = worksheet.getRow(1);
-            cell = contract_name.getCell(0, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
-            cell.setCellValue(contract.getName());
+    public XSSFSheet writeQuarterlyIncomeImpact(XSSFSheet worksheet, Contract contract) throws Exception {
+        XSSFRow row;
+        Cell cell = null;
+        int rowid = HEADER_ROW_COUNT;
+        XSSFRow contract_name = worksheet.getRow(1);
+        cell = contract_name.getCell(0, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
+        cell.setCellValue(contract.getName());
 
-            BigDecimal revenueToRecognize = viewSupport.getCurrencyMetric("REVENUE_TO_RECOGNIZE_ITD_LC", contract).getValue();
-            BigDecimal loquidatedDamage = viewSupport.getCurrencyMetric("LIQUIDATED_DAMAGES_ITD_CC", contract).getValue();
-            BigDecimal cumulativeCostGoodsSoldLC = viewSupport.getCurrencyMetric("CUMULATIVE_COST_OF_GOODS_SOLD_LC", contract).getValue();
-            BigDecimal EstimatedGrossProfitLC = viewSupport.getCurrencyMetric("ESTIMATED_GROSS_PROFIT_LC", contract).getValue();
+        BigDecimal revenueToRecognize = viewSupport.getCurrencyMetric("REVENUE_TO_RECOGNIZE_ITD_LC", contract).getValue();
+        BigDecimal loquidatedDamage = viewSupport.getCurrencyMetric("LIQUIDATED_DAMAGES_ITD_CC", contract).getValue();
+        BigDecimal cumulativeCostGoodsSoldLC = viewSupport.getCurrencyMetric("CUMULATIVE_COST_OF_GOODS_SOLD_LC", contract).getValue();
+        BigDecimal EstimatedGrossProfitLC = viewSupport.getCurrencyMetric("ESTIMATED_GROSS_PROFIT_LC", contract).getValue();
 
-            row = worksheet.getRow(rowid++);
+        row = worksheet.getRow(rowid++);
+        cell = row.getCell(1, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
+        cell.setCellValue(revenueToRecognize.doubleValue());
+        cell = row.getCell(2, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
+        cell.setCellValue(loquidatedDamage.doubleValue());
+        cell = row.getCell(3, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
+        cell.setCellValue(cumulativeCostGoodsSoldLC.doubleValue());
+//          cell = row.getCell(4, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
+//          cell.setCellValue(EstimatedGrossProfitLC.doubleValue());
+        cell = row.getCell(5, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
+        cell.setCellValue(EstimatedGrossProfitLC.doubleValue());
+
+        int pobInsertionRow = 18;
+
+        List<PerformanceObligation> pobs = contract.getPerformanceObligations();
+        worksheet.shiftRows(18, 24, pobs.size(), true, false);
+
+        for (PerformanceObligation pob : contract.getPerformanceObligations()) {
+            revenueToRecognize = viewSupport.getCurrencyMetric("REVENUE_TO_RECOGNIZE_ITD_LC", pob).getValue();
+            loquidatedDamage = viewSupport.getCurrencyMetric("LIQUIDATED_DAMAGES_ITD_CC", pob).getValue();
+            cumulativeCostGoodsSoldLC = viewSupport.getCurrencyMetric("CUMULATIVE_COST_OF_GOODS_SOLD_LC", pob).getValue();
+            EstimatedGrossProfitLC = viewSupport.getCurrencyMetric("ESTIMATED_GROSS_PROFIT_LC", pob).getValue();
+
+            row = worksheet.createRow(pobInsertionRow);
             cell = row.getCell(1, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
             cell.setCellValue(revenueToRecognize.doubleValue());
             cell = row.getCell(2, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
             cell.setCellValue(loquidatedDamage.doubleValue());
             cell = row.getCell(3, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
-            cell.setCellValue(cumulativeCostGoodsSoldLC.doubleValue());
-//          cell = row.getCell(4, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
-//          cell.setCellValue(EstimatedGrossProfitLC.doubleValue());
+            //below throwing NullPointerException
+            //cell.setCellValue(cumulativeCostGoodsSoldLC.doubleValue());
             cell = row.getCell(5, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
             cell.setCellValue(EstimatedGrossProfitLC.doubleValue());
 
-            workbook.write(outputStream);
-        }
-        inputStream.close();
-        outputStream.close();
+            pobInsertionRow++;
 
+        }
+        return worksheet;
     }
 
     public void generateReportAnnualIncomeImpact(InputStream inputStream, FileOutputStream outputStream, Contract contract) throws Exception {
@@ -307,29 +383,104 @@ public class ReportsService {
             workbook.removeSheetAt(workbook.getSheetIndex("Contract Summary-4"));
             XSSFSheet worksheet = workbook.getSheet("Contract Summary-5");
 
-            XSSFRow row;
-            Cell cell = null;
-            int rowid = HEADER_ROW_COUNT;
-            XSSFRow contract_name = worksheet.getRow(1);
-            cell = contract_name.getCell(0, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
-            cell.setCellValue(contract.getName());
+            worksheet = writeAnnualIncomeImpact(worksheet, contract);
 
-            BigDecimal revenueToRecognize = viewSupport.getCurrencyMetric("REVENUE_TO_RECOGNIZE_ITD_LC", contract).getValue();
-            BigDecimal loquidatedDamage = viewSupport.getCurrencyMetric("LIQUIDATED_DAMAGES_ITD_CC", contract).getValue();
-            BigDecimal cumulativeCostGoodsSoldLC = viewSupport.getCurrencyMetric("CUMULATIVE_COST_OF_GOODS_SOLD_LC", contract).getValue();
-            BigDecimal EstimatedGrossProfitLC = viewSupport.getCurrencyMetric("ESTIMATED_GROSS_PROFIT_LC", contract).getValue();
+            workbook.write(outputStream);
+        }
+        inputStream.close();
+        outputStream.close();
 
-            row = worksheet.getRow(rowid++);
+    }
+
+    public XSSFSheet writeAnnualIncomeImpact(XSSFSheet worksheet, Contract contract) throws Exception {
+        XSSFRow row;
+        Cell cell = null;
+        int rowid = HEADER_ROW_COUNT;
+        XSSFRow contract_name = worksheet.getRow(1);
+        cell = contract_name.getCell(0, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
+        cell.setCellValue(contract.getName());
+
+        BigDecimal revenueToRecognize = viewSupport.getCurrencyMetric("REVENUE_TO_RECOGNIZE_ITD_LC", contract).getValue();
+        BigDecimal loquidatedDamage = viewSupport.getCurrencyMetric("LIQUIDATED_DAMAGES_ITD_CC", contract).getValue();
+        BigDecimal cumulativeCostGoodsSoldLC = viewSupport.getCurrencyMetric("CUMULATIVE_COST_OF_GOODS_SOLD_LC", contract).getValue();
+        BigDecimal EstimatedGrossProfitLC = viewSupport.getCurrencyMetric("ESTIMATED_GROSS_PROFIT_LC", contract).getValue();
+
+        row = worksheet.getRow(rowid++);
+        cell = row.getCell(1, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
+        cell.setCellValue(revenueToRecognize.doubleValue());
+        cell = row.getCell(2, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
+        cell.setCellValue(loquidatedDamage.doubleValue());
+        cell = row.getCell(3, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
+        cell.setCellValue(cumulativeCostGoodsSoldLC.doubleValue());
+//          cell = row.getCell(4, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
+//          cell.setCellValue(EstimatedGrossProfitLC.doubleValue());
+        cell = row.getCell(5, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
+        cell.setCellValue(EstimatedGrossProfitLC.doubleValue());
+
+        int pobInsertionRow = 18;
+
+        List<PerformanceObligation> pobs = contract.getPerformanceObligations();
+        worksheet.shiftRows(18, 24, pobs.size(), true, false);
+
+        for (PerformanceObligation pob : contract.getPerformanceObligations()) {
+            revenueToRecognize = viewSupport.getCurrencyMetric("REVENUE_TO_RECOGNIZE_ITD_LC", pob).getValue();
+            loquidatedDamage = viewSupport.getCurrencyMetric("LIQUIDATED_DAMAGES_ITD_CC", pob).getValue();
+            cumulativeCostGoodsSoldLC = viewSupport.getCurrencyMetric("CUMULATIVE_COST_OF_GOODS_SOLD_LC", pob).getValue();
+            EstimatedGrossProfitLC = viewSupport.getCurrencyMetric("ESTIMATED_GROSS_PROFIT_LC", pob).getValue();
+
+            row = worksheet.createRow(pobInsertionRow);
             cell = row.getCell(1, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
             cell.setCellValue(revenueToRecognize.doubleValue());
             cell = row.getCell(2, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
             cell.setCellValue(loquidatedDamage.doubleValue());
             cell = row.getCell(3, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
-            cell.setCellValue(cumulativeCostGoodsSoldLC.doubleValue());
-//          cell = row.getCell(4, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
-//          cell.setCellValue(EstimatedGrossProfitLC.doubleValue());
+            //below throwing NullPointerException
+            //cell.setCellValue(cumulativeCostGoodsSoldLC.doubleValue());
             cell = row.getCell(5, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
             cell.setCellValue(EstimatedGrossProfitLC.doubleValue());
+
+            pobInsertionRow++;
+
+        }
+        return worksheet;
+    }
+
+    public void generateJournalEntryReport(InputStream inputStream, FileOutputStream outputStream, Contract contract) throws Exception {
+        try (XSSFWorkbook workbook = new XSSFWorkbook(inputStream)) {
+            workbook.removeSheetAt(workbook.getSheetIndex("Journal Entry-1"));
+            XSSFSheet worksheet = workbook.getSheet("Journal Entry-2");
+
+            XSSFRow row;
+            Cell cell = null;
+            int rowid = HEADER_ROW_COUNT;
+            XSSFRow contract_name = worksheet.getRow(2);
+            cell = contract_name.getCell(0, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
+            cell.setCellValue(contract.getName());
+
+            workbook.write(outputStream);
+        }
+        inputStream.close();
+        outputStream.close();
+
+    }
+
+    public void generateCombineReport(InputStream inputStream, FileOutputStream outputStream, Contract contract) throws Exception {
+        try (XSSFWorkbook workbook = new XSSFWorkbook(inputStream)) {
+            XSSFSheet worksheet = workbook.getSheet("Contract Summary-1");
+            calculationService.executeBusinessRules(contract, webSession.getCurrentPeriod());
+            worksheet = writeContractEsimatesReport(worksheet, contract);
+
+            worksheet = workbook.getSheet("Contract Summary-2");
+            worksheet = writefromInceptiontoDate(worksheet, contract);
+
+            worksheet = workbook.getSheet("Contract Summary-3");
+            worksheet = writeMonthlyIncomeImpact(worksheet, contract);
+
+            worksheet = workbook.getSheet("Contract Summary-4");
+            worksheet = writeQuarterlyIncomeImpact(worksheet, contract);
+
+            worksheet = workbook.getSheet("Contract Summary-5");
+            worksheet = writeAnnualIncomeImpact(worksheet, contract);
 
             workbook.write(outputStream);
         }

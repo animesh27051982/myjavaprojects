@@ -43,6 +43,11 @@
                                         <p:fileDownload value="#{reportContractEstimate.fileMonthlyIncomeImpact}" />
                                     </p:commandButton>
 
+                                    <h5> Journal Entry Report</h5>
+                                    <p:commandButton value="Download  Report" ajax="false" style="width:auto;" icon="ui-icon-arrowthick-1-s">
+                                        <p:fileDownload value="#{reportContractEstimate.journalEntryReport}" />
+                                    </p:commandButton>
+
                                 </p:panelGrid>
                             </f:facet>
 
@@ -56,6 +61,11 @@
                                     <h5> Annual Income Statement Impact</h5>
                                     <p:commandButton value="Download  Report" ajax="false" style="width:auto;" icon="ui-icon-arrowthick-1-s">
                                         <p:fileDownload value="#{reportContractEstimate.fileAnnualIncomeImpact}" />
+                                    </p:commandButton>
+
+                                    <h5> Combine Report</h5>
+                                    <p:commandButton value="Download  Report" ajax="false" style="width:auto;" icon="ui-icon-arrowthick-1-s">
+                                        <p:fileDownload value="#{reportContractEstimate.combineReport}" />
                                     </p:commandButton>
                                 </p:panelGrid>
                             </f:facet>
