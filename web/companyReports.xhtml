@@ -23,19 +23,19 @@
                     <div class="card card-w-title">
                         <p:messages showDetail="true" />
 
-                        <h2><strong>FlowServe Reports</strong></h2>
+                        <h2><strong>#{companyReports.comp.name} Reports</strong></h2>
 
                         <p:toolbar>
                             <f:facet name="left">
                                 <p:panelGrid columns="2" style="width:auto" >
                                     <h5>FInancial Summary</h5>
                                     <p:commandButton value="Download  Report" ajax="false" style="width:auto;" icon="ui-icon-arrowthick-1-s">
-                                        <p:fileDownload value="#{reportFlowServe.fileFinancialSummary}" />
+                                        <p:fileDownload value="#{companyReports.fileFinancialSummary}" />
                                     </p:commandButton>
 
                                    <h5>Disclosures</h5>
                                     <p:commandButton value="Download  Report" ajax="false" style="width:auto;" icon="ui-icon-arrowthick-1-s">
-                                        <p:fileDownload value="#{reportFlowServe.fileDisclosures}" />
+                                        <p:fileDownload value="#{companyReports.fileDisclosures}" />
                                     </p:commandButton>
 
 

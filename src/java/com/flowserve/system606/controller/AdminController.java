@@ -282,4 +282,9 @@ public class AdminController implements Serializable {
         webSession.setEditContract(c);
         return "reportContractEstimate";
     }
+    
+     public String generateReportCompany(Company c) throws Exception {
+        webSession.setEditCompany(c);
+        return "companyReports";
+    }
 }

@@ -6,6 +6,7 @@
 package com.flowserve.system606.view;
 
 import com.flowserve.system606.model.Contract;
+import com.flowserve.system606.model.Company;
 import com.flowserve.system606.service.AdminService;
 import com.flowserve.system606.service.ReportsService;
 import com.flowserve.system606.web.WebSession;
@@ -29,12 +30,12 @@ import org.primefaces.model.StreamedContent;
 
 @Named
 @ViewScoped
-public class ReportFlowServe implements Serializable {
+public class CompanyReports implements Serializable {
     
     private StreamedContent file;
     private InputStream inputStream;
     private FileOutputStream outputStream;
-    
+    Company comp=new Company();
     
     @Inject
     AdminService adminService;
@@ -45,7 +46,15 @@ public class ReportFlowServe implements Serializable {
     
      @PostConstruct
     public void init() {
-      
+      comp=webSession.getEditCompany();
+    }
+
+    public Company getComp() {
+        return comp;
+    }
+
+    public void setComp(Company comp) {
+        this.comp = comp;
     }
 
   
@@ -53,7 +62,7 @@ public class ReportFlowServe implements Serializable {
     public StreamedContent getFileFinancialSummary() throws Exception {
         try {
 
-           inputStream =ReportFlowServe.class.getResourceAsStream("/resources/excel_input_templates/Outputs_Summary_v2_ORIGINAL.xlsx");
+           inputStream =CompanyReports.class.getResourceAsStream("/resources/excel_input_templates/Outputs_Summary_v2_ORIGINAL.xlsx");
             outputStream = new FileOutputStream(new File("Outputs_Summary_v2_ORIGINAL.xlsx"));
 
         } catch (IOException e) {
@@ -71,7 +80,7 @@ public class ReportFlowServe implements Serializable {
      public StreamedContent getFileDisclosures() throws Exception {
         try {
 
-           inputStream =ReportFlowServe.class.getResourceAsStream("/resources/excel_input_templates/Outputs_Summary_v2_ORIGINAL.xlsx");
+           inputStream =CompanyReports.class.getResourceAsStream("/resources/excel_input_templates/Outputs_Summary_v2_ORIGINAL.xlsx");
             outputStream = new FileOutputStream(new File("Outputs_Summary_v2_ORIGINAL.xlsx"));
 
         } catch (IOException e) {
@@ -84,5 +93,7 @@ public class ReportFlowServe implements Serializable {
         file = new DefaultStreamedContent(inputStreamFromOutputStream, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "Disclosures.xlsx");
         return file;
     }
+     
+     
     
 }
