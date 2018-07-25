@@ -31,9 +31,16 @@
                                     <p:outputLabel for="currency" value="Reporting Currency"/>
                                     <p:outputLabel id="currency" value="#{companyEdit.company.reportingCurrency}" />
                                     <p:outputLabel for="type" value="Input Freeze Workday"/>
-                                    <p:inputText id="type" value="#{companyEdit.company.inputFreezeWorkday}"/>
+                                    <p:selectOneMenu  value="#{companyEdit.company.inputFreezeWorkday}" style="width:125px" id="type" >
+                                        <f:selectItems   value="#{companyEdit.pocidates}" />
+                                    
+                                    </p:selectOneMenu>
                                     <p:outputLabel for="pociDueWorkday" value="POCI Due Workday"/>
-                                    <p:inputText id="pociDueWorkday" value="#{companyEdit.company.pociDueWorkday}"/>
+                                    <p:selectOneMenu  value="#{companyEdit.company.pociDueWorkday}" style="width:125px" id="pociDueWorkday" >
+                                        <f:selectItems  value="#{companyEdit.pocidates}"   /> 
+                              
+                                    </p:selectOneMenu>
+                                    
                                     <p:outputLabel for="description" value="Description"/>
                                     <p:outputLabel id="description" value="#{companyEdit.company.description}"/>
 

@@ -5,6 +5,9 @@ import com.flowserve.system606.model.Company;
 import com.flowserve.system606.service.AdminService;
 import com.flowserve.system606.web.WebSession;
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import javax.faces.view.ViewScoped;
@@ -18,9 +21,13 @@ import javax.inject.Named;
 @Named
 @ViewScoped
 public class CompanyEdit implements Serializable {
-
+    
     private Company company = new Company();
 
+    public List<Integer> getPocidates() {
+        return pocidates;
+    }
+    List<Integer> pocidates=new ArrayList();
     @Inject
     private WebSession webSession;
 
@@ -32,6 +39,10 @@ public class CompanyEdit implements Serializable {
     private static Logger logger = Logger.getLogger("com.flowserve.system606");
 
     public CompanyEdit() {
+       
+        Collections.addAll(pocidates,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18);
+        
+     
     }
 
     @PostConstruct

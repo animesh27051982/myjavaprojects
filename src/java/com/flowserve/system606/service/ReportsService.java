@@ -488,5 +488,83 @@ public class ReportsService {
         outputStream.close();
 
     }
+    public void generateReportFinancialSummary(InputStream inputStream, FileOutputStream outputStream) throws Exception {
+        try (XSSFWorkbook workbook = new XSSFWorkbook(inputStream)) {
+            workbook.removeSheetAt(workbook.getSheetIndex("Contract Summary"));
+            workbook.removeSheetAt(workbook.getSheetIndex("Contract Summary-1"));
+            workbook.removeSheetAt(workbook.getSheetIndex("Contract Summary-2"));
+            workbook.removeSheetAt(workbook.getSheetIndex("Contract Summary-3"));
+            workbook.removeSheetAt(workbook.getSheetIndex("Contract Summary-4"));
+            workbook.removeSheetAt(workbook.getSheetIndex("Contract Summary-5"));
+            workbook.removeSheetAt(workbook.getSheetIndex("Journal Entry"));
+            workbook.removeSheetAt(workbook.getSheetIndex("Journal Entry-1"));
+            workbook.removeSheetAt(workbook.getSheetIndex("Journal Entry-2"));
+            workbook.removeSheetAt(workbook.getSheetIndex("Financial Summary"));
+            workbook.removeSheetAt(workbook.getSheetIndex("Disclosures"));
+            workbook.removeSheetAt(workbook.getSheetIndex("Disclosures-1"));
+            workbook.removeSheetAt(workbook.getSheetIndex("Disclosures-2"));
+            workbook.removeSheetAt(workbook.getSheetIndex("Disclosures-3"));
+            workbook.removeSheetAt(workbook.getSheetIndex("Disclosures-4"));
+            workbook.removeSheetAt(workbook.getSheetIndex("Disclosures-5"));
+            workbook.removeSheetAt(workbook.getSheetIndex("Disclosures-6"));
+            workbook.removeSheetAt(workbook.getSheetIndex("Disclosures-7"));
+            
+
+           
+            
+        
+
+            workbook.write(outputStream);
+        }
+        inputStream.close();
+        outputStream.close();
+
+    }
+
+     
+      public void generateReportDisclosures(InputStream inputStream, FileOutputStream outputStream) throws Exception {
+        try (XSSFWorkbook workbook = new XSSFWorkbook(inputStream)) {
+            workbook.removeSheetAt(workbook.getSheetIndex("Contract Summary"));
+            workbook.removeSheetAt(workbook.getSheetIndex("Contract Summary-1"));
+            workbook.removeSheetAt(workbook.getSheetIndex("Contract Summary-2"));
+            workbook.removeSheetAt(workbook.getSheetIndex("Contract Summary-3"));
+            workbook.removeSheetAt(workbook.getSheetIndex("Contract Summary-4"));
+            workbook.removeSheetAt(workbook.getSheetIndex("Contract Summary-5"));
+            workbook.removeSheetAt(workbook.getSheetIndex("Journal Entry"));
+            workbook.removeSheetAt(workbook.getSheetIndex("Journal Entry-1"));
+            workbook.removeSheetAt(workbook.getSheetIndex("Journal Entry-2"));
+            workbook.removeSheetAt(workbook.getSheetIndex("Financial Summary"));
+            workbook.removeSheetAt(workbook.getSheetIndex("Financial Summary-1"));
+            workbook.removeSheetAt(workbook.getSheetIndex("Financial Summary-2"));
+            workbook.removeSheetAt(workbook.getSheetIndex("Financial Summary-3"));
+            workbook.removeSheetAt(workbook.getSheetIndex("Disclosures"));
+            
+
+           
+            
+        
+
+            workbook.write(outputStream);
+        }
+        inputStream.close();
+        outputStream.close();
+
+    }
+      
+      public void generateReportJournalEntry(InputStream inputStream, FileOutputStream outputStream) throws Exception {
+        try (XSSFWorkbook workbook = new XSSFWorkbook(inputStream)) {
+           
+         workbook.removeSheetAt(workbook.getSheetIndex("Journal Entry-2"));
+
+           
+            
+        
+
+            workbook.write(outputStream);
+        }
+        inputStream.close();
+        outputStream.close();
+
+    }
 
 }
