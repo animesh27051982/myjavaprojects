@@ -59,7 +59,7 @@ public class ReportReportingUnit implements Serializable{
      public StreamedContent getFileJournalEntry() throws Exception {
         try {
 
-           inputStream =CompanyReports.class.getResourceAsStream("/resources/excel_input_templates/Journal_Entry.xlsx");
+           inputStream =ReportReportingUnit.class.getResourceAsStream("/resources/excel_input_templates/Journal_Entry.xlsx");
             outputStream = new FileOutputStream(new File("Journal_Entry.xlsx"));
 
         } catch (IOException e) {
