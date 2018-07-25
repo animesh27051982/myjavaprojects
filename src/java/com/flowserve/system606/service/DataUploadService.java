@@ -17,11 +17,14 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Currency;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.ejb.Stateless;
@@ -64,9 +67,8 @@ public class DataUploadService {
     public void processUploadedCalculationData(String msAccDB, String fileName) throws Exception {
 
         // KJG - Remove this after UAT along with the deleteAllMetrics() method itself.
-        int metricDeletionCount = metricService.deleteAllMetrics();
-
-        Logger.getLogger(DataUploadService.class.getName()).log(Level.INFO, "Deleted " + metricDeletionCount + " metrics.");
+        //int metricDeletionCount = metricService.deleteAllMetrics();
+        //Logger.getLogger(DataUploadService.class.getName()).log(Level.INFO, "Deleted " + metricDeletionCount + " metrics.");
         Logger.getLogger(DataUploadService.class.getName()).log(Level.INFO, "Processing POCI Data: " + msAccDB);
 
         Connection connection = null;
@@ -75,6 +77,8 @@ public class DataUploadService {
         String exPeriod = null;
 
         Class.forName("net.ucanaccess.jdbc.UcanaccessDriver");
+
+        Set<ReportingUnit> rusToSave = new HashSet<ReportingUnit>();
 
         try {
             String dbURL = "jdbc:ucanaccess://" + msAccDB;
@@ -91,7 +95,6 @@ public class DataUploadService {
 
             int count = 0;
             long timeInterval = System.currentTimeMillis();
-            //Set<ReportingUnit> rusToSave = new HashSet<ReportingUnit>();
 
             String[] monthName = {"JAN", "FEB",
                 "MAR", "APR", "MAY", "JUN", "JUL",
@@ -130,15 +133,15 @@ public class DataUploadService {
                             PerformanceObligation pob = pobService.findPerformanceObligationById(new Long(lastId));
                             if (pob != null) {
                                 ReportingUnit ru = pob.getContract().getReportingUnit();
-                                if (ru.getLocalCurrency() == null) {
-                                    String msg = "No local currency found for RU: " + ru.getCode();
+                                if (ru == null || ru.getLocalCurrency() == null) {
+                                    //String msg = "No local currency found for RU: " + ru.getCode();
                                     //importMSG.add(msg);
                                     //Logger.getLogger(DataUploadService.class.getName()).log(Level.INFO, msg);
                                     continue;
                                 }
-                                //if (ru.getCode().equalsIgnoreCase("1100")) {
-                                //if (ru.getCode().equalsIgnoreCase("1100") || ru.getCode().equalsIgnoreCase("1015") || ru.getCode().equalsIgnoreCase("8225")) {
-                                if (true) {
+                                if (ru.getCode().equalsIgnoreCase("1015")) {
+                                    //if (ru.getCode().equalsIgnoreCase("1100") || ru.getCode().equalsIgnoreCase("1015") || ru.getCode().equalsIgnoreCase("8225") || ru.getCode().equalsIgnoreCase("5200")) {
+                                    //if (true) {
                                     calculationService.getCurrencyMetric("TRANSACTION_PRICE_CC", pob, period).setValue(tp);
                                     calculationService.getCurrencyMetric("ESTIMATED_COST_AT_COMPLETION_LC", pob, period).setValue(eac);
                                     calculationService.getCurrencyMetric("LOCAL_COSTS_ITD_LC", pob, period).setValue(costs);
@@ -153,7 +156,7 @@ public class DataUploadService {
                                     }
                                     //calculationService.executeBusinessRules(pob, period);
                                     //07calculationService.executeBusinessRules(pob.getContract(), period);
-                                    //rusToSave.add(pob.getContract().getReportingUnit());
+                                    rusToSave.add(pob.getContract().getReportingUnit());
                                 }
                             } else {
                                 //importMSG.add("These POBs not found : " + id);
@@ -179,19 +182,20 @@ public class DataUploadService {
 
             }
 
-//            Logger.getLogger(DataUploadService.class.getName()).log(Level.INFO, "Saving RUs...");
-//            for (ReportingUnit reportingUnit : rusToSave) {
-//                adminService.update(reportingUnit);
-//            }
-//            dataImport.setFilename(fileName + " - tbl_POCI_1_POb Changes");
-//            dataImport.setUploadDate(LocalDate.now());
-//            dataImport.setCompany(adminService.findCompanyById("FLS"));
-//            dataImport.setDataImportMessage(importMSG);
-//            adminService.persist(dataImport);
+            Logger.getLogger(DataUploadService.class.getName()).log(Level.INFO, "Saving RUs...");
+            for (ReportingUnit reportingUnit : rusToSave) {
+                adminService.update(reportingUnit);
+            }
+            dataImport.setFilename(fileName + " - tbl_POCI_1_POb Changes");
+            dataImport.setUploadDate(LocalDate.now());
+            dataImport.setCompany(adminService.findCompanyById("FLS"));
+            dataImport.setDataImportMessage(importMSG);
+            adminService.persist(dataImport);
             Logger.getLogger(DataUploadService.class.getName()).log(Level.INFO, "Import completed.");
         } catch (SQLException sqlex) {
-            sqlex.printStackTrace();
+            Logger.getLogger(DataUploadService.class.getName()).log(Level.INFO, "Error processing input file: ", sqlex);
         } catch (Exception e) {
+            Logger.getLogger(DataUploadService.class.getName()).log(Level.INFO, "Error processing input file: ", e);
             throw new Exception(e.getMessage());
         } finally {
 
@@ -368,7 +372,7 @@ public class DataUploadService {
 
             ReportingUnit reportingUnit = adminService.findReportingUnitByCode(ru);
 
-            if (contract == null) {
+            if (reportingUnit == null) {
                 throw new IllegalStateException("Countract refers to a non-existent RU.  Invalid.");
             }
 

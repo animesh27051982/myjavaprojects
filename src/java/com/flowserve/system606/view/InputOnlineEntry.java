@@ -7,13 +7,12 @@ package com.flowserve.system606.view;
 
 import com.flowserve.system606.model.BillingEvent;
 import com.flowserve.system606.model.Contract;
+import com.flowserve.system606.model.FinancialPeriod;
 import com.flowserve.system606.model.PerformanceObligation;
 import com.flowserve.system606.model.ReportingUnit;
 import com.flowserve.system606.service.AdminService;
 import com.flowserve.system606.service.CalculationService;
 import com.flowserve.system606.service.ContractService;
-import com.flowserve.system606.service.PerformanceObligationService;
-import com.flowserve.system606.service.ReportingUnitService;
 import com.flowserve.system606.web.WebSession;
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -29,6 +28,7 @@ import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import org.primefaces.event.CellEditEvent;
+import org.primefaces.event.TabChangeEvent;
 import org.primefaces.model.TreeNode;
 
 /**
@@ -42,19 +42,14 @@ public class InputOnlineEntry implements Serializable {
     private static final Logger logger = Logger.getLogger(InputOnlineEntry.class.getName());
 
     private TreeNode rootTreeNode;
-    private TreeNode rootTreeNodeInitialState;
     private TreeNode billingTreeNode;
     @Inject
     private AdminService adminService;
-    @Inject
-    private PerformanceObligationService pobService;
     @Inject
     private CalculationService calculationService;
     private BigDecimal eacValue;
     @Inject
     private ViewSupport viewSupport;
-    @Inject
-    private ReportingUnitService reportingUnitService;
     @Inject
     private ContractService contractService;
     @Inject
@@ -66,14 +61,26 @@ public class InputOnlineEntry implements Serializable {
     private List<ReportingUnit> reportingUnits = new ArrayList<ReportingUnit>();
     private List<Contract> contracts;
     private Contract[] selectedContracts;
+    private String activeTabIndex;
 
     @PostConstruct
     public void init() {
         //reportingUnits = adminService.getPreparableReportingUnits();
+        reportingUnits.clear();
         reportingUnits.add(webSession.getCurrentReportingUnit());
         rootTreeNode = viewSupport.generateNodeTree(reportingUnits);
         billingTreeNode = viewSupport.generateNodeTreeForBilling(reportingUnits);
         initContracts(reportingUnits);
+    }
+
+    public void switchPeriod(FinancialPeriod period) {
+        webSession.switchPeriod(period);
+        init();
+    }
+
+    public void onTabChange(TabChangeEvent event) {
+        activeTabIndex = event.getTab().getId();
+
     }
 
     public void initContracts(List<ReportingUnit> reportingUnits) {
@@ -102,7 +109,9 @@ public class InputOnlineEntry implements Serializable {
     public void addBillingEvent(Contract contract) throws Exception {
         BillingEvent billingEvent = new BillingEvent();
         billingEvent.setContract(contract);
+        billingEvent = adminService.update(billingEvent);
         contract.getBillingEvents().add(billingEvent);
+        contractService.update(contract);
 
         billingTreeNode = viewSupport.generateNodeTreeForBilling(reportingUnits);
     }
@@ -179,10 +188,11 @@ public class InputOnlineEntry implements Serializable {
     }
 
     public void saveInputs() throws Exception {
+
+        adminService.update(reportingUnits);
+
         Logger.getLogger(InputOnlineEntry.class.getName()).log(Level.FINE, "Saving inputs.");
         FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Inputs saved.", ""));
-
-        calculationService.calculateAndSave(reportingUnits, webSession.getCurrentPeriod());
     }
 
     public void cancelEdits() throws Exception {
@@ -212,4 +222,25 @@ public class InputOnlineEntry implements Serializable {
         this.selectedNode = selectedNode;
     }
 
+    public int getProgress() {
+        return 50;
+    }
+
+//    public String reviewCalculations() throws Exception {
+//        // TODO - If problem here, then return back and show validations, etc.
+//        // TODO - Actally handle all that as part of upload and just enable button if everything ok.
+//        //adminService.update();
+//        //adminService.update(reportingUnits);
+//
+//        calculationService.calculateAndSave(reportingUnits, webSession.getCurrentPeriod());
+//
+//        return "pobCalculationReview";
+//    }
+    public String getActiveTabIndex() {
+        return activeTabIndex;
+    }
+
+    public void setActiveTabIndex(String activeTabIndex) {
+        this.activeTabIndex = activeTabIndex;
+    }
 }

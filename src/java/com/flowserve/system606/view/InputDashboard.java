@@ -36,7 +36,7 @@ import org.primefaces.model.TreeNode;
         )
 )
 @EmbeddedIdentityStoreDefinition({
-    @Credentials(callerName = "kg", password = "kg", groups = {"users"})
+    @Credentials(callerName = "jp", password = "jp", groups = {"users"})
     ,
         @Credentials(callerName = "arjan", password = "secret3", groups = {"foo"})}
 )

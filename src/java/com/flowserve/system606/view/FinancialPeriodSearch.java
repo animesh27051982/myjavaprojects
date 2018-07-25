@@ -9,7 +9,22 @@ import java.util.List;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.security.enterprise.authentication.mechanism.http.CustomFormAuthenticationMechanismDefinition;
+import javax.security.enterprise.authentication.mechanism.http.LoginToContinue;
+import org.glassfish.soteria.identitystores.annotation.Credentials;
+import org.glassfish.soteria.identitystores.annotation.EmbeddedIdentityStoreDefinition;
 
+@CustomFormAuthenticationMechanismDefinition(
+        loginToContinue = @LoginToContinue(
+                loginPage = "/login.xhtml",
+                errorPage = ""
+        )
+)
+@EmbeddedIdentityStoreDefinition({
+    @Credentials(callerName = "kg", password = "kg", groups = {"users"})
+    ,
+        @Credentials(callerName = "arjan", password = "secret3", groups = {"foo"})}
+)
 @Named
 @ViewScoped
 public class FinancialPeriodSearch implements Serializable {

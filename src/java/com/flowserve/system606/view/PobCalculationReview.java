@@ -50,7 +50,8 @@ public class PobCalculationReview implements Serializable {
         try {
             List<ReportingUnit> reportingUnits = new ArrayList<ReportingUnit>();
             reportingUnits.add(webSession.getCurrentReportingUnit());
-            rootTreeNode = viewSupport.generateNodeTree(adminService.getPreparableReportingUnits());
+            Logger.getLogger(PobCalculationReview.class.getName()).log(Level.INFO, "POB Calc review.  Current RU: " + webSession.getCurrentReportingUnit().getCode());
+            rootTreeNode = viewSupport.generateNodeTree(reportingUnits);
         } catch (Exception e) {
             logger.log(Level.SEVERE, "Error init pobs", e);
         }

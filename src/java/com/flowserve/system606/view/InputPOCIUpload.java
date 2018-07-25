@@ -58,7 +58,10 @@ public class InputPOCIUpload implements Serializable {
             File accessFile = stream2file((InputStream) event.getFile().getInputstream());
             String fileName = accessFile.getAbsolutePath();
             dataUploadService.processUploadedCalculationData(fileName, event.getFile().getFileName());
-            //calculationService.calcAllPobsApr2018();
+            calculationService.calcAllPobsApr2018(adminService.findBUByReportingUnitCode("1015"));
+            //calculationService.calcAllPobsApr2018(adminService.findBUByReportingUnitCode("1100"));
+            //calculationService.calcAllPobsApr2018(adminService.findBUByReportingUnitCode("8225"));
+            //calculationService.calcAllPobsApr2018(adminService.findBUByReportingUnitCode("5200"));
 
             //get reporting unit to calculate business rules on the POBs
             //List<ReportingUnit> reportingUnits = adminService.getPreparableReportingUnits();

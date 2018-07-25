@@ -1,8 +1,11 @@
 package com.flowserve.system606.controller;
 
+import com.flowserve.system606.model.ReportingUnit;
 import com.flowserve.system606.service.AdminService;
+import com.flowserve.system606.service.CalculationService;
 import com.flowserve.system606.web.WebSession;
 import java.io.Serializable;
+import java.util.List;
 import java.util.logging.Logger;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
@@ -18,6 +21,8 @@ public class CalcReviewController implements Serializable {
     private WebSession webSession;
     @Inject
     private AdminService adminService;
+    @Inject
+    private CalculationService calculationService;
 
     public CalcReviewController() {
     }
@@ -26,11 +31,13 @@ public class CalcReviewController implements Serializable {
         return "inputOnlineEntry";
     }
 
-    public String reviewCalculations() throws Exception {
+    public String reviewCalculations(List<ReportingUnit> reportingUnits) throws Exception {
         // TODO - If problem here, then return back and show validations, etc.
         // TODO - Actally handle all that as part of upload and just enable button if everything ok.
         //adminService.update();
         //adminService.update(reportingUnits);
+
+        calculationService.calculateAndSave(reportingUnits, webSession.getCurrentPeriod());
 
         return "pobCalculationReview";
     }

@@ -26,7 +26,7 @@
                     <div class="card card-w-title">
                         <h1><strong>#{webSession.currentPeriod.id} Calculation Review</strong></h1>
 
-                        <p:tabView>
+                        <p:tabView dynamic="true">
                             <p:tab title="Percent Complete / Revenue">
                                 <p:treeTable value="#{pobCalculationReview.rootTreeNode}" var="pob">
                                     <f:facet name="header">

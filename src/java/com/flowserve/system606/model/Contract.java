@@ -109,7 +109,7 @@ public class Contract extends BaseEntity<Long> implements MetricStore, Measurabl
     @JoinColumn(name = "SALES_DESTINATION_COUNTRY_ID")
     //private Country salesDestinationCountry;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "contract", cascade = CascadeType.MERGE)
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "contract", cascade = CascadeType.ALL)
     private List<PerformanceObligation> performanceObligations = new ArrayList<PerformanceObligation>();
 
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)

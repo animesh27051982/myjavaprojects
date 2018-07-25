@@ -64,10 +64,10 @@ public class ReportingUnit extends TransientMeasurable<Long> implements Measurab
     @JoinColumn(name = "COMPANY_ID")
     private Company company;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "reportingUnit", cascade = CascadeType.MERGE)
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "reportingUnit", cascade = CascadeType.ALL)
     private List<Contract> contracts = new ArrayList<Contract>();
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "parent", cascade = CascadeType.MERGE)
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "parent")
     private List<ReportingUnit> childReportingUnits = new ArrayList<ReportingUnit>();
 
     public ReportingUnit() {
@@ -204,5 +204,9 @@ public class ReportingUnit extends TransientMeasurable<Long> implements Measurab
 
     public void setChildReportingUnits(List<ReportingUnit> childReportingUnits) {
         this.childReportingUnits = childReportingUnits;
+    }
+
+    public boolean isParent() {
+        return childReportingUnits.size() > 0;
     }
 }

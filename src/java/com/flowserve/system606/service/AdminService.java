@@ -22,7 +22,6 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.Currency;
 import java.util.List;
 import java.util.Locale;
@@ -103,6 +102,10 @@ public class AdminService {
 
     public void persist(BillingEvent be) throws Exception {
         em.persist(be);
+    }
+
+    public BillingEvent update(BillingEvent be) throws Exception {
+        return em.merge(be);
     }
 
     public void persist(Object object) {
@@ -259,10 +262,6 @@ public class AdminService {
 
     public void persist(ReportingUnit ru) throws Exception {
         em.persist(ru);
-    }
-
-    public BillingEvent update(BillingEvent b) throws Exception {
-        return em.merge(b);
     }
 
     public void update(List<ReportingUnit> rus) throws Exception {
@@ -665,16 +664,15 @@ public class AdminService {
 
     }
 
-    public List<ReportingUnit> getPreparableReportingUnits() {   // TODO - Move this to UserService.
-        // TODO - figure out logged in user.
-        List<ReportingUnit> rus = new ArrayList<ReportingUnit>();
-        rus.add(findReportingUnitByCode("1225"));
-        //rus.add(findReportingUnitByCode("1100"));
-        rus.add(findReportingUnitByCode("8025"));
-
-        return rus;
-    }
-
+//    public List<ReportingUnit> getPreparableReportingUnits() {   // TODO - Move this to UserService.
+//        // TODO - figure out logged in user.
+//        List<ReportingUnit> rus = new ArrayList<ReportingUnit>();
+//        rus.add(findReportingUnitByCode("1225"));
+//        //rus.add(findReportingUnitByCode("1100"));
+//        rus.add(findReportingUnitByCode("8025"));
+//
+//        return rus;
+//    }
     public List<Company> findAllCompany() throws Exception {  // Need an application exception type defined.
 
         TypedQuery<Company> query = em.createQuery("SELECT c FROM Company c", Company.class);

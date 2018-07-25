@@ -15,6 +15,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.faces.view.ViewScoped;
@@ -31,7 +32,7 @@ import org.primefaces.model.StreamedContent;
 @ViewScoped
 public class InputTemplateDownload implements Serializable {
 
-    private List<ReportingUnit> reportingUnits;
+    private List<ReportingUnit> reportingUnits = new ArrayList<ReportingUnit>();
     private List<ReportingUnit> selectedReportingUnits;
     private StreamedContent file;
     private InputStream inputStream;

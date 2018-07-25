@@ -156,7 +156,9 @@ public class TemplateService {
                 }
 
                 for (MetricType inputType : inputTypes) {
+                    Logger.getLogger(TemplateService.class.getName()).log(Level.INFO, "Excel upload inputType: " + inputType.getId());
                     Cell cell = row.getCell(CellReference.convertColStringToIndex(inputType.getExcelCol()));
+
                     try {
                         if (cell == null || pobIdCell.getCellTypeEnum() == CellType.BLANK || ((XSSFCell) cell).getRawValue() == null) {
                             // TODO - figure out what to do in this blank case.  It will depend on the situation.

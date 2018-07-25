@@ -82,7 +82,7 @@ rule "Percent Complete POB"
         estimatedCostAtCompletion : CurrencyMetric(metricType.id == "ESTIMATED_COST_AT_COMPLETION_LC", lcValue != null)
         percentComplete : Metric(metricType.id == "PERCENT_COMPLETE")
     then
-        modify (percentComplete) { value = (costOfGoodsSoldITD.lcValue / estimatedCostAtCompletion.lcValue)};
+        modify (percentComplete) { value = (costOfGoodsSoldITD.lcValue == 0B || estimatedCostAtCompletion.lcValue == 0B ? 0B : costOfGoodsSoldITD.lcValue / estimatedCostAtCompletion.lcValue)};
 end
 
 rule "Percent Complete Contract"

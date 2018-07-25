@@ -7,6 +7,7 @@ package com.flowserve.system606.view;
 
 import com.flowserve.system606.model.ReportingUnit;
 import com.flowserve.system606.service.AdminService;
+import com.flowserve.system606.service.CalculationService;
 import com.flowserve.system606.service.TemplateService;
 import com.flowserve.system606.web.WebSession;
 import java.io.InputStream;
@@ -35,6 +36,8 @@ public class InputTemplateUpload implements Serializable {
     AdminService adminService;
     @Inject
     private TemplateService templateService;
+    @Inject
+    private CalculationService calculationService;
     @Inject
     private WebSession webSession;
     private List<ReportingUnit> reportingUnits = new ArrayList<ReportingUnit>();
@@ -65,4 +68,12 @@ public class InputTemplateUpload implements Serializable {
     public List<ReportingUnit> getReportingUnits() {
         return reportingUnits;
     }
+
+    public void saveInputs() throws Exception {
+        Logger.getLogger(InputOnlineEntry.class.getName()).log(Level.FINE, "Saving inputs.");
+        FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Inputs saved.", ""));
+
+        calculationService.calculateAndSave(reportingUnits, webSession.getCurrentPeriod());
+    }
+
 }

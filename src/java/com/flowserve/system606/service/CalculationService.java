@@ -25,9 +25,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.ejb.Stateless;
@@ -149,55 +147,59 @@ public class CalculationService {
         return metric != null;
     }
 
-    public void calcAllPobsApr2018() throws Exception {
-        FinancialPeriod period = financialPeriodService.findById("APR-18");
+    public void calcAllPobsApr2018(ReportingUnit ru) throws Exception {
+        FinancialPeriod period = financialPeriodService.findById("DEC-17");
         Logger.getLogger(CalculationService.class.getName()).log(Level.INFO, "Calculating all POBs...");
-        calculateAndSave(adminService.findAllReportingUnits(), period);
+        //calculateAndSave(adminService.findAllReportingUnits(), period);
+        List<ReportingUnit> rus = new ArrayList<ReportingUnit>();
+        rus.add(ru);
+        calculateAndSave(rus, period);
+        Logger.getLogger(CalculationService.class.getName()).log(Level.INFO, "Calcs complete.");
     }
 
     public void calculateAndSave(List<ReportingUnit> reportingUnits, FinancialPeriod period) throws Exception {
 
-        Set<Contract> contractsToCalc = new HashSet<Contract>();
-
         for (ReportingUnit reportingUnit : reportingUnits) {
+            if (reportingUnit.isParent()) {
+                continue;
+            }
             Logger.getLogger(CalculationService.class.getName()).log(Level.INFO, "Calculating RU: " + reportingUnit.getCode());
+
             FinancialPeriod calculationPeriod = period;
-            List<PerformanceObligation> pobs = reportingUnit.getPerformanceObligations();
-            List<PerformanceObligation> validPobs = new ArrayList<PerformanceObligation>();
-            for (PerformanceObligation pob : pobs) {
-                if (!isInputRequired(pob, period)) {
-                    validPobs.add(pob);
-                    contractsToCalc.add(pob.getContract());
-                }
-            }
+            do {
+                executeBusinessRules((new ArrayList<Measurable>(reportingUnit.getPerformanceObligations())), calculationPeriod);
+            } while ((calculationPeriod = financialPeriodService.calculateNextPeriodUntilCurrent(calculationPeriod)) != null);
 
-            executeBusinessRules((new ArrayList<Measurable>(validPobs)), calculationPeriod);
-            while ((calculationPeriod = financialPeriodService.calculateNextPeriodUntilCurrent(calculationPeriod)) != null) {
-                executeBusinessRules((new ArrayList<Measurable>(validPobs)), calculationPeriod);
-            }
+            calculationPeriod = period;
+            do {
+                executeBusinessRules((new ArrayList<Measurable>(reportingUnit.getContracts())), calculationPeriod);
+                //                contractService.update(contract);
+            } while ((calculationPeriod = financialPeriodService.calculateNextPeriodUntilCurrent(calculationPeriod)) != null);
 
-            for (Contract contract : contractsToCalc) {
-                calculationPeriod = period;
-                executeBusinessRules(contract, calculationPeriod);
-                contractService.update(contract);
-                while ((calculationPeriod = financialPeriodService.calculateNextPeriodUntilCurrent(calculationPeriod)) != null) {
-                    executeBusinessRules(contract, calculationPeriod);
-                    contractService.update(contract);
-                }
-            }
-
-            contractsToCalc.clear();
+            adminService.update(reportingUnit);
         }
 
     }
 
     // More validity work needed.
-    private boolean isInputRequired(PerformanceObligation pob, FinancialPeriod period) throws Exception {
-        if (getCurrencyMetric("TRANSACTION_PRICE_CC", pob, period).getCcValue() == null) {
-            return true;
+    private boolean isValidForCalculations(Measurable measurable, FinancialPeriod period) throws Exception {
+        if (measurable instanceof PerformanceObligation) {
+            if (getCurrencyMetric("TRANSACTION_PRICE_CC", (PerformanceObligation) measurable, period).getCcValue() != null) {
+                return true;
+            }
+            return false;
+        }
+        if (measurable instanceof Contract) {
+            for (PerformanceObligation pob : ((Contract) measurable).getPerformanceObligations()) {
+                if (isValidForCalculations(pob, period) == true) {
+                    return true;
+                }
+            }
+            return false;
         }
 
-        return false;
+        // All other types are valid since they will be rollups.
+        return true;
     }
 
     @TransactionAttribute(NOT_SUPPORTED)
@@ -222,9 +224,17 @@ public class CalculationService {
 
     public void executeBusinessRules(List<Measurable> measurables, FinancialPeriod period) throws Exception {
         for (Measurable measurable : measurables) {
-            executeBusinessRules(measurable, period);
-            adminService.update(measurable);
+            if (isValidForCalculations(measurable, period)) {
+                executeBusinessRules(measurable, period);
+                adminService.update(measurable);
+                flushAndClear();
+            }
         }
+    }
+
+    private void flushAndClear() {
+        em.flush();
+        em.clear();
     }
 
     private Collection<Metric> getAllCurrentPeriodMetrics(Measurable measurable, FinancialPeriod period) throws Exception {
