@@ -25,8 +25,8 @@ public class ExchangeRate implements Serializable, Comparable<ExchangeRate> {
     private static final long serialVersionUID = -383220321690601009L;
     private static final Logger LOG = Logger.getLogger(ExchangeRate.class.getName());
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "FLS_SEQ")
-    @SequenceGenerator(name = "FLS_SEQ", sequenceName = "FLS_SEQ", allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "EXCHANGE_RATE_SEQ")
+    @SequenceGenerator(name = "EXCHANGE_RATE_SEQ", sequenceName = "EXCHANGE_RATE_SEQ", allocationSize = 50)
     @Column(name = "EXCHANGE_RATE_ID")
     private Long id;
     @Column(name = "TYPE")

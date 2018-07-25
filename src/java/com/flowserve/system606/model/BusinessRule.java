@@ -32,8 +32,8 @@ public class BusinessRule implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "FLS_SEQ")
-    @SequenceGenerator(name = "FLS_SEQ", sequenceName = "FLS_SEQ", allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "BUSINESS_RULE_SEQ")
+    @SequenceGenerator(name = "BUSINESS_RULE_SEQ", sequenceName = "BUSINESS_RULE_SEQ", allocationSize = 50)
     @Column(name = "BUSINESS_RULE_ID")
     private Long id;
     @Column(name = "RULE_KEY", nullable = false, unique = true)

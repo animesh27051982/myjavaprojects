@@ -30,8 +30,8 @@ public class FinancialPeriod extends BaseEntity<String> implements Comparable<Fi
     @Id
     @Column(name = "FINANCIAL_PERIOD_ID")
     private String id;
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "FLS_SEQ")
-    @SequenceGenerator(name = "FLS_SEQ", sequenceName = "FLS_SEQ", allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "FINANCIAL_PERIOD_SEQ")
+    @SequenceGenerator(name = "FINANCIAL_PERIOD_SEQ", sequenceName = "FINANCIAL_PERIOD_SEQ", allocationSize = 50)
     @Column(name = "PERIOD_SEQ")
     private Long sequence;
     @Column(name = "NAME")

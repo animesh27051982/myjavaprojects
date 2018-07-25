@@ -6,7 +6,7 @@
 package com.flowserve.system606.model;
 
 import java.io.Serializable;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.CollectionTable;
@@ -20,6 +20,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import static javax.persistence.TemporalType.TIMESTAMP;
 
 /**
  *
@@ -30,8 +32,8 @@ import javax.persistence.Table;
 public class DataImportFile implements Comparable<DataImportFile>, Serializable {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "FLS_SEQ")
-    @SequenceGenerator(name = "FLS_SEQ", sequenceName = "FLS_SEQ", allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "IMPORT_FILE_SEQ")
+    @SequenceGenerator(name = "IMPORT_FILE_SEQ", sequenceName = "IMPORT_FILE_SEQ", allocationSize = 50)
     @Column(name = "DATA_IMPORT_ID")
     private String id;
     @Column(name = "FILE_NAME")
@@ -39,12 +41,15 @@ public class DataImportFile implements Comparable<DataImportFile>, Serializable 
     @OneToOne
     @JoinColumn(name = "COMPANY_ID")
     private Company company;
+    @Temporal(TIMESTAMP)
     @Column(name = "UPLOAD_DATE")
-    private LocalDate uploadDate;
+    private LocalDateTime uploadDate;
     @Column(name = "UPLOADED_BY")
     private String uploadedBy;
     @Column(name = "STATUS")
     private String status;
+    @Column(name = "TYPE")
+    private String type;
 
     @ElementCollection
     @CollectionTable(name = "IMPORT_MESSAGE")
@@ -77,14 +82,6 @@ public class DataImportFile implements Comparable<DataImportFile>, Serializable 
         this.company = company;
     }
 
-    public LocalDate getUploadDate() {
-        return uploadDate;
-    }
-
-    public void setUploadDate(LocalDate uploadDate) {
-        this.uploadDate = uploadDate;
-    }
-
     public String getUploadedBy() {
         return uploadedBy;
     }
@@ -112,6 +109,22 @@ public class DataImportFile implements Comparable<DataImportFile>, Serializable 
     @Override
     public int compareTo(DataImportFile o) {
         return this.filename.compareTo(o.getFilename());
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public LocalDateTime getUploadDate() {
+        return uploadDate;
+    }
+
+    public void setUploadDate(LocalDateTime uploadDate) {
+        this.uploadDate = uploadDate;
     }
 
 }

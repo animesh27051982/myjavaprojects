@@ -31,8 +31,8 @@ public class User implements Comparable<User>, Serializable {
     private static final Logger LOG = Logger.getLogger(User.class.getName());
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "FLS_SEQ")
-    @SequenceGenerator(name = "FLS_SEQ", sequenceName = "FLS_SEQ", allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "USER_SEQ")
+    @SequenceGenerator(name = "USER_SEQ", sequenceName = "USER_SEQ", allocationSize = 50)
     @Column(name = "USER_ID")
     private Long id;
     @Column(name = "FLS_ID", nullable = false, length = 30)

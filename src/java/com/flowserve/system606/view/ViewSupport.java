@@ -7,6 +7,7 @@ package com.flowserve.system606.view;
 
 import com.flowserve.system606.model.BillingEvent;
 import com.flowserve.system606.model.BusinessUnit;
+import com.flowserve.system606.model.Company;
 import com.flowserve.system606.model.Contract;
 import com.flowserve.system606.model.CurrencyMetric;
 import com.flowserve.system606.model.DecimalMetric;
@@ -47,6 +48,8 @@ import org.primefaces.model.TreeNode;
 public class ViewSupport implements Serializable {
 
     private static Logger logger = Logger.getLogger("com.flowserve.system606");
+    private BusinessUnit businessUnit = new BusinessUnit();
+    private ReportingUnit reportingUnit = new ReportingUnit();
     List<User> users = new ArrayList<User>();
     @Inject
     private AdminService adminService;
@@ -75,7 +78,8 @@ public class ViewSupport implements Serializable {
         //period = financialPeriodService.getCurrentFinancialPeriod();
         //priorPeriod = financialPeriodService.getPriorFinancialPeriod();
         allPeriods = financialPeriodService.findAllPeriods();
-
+        businessUnit = webSession.getEditBusinessUnit();
+        reportingUnit = webSession.getEditReportingUnit();
     }
 
     public List<User> completeUser(String searchString) {
@@ -92,20 +96,69 @@ public class ViewSupport implements Serializable {
 
     }
 
-    public List<User> getUsers() {
-        return users;
+    public List<Company> completeCompany(String searchString) {
+        List<Company> sites = null;
+
+        try {
+            sites = adminService.searchCompany(searchString);
+        } catch (Exception e) {
+            FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", " company error  " + e.getMessage());
+            FacesContext.getCurrentInstance().addMessage(null, msg);
+            Logger.getLogger(HolidaysEdit.class.getName()).log(Level.SEVERE, "Error Company", e);
+        }
+        return sites;
     }
 
-    public void setUsers(List<User> users) {
-        this.users = users;
+    public List<ReportingUnit> completeReportingUnit(String searchString) {
+        List<ReportingUnit> rUnit = null;
+
+        try {
+            rUnit = adminService.searchReportingUnits(searchString);
+        } catch (Exception e) {
+            FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", " RU search error  " + e.getMessage());
+            FacesContext.getCurrentInstance().addMessage(null, msg);
+            logger.log(Level.SEVERE, "Error ru search.", e);
+        }
+        return rUnit;
     }
 
-    public String getSearchString() {
-        return searchString;
+    public List<ReportingUnit> parentReportingUnit(String searchString) {
+        List<ReportingUnit> rUnit = null;
+
+        try {
+            rUnit = adminService.parentReportingUnits(searchString, this.reportingUnit);
+        } catch (Exception e) {
+            FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", " site location error  " + e.getMessage());
+            FacesContext.getCurrentInstance().addMessage(null, msg);
+            logger.log(Level.SEVERE, "Error siteLocations.", e);
+        }
+        return rUnit;
     }
 
-    public void setSearchString(String searchString) {
-        this.searchString = searchString;
+    public List<BusinessUnit> CompleteParentBusinessUnit(String searchString) {
+        List<BusinessUnit> sites = null;
+
+        try {
+            sites = adminService.searchParentBu(searchString, this.businessUnit);
+        } catch (Exception e) {
+            FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", " site location error  " + e.getMessage());
+            FacesContext.getCurrentInstance().addMessage(null, msg);
+            logger.log(Level.SEVERE, "Error siteLocations.", e);
+        }
+        return sites;
+    }
+
+    public List<BusinessUnit> completeBusinessUnit(String searchString) {
+        List<BusinessUnit> sites = null;
+
+        try {
+            sites = adminService.searchSites(searchString);
+        } catch (Exception e) {
+            FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", " site location error  " + e.getMessage());
+            FacesContext.getCurrentInstance().addMessage(null, msg);
+            logger.log(Level.SEVERE, "Error siteLocations.", e);
+        }
+        return sites;
     }
 
     public List<Currency> getAllCurrencies() {
@@ -276,16 +329,31 @@ public class ViewSupport implements Serializable {
         return currencyService.findRateByFromToPeriod(contract.getContractCurrency(), contract.getLocalCurrency(), webSession.getCurrentPeriod()).getConversionRate().toPlainString();
     }
 
-    public List<ReportingUnit> completeReportingUnit(String searchString) {
-        List<ReportingUnit> rUnit = null;
+    public void setUsers(List<User> users) {
+        this.users = users;
+    }
 
-        try {
-            rUnit = adminService.searchReportingUnits(searchString);
-        } catch (Exception e) {
-            FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", " RU search error  " + e.getMessage());
-            FacesContext.getCurrentInstance().addMessage(null, msg);
-            logger.log(Level.SEVERE, "Error ru search.", e);
-        }
-        return rUnit;
+    public String getSearchString() {
+        return searchString;
+    }
+
+    public void setSearchString(String searchString) {
+        this.searchString = searchString;
+    }
+
+    public BusinessUnit getBusinessUnit() {
+        return businessUnit;
+    }
+
+    public void setBusinessUnit(BusinessUnit businessUnit) {
+        this.businessUnit = businessUnit;
+    }
+
+    public ReportingUnit getReportingUnit() {
+        return reportingUnit;
+    }
+
+    public void setReportingUnit(ReportingUnit reportingUnit) {
+        this.reportingUnit = reportingUnit;
     }
 }

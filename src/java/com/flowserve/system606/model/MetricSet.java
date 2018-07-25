@@ -23,8 +23,8 @@ import static javax.persistence.TemporalType.TIMESTAMP;
 public class MetricSet extends BaseEntity<Long> {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "FLS_SEQ")
-    @SequenceGenerator(name = "FLS_SEQ", sequenceName = "FLS_SEQ", allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "METRIC_SET_SEQ")
+    @SequenceGenerator(name = "METRIC_SET_SEQ", sequenceName = "METRIC_SET_SEQ", allocationSize = 50)
     @Column(name = "METRIC_SET_ID")
     private Long id;
     @Column(name = "VERSION")
