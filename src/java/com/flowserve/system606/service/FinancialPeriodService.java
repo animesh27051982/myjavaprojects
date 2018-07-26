@@ -420,4 +420,53 @@ public class FinancialPeriodService {
         em.merge(financialPeriod);
     }
 
+    
+    public List<FinancialPeriod> getQTDFinancialPeriods(FinancialPeriod period)
+    {
+        FinancialPeriod temp, temp2, temp3;
+        LocalDate date = LocalDate.of(period.getPeriodYear(), period.getPeriodMonth(), 1);
+        List<FinancialPeriod> finacialPeriod = new ArrayList<FinancialPeriod>();
+
+        if (period.getPeriodMonth() == 1 || period.getPeriodMonth() == 4 || period.getPeriodMonth() == 7 || period.getPeriodMonth() == 10) {
+            temp = findPeriodByLocalDate(date);
+            finacialPeriod.add(temp);
+            return finacialPeriod;
+        }
+
+        if (period.getPeriodMonth() == 2 || period.getPeriodMonth() == 5 || period.getPeriodMonth() == 8 || period.getPeriodMonth() == 11) {
+            temp = findPeriodByLocalDate(date);
+            temp2 = calculatePriorPeriod(temp);
+            Collections.addAll(finacialPeriod, temp2, temp);
+            return finacialPeriod;
+        }
+
+        if (period.getPeriodMonth() == 3 || period.getPeriodMonth() == 6 || period.getPeriodMonth() == 9 || period.getPeriodMonth() == 12) {
+            temp = findPeriodByLocalDate(date);
+            temp2 = calculatePriorPeriod(temp);
+            temp3 = calculatePriorPeriod(temp2);
+            Collections.addAll(finacialPeriod, temp3, temp2, temp);
+            return finacialPeriod;
+        }
+        
+        
+        return finacialPeriod;
+    }
+    
+    public List<FinancialPeriod> getYTDFinancialPeriods(FinancialPeriod period)
+    {
+        FinancialPeriod temp;
+        LocalDate date = LocalDate.of(period.getPeriodYear(), period.getPeriodMonth(), 1);
+        List<FinancialPeriod> finacialPeriod = new ArrayList<FinancialPeriod>();
+        for(int i=1;i<=period.getPeriodMonth();i++)
+        {
+            LocalDate tempdate = LocalDate.of(period.getPeriodYear(), i, 1);
+            temp = findPeriodByLocalDate(tempdate);
+            finacialPeriod.add(temp);
+
+            if (i == period.getPeriodMonth()) {
+               return finacialPeriod;
+            }
+        }
+        return finacialPeriod;
+    }
 }
