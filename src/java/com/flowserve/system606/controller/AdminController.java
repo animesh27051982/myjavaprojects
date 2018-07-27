@@ -172,6 +172,22 @@ public class AdminController implements Serializable {
 
         return "userSearch";
     }
+    
+    public String updateUserProfile(User u) {
+        FacesContext context = FacesContext.getCurrentInstance();
+
+        try {
+            adminService.updateUser(u);
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, e.getMessage(), e);
+            context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Error saving", e.getMessage()));
+            return null;
+        }
+
+        context.addMessage(null, new FacesMessage("Successful", "User saved"));
+
+        return "userProfile";
+    }
 
     public String editFinancialPeriod(FinancialPeriod f) throws Exception {
 

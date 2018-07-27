@@ -18,6 +18,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
@@ -61,6 +62,9 @@ public class User implements Comparable<User>, Serializable {
     private String title;
     @Column(name = "ORG_LEVEL")
     private int orgLevel;
+    @ManyToOne
+    @JoinColumn(name = "COUNTRY_ID")
+    private Country country;
 
     public User(String flsId, String name, String displayName, String emailAddress) {
         this.flsId = flsId;
@@ -206,6 +210,14 @@ public class User implements Comparable<User>, Serializable {
 
     public void setOrgLevel(int orgLevel) {
         this.orgLevel = orgLevel;
+    }
+
+    public Country getCountry() {
+        return country;
+    }
+
+    public void setCountry(Country country) {
+        this.country = country;
     }
 
 }
