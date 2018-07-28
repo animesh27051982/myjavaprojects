@@ -356,6 +356,8 @@ public class CurrencyService {
         ResultSet resultSet2 = null;
         FinancialPeriod period = null;
         List<ExchangeRate> exchangeRate = new ArrayList<ExchangeRate>();
+        DataImportFile dataImport = new DataImportFile();
+        List<String> importMSG = new ArrayList<String>();
         // Step 1: Loading or registering Oracle JDBC driver class
         try {
 
@@ -374,15 +376,9 @@ public class CurrencyService {
             // Step 2.C: Executing SQL &amp; retrieve data into ResultSet
             resultSet = statement.executeQuery("SELECT Period FROM `tbl_ExchangeRates` GROUP BY Period");
 
+            int count = 0;
             // processing returned data and printing into console
             while (resultSet.next()) {
-//                Logger.getLogger(DataUploadService.class.getName()).log(Level.INFO, resultSet.getString(1) + "\t"
-//                        + resultSet.getString(2) + "\t"
-//                        + resultSet.getBigDecimal(3)+ "\t"
-//                        + resultSet.getBigDecimal(4)+ "\t"
-//                        + resultSet.getBigDecimal(5)+ "\t"
-//                        + resultSet.getBigDecimal(6)+ "\t"
-//                );
                 if (!resultSet.getString(1).equalsIgnoreCase("2018-5")) {
                     String periodDate = resultSet.getString(1);
                     String[] sp = periodDate.split("-");
@@ -399,10 +395,12 @@ public class CurrencyService {
                         String exPeriod = monthName[month - 1] + "-" + finalYear;
 
                         period = financialPeriodService.findById(exPeriod);
-                    } catch (NumberFormatException e) {
-                        Logger.getLogger(DataUploadService.class.getName()).log(Level.INFO, "Error " + e);
+                    } catch (Exception e) {
+                        importMSG.add("Invalid Financial Period : " + periodDate);
+                        throw new Exception("Invalid Financial Period : " + periodDate);
                     }
                     if (adminService.findExchangeRatesByFinancialPeriod(period) == null) {
+                        count++;
                         PreparedStatement statement1 = connection.prepareStatement("SELECT Currency,ISOCodeAlpha,CUSDPeriodEndRate FROM `tbl_ExchangeRates` WHERE Period = ?");
                         statement1.setString(1, resultSet.getString(1));
                         resultSet1 = statement1.executeQuery();
@@ -451,17 +449,29 @@ public class CurrencyService {
                 }
 
             }
+            if (count == 0) {
+                importMSG.add("All legacy financial years exchange rates already available in DB");
+                throw new Exception("All legacy financial years exchange rates already available in DB");
+            }
         } catch (SQLException sqlex) {
             sqlex.printStackTrace();
+            importMSG.add("Table can not found : TBL_EXCHANGERATES");
+            throw new Exception("Table can not found : TBL_EXCHANGERATES");
         } finally {
-
+            dataImport.setFilename("TBL_EXCHANGERATES");
+            dataImport.setUploadDate(LocalDateTime.now());
+            dataImport.setCompany(adminService.findCompanyById("FLS"));
+            dataImport.setDataImportMessage(importMSG);
+            dataImport.setType("Legacy Exchange Rate");
+            adminService.persist(dataImport);
             // Step 3: Closing database connection
             try {
                 if (null != connection) {
-
-                    // cleanup resources, once after processing
-                    resultSet.close();
-                    statement.close();
+                    if (null != resultSet) {
+                        // cleanup resources, once after processing
+                        resultSet.close();
+                        statement.close();
+                    }
 
                     // and then finally close connection
                     connection.close();

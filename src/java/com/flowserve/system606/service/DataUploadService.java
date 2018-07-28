@@ -90,9 +90,6 @@ public class DataUploadService {
                     "SELECT Period,`POb NAME (TAB NAME)`,`Transaction Price/Changes to Trans Price (excl LDs)`,`Estimated at Completion (EAC)/ Changes to EAC (excl TPCs)`,"
                     + "`Cumulative Costs Incurred`,`Liquidated Damages (LDs)/Changes to LDs` FROM `tbl_POCI_1_POb Changes` ORDER BY Period");
 
-            Logger.getLogger(DataUploadService.class.getName()).log(Level.INFO, "Period\tPOCC File Name\tC Page Number\tReporting Unit Number");
-            Logger.getLogger(DataUploadService.class.getName()).log(Level.INFO, "==\t================\t===\t=======");
-
             int count = 0;
             long timeInterval = System.currentTimeMillis();
 
@@ -115,7 +112,8 @@ public class DataUploadService {
                     exPeriod = monthName[month - 1] + "-" + finalYear;
                     period = financialPeriodService.findById(exPeriod);
                 } catch (NumberFormatException e) {
-                    Logger.getLogger(DataUploadService.class.getName()).log(Level.INFO, "Error " + e);
+                    importMSG.add("Invalid Financial Period : " + periodDate);
+                    throw new Exception("Invalid Financial Period : " + periodDate);
                 }
 
                 if (period != null) {
@@ -160,11 +158,9 @@ public class DataUploadService {
                                 }
                             } else {
                                 importMSG.add("These POBs not found : " + id);
-                                //Logger.getLogger(DataUploadService.class.getName()).log(Level.FINER, "These POBs not found : " + id);
                             }
                         } catch (NumberFormatException e) {
                             importMSG.add("This is not a Valid POB ID : " + lastId);
-                            //Logger.getLogger(DataUploadService.class.getName()).log(Level.INFO, "Error " + e);
                         }
                     }
                 } else {
@@ -186,14 +182,11 @@ public class DataUploadService {
             for (ReportingUnit reportingUnit : rusToSave) {
                 adminService.update(reportingUnit);
             }
-            dataImport.setFilename(fileName + " - tbl_POCI_1_POb Changes");
-            dataImport.setUploadDate(LocalDateTime.now());
-            dataImport.setCompany(adminService.findCompanyById("FLS"));
-            dataImport.setDataImportMessage(importMSG);
-            adminService.persist(dataImport);
             Logger.getLogger(DataUploadService.class.getName()).log(Level.INFO, "Import completed.");
         } catch (SQLException sqlex) {
             Logger.getLogger(DataUploadService.class.getName()).log(Level.INFO, "Error processing input file: ", sqlex);
+            importMSG.add("Table can not found : tbl_POCI_1_POb Changes");
+            throw new Exception("Table can not found : tbl_POCI_1_POb Changes");
         } catch (Exception e) {
             Logger.getLogger(DataUploadService.class.getName()).log(Level.INFO, "Error processing input file: ", e);
             throw new Exception(e.getMessage());
@@ -208,9 +201,11 @@ public class DataUploadService {
             try {
                 if (null != connection) {
 
-                    // cleanup resources, once after processing
-                    resultSet.close();
-                    statement.close();
+                    if (null != resultSet) {
+                        // cleanup resources, once after processing
+                        resultSet.close();
+                        statement.close();
+                    }
 
                     // and then finally close connection
                     connection.close();
@@ -276,128 +271,166 @@ public class DataUploadService {
         String pobName = null;
         long pobId = -1;
         String revRecMethod = null;
+        DataImportFile dataImport = new DataImportFile();
+        List<String> importMSG = new ArrayList<String>();
 
         int count = 0;
         String line = null;
+        try {
+            resultSet = statement.executeQuery("SELECT ID, Name, Stage, Folders, `Name of POb`, `If OT, identify the revenue recognition method`, `C-Page ID` FROM tbl_POb");
+            while (resultSet.next()) {
 
-        resultSet = statement.executeQuery("SELECT ID, Name, Stage, Folders, `Name of POb`, `If OT, identify the revenue recognition method`, `C-Page ID` FROM tbl_POb");
+                PerformanceObligation pob = new PerformanceObligation();
+                pobId = resultSet.getInt(1);
 
-        //Logger.getLogger(AppInitializeService.class.getName()).log(Level.INFO, "ID\tCustomer Name\t\tStage\t\tFolders-RU\tName of POb\tRevenue recognition method\tContract ID");
-        //Logger.getLogger(AppInitializeService.class.getName()).log(Level.INFO, "==\t================\t===\t=======t=======");
-        while (resultSet.next()) {
+                if (pobService.findById(pobId) != null) {
+                    continue;
+                }
+                customerName = resultSet.getString(2);
+                pobName = resultSet.getString(5);
+                revRecMethod = resultSet.getString(6);
 
-            PerformanceObligation pob = new PerformanceObligation();
-            pobId = resultSet.getInt(1);
+                contractId = resultSet.getInt(7);
 
-            if (pobService.findById(pobId) != null) {
-                continue;
+                Contract contract = contractService.findContractById(contractId);
+
+                if (contract == null) {
+                    importMSG.add("POB refers to non-existent contract.  Invalid.  POB ID: " + pobId + " contract Id: " + contractId);
+                    Logger.getLogger(AppInitializeService.class.getName()).log(Level.WARNING, "POB refers to non-existent contract.  Invalid.  POB ID: " + pobId + " contract Id: " + contractId);
+                    continue;
+                } else {
+                    pob.setContract(contract);
+                }
+                pob.setName(pobName);
+                pob.setId(pobId);
+                if (methodMap.get(revRecMethod) == null) {
+                    importMSG.add("POB revrec method not in our list: " + revRecMethod);
+                    Logger.getLogger(DataUploadService.class.getName()).log(Level.SEVERE, "POB revrec method not in our list: " + revRecMethod);
+                }
+                pob.setRevRecMethod(methodMap.get(revRecMethod));
+
+                pob = pobService.update(pob);
+                contract.getPerformanceObligations().add(pob);
+                contractService.update(contract);
+
+                count++;
+                if ((count % 100) == 0) {
+                    Logger.getLogger(AppInitializeService.class.getName()).log(Level.INFO, "Contract import count: " + count);
+                }
             }
-            customerName = resultSet.getString(2);
-            pobName = resultSet.getString(5);
-            revRecMethod = resultSet.getString(6);
+        } catch (SQLException sqlex) {
+            sqlex.printStackTrace();
+            importMSG.add("Table can not found : TBL_POB");
+            throw new Exception("Table can not found : TBL_POB");
+        } finally {
+            dataImport.setFilename("TBL_POB");
+            dataImport.setUploadDate(LocalDateTime.now());
+            dataImport.setCompany(adminService.findCompanyById("FLS"));
+            dataImport.setDataImportMessage(importMSG);
+            dataImport.setType("Contract and Pobs");
+            adminService.persist(dataImport);
+            // Step 3: Closing database connection
+            try {
+                if (null != resultSet) {
+                    // cleanup resources, once after processing
+                    resultSet.close();
 
-            contractId = resultSet.getInt(7);
-
-            Contract contract = contractService.findContractById(contractId);
-
-            if (contract == null) {
-                //throw new IllegalStateException("POB refers to non-existent contract.  Invalid.  POB ID: " + pobId);
-                Logger.getLogger(AppInitializeService.class.getName()).log(Level.WARNING, "POB refers to non-existent contract.  Invalid.  POB ID: " + pobId + " contract Id: " + contractId);
-                continue;
-            } else {
-                pob.setContract(contract);
-            }
-            pob.setName(pobName);
-            pob.setId(pobId);
-            if (methodMap.get(revRecMethod) == null) {
-                Logger.getLogger(DataUploadService.class.getName()).log(Level.SEVERE, "POB revrec method not in our list: " + revRecMethod);
-            }
-            pob.setRevRecMethod(methodMap.get(revRecMethod));
-
-            pob = pobService.update(pob);
-            contract.getPerformanceObligations().add(pob);
-            contractService.update(contract);
-
-            count++;
-            if ((count % 100) == 0) {
-                Logger.getLogger(AppInitializeService.class.getName()).log(Level.INFO, "Contract import count: " + count);
+                }
+            } catch (SQLException sqlex) {
+                sqlex.printStackTrace();
             }
         }
-        resultSet.close();
+        importMSG.add("POBs import complete.Total POBs import count: " + count);
         Logger.getLogger(DataUploadService.class.getName()).log(Level.INFO, "POB imoprt complete.");
     }
 
     void initContracts(Connection connection, Statement statement) throws SQLException, Exception {
         ResultSet resultSet = null;
 
-//        try {
         String ru = null;
         long contractId = 0;
         String contractName = null;
         String salesOrderNumber = null;
         String contractCurrencyCode = null;
-
+        DataImportFile dataImport = new DataImportFile();
+        List<String> importMSG = new ArrayList<String>();
         int count = 0;
-        String line = null;
+        try {
 
-        resultSet = statement.executeQuery("SELECT ID, Name, `BPC Reporting Unit`, `Sales Order #`, `Contract Currency` FROM tbl_Contracts");
+            String line = null;
+            resultSet = statement.executeQuery("SELECT ID, Name, `BPC Reporting Unit`, `Sales Order #`, `Contract Currency` FROM tbl_Contracts");
 
-        //Logger.getLogger(AppInitializeService.class.getName()).log(Level.INFO, "ID\t\t\tName\tRU\tSales Order #\tCC");
-        //Logger.getLogger(AppInitializeService.class.getName()).log(Level.INFO, "==\t================\t===\t=======\t=====");
-        // processing returned data and printing into console
-        while (resultSet.next()) {
-//            Logger.getLogger(AppInitializeService.class.getName()).log(Level.INFO, resultSet.getInt(1) + "\t"
-//                    + resultSet.getString(2) + "\t"
-//                    + resultSet.getString(3) + "\t"
-//                    + resultSet.getString(4) + "\t"
-//                    + resultSet.getString(5));
+            while (resultSet.next()) {
+                contractId = resultSet.getInt(1);
+                if (contractService.findContractById(contractId) != null) {
+                    continue;  // we've already processed this contract.  dont' process the repeated lines.
+                }
+                contractName = resultSet.getString(2);
+                String ruStr = StringUtils.substringBefore(resultSet.getString(3).trim(), "-");
+                ru = ruStr.replace("RU", "").trim();
+                //Logger.getLogger(AppInitializeService.class.getName()).log(Level.INFO, "RU:\t" + ru);
+                salesOrderNumber = resultSet.getString(4);
+                contractCurrencyCode = resultSet.getString(5);
 
-            contractId = resultSet.getInt(1);
-            if (contractService.findContractById(contractId) != null) {
-                continue;  // we've already processed this contract.  dont' process the repeated lines.
+                //same code logic when intialContractUpload
+                Contract contract = new Contract();
+                contract.setId(contractId);
+                contract.setName(contractName);
+                contract.setSalesOrderNumber(salesOrderNumber);
+                if (contractCurrencyCode != null && !contractCurrencyCode.isEmpty()) {
+                    contract.setContractCurrency(Currency.getInstance(contractCurrencyCode));
+                } else {
+                    importMSG.add("Contract currency not found for contract: " + contractId + " code: " + contractCurrencyCode);
+                    Logger.getLogger(DataUploadService.class.getName()).log(Level.SEVERE, "Contract currency not found for contract: " + contractId + " code: " + contractCurrencyCode);
+                    continue;
+                }
+
+                ReportingUnit reportingUnit = adminService.findReportingUnitByCode(ru);
+
+                if (reportingUnit == null) {
+                    importMSG.add("Countract refers to a non-existent RU.  Invalid.");
+                    throw new IllegalStateException("Countract refers to a non-existent RU.  Invalid.");
+                }
+
+                if (reportingUnit != null) {
+                    contract.setReportingUnit(reportingUnit);
+                }
+                contract = contractService.update(contract);   // this gives us the JPA managed object.
+                if (reportingUnit != null) {
+                    reportingUnit.getContracts().add(contract);
+                    adminService.update(reportingUnit);
+                }
+
+                count++;
+
+                if ((count % 100) == 0) {
+                    Logger.getLogger(AppInitializeService.class.getName()).log(Level.INFO, "Contract import count: " + count);
+                }
             }
-            contractName = resultSet.getString(2);
-            String ruStr = StringUtils.substringBefore(resultSet.getString(3).trim(), "-");
-            ru = ruStr.replace("RU", "").trim();
-            //Logger.getLogger(AppInitializeService.class.getName()).log(Level.INFO, "RU:\t" + ru);
-            salesOrderNumber = resultSet.getString(4);
-            contractCurrencyCode = resultSet.getString(5);
 
-            //same code logic when intialContractUpload
-            Contract contract = new Contract();
-            contract.setId(contractId);
-            contract.setName(contractName);
-            contract.setSalesOrderNumber(salesOrderNumber);
-            if (contractCurrencyCode != null && !contractCurrencyCode.isEmpty()) {
-                contract.setContractCurrency(Currency.getInstance(contractCurrencyCode));
-            } else {
-                Logger.getLogger(DataUploadService.class.getName()).log(Level.SEVERE, "Contract currency not found for contract: " + contractId + " code: " + contractCurrencyCode);
-                continue;
-            }
+        } catch (SQLException sqlex) {
+            sqlex.printStackTrace();
+            importMSG.add("Table can not found : TBL_CONTRACTS");
+            throw new Exception("Table can not found : TBL_CONTRACTS");
+        } finally {
+            dataImport.setFilename("TBL_CONTRACTS");
+            dataImport.setUploadDate(LocalDateTime.now());
+            dataImport.setCompany(adminService.findCompanyById("FLS"));
+            dataImport.setDataImportMessage(importMSG);
+            dataImport.setType("Contract and Pobs");
+            adminService.persist(dataImport);
+            // Step 3: Closing database connection
+            try {
+                if (null != resultSet) {
+                    // cleanup resources, once after processing
+                    resultSet.close();
 
-            ReportingUnit reportingUnit = adminService.findReportingUnitByCode(ru);
-
-            if (reportingUnit == null) {
-                throw new IllegalStateException("Countract refers to a non-existent RU.  Invalid.");
-            }
-
-            if (reportingUnit != null) {
-                contract.setReportingUnit(reportingUnit);
-            }
-            contract = contractService.update(contract);   // this gives us the JPA managed object.
-            if (reportingUnit != null) {
-                reportingUnit.getContracts().add(contract);
-                adminService.update(reportingUnit);
-            }
-
-            count++;
-
-            if ((count % 100) == 0) {
-                Logger.getLogger(AppInitializeService.class.getName()).log(Level.INFO, "Contract import count: " + count);
+                }
+            } catch (SQLException sqlex) {
+                sqlex.printStackTrace();
             }
         }
-
-        resultSet.close();
+        importMSG.add("Contracts import complete.Total Contract import count: " + count);
         Logger.getLogger(DataUploadService.class.getName()).log(Level.INFO, "Contract import complete.");
     }
 
