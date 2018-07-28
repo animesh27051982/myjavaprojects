@@ -206,7 +206,7 @@ public class ReportingUnit extends TransientMeasurable<Long> implements Measurab
         this.childReportingUnits = childReportingUnits;
     }
 
-    public boolean isParent() {
+    public boolean checkIsParent() {
         return childReportingUnits.size() > 0;
     }
 }
