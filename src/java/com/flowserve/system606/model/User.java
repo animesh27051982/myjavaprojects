@@ -62,7 +62,7 @@ public class User implements Comparable<User>, Serializable {
     private String title;
     @Column(name = "ORG_LEVEL")
     private int orgLevel;
-    @ManyToOne
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "COUNTRY_ID")
     private Country country;
 
