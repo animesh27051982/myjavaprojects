@@ -226,16 +226,6 @@ public class InputOnlineEntry implements Serializable {
         return 50;
     }
 
-//    public String reviewCalculations() throws Exception {
-//        // TODO - If problem here, then return back and show validations, etc.
-//        // TODO - Actally handle all that as part of upload and just enable button if everything ok.
-//        //adminService.update();
-//        //adminService.update(reportingUnits);
-//
-//        calculationService.calculateAndSave(reportingUnits, webSession.getCurrentPeriod());
-//
-//        return "pobCalculationReview";
-//    }
     public String getActiveTabIndex() {
         return activeTabIndex;
     }

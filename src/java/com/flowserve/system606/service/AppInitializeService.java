@@ -52,7 +52,6 @@ public class AppInitializeService {
             financialPeriodService.initFinancialPeriods();
             // TODO - KJG - The legacy file does not contain Oct 17 data but prior period lookups try to find it, so just use dummy rates for now.
             currencyService.initCurrencyConverter(financialPeriodService.findById("OCT-17"));
-            //currencyService.initCurrencyConverter(financialPeriodService.findById("APR-18"));
             currencyService.initCurrencyConverter(financialPeriodService.findById("MAY-18"));
             //adminService.initBilings();
             metricService.initMetricTypes();
@@ -63,14 +62,14 @@ public class AppInitializeService {
             adminService.initCoEtoParentRU();
             adminService.initCompaniesInRUs();
             adminService.initPreparersReviewerForRU();
-            //contractService.initContracts();
-            //pobService.initPOBs();
-
             calculationService.initBusinessRules();
             //calculationService.initBusinessRulesEngine();
 
-            // businessRuleService.executePOBCalculations(pob);// TODO - Remove
-            //DroolsTest.execute();
+            // Uncomment for local file based POB loading current month only.
+            //contractService.initContracts();
+            //pobService.initPOBs();
+            //currencyService.initCurrencyConverter(financialPeriodService.findById("APR-18"));
+            // end
         } catch (Exception ex) {
             Logger.getLogger(AppInitializeService.class.getName()).log(Level.SEVERE, null, ex);
         }

@@ -15,7 +15,9 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.ejb.EJB;
@@ -35,6 +37,8 @@ public class MetricService {
 
     @PersistenceContext(unitName = "FlowServePU")
     private EntityManager em;
+
+    private static Map<String, MetricType> metricCodeMap = new HashMap<String, MetricType>();
 
     @EJB
     private PerformanceObligationService pobService;
@@ -58,15 +62,6 @@ public class MetricService {
     public List<MetricType> findActiveMetricTypes() {
         Query query = em.createQuery("SELECT it FROM MetricType it WHERE it.active = TRUE");
         return (List<MetricType>) query.getResultList();
-    }
-
-    // KJG TODO - Remove after go-live!!
-    public int deleteAllMetrics() {
-        return em.createQuery("DELETE FROM Metric").executeUpdate();
-    }
-
-    public int deleteAllMetricSets() {
-        return em.createQuery("DELETE FROM MetricSet").executeUpdate();
     }
 
     private List<MetricType> findActiveMetricTypesByOwnerEntityType(String ownerEntityType) {
@@ -96,7 +91,7 @@ public class MetricService {
         em.persist(metricSet);
     }
 
-    public MetricType findMetricTypeById(String id) {
+    public MetricType findMetricTypeById(Long id) {
         return em.find(MetricType.class, id);
     }
 
@@ -104,6 +99,18 @@ public class MetricService {
         Query query = em.createQuery("SELECT it FROM MetricType it WHERE it.name = :IN");
         query.setParameter("IN", metricName);
         return (MetricType) query.getSingleResult();  // we want an exception if not one and only one.
+    }
+
+    public MetricType findMetricTypeByCode(String metricCode) {
+        if (metricCodeMap.get(metricCode) != null) {
+            return metricCodeMap.get(metricCode);
+        }
+        Query query = em.createQuery("SELECT it FROM MetricType it WHERE it.code = :IN");
+        query.setParameter("IN", metricCode);
+        MetricType metricType = (MetricType) query.getSingleResult();
+        metricCodeMap.put(metricCode, metricType);
+
+        return metricType;
     }
 
     private Contract createContract(String reportingUnit, long contractId, String customerName, String salesOrderNum, BigDecimal totalTransactionPrice) {
@@ -142,9 +149,9 @@ public class MetricService {
 
             MetricType metricType = new MetricType();
             metricType.setDirection(MetricDirection.valueOf(values[count++]));
-            metricType.setId(values[count++]);
+            metricType.setCode(values[count++]);
             try {
-                if (findMetricTypeById(metricType.getId()) != null) {
+                if (findMetricTypeByCode(metricType.getCode()) != null) {
                     continue;
                 }
             } catch (Exception e) {

@@ -109,14 +109,14 @@ public class Contract extends BaseEntity<Long> implements MetricStore, Measurabl
     @JoinColumn(name = "SALES_DESTINATION_COUNTRY_ID")
     //private Country salesDestinationCountry;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "contract", cascade = CascadeType.ALL)
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "contract")
     private List<PerformanceObligation> performanceObligations = new ArrayList<PerformanceObligation>();
 
-    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(fetch = FetchType.LAZY, cascade = {CascadeType.ALL}, orphanRemoval = true)
     @JoinTable(name = "CONTRACT_METRIC_SET", joinColumns = @JoinColumn(name = "CONTRACT_ID"), inverseJoinColumns = @JoinColumn(name = "METRIC_SET_ID"))
     private Map<FinancialPeriod, MetricSet> periodMetricSetMap = new HashMap<FinancialPeriod, MetricSet>();
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "contract", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "contract", orphanRemoval = true)
     private List<BillingEvent> billingEvents = new ArrayList<BillingEvent>();
 
     public Contract() {
@@ -155,19 +155,22 @@ public class Contract extends BaseEntity<Long> implements MetricStore, Measurabl
         return periodMetricSetMap.get(period).getTypeMetricMap().get(metricType) != null;
     }
 
-    public void initializeMetricSetForPeriod(FinancialPeriod period) {
-        periodMetricSetMap.put(period, new MetricSet());
+    public MetricSet initializeMetricSetForPeriod(FinancialPeriod period) {
+        MetricSet metricSet = new MetricSet();
+        periodMetricSetMap.put(period, metricSet);
+        return metricSet;
     }
 
     public Metric getPeriodMetric(FinancialPeriod period, MetricType metricType) {
         return periodMetricSetMap.get(period).getTypeMetricMap().get(metricType);
     }
 
-    public void initializeMetricForPeriod(FinancialPeriod period, MetricType metricType) {
+    public Metric initializeMetricForPeriod(FinancialPeriod period, MetricType metricType) {
+        Metric metric = null;
         try {
             if (metricType.isContractLevel()) {
                 Class<?> clazz = Class.forName(MetricType.PACKAGE_PREFIX + metricType.getMetricClass());
-                Metric metric = (Metric) clazz.newInstance();
+                metric = (Metric) clazz.newInstance();
                 metric.setMetricType(metricType);
                 metric.setMetricSet(periodMetricSetMap.get(period));
                 periodMetricSetMap.get(period).getTypeMetricMap().put(metricType, metric);
@@ -176,6 +179,11 @@ public class Contract extends BaseEntity<Long> implements MetricStore, Measurabl
             Logger.getLogger(Contract.class.getName()).log(Level.SEVERE, "Severe exception initializing metricTypeId: " + metricType.getId(), e);
             throw new IllegalStateException("Severe exception initializing metricTypeId: " + metricType.getId(), e);
         }
+
+        if (metric == null) {
+            Logger.getLogger(Contract.class.getName()).log(Level.FINER, "Null metric at contract level!:  " + metricType.getCode());
+        }
+        return metric;
     }
 
     public Currency getLocalCurrency() {

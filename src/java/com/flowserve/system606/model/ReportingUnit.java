@@ -11,7 +11,6 @@ import java.util.ArrayList;
 import java.util.Currency;
 import java.util.List;
 import java.util.logging.Logger;
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -64,7 +63,7 @@ public class ReportingUnit extends TransientMeasurable<Long> implements Measurab
     @JoinColumn(name = "COMPANY_ID")
     private Company company;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "reportingUnit", cascade = CascadeType.ALL)
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "reportingUnit")
     private List<Contract> contracts = new ArrayList<Contract>();
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "parent")

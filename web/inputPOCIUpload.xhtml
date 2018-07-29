@@ -26,6 +26,8 @@
                         <h1>Upload POCI Data</h1>
                         <p:fileUpload fileUploadListener="#{inputPOCIUpload.handleInputPOCIUpload}" auto="true" dragDropSupport="true" label="Upload POCI Data (or drag and drop)"
                                       multiple="false" update="messages,tblupdate" sizeLimit="100000000" allowTypes="/(\.|\/)(accdb)$/" style="width:75%" />
+
+                        <p:commandButton value="Calc All" icon="ui-icon-disk" ajax="false" action="#{inputPOCIUpload.calcAll()}"/>
                     </div>
                 </div>
 

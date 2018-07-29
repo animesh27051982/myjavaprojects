@@ -10,6 +10,7 @@
 package com.flowserve.system606.model;
 
 import java.io.Serializable;
+import java.security.Principal;
 import java.util.logging.Logger;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -25,7 +26,7 @@ import javax.persistence.Table;
 @Entity
 
 @Table(name = "SYSTEM_USERS")
-public class User implements Comparable<User>, Serializable {
+public class User implements Principal, Comparable<User>, Serializable {
 
     private static final long serialVersionUID = -4257640938927294079L;
     private static final Logger LOG = Logger.getLogger(User.class.getName());

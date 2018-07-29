@@ -106,17 +106,27 @@ public class CalculationService {
     private Metric intelliGetMetric(MetricType metricType, Measurable measurable, FinancialPeriod period) {  // TODO - Exception type to be thrown?
         if (!measurable.metricSetExistsForPeriod(period)) {
             measurable.initializeMetricSetForPeriod(period);
+            //em.persist(measurable.initializeMetricSetForPeriod(period));
         }
         if (!measurable.metricExistsForPeriod(period, metricType)) {
-            measurable.initializeMetricForPeriod(period, metricType);
+            /**
+             * KJG - TODO - Need to time this approach for persisting when created. Documentation says we should always persist upon creation, but this seems to
+             * slow down processing. Time it both ways. Disabled for now. Same for above.
+             *
+             *
+             */
+            Metric metric = measurable.initializeMetricForPeriod(period, metricType);
+//            if (metric != null) {
+//                em.persist(metric);
+//            }
         }
 
         return measurable.getPeriodMetric(period, metricType);
     }
 
-    private Metric getMetric(String metricTypeId, Measurable measurable, FinancialPeriod period) {
+    private Metric getMetric(String metricCode, Measurable measurable, FinancialPeriod period) {
         //FinancialPeriod period = financialPeriodService.getCurrentFinancialPeriod();
-        return intelliGetMetric(metricService.findMetricTypeById(metricTypeId), measurable, period);
+        return intelliGetMetric(metricService.findMetricTypeByCode(metricCode), measurable, period);
     }
 
     public StringMetric getStringMetric(String metricTypeId, PerformanceObligation pob, FinancialPeriod period) {
@@ -131,29 +141,19 @@ public class CalculationService {
         return (DateMetric) getMetric(metricTypeId, measurable, period);
     }
 
-    public CurrencyMetric getCurrencyMetric(String metricTypeId, Measurable measurable, FinancialPeriod period) throws Exception {
+    public CurrencyMetric getCurrencyMetric(String metricCode, Measurable measurable, FinancialPeriod period) throws Exception {
         if (measurable instanceof MetricStore) {
-            CurrencyMetric currencyMetric = (CurrencyMetric) getMetric(metricTypeId, measurable, period);
+            CurrencyMetric currencyMetric = (CurrencyMetric) getMetric(metricCode, measurable, period);
             if (isMetricAvailableAtThisLevel(currencyMetric) || measurable instanceof PerformanceObligation) {
                 return currencyMetric;
             }
         }
-        Logger.getLogger(CalculationService.class.getName()).log(Level.FINER, "Metric not directly available at level. " + measurable.getClass() + " Returnig accumulated version: " + metricTypeId);
-        return getAccumulatedCurrencyMetric(metricTypeId, measurable, period);
+        Logger.getLogger(CalculationService.class.getName()).log(Level.FINER, "Metric not directly available at level. " + measurable.getClass() + " Returnig accumulated version: " + metricCode);
+        return getAccumulatedCurrencyMetric(metricCode, measurable, period);
     }
 
     private boolean isMetricAvailableAtThisLevel(Metric metric) {
         return metric != null;
-    }
-
-    public void calcAllPobsApr2018(ReportingUnit ru) throws Exception {
-        FinancialPeriod period = financialPeriodService.findById("DEC-17");
-        Logger.getLogger(CalculationService.class.getName()).log(Level.INFO, "Calculating all POBs...");
-        //calculateAndSave(adminService.findAllReportingUnits(), period);
-        List<ReportingUnit> rus = new ArrayList<ReportingUnit>();
-        rus.add(ru);
-        calculateAndSave(rus, period);
-        Logger.getLogger(CalculationService.class.getName()).log(Level.INFO, "Calcs complete.");
     }
 
     public void calculateAndSave(List<ReportingUnit> reportingUnits, FinancialPeriod period) throws Exception {
@@ -162,25 +162,29 @@ public class CalculationService {
             if (reportingUnit.isParent()) {
                 continue;
             }
-            Logger.getLogger(CalculationService.class.getName()).log(Level.INFO, "Calculating RU: " + reportingUnit.getCode());
+            Logger.getLogger(CalculationService.class.getName()).log(Level.INFO, "Calculating RU: " + reportingUnit.getCode() + "...");
 
             FinancialPeriod calculationPeriod = period;
             do {
-                executeBusinessRules((new ArrayList<Measurable>(reportingUnit.getPerformanceObligations())), calculationPeriod);
+                executeBusinessRulesAndSave((new ArrayList<Measurable>(reportingUnit.getPerformanceObligations())), calculationPeriod);
             } while ((calculationPeriod = financialPeriodService.calculateNextPeriodUntilCurrent(calculationPeriod)) != null);
 
             calculationPeriod = period;
             do {
-                executeBusinessRules((new ArrayList<Measurable>(reportingUnit.getContracts())), calculationPeriod);
-                //                contractService.update(contract);
+                executeBusinessRulesAndSave((new ArrayList<Measurable>(reportingUnit.getContracts())), calculationPeriod);
             } while ((calculationPeriod = financialPeriodService.calculateNextPeriodUntilCurrent(calculationPeriod)) != null);
-
-            adminService.update(reportingUnit);
+            Logger.getLogger(CalculationService.class.getName()).log(Level.INFO, "Completed calcs RU: " + reportingUnit.getCode());
         }
-
     }
 
-    // More validity work needed.
+    public void calculateAndSave(Long reportingUnitId, FinancialPeriod period) throws Exception {
+        ReportingUnit ru = adminService.findReportingUnitById(reportingUnitId);
+        List<ReportingUnit> rus = new ArrayList<ReportingUnit>();
+        rus.add(ru);
+        calculateAndSave(rus, period);
+    }
+
+    // KJG TODO - More validity work needed.  Just checking TP not good enough.
     private boolean isValidForCalculations(Measurable measurable, FinancialPeriod period) throws Exception {
         if (measurable instanceof PerformanceObligation) {
             if (getCurrencyMetric("TRANSACTION_PRICE_CC", (PerformanceObligation) measurable, period).getCcValue() != null) {
@@ -217,28 +221,18 @@ public class CalculationService {
         facts.addAll(getAllPriorPeriodMetrics(measurable, period));
         kSession.execute(facts);
         convertCurrencies(periodMetrics, measurable, period);
-
-        Logger.getLogger(CalculationService.class.getName()).log(Level.FINER, "Firing all business rules complete.");
     }
 
-    public void executeBusinessRules(List<Measurable> measurables, FinancialPeriod period) throws Exception {
+    public void executeBusinessRulesAndSave(List<Measurable> measurables, FinancialPeriod period) throws Exception {
         for (Measurable measurable : measurables) {
             if (isValidForCalculations(measurable, period)) {
                 executeBusinessRules(measurable, period);
                 adminService.update(measurable);
-                flushAndClear();
             }
         }
     }
 
-    private void flushAndClear() {
-        em.flush();
-        em.clear();
-    }
-
     private Collection<Metric> getAllCurrentPeriodMetrics(Measurable measurable, FinancialPeriod period) throws Exception {
-        //FinancialPeriod period = financialPeriodService.getCurrentFinancialPeriod();
-
         return getAllMetrics(measurable, period);
     }
 
@@ -249,7 +243,7 @@ public class CalculationService {
         for (MetricType metricType : metricTypes) {
 
             if (metricType.isCurrency()) {
-                Metric currencyMetric = getCurrencyMetric(metricType.getId(), measurable, period);
+                Metric currencyMetric = getCurrencyMetric(metricType.getCode(), measurable, period);
                 if (currencyMetric != null) {
                     metrics.add(currencyMetric);
                 }
@@ -299,17 +293,17 @@ public class CalculationService {
         return (List<BusinessRule>) query.getResultList();
     }
 
-    private CurrencyMetric getAccumulatedCurrencyMetric(String metricTypeId, Measurable measurable, FinancialPeriod period) throws Exception {
-        Logger.getLogger(CalculationService.class.getName()).log(Level.FINER, "getAccumulatedCurrencyMetric() " + metricTypeId + " measurable: " + measurable.getClass().getName());
+    private CurrencyMetric getAccumulatedCurrencyMetric(String metricCode, Measurable measurable, FinancialPeriod period) throws Exception {
+        Logger.getLogger(CalculationService.class.getName()).log(Level.FINER, "getAccumulatedCurrencyMetric() " + metricCode + " measurable: " + measurable.getClass().getName());
         BigDecimal sum = new BigDecimal("0.0");
         CurrencyMetric metric = new CurrencyMetric();
-        metric.setMetricType(metricService.findMetricTypeById(metricTypeId));
+        metric.setMetricType(metricService.findMetricTypeByCode(metricCode));
         metric.setValue(sum);
         if (isEmptyTransientMesaurable(measurable)) {
             return metric;
         }
         if (isRootMeasurable(measurable)) {
-            BigDecimal value = getCurrencyMetric(metricTypeId, measurable, period).getValue();
+            BigDecimal value = getCurrencyMetric(metricCode, measurable, period).getValue();
             if (value != null) {
                 sum = sum.add(value);
             }
@@ -318,7 +312,7 @@ public class CalculationService {
         }
 
         for (Measurable childMeasurable : measurable.getChildMeasurables()) {
-            sum = sum.add(getAccumulatedCurrencyMetric(metricTypeId, childMeasurable, period).getValue());
+            sum = sum.add(getAccumulatedCurrencyMetric(metricCode, childMeasurable, period).getValue());
         }
 
         metric.setValue(sum);

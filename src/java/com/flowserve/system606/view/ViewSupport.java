@@ -304,20 +304,20 @@ public class ViewSupport implements Serializable {
 
     }
 
-    public String getMetricTypeDescription(String metricTypeId) {
-        return metricService.findMetricTypeById(metricTypeId).getDescription();
+    public String getMetricTypeDescription(String metricCode) {
+        return metricService.findMetricTypeByCode(metricCode).getDescription();
     }
 
-    public CurrencyMetric getCurrencyMetric(String metricTypeId, Measurable measurable) throws Exception {
-        return calculationService.getCurrencyMetric(metricTypeId, measurable, webSession.getCurrentPeriod());
+    public CurrencyMetric getCurrencyMetric(String metricCode, Measurable measurable) throws Exception {
+        return calculationService.getCurrencyMetric(metricCode, measurable, webSession.getCurrentPeriod());
     }
 
-    public DecimalMetric getDecimalMetric(String metricTypeId, Measurable measurable) throws Exception {
-        return calculationService.getDecimalMetric(metricTypeId, measurable, webSession.getCurrentPeriod());
+    public DecimalMetric getDecimalMetric(String metricCode, Measurable measurable) throws Exception {
+        return calculationService.getDecimalMetric(metricCode, measurable, webSession.getCurrentPeriod());
     }
 
-    public CurrencyMetric getCurrencyMetricPriorPeriod(String metricTypeId, Measurable measurable) throws Exception {
-        return calculationService.getCurrencyMetric(metricTypeId, measurable, webSession.getPriorPeriod());
+    public CurrencyMetric getCurrencyMetricPriorPeriod(String metricCode, Measurable measurable) throws Exception {
+        return calculationService.getCurrencyMetric(metricCode, measurable, webSession.getPriorPeriod());
     }
 
     public List<FinancialPeriod> getAllPeriods() {

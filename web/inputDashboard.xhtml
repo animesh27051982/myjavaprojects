@@ -10,7 +10,7 @@
             .main-content {
                 padding: 0;
             }
-          
+
         </style>
     </ui:define>
 
@@ -150,12 +150,13 @@
 
                             <p:toolbar>
                                 <f:facet name="right">
-                                    <p:commandButton value="Proceed via Online Input Entry" icon="ui-icon-arrowthick-1-e" action="#{inputController.proceedToOnlineEntry()}"/>
-                                    <p:commandButton value="Proceed via Download Upload Excel" icon="ui-icon-arrowthick-1-e" action="#{inputController.proceedToInputDownload()}"/>
+                                    <p:commandButton value="Proceed via Online Input Entry" icon="ui-icon-arrowthick-1-e" ajax="false" action="#{inputController.proceedToOnlineEntry()}"/>
+                                    <p:commandButton value="Proceed via Download Upload Excel" icon="ui-icon-arrowthick-1-e" ajax="false" action="#{inputController.proceedToInputDownload()}"/>
                                 </f:facet>
                             </p:toolbar>
-                     
+
                         </div>
+
                         <div class="ui-g-6 card ">
                             <p:panel header="Calendar" >
                                 <p:schedule id="schedule" value="#{inputDashboard.eventModel}" />

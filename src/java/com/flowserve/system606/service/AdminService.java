@@ -186,6 +186,11 @@ public class AdminService {
         return (List<ReportingUnit>) query.getResultList();
     }
 
+    public List<Long> findAllReportingUnitIds() {
+        Query query = em.createQuery("SELECT ru.id FROM ReportingUnit ru");
+        return (List<Long>) query.getResultList();
+    }
+
     public ReportingUnit findReportingUnitByCode(String code) {
         Query query = em.createQuery("SELECT reportingUnit FROM ReportingUnit reportingUnit WHERE reportingUnit.code = :CODE");
         query.setParameter("CODE", code);

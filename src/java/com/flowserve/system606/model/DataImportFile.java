@@ -28,7 +28,7 @@ import static javax.persistence.TemporalType.TIMESTAMP;
  * @author shubhamv
  */
 @Entity
-@Table(name = "DATA_IMPORT_FILE")
+@Table(name = "DATA_IMPORT_FILES")
 public class DataImportFile implements Comparable<DataImportFile>, Serializable {
 
     @Id
@@ -48,12 +48,12 @@ public class DataImportFile implements Comparable<DataImportFile>, Serializable 
     private String uploadedBy;
     @Column(name = "STATUS")
     private String status;
-    @Column(name = "TYPE")
+    @Column(name = "IMPORT_TYPE")
     private String type;
 
     @ElementCollection
-    @CollectionTable(name = "IMPORT_MESSAGE")
-    private List<String> DataImportMessage = new ArrayList<String>();
+    @CollectionTable(name = "DATA_IMPORT_MESSAGES")
+    private List<String> dataImportMessages = new ArrayList<String>();
 
     public DataImportFile() {
     }
@@ -98,12 +98,12 @@ public class DataImportFile implements Comparable<DataImportFile>, Serializable 
         this.status = status;
     }
 
-    public List<String> getDataImportMessage() {
-        return DataImportMessage;
+    public List<String> getDataImportMessages() {
+        return dataImportMessages;
     }
 
-    public void setDataImportMessage(List<String> DataImportMessage) {
-        this.DataImportMessage = DataImportMessage;
+    public void setDataImportMessages(List<String> dataImportMessages) {
+        this.dataImportMessages = dataImportMessages;
     }
 
     @Override

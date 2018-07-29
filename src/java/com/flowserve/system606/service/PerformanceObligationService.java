@@ -4,7 +4,6 @@ import com.flowserve.system606.model.Contract;
 import com.flowserve.system606.model.PerformanceObligation;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
-import java.time.LocalDateTime;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.Resource;
@@ -40,16 +39,16 @@ public class PerformanceObligationService {
     public PerformanceObligation update(PerformanceObligation pob) throws Exception {
         //User user = adminService.findUserByFlsId(sessionContext.getCallerPrincipal().getName().toLowerCase());
         //pob.setLastUpdatedBy(updatedBy);
-        if (pob.getCreationDate() == null) {
-            pob.setCreationDate(LocalDateTime.now());
-        }
-        pob.setLastUpdateDate(LocalDateTime.now());
+//        if (pob.getCreationDate() == null) {
+//            pob.setCreationDate(LocalDateTime.now());
+//        }
+//        pob.setLastUpdateDate(LocalDateTime.now());
 
         return em.merge(pob);
     }
 
-    public void persist1(Object object) {
-        em.persist(object);
+    public void persist(PerformanceObligation pob) {
+        em.persist(pob);
     }
 
     public void testFromDrools(PerformanceObligation pob) {

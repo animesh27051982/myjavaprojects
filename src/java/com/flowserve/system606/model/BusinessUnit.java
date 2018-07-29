@@ -9,7 +9,6 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -42,10 +41,10 @@ public class BusinessUnit extends TransientMeasurable<String> implements Compara
     @JoinColumn(name = "PARENT_ID")
     private BusinessUnit parent;
 
-    @OneToMany(fetch = FetchType.EAGER, mappedBy = "businessUnit", cascade = CascadeType.MERGE)
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "businessUnit")
     private List<ReportingUnit> reportingUnit = new ArrayList<ReportingUnit>();
 
-    @OneToMany(fetch = FetchType.EAGER, mappedBy = "parent", cascade = CascadeType.MERGE)
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "parent")
     private List<BusinessUnit> childBusinessUnit = new ArrayList<BusinessUnit>();
 
     public BusinessUnit() {

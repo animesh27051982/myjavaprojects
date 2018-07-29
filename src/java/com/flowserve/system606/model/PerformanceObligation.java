@@ -7,7 +7,6 @@ package com.flowserve.system606.model;
 
 import com.flowserve.system606.service.PerformanceObligationService;
 import java.io.Serializable;
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Currency;
@@ -63,7 +62,7 @@ public class PerformanceObligation extends BaseEntity<Long> implements MetricSto
     private LocalDateTime lastUpdateDate;
 
     //private String deactivationReason;  // create type class
-    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(fetch = FetchType.LAZY, cascade = {CascadeType.ALL}, orphanRemoval = true)
     @JoinTable(name = "POB_METRIC_SET", joinColumns = @JoinColumn(name = "POB_ID"), inverseJoinColumns = @JoinColumn(name = "METRIC_SET_ID"))
     private Map<FinancialPeriod, MetricSet> periodMetricSetMap = new HashMap<FinancialPeriod, MetricSet>();
 
@@ -147,15 +146,6 @@ public class PerformanceObligation extends BaseEntity<Long> implements MetricSto
         this.revRecMethod = revRecMethod;
     }
 
-    // TODO - Temp code remove.  This is to support temp code from the JSF UI until we finish the calculations.
-    public BigDecimal getPobCountRejected() {
-        return new BigDecimal("10.0");
-    }
-
-    public BigDecimal getContractToLocalFxRate() {
-        return new BigDecimal("1.0");
-    }
-
     public Metric getPeriodMetric(FinancialPeriod period, MetricType metricType) {
         return periodMetricSetMap.get(period).getTypeMetricMap().get(metricType);
     }
@@ -164,25 +154,30 @@ public class PerformanceObligation extends BaseEntity<Long> implements MetricSto
         return new ArrayList<Measurable>();
     }
 
-    public void initializeMetricSetForPeriod(FinancialPeriod period) {
+    public MetricSet initializeMetricSetForPeriod(FinancialPeriod period) {
         MetricSet metricSet = new MetricSet();
-        //metricSet.setPerformanceObligation(this);
         periodMetricSetMap.put(period, metricSet);
+
+        return metricSet;
     }
 
-    public void initializeMetricForPeriod(FinancialPeriod period, MetricType metricType) {
+    public Metric initializeMetricForPeriod(FinancialPeriod period, MetricType metricType) {
+        Metric metric = null;
         try {
             if (metricType.isPobLevel()) {
                 Class<?> clazz = Class.forName(MetricType.PACKAGE_PREFIX + metricType.getMetricClass());
-                Metric metric = (Metric) clazz.newInstance();
+                metric = (Metric) clazz.newInstance();
                 metric.setMetricType(metricType);
                 metric.setMetricSet(periodMetricSetMap.get(period));
                 periodMetricSetMap.get(period).getTypeMetricMap().put(metricType, metric);
+
             }
         } catch (Exception e) {
             Logger.getLogger(PerformanceObligationService.class.getName()).log(Level.SEVERE, "Severe exception initializing metricTypeId: " + metricType.getId(), e);
             throw new IllegalStateException("Severe exception initializing metricTypeId: " + metricType.getId(), e);
         }
+
+        return metric;
     }
 
     public FinancialPeriod getEarliestPeriod() {

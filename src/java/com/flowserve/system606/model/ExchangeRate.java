@@ -15,11 +15,29 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
+import javax.persistence.QueryHint;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
+/*
+Performance tuning showed that currency rate lookups where a major cause of slowness.
+Tried to use Eclipselink query cache, but it does not seem to work, possibly becuase the
+resulting object contains relationships.  Ended up implementing an ExchangeRate object
+cache in CurrencyService.java.  Leaving the query cache settings in place for now.
+ */
 @Entity
 @Table(name = "EXCHANGE_RATES")
+@NamedQueries({
+    @NamedQuery(name = "Currency.findRateByFromToPeriod",
+            query = "SELECT er FROM ExchangeRate er WHERE er.financialPeriod = :PERIOD and er.fromCurrency = :FROM and er.toCurrency = :TO",
+            hints = {
+                @QueryHint(name = "eclipselink.query-results-cache", value = "true")
+                ,
+                     @QueryHint(name = "eclipselink.query-results-cache.size", value = "1000")}
+    )
+})
 public class ExchangeRate implements Serializable, Comparable<ExchangeRate> {
 
     private static final long serialVersionUID = -383220321690601009L;

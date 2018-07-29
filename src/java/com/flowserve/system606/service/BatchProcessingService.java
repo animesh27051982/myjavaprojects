@@ -8,9 +8,9 @@ package com.flowserve.system606.service;
 import com.flowserve.system606.model.Contract;
 import com.flowserve.system606.model.DataImportFile;
 import com.flowserve.system606.model.FinancialPeriod;
+import com.flowserve.system606.model.Measurable;
 import com.flowserve.system606.model.PerformanceObligation;
 import com.flowserve.system606.model.ReportingUnit;
-import com.flowserve.system606.web.WebSession;
 import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -27,56 +27,86 @@ import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.annotation.Resource;
+import javax.ejb.Asynchronous;
 import javax.ejb.Stateless;
+import javax.ejb.TransactionManagement;
+import javax.ejb.TransactionManagementType;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.transaction.UserTransaction;
 import org.apache.commons.lang.StringUtils;
 
 /**
+ * @author kgraves
  *
- * @author shubhamv
+ * This EJB uses bean managed transactions due to high load batch processing
  */
 @Stateless
-public class DataUploadService {
+@TransactionManagement(TransactionManagementType.BEAN)
+public class BatchProcessingService {
 
     @PersistenceContext(unitName = "FlowServePU")
     private EntityManager em;
-
-    @Inject
-    private ContractService contractService;
-    @Inject
-    private PerformanceObligationService pobService;
-    @Inject
-    private AdminService adminService;
     @Inject
     private CalculationService calculationService;
     @Inject
     private FinancialPeriodService financialPeriodService;
     @Inject
-    private WebSession webSession;
+    PerformanceObligationService performanceObligationService;
     @Inject
-    private MetricService metricService;
+    private ContractService contractService;
+    @Inject
+    private AdminService adminService;
+    @Resource
+    private UserTransaction ut;
 
     private Map<String, String> methodMap = new HashMap<String, String>();
 
-    public void persist(Object object) {
-        em.persist(object);
+    @Asynchronous
+    public void calculateAllFinancials(List<ReportingUnit> reportingUnits, FinancialPeriod period) throws Exception {
+
+        for (ReportingUnit reportingUnit : reportingUnits) {
+
+            if (reportingUnit.isParent()) {
+                continue;
+            }
+            ut.begin();
+            Logger.getLogger(BatchProcessingService.class.getName()).log(Level.INFO, "Calculating RU: " + reportingUnit.getCode() + "...");
+
+            FinancialPeriod calculationPeriod = period;
+            do {
+                calculationService.executeBusinessRulesAndSave((new ArrayList<Measurable>(reportingUnit.getPerformanceObligations())), calculationPeriod);
+            } while ((calculationPeriod = financialPeriodService.calculateNextPeriodUntilCurrent(calculationPeriod)) != null);
+
+            calculationPeriod = period;
+            do {
+                calculationService.executeBusinessRulesAndSave((new ArrayList<Measurable>(reportingUnit.getContracts())), calculationPeriod);
+            } while ((calculationPeriod = financialPeriodService.calculateNextPeriodUntilCurrent(calculationPeriod)) != null);
+            Logger.getLogger(BatchProcessingService.class.getName()).log(Level.INFO, "Completed RU: " + reportingUnit.getCode());
+            ut.commit();
+            Logger.getLogger(BatchProcessingService.class.getName()).log(Level.INFO, "Flushing EntityManager");
+            em.flush();
+            Logger.getLogger(BatchProcessingService.class.getName()).log(Level.INFO, "Clearing EntityManager");
+            em.clear();
+        }
+        Logger.getLogger(BatchProcessingService.class.getName()).log(Level.INFO, "calculateAllFinancials() completed.");
     }
 
+    @Asynchronous
     public void processUploadedCalculationData(String msAccDB, String fileName) throws Exception {
 
         // KJG - Remove this after UAT along with the deleteAllMetrics() method itself.
-        //int metricDeletionCount = metricService.deleteAllMetrics();
-        //Logger.getLogger(DataUploadService.class.getName()).log(Level.INFO, "Deleted " + metricDeletionCount + " metrics.");
-        Logger.getLogger(DataUploadService.class.getName()).log(Level.INFO, "Processing POCI Data: " + msAccDB);
+        Logger.getLogger(BatchProcessingService.class.getName()).log(Level.INFO, "Processing POCI Data: " + msAccDB);
 
         Connection connection = null;
+
         Statement statement = null;
         ResultSet resultSet = null;
         String exPeriod = null;
-        DataImportFile dataImport = new DataImportFile();
-        List<String> importMSG = new ArrayList<String>();
+        DataImportFile dataImport = null;
+        List<String> importMessages = new ArrayList<String>();
 
         Class.forName("net.ucanaccess.jdbc.UcanaccessDriver");
 
@@ -85,13 +115,14 @@ public class DataUploadService {
         try {
             String dbURL = "jdbc:ucanaccess://" + msAccDB;
             connection = DriverManager.getConnection(dbURL);
+            connection.setAutoCommit(false);
             statement = connection.createStatement();
             resultSet = statement.executeQuery(
                     "SELECT Period,`POb NAME (TAB NAME)`,`Transaction Price/Changes to Trans Price (excl LDs)`,`Estimated at Completion (EAC)/ Changes to EAC (excl TPCs)`,"
                     + "`Cumulative Costs Incurred`,`Liquidated Damages (LDs)/Changes to LDs` FROM `tbl_POCI_1_POb Changes` ORDER BY Period");
 
-            Logger.getLogger(DataUploadService.class.getName()).log(Level.INFO, "Period\tPOCC File Name\tC Page Number\tReporting Unit Number");
-            Logger.getLogger(DataUploadService.class.getName()).log(Level.INFO, "==\t================\t===\t=======");
+            Logger.getLogger(BatchProcessingService.class.getName()).log(Level.INFO, "Period\tPOCC File Name\tC Page Number\tReporting Unit Number");
+            Logger.getLogger(BatchProcessingService.class.getName()).log(Level.INFO, "==\t================\t===\t=======");
 
             int count = 0;
             long timeInterval = System.currentTimeMillis();
@@ -100,6 +131,10 @@ public class DataUploadService {
                 "MAR", "APR", "MAY", "JUN", "JUL",
                 "AUG", "SEP", "OCT", "NOV",
                 "DEC"};
+
+            dataImport = new DataImportFile();
+
+            ut.begin();
 
             while (resultSet.next()) {
 
@@ -115,7 +150,7 @@ public class DataUploadService {
                     exPeriod = monthName[month - 1] + "-" + finalYear;
                     period = financialPeriodService.findById(exPeriod);
                 } catch (NumberFormatException e) {
-                    Logger.getLogger(DataUploadService.class.getName()).log(Level.INFO, "Error " + e);
+                    Logger.getLogger(BatchProcessingService.class.getName()).log(Level.INFO, "Error " + e);
                 }
 
                 if (period != null) {
@@ -130,18 +165,25 @@ public class DataUploadService {
                             BigDecimal ld = resultSet.getBigDecimal(6);
                             // checking valid integer using parseInt() method
                             Integer.parseInt(lastId);
-                            PerformanceObligation pob = pobService.findPerformanceObligationById(new Long(lastId));
+                            PerformanceObligation pob = performanceObligationService.findPerformanceObligationById(new Long(lastId));
                             if (pob != null) {
                                 ReportingUnit ru = pob.getContract().getReportingUnit();
-                                if (ru == null || ru.getLocalCurrency() == null) {
+                                if (ru == null) {
                                     //String msg = "No local currency found for RU: " + ru.getCode();
                                     //importMSG.add(msg);
-                                    //Logger.getLogger(DataUploadService.class.getName()).log(Level.INFO, msg);
+                                    Logger.getLogger(BatchProcessingService.class.getName()).log(Level.INFO, "RU is null ");
                                     continue;
                                 }
-                                if (ru.getCode().equalsIgnoreCase("1015")) {
-                                    //if (ru.getCode().equalsIgnoreCase("1100") || ru.getCode().equalsIgnoreCase("1015") || ru.getCode().equalsIgnoreCase("8225") || ru.getCode().equalsIgnoreCase("5200")) {
-                                    //if (true) {
+                                if (ru.getLocalCurrency() == null) {
+                                    //String msg = "No local currency found for RU: " + ru.getCode();
+                                    //importMSG.add(msg);
+                                    Logger.getLogger(BatchProcessingService.class.getName()).log(Level.INFO, "RU local currency is null ");
+                                    continue;
+                                }
+                                //if (ru.getCode().equalsIgnoreCase("1015")) {
+                                //if (ru.getCode().equalsIgnoreCase("1100") || ru.getCode().equalsIgnoreCase("1015") || ru.getCode().equalsIgnoreCase("8225") || ru.getCode().equalsIgnoreCase("5200")) {
+                                if (true) {
+                                    Logger.getLogger(BatchProcessingService.class.getName()).log(Level.INFO, "Populating POB metrics: " + pob.getId());
                                     calculationService.getCurrencyMetric("TRANSACTION_PRICE_CC", pob, period).setValue(tp);
                                     calculationService.getCurrencyMetric("ESTIMATED_COST_AT_COMPLETION_LC", pob, period).setValue(eac);
                                     calculationService.getCurrencyMetric("LOCAL_COSTS_ITD_LC", pob, period).setValue(costs);
@@ -155,26 +197,28 @@ public class DataUploadService {
                                         calculationService.getCurrencyMetric("LIQUIDATED_DAMAGES_ITD_CC", pob, period).setValue(ld);
                                     }
                                     //calculationService.executeBusinessRules(pob, period);
-                                    //07calculationService.executeBusinessRules(pob.getContract(), period);
+                                    //calculationService.executeBusinessRules(pob.getContract(), period);
                                     rusToSave.add(pob.getContract().getReportingUnit());
                                 }
                             } else {
-                                importMSG.add("These POBs not found : " + id);
-                                //Logger.getLogger(DataUploadService.class.getName()).log(Level.FINER, "These POBs not found : " + id);
+                                importMessages.add("These POBs not found : " + id);
+                                //Logger.getLogger(BatchProcessingService.class.getName()).log(Level.FINER, "These POBs not found : " + id);
                             }
                         } catch (NumberFormatException e) {
-                            importMSG.add("This is not a Valid POB ID : " + lastId);
-                            //Logger.getLogger(DataUploadService.class.getName()).log(Level.INFO, "Error " + e);
+                            importMessages.add("This is not a Valid POB ID : " + lastId);
+                            //Logger.getLogger(BatchProcessingService.class.getName()).log(Level.INFO, "Error " + e);
                         }
                     }
+
                 } else {
-                    importMSG.add("Financial Period not available : " + exPeriod);
+                    importMessages.add("Financial Period not available : " + exPeriod);
                     throw new IllegalStateException("Financial Period not available :" + exPeriod);
+
                 }
 
                 if ((count % 100) == 0) {
-                    Logger.getLogger(DataUploadService.class.getName()).log(Level.INFO, "Processed " + count + " POCI import records");
-                    Logger.getLogger(DataUploadService.class.getName()).log(Level.INFO, "Interval time: " + ((System.currentTimeMillis() - timeInterval)) / 1000);
+                    Logger.getLogger(BatchProcessingService.class.getName()).log(Level.INFO, "Processed " + count + " POCI import records");
+                    Logger.getLogger(BatchProcessingService.class.getName()).log(Level.INFO, "Interval time: " + ((System.currentTimeMillis() - timeInterval)) / 1000);
                     timeInterval = System.currentTimeMillis();
 
                 }
@@ -182,37 +226,30 @@ public class DataUploadService {
 
             }
 
-            Logger.getLogger(DataUploadService.class.getName()).log(Level.INFO, "Saving RUs...");
-            for (ReportingUnit reportingUnit : rusToSave) {
-                adminService.update(reportingUnit);
-            }
+            Logger.getLogger(BatchProcessingService.class.getName()).log(Level.INFO, "Saving RUs...");
             dataImport.setFilename(fileName + " - tbl_POCI_1_POb Changes");
             dataImport.setUploadDate(LocalDateTime.now());
             dataImport.setCompany(adminService.findCompanyById("FLS"));
-            dataImport.setDataImportMessage(importMSG);
+            dataImport.setDataImportMessages(importMessages);
             adminService.persist(dataImport);
-            Logger.getLogger(DataUploadService.class.getName()).log(Level.INFO, "Import completed.");
+            Logger.getLogger(BatchProcessingService.class.getName()).log(Level.INFO, "Import completed.");
+
+            ut.commit();
+            Logger.getLogger(BatchProcessingService.class.getName()).log(Level.INFO, "Flushing EntityManager");
+            em.flush();
+            Logger.getLogger(BatchProcessingService.class.getName()).log(Level.INFO, "Clearing EntityManager");
+            em.clear();
+
         } catch (SQLException sqlex) {
-            Logger.getLogger(DataUploadService.class.getName()).log(Level.INFO, "Error processing input file: ", sqlex);
+            Logger.getLogger(BatchProcessingService.class.getName()).log(Level.INFO, "Error processing input file: ", sqlex);
         } catch (Exception e) {
-            Logger.getLogger(DataUploadService.class.getName()).log(Level.INFO, "Error processing input file: ", e);
+            Logger.getLogger(BatchProcessingService.class.getName()).log(Level.INFO, "Error processing input file: ", e);
             throw new Exception(e.getMessage());
         } finally {
-            dataImport.setFilename(fileName + " - tbl_POCI_1_POb Changes");
-            dataImport.setUploadDate(LocalDateTime.now());
-            dataImport.setCompany(adminService.findCompanyById("FLS"));
-            dataImport.setDataImportMessage(importMSG);
-            dataImport.setType("POCI DATA");
-            adminService.persist(dataImport);
-            // Step 3: Closing database connection
             try {
                 if (null != connection) {
-
-                    // cleanup resources, once after processing
                     resultSet.close();
                     statement.close();
-
-                    // and then finally close connection
                     connection.close();
                 }
             } catch (SQLException sqlex) {
@@ -220,7 +257,7 @@ public class DataUploadService {
             }
         }
 
-        Logger.getLogger(DataUploadService.class.getName()).log(Level.INFO, "POCI import complete.");
+        Logger.getLogger(BatchProcessingService.class.getName()).log(Level.INFO, "POCI import complete.");
     }
 
     private boolean isGreaterThanZero(BigDecimal value) {
@@ -231,7 +268,7 @@ public class DataUploadService {
         return false;
     }
 
-    public void initContract(String msAccDB) throws Exception {
+    public void processUploadedContractPobData(String msAccDB) throws Exception {
         Logger.getLogger(AppInitializeService.class.getName()).log(Level.INFO, "Processing initContract: " + msAccDB);
 
         Connection connection = null;
@@ -243,8 +280,8 @@ public class DataUploadService {
             String dbURL = "jdbc:ucanaccess://" + msAccDB;
             connection = DriverManager.getConnection(dbURL);
             statement = connection.createStatement();
-            initContracts(connection, statement);
-            initPOBs(connection, statement);
+            processContracts(connection, statement);
+            processPobs(connection, statement);
         } finally {
             try {
                 if (null != connection) {
@@ -258,9 +295,15 @@ public class DataUploadService {
                 sqlex.printStackTrace();
             }
         }
+
+        Logger.getLogger(BatchProcessingService.class.getName()).log(Level.INFO, "Flushing EntityManager");
+        em.flush();
+        Logger.getLogger(BatchProcessingService.class.getName()).log(Level.INFO, "Clearing EntityManager");
+        em.clear();
+        Logger.getLogger(BatchProcessingService.class.getName()).log(Level.INFO, "Contract and POB import completed.");
     }
 
-    void initPOBs(Connection connection, Statement statement) throws SQLException, Exception {
+    void processPobs(Connection connection, Statement statement) throws SQLException, Exception {
         ResultSet resultSet = null;
 
         methodMap.put("POC/Cost-to-Cost", "POC");
@@ -278,18 +321,15 @@ public class DataUploadService {
         String revRecMethod = null;
 
         int count = 0;
-        String line = null;
 
         resultSet = statement.executeQuery("SELECT ID, Name, Stage, Folders, `Name of POb`, `If OT, identify the revenue recognition method`, `C-Page ID` FROM tbl_POb");
 
-        //Logger.getLogger(AppInitializeService.class.getName()).log(Level.INFO, "ID\tCustomer Name\t\tStage\t\tFolders-RU\tName of POb\tRevenue recognition method\tContract ID");
-        //Logger.getLogger(AppInitializeService.class.getName()).log(Level.INFO, "==\t================\t===\t=======t=======");
         while (resultSet.next()) {
 
             PerformanceObligation pob = new PerformanceObligation();
             pobId = resultSet.getInt(1);
 
-            if (pobService.findById(pobId) != null) {
+            if (performanceObligationService.findById(pobId) != null) {
                 continue;
             }
             customerName = resultSet.getString(2);
@@ -310,13 +350,16 @@ public class DataUploadService {
             pob.setName(pobName);
             pob.setId(pobId);
             if (methodMap.get(revRecMethod) == null) {
-                Logger.getLogger(DataUploadService.class.getName()).log(Level.SEVERE, "POB revrec method not in our list: " + revRecMethod);
+                Logger.getLogger(BatchProcessingService.class.getName()).log(Level.SEVERE, "POB revrec method not in our list: " + revRecMethod);
             }
             pob.setRevRecMethod(methodMap.get(revRecMethod));
 
-            pob = pobService.update(pob);
+            ut.begin();
+            //pobService.update(pob);  // update or persist?
+            performanceObligationService.persist(pob);
             contract.getPerformanceObligations().add(pob);
             contractService.update(contract);
+            ut.commit();
 
             count++;
             if ((count % 100) == 0) {
@@ -324,10 +367,10 @@ public class DataUploadService {
             }
         }
         resultSet.close();
-        Logger.getLogger(DataUploadService.class.getName()).log(Level.INFO, "POB imoprt complete.");
+        Logger.getLogger(BatchProcessingService.class.getName()).log(Level.INFO, "POB imoprt complete.");
     }
 
-    void initContracts(Connection connection, Statement statement) throws SQLException, Exception {
+    void processContracts(Connection connection, Statement statement) throws SQLException, Exception {
         ResultSet resultSet = null;
 
 //        try {
@@ -342,15 +385,7 @@ public class DataUploadService {
 
         resultSet = statement.executeQuery("SELECT ID, Name, `BPC Reporting Unit`, `Sales Order #`, `Contract Currency` FROM tbl_Contracts");
 
-        //Logger.getLogger(AppInitializeService.class.getName()).log(Level.INFO, "ID\t\t\tName\tRU\tSales Order #\tCC");
-        //Logger.getLogger(AppInitializeService.class.getName()).log(Level.INFO, "==\t================\t===\t=======\t=====");
-        // processing returned data and printing into console
         while (resultSet.next()) {
-//            Logger.getLogger(AppInitializeService.class.getName()).log(Level.INFO, resultSet.getInt(1) + "\t"
-//                    + resultSet.getString(2) + "\t"
-//                    + resultSet.getString(3) + "\t"
-//                    + resultSet.getString(4) + "\t"
-//                    + resultSet.getString(5));
 
             contractId = resultSet.getInt(1);
             if (contractService.findContractById(contractId) != null) {
@@ -371,7 +406,7 @@ public class DataUploadService {
             if (contractCurrencyCode != null && !contractCurrencyCode.isEmpty()) {
                 contract.setContractCurrency(Currency.getInstance(contractCurrencyCode));
             } else {
-                Logger.getLogger(DataUploadService.class.getName()).log(Level.SEVERE, "Contract currency not found for contract: " + contractId + " code: " + contractCurrencyCode);
+                Logger.getLogger(BatchProcessingService.class.getName()).log(Level.SEVERE, "Contract currency not found for contract: " + contractId + " code: " + contractCurrencyCode);
                 continue;
             }
 
@@ -384,11 +419,14 @@ public class DataUploadService {
             if (reportingUnit != null) {
                 contract.setReportingUnit(reportingUnit);
             }
-            contract = contractService.update(contract);   // this gives us the JPA managed object.
+            //contract = contractService.update(contract);   // this gives us the JPA managed object.
+            ut.begin();
+            contractService.persist(contract);   // persist or update?
             if (reportingUnit != null) {
                 reportingUnit.getContracts().add(contract);
                 adminService.update(reportingUnit);
             }
+            ut.commit();
 
             count++;
 
@@ -398,7 +436,7 @@ public class DataUploadService {
         }
 
         resultSet.close();
-        Logger.getLogger(DataUploadService.class.getName()).log(Level.INFO, "Contract import complete.");
+        Logger.getLogger(BatchProcessingService.class.getName()).log(Level.INFO, "Contract import complete.");
     }
 
 }

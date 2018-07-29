@@ -49,8 +49,21 @@
                         </p:panelGrid>
                         <h1><strong>#{webSession.currentPeriod.id} Calculation Review</strong></h1>
 
+                        <p:outputPanel style="margin-top: 20px;">
+                            <h:outputText value="Search within list:" />
+                            <p:inputText id="globalFilterText" value="#{pobCalculationReview.contractFilterText}" style="width:150px; margin-left: 10px;">
+                            </p:inputText>
+                            <p:commandButton id="globalFilter" style="font-size: 80%; margin-left: 5px;" value="Search" actionListener="#{pobCalculationReview.filterByContractText()}" update=":form:topLevelTabView"/>
+                            <p:commandButton id="globalFilterClear" style="font-size: 80%; margin-left: 5px;" value="Reset" actionListener="#{pobCalculationReview.clearFilterByContractText()}" update=":form:topLevelTabView, :form:globalFilterText"/>
+                            <h:outputText value="Filter list by contract:" style="margin-left: 30px;"/>
+                            <p:selectCheckboxMenu id="contracts" showHeader="false" label="Contracts" value="#{pobCalculationReview.selectedContracts}" converter="contractConverter" style="width:150px; margin-left: 5px;">
+                                <p:ajax event="change" update=":form:topLevelTabView" process="@this" listener="#{pobCalculationReview.filterByContracts()}"/>
+                                <f:selectItems var="contract" value="#{pobCalculationReview.contracts}" itemLabel="#{contract.name}"/>
+                            </p:selectCheckboxMenu>
+                            <p:commandButton id="globalFilterClear2" style="font-size: 80%; margin-left: 5px;" value="Clear Filter" actionListener="#{pobCalculationReview.clearFilterByContractText()}" update=":form:topLevelTabView, :form:globalFilterText"/>
+                        </p:outputPanel>
 
-                        <p:tabView dynamic="true">
+                        <p:tabView id="topLevelTabView" dynamic="true" style="margin-top: 15px;">
                             <p:tab title="Percent Complete / Revenue">
                                 <p:treeTable value="#{pobCalculationReview.rootTreeNode}" var="pob">
                                     <f:facet name="header">

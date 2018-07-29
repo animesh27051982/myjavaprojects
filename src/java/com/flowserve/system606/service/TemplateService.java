@@ -103,7 +103,7 @@ public class TemplateService {
                         cell = row.getCell(CellReference.convertColStringToIndex(metricType.getExcelCol()));
                         if ("CurrencyMetric".equals(metricType.getMetricClass())) {
                             if (currencyMetricIsNotNull(metricType, pob, period)) {
-                                cell.setCellValue(calculationService.getCurrencyMetric(metricType.getId(), pob, period).getValue().doubleValue());
+                                cell.setCellValue(calculationService.getCurrencyMetric(metricType.getCode(), pob, period).getValue().doubleValue());
                             }
                         }
                     }
@@ -165,13 +165,13 @@ public class TemplateService {
                             continue;
                         }
                         if ("CurrencyMetric".equals(inputType.getMetricClass())) {
-                            calculationService.getCurrencyMetric(inputType.getId(), pob, period).setValue(new BigDecimal(NumberToTextConverter.toText(cell.getNumericCellValue())));
+                            calculationService.getCurrencyMetric(inputType.getCode(), pob, period).setValue(new BigDecimal(NumberToTextConverter.toText(cell.getNumericCellValue())));
                         }
                         if ("StringMetric".equals(inputType.getMetricClass())) {
-                            calculationService.getStringMetric(inputType.getId(), pob, period).setValue(cell.getStringCellValue());
+                            calculationService.getStringMetric(inputType.getCode(), pob, period).setValue(cell.getStringCellValue());
                         }
                         if ("DateMetric".equals(inputType.getMetricClass())) {
-                            calculationService.getDateMetric(inputType.getId(), pob, period).setValue(cell.getDateCellValue().toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
+                            calculationService.getDateMetric(inputType.getCode(), pob, period).setValue(cell.getDateCellValue().toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
                         }
                     } catch (Exception rce) {
                         Logger.getLogger(TemplateService.class.getName()).log(Level.SEVERE, "Error processing " + inputType.getId());
@@ -329,7 +329,7 @@ public class TemplateService {
     }
 
     private boolean currencyMetricIsNotNull(MetricType metricType, Measurable measurable, FinancialPeriod period) throws Exception {
-        return calculationService.getCurrencyMetric(metricType.getId(), measurable, period) != null
-                && calculationService.getCurrencyMetric(metricType.getId(), measurable, period).getValue() != null;
+        return calculationService.getCurrencyMetric(metricType.getCode(), measurable, period) != null
+                && calculationService.getCurrencyMetric(metricType.getCode(), measurable, period).getValue() != null;
     }
 }

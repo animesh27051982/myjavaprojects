@@ -25,10 +25,6 @@ import javax.annotation.PostConstruct;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
-import javax.security.enterprise.authentication.mechanism.http.CustomFormAuthenticationMechanismDefinition;
-import javax.security.enterprise.authentication.mechanism.http.LoginToContinue;
-import org.glassfish.soteria.identitystores.annotation.Credentials;
-import org.glassfish.soteria.identitystores.annotation.EmbeddedIdentityStoreDefinition;
 import org.primefaces.event.SelectEvent;
 import org.primefaces.model.DefaultScheduleEvent;
 import org.primefaces.model.DefaultScheduleModel;
@@ -39,17 +35,6 @@ import org.primefaces.model.TreeNode;
  *
  * @author kgraves
  */
-@CustomFormAuthenticationMechanismDefinition(
-        loginToContinue = @LoginToContinue(
-                loginPage = "/login.xhtml",
-                errorPage = ""
-        )
-)
-@EmbeddedIdentityStoreDefinition({
-    @Credentials(callerName = "jp", password = "jp", groups = {"users"})
-    ,
-        @Credentials(callerName = "arjan", password = "secret3", groups = {"foo"})}
-)
 @Named
 @ViewScoped
 public class InputDashboard implements Serializable {
@@ -65,43 +50,44 @@ public class InputDashboard implements Serializable {
     private ReportingUnitService reportingUnitService;
     @Inject
     private ViewSupport viewSupport;
-     @Inject
+    @Inject
     private FinancialPeriodService financialPeriodService;
 
     private List<ReportingUnit> reportingUnits = new ArrayList<ReportingUnit>();
     private ScheduleModel eventModel;
-    
+
     @PostConstruct
     public void init() {
         if (webSession.getCurrentReportingUnit() != null) {
             reportingUnits.clear();
             reportingUnits.add(webSession.getCurrentReportingUnit());
         }
-        
+
         try {
             List<Holiday> holidays = adminService.findHolidayList();
             Company company = adminService.findCompanyById("FLS");
-            LocalDate freeze=financialPeriodService.CalcInputFreezeWorkday(LocalDate.now(), holidays,company.getInputFreezeWorkday());
-            LocalDate poci=financialPeriodService.CalcInputFreezeWorkday(LocalDate.now(), holidays,company.getPociDueWorkday());
+            LocalDate freeze = financialPeriodService.CalcInputFreezeWorkday(LocalDate.now(), holidays, company.getInputFreezeWorkday());
+            LocalDate poci = financialPeriodService.CalcInputFreezeWorkday(LocalDate.now(), holidays, company.getPociDueWorkday());
             eventModel = new DefaultScheduleModel();
             for (Holiday holiday : holidays) {
                 Date date = Date.from(holiday.getHolidayDate().atStartOfDay(ZoneOffset.UTC).toInstant());
-                 eventModel.addEvent(new DefaultScheduleEvent(holiday.getName(), date, date, true)); 
+                eventModel.addEvent(new DefaultScheduleEvent(holiday.getName(), date, date, true));
             }
             Date Freezeday = Date.from(freeze.atStartOfDay(ZoneOffset.UTC).toInstant());
             eventModel.addEvent(new DefaultScheduleEvent("Input Freeze Day", Freezeday, Freezeday, true));
-            
+
             Date Pociworkday = Date.from(poci.atStartOfDay(ZoneOffset.UTC).toInstant());
-            eventModel.addEvent(new DefaultScheduleEvent("POCI Due Workday", Pociworkday, Pociworkday, true)); 
-            
+            eventModel.addEvent(new DefaultScheduleEvent("POCI Due Workday", Pociworkday, Pociworkday, true));
+
         } catch (Exception ex) {
             Logger.getLogger(Calendar.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
-      public ScheduleModel getEventModel() {
+    public ScheduleModel getEventModel() {
         return eventModel;
     }
+
     public List<ReportingUnit> getReportingUnits() {
         return reportingUnits;
     }

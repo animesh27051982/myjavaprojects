@@ -25,14 +25,17 @@ public abstract class TransientMeasurable<T extends Serializable> extends BaseEn
         return periodMetricSetMap.get(period).getTypeMetricMap().get(metricType);
     }
 
-    public void initializeMetricSetForPeriod(FinancialPeriod period) {
-        periodMetricSetMap.put(period, new MetricSet());
+    public MetricSet initializeMetricSetForPeriod(FinancialPeriod period) {
+        MetricSet metricSet = new MetricSet();
+        periodMetricSetMap.put(period, metricSet);
+        return metricSet;
     }
 
-    public void initializeMetricForPeriod(FinancialPeriod period, MetricType metricType) {
+    public Metric initializeMetricForPeriod(FinancialPeriod period, MetricType metricType) {
+        Metric metric = null;
         try {
             Class<?> clazz = Class.forName(MetricType.PACKAGE_PREFIX + metricType.getMetricClass());
-            Metric metric = (Metric) clazz.newInstance();
+            metric = (Metric) clazz.newInstance();
             metric.setMetricType(metricType);
             metric.setMetricSet(periodMetricSetMap.get(period));
             periodMetricSetMap.get(period).getTypeMetricMap().put(metricType, metric);
@@ -40,6 +43,8 @@ public abstract class TransientMeasurable<T extends Serializable> extends BaseEn
             Logger.getLogger(TransientMeasurable.class.getName()).log(Level.SEVERE, "Severe exception initializing metricTypeId: " + metricType.getId(), e);
             throw new IllegalStateException("Severe exception initializing metricTypeId: " + metricType.getId(), e);
         }
+
+        return metric;
     }
 
     public boolean metricSetExistsForPeriod(FinancialPeriod period) {

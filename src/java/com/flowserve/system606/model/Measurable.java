@@ -24,9 +24,9 @@ public interface Measurable {
 
     public Metric getPeriodMetric(FinancialPeriod period, MetricType metricType);
 
-    public void initializeMetricSetForPeriod(FinancialPeriod period);
+    public MetricSet initializeMetricSetForPeriod(FinancialPeriod period);
 
-    public void initializeMetricForPeriod(FinancialPeriod period, MetricType metricType);
+    public Metric initializeMetricForPeriod(FinancialPeriod period, MetricType metricType);
 
     public boolean metricSetExistsForPeriod(FinancialPeriod period);
 

@@ -2,6 +2,7 @@ package com.flowserve.system606.controller;
 
 import com.flowserve.system606.service.AdminService;
 import java.io.Serializable;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.enterprise.context.RequestScoped;
 import javax.faces.application.FacesMessage;
@@ -40,6 +41,7 @@ public class InputController implements Serializable {
     }
 
     public String proceedToOnlineEntry() {
+        Logger.getLogger(InputController.class.getName()).log(Level.INFO, "Proceeding to online entry");
         return "inputOnlineEntry";
     }
 

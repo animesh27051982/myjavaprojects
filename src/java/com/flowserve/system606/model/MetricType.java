@@ -6,14 +6,17 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import static javax.persistence.TemporalType.DATE;
 
 @Entity
 @Table(name = "METRIC_TYPES")
-public class MetricType extends BaseEntity<String> implements Comparable<MetricType>, Serializable {
+public class MetricType extends BaseEntity<Long> implements Comparable<MetricType>, Serializable {
 
     private static final long serialVersionUID = -8382719960002472187L;
     private static final String CURRENCY_METRIC = "CurrencyMetric";
@@ -21,9 +24,14 @@ public class MetricType extends BaseEntity<String> implements Comparable<MetricT
     private static final String OWNER_ENTITY_TYPE_CONTRACT = "Contract";
     private static final String OWNER_ENTITY_TYPE_POB = "POB";
 
+//    @Id
+//    @Column(name = "METRIC_TYPE_ID")
+//    private String id;
     @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "METRIC_TYPE_SEQ")
+    @SequenceGenerator(name = "METRIC_TYPE_SEQ", sequenceName = "METRIC_TYPE_SEQ", allocationSize = 1)
     @Column(name = "METRIC_TYPE_ID")
-    private String id;
+    private Long id;
     @Enumerated(EnumType.STRING)
     @Column(name = "DIRECTION")
     private MetricDirection direction;
@@ -33,6 +41,8 @@ public class MetricType extends BaseEntity<String> implements Comparable<MetricT
     private String inputClass;
     @Column(name = "NAME")
     private String name;
+    @Column(name = "CODE")
+    private String code;
     @Column(name = "DESCRIPTION")
     private String description;
     @Column(name = "METRIC_CURRENCY_TYPE")
@@ -60,11 +70,11 @@ public class MetricType extends BaseEntity<String> implements Comparable<MetricT
     }
 
     @Override
-    public String getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -203,5 +213,13 @@ public class MetricType extends BaseEntity<String> implements Comparable<MetricT
 
     public boolean isPobLevel() {
         return OWNER_ENTITY_TYPE_POB.equals((this.ownerEntityType));
+    }
+
+    public String getCode() {
+        return code;
+    }
+
+    public void setCode(String code) {
+        this.code = code;
     }
 }

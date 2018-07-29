@@ -26,7 +26,9 @@ import java.time.LocalDateTime;
 import java.time.Month;
 import java.util.ArrayList;
 import java.util.Currency;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.ejb.Stateless;
@@ -47,6 +49,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
  * @author shubhamv
  */
 @Stateless
+
 public class CurrencyService {
 
     private static final Logger logger = Logger.getLogger(CurrencyService.class.getName());
@@ -58,6 +61,7 @@ public class CurrencyService {
     FinancialPeriodService financialPeriodService;
     @Inject
     AdminService adminService;
+    private static Map<String, ExchangeRate> exchangeRateCache = new HashMap<String, ExchangeRate>();
 
     public void convertCurrency(Metric metric, Measurable measurable, FinancialPeriod period) throws Exception {
         if (!(metric instanceof CurrencyMetric)) {
@@ -124,7 +128,9 @@ public class CurrencyService {
     }
 
     public ExchangeRate findRateByFromToPeriod(Currency fromCurrency, Currency toCurrency, FinancialPeriod period) throws Exception {
-        Query query = em.createQuery("SELECT er FROM ExchangeRate er WHERE er.financialPeriod = :PERIOD and er.fromCurrency = :FROM and er.toCurrency = :TO");
+        // Using NamedQuery for performance.
+        Query query = em.createNamedQuery("Currency.findRateByFromToPeriod");
+        query.setHint("eclipselink.QUERY_RESULTS_CACHE", "TRUE");
         query.setParameter("PERIOD", period);
         query.setParameter("FROM", fromCurrency);
         query.setParameter("TO", toCurrency);
@@ -142,17 +148,23 @@ public class CurrencyService {
 
     public BigDecimal convert(BigDecimal amount, Currency fromCurrency, Currency toCurrency, FinancialPeriod period) throws Exception {  // throw an application defined exception here instead of Exception
 
-        ExchangeRate er = null;
+        ExchangeRate exchangeRate = null;
         try {
-            er = findRateByFromToPeriod(fromCurrency, toCurrency, period);
+            String cacheKey = period.getName() + fromCurrency.getCurrencyCode() + toCurrency.getCurrencyCode();
+            exchangeRate = exchangeRateCache.get(cacheKey);
+            if (exchangeRate == null) {
+                exchangeRate = findRateByFromToPeriod(fromCurrency, toCurrency, period);
+                exchangeRateCache.put(cacheKey, exchangeRate);
+            }
         } catch (Exception e) {
             throw new IllegalStateException("Unable to find an exchange rate from " + fromCurrency.getCurrencyCode() + " to " + toCurrency.getCurrencyCode() + " in period " + period.getId());
         }
-        return amount.multiply(er.getConversionRate()).setScale(SCALE, BigDecimal.ROUND_HALF_UP);
+        return amount.multiply(exchangeRate.getConversionRate()).setScale(SCALE, BigDecimal.ROUND_HALF_UP);
     }
 
     public void initCurrencyConverter(FinancialPeriod period) throws Exception {
 
+        exchangeRateCache.clear();
         List<ExchangeRate> er = findRatesByPeriod(period);
         //Logger.getLogger(CurrencyService.class.getName()).log(Level.INFO, "rate count: " + er.size());
         //Logger.getLogger(CurrencyService.class.getName()).log(Level.INFO, "period: " + period.getId());
@@ -216,6 +228,7 @@ public class CurrencyService {
         List<ExchangeRate> exchangeRate = new ArrayList<ExchangeRate>();
         DataImportFile dataImport = new DataImportFile();
         List<String> importMSG = new ArrayList<String>();
+        exchangeRateCache.clear();
         try {
             XSSFWorkbook workbook = new XSSFWorkbook(fis);
             XSSFSheet worksheetforPeriod = workbook.getSheet("Currency Rates");//workbook.getSheetAt(0);
@@ -337,7 +350,7 @@ public class CurrencyService {
             dataImport.setFilename(filename);
             dataImport.setUploadDate(LocalDateTime.now());
             dataImport.setCompany(adminService.findCompanyById("FLS"));
-            dataImport.setDataImportMessage(importMSG);
+            dataImport.setDataImportMessages(importMSG);
             dataImport.setType("Exchange Rate");
             adminService.persist(dataImport);
             fis.close();
@@ -347,7 +360,7 @@ public class CurrencyService {
     public void processLegacyExchangeRates(String msAccDB) throws Exception {  // Need an application exception type defined.
         final int SCALE = 14;
         final int ROUNDING_METHOD = BigDecimal.ROUND_HALF_UP;
-        Logger.getLogger(DataUploadService.class.getName()).log(Level.INFO, "Processing POCI Data: " + msAccDB);
+        Logger.getLogger(CurrencyService.class.getName()).log(Level.INFO, "Processing POCI Data: " + msAccDB);
 
         Connection connection = null;
         Statement statement = null;
@@ -356,6 +369,7 @@ public class CurrencyService {
         ResultSet resultSet2 = null;
         FinancialPeriod period = null;
         List<ExchangeRate> exchangeRate = new ArrayList<ExchangeRate>();
+        exchangeRateCache.clear();
         // Step 1: Loading or registering Oracle JDBC driver class
         try {
 
@@ -376,7 +390,7 @@ public class CurrencyService {
 
             // processing returned data and printing into console
             while (resultSet.next()) {
-//                Logger.getLogger(DataUploadService.class.getName()).log(Level.INFO, resultSet.getString(1) + "\t"
+//                Logger.getLogger(CurrencyService.class.getName()).log(Level.INFO, resultSet.getString(1) + "\t"
 //                        + resultSet.getString(2) + "\t"
 //                        + resultSet.getBigDecimal(3)+ "\t"
 //                        + resultSet.getBigDecimal(4)+ "\t"
@@ -400,7 +414,7 @@ public class CurrencyService {
 
                         period = financialPeriodService.findById(exPeriod);
                     } catch (NumberFormatException e) {
-                        Logger.getLogger(DataUploadService.class.getName()).log(Level.INFO, "Error " + e);
+                        Logger.getLogger(CurrencyService.class.getName()).log(Level.INFO, "Error " + e);
                     }
                     if (adminService.findExchangeRatesByFinancialPeriod(period) == null) {
                         PreparedStatement statement1 = connection.prepareStatement("SELECT Currency,ISOCodeAlpha,CUSDPeriodEndRate FROM `tbl_ExchangeRates` WHERE Period = ?");
