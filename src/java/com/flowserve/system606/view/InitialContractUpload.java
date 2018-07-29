@@ -13,7 +13,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -38,7 +37,6 @@ public class InitialContractUpload implements Serializable {
     @Inject
     private AdminService adminService;
 
-    List<DataImportFile> dataImportFile = new ArrayList<DataImportFile>();
     public static final String PREFIX = "msaccess";
     public static final String SUFFIX = ".tmp";
 
@@ -70,15 +68,10 @@ public class InitialContractUpload implements Serializable {
         return tempFile;
     }
 
-    public List<DataImportFile> getDataImportFile() throws Exception {
-        dataImportFile = adminService.findDataImportFileByType("Contract and Pobs");
-        Logger.getLogger(inputExchangeRate.class.getName()).log(Level.INFO, "message" + dataImportFile);
+    public List<DataImportFile> getDataImportFiles() throws Exception {
+        List<DataImportFile> dataImportFiles = adminService.findDataImportFileByType("Contract and Pobs");
+        Logger.getLogger(inputExchangeRate.class.getName()).log(Level.INFO, "message" + dataImportFiles);
         //Collections.sort(dataImportFile);
-        return dataImportFile;
+        return dataImportFiles;
     }
-
-    public void setDataImportFile(List<DataImportFile> dataImportFile) {
-        this.dataImportFile = dataImportFile;
-    }
-
 }
