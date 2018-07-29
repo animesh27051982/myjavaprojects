@@ -5,6 +5,7 @@
  */
 package com.flowserve.system606.view;
 
+import com.flowserve.system606.model.DataImportFile;
 import com.flowserve.system606.service.AdminService;
 import com.flowserve.system606.service.CurrencyService;
 import java.io.File;
@@ -12,6 +13,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
@@ -38,6 +41,7 @@ public class InputLegacyExchangeRate implements Serializable {
     private static Logger logger = Logger.getLogger("com.flowserve.system606");
     public static final String PREFIX = "msaccess";
     public static final String SUFFIX = ".tmp";
+    List<DataImportFile> dataImportFile = new ArrayList<DataImportFile>();
 
     @PostConstruct
     public void init() {
@@ -69,4 +73,16 @@ public class InputLegacyExchangeRate implements Serializable {
         }
         return tempFile;
     }
+
+    public List<DataImportFile> getDataImportFile() throws Exception {
+        dataImportFile = adminService.findDataImportFileByType("Legacy Exchange Rate");
+        Logger.getLogger(inputExchangeRate.class.getName()).log(Level.INFO, "message" + dataImportFile);
+        //Collections.sort(dataImportFile);
+        return dataImportFile;
+    }
+
+    public void setDataImportFile(List<DataImportFile> dataImportFile) {
+        this.dataImportFile = dataImportFile;
+    }
+
 }

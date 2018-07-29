@@ -159,7 +159,7 @@ public class CalculationService {
     public void calculateAndSave(List<ReportingUnit> reportingUnits, FinancialPeriod period) throws Exception {
 
         for (ReportingUnit reportingUnit : reportingUnits) {
-            if (reportingUnit.isParent()) {
+            if (reportingUnit.checkIsParent()) {
                 continue;
             }
             Logger.getLogger(CalculationService.class.getName()).log(Level.INFO, "Calculating RU: " + reportingUnit.getCode() + "...");
