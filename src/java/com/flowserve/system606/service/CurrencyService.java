@@ -23,7 +23,6 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.Month;
 import java.util.ArrayList;
 import java.util.Currency;
 import java.util.HashMap;
@@ -234,8 +233,8 @@ public class CurrencyService {
             XSSFSheet worksheetforPeriod = workbook.getSheet("Currency Rates");//workbook.getSheetAt(0);
 
             if (worksheetforPeriod == null) {
-                importMSG.add("Invalid xlsx file.  Currency Rates Sheet can not be found");
-                throw new IllegalStateException("Invalid xlsx file.  Currency Rates Sheet can not be found");
+                importMSG.add("Invalid xlsx file. Currency Rates Sheet can not be found");
+                throw new IllegalStateException("Invalid xlsx file. Currency Rates Sheet can not be found");
             }
             XSSFRow rowPeriod;
             Cell cellPeriod = null;
@@ -250,46 +249,54 @@ public class CurrencyService {
                 importMSG.add("Can't read financial period from Currency Rates Sheet");
                 throw new IllegalStateException("Can't read financial period from Currency Rates Sheet");
             }
+            String[] shortMonth = {"JAN", "FEB",
+                "MAR", "APR", "MAY", "JUN", "JUL",
+                "AUG", "SEP", "OCT", "NOV",
+                "DEC"};
             String yrStr = Integer.toString(year);
             String finalYear = yrStr.substring(yrStr.length() - 2);
-            String exPeriod = Month.of(month).name() + "-" + finalYear;
+            String exPeriod = shortMonth[month - 1] + "-" + finalYear;
 
             FinancialPeriod period = financialPeriodService.findById(exPeriod);
+            if (period == null) {
+                importMSG.add("Can not find Financial Period for  : " + exPeriod);
+                throw new IllegalStateException("Can not find Financial Period for  : " + exPeriod);
+            }
             List<ExchangeRate> er = findRatesByPeriod(period);
             if (er.isEmpty()) {
                 Cell cellFrom = null;
-                int rowidFrom = 1;
-                XSSFSheet worksheetFrom = workbook.getSheet("Oracle Load Rates");
+                int rowidFrom = 10;
+                XSSFSheet worksheetFrom = workbook.getSheet("Summary");
                 if (worksheetFrom == null) {
-                    importMSG.add("Invalid xlsx file.  Oracle Load Rates Sheet can not be found");
-                    throw new IllegalStateException("Invalid xlsx file.  Oracle Load Rates Sheet can not be found");
+                    importMSG.add("Invalid xlsx file. Summary Sheet can not be found");
+                    throw new IllegalStateException("Invalid xlsx file. Summary Sheet can not be found");
                 }
                 for (Row rowFrom : worksheetFrom) {
                     if (rowFrom.getRowNum() < rowidFrom) {
                         continue;
                     }
-                    rowFrom = worksheetFrom.getRow(rowidFrom++);
+                    //rowFrom = worksheetFrom.getRow(rowidFrom++);
+                    cellFrom = rowFrom.getCell(CellReference.convertColStringToIndex("A"));
+                    if (cellFrom == null || ((XSSFCell) cellFrom).getRawValue() == null) {
+                        continue;
+                    }
                     cellFrom = rowFrom.getCell(CellReference.convertColStringToIndex("B"));
                     if (cellFrom == null || ((XSSFCell) cellFrom).getRawValue() == null) {
                         continue;
                     }
-                    cellFrom = rowFrom.getCell(CellReference.convertColStringToIndex("C"));
-                    if (cellFrom == null || ((XSSFCell) cellFrom).getRawValue() == null) {
-                        continue;
-                    }
                     Cell cellTo = null;
-                    int rowidTo = 1;
-                    XSSFSheet worksheetTo = workbook.getSheet("Oracle Load Rates");
+                    int rowidTo = 10;
+                    XSSFSheet worksheetTo = workbook.getSheet("Summary");
                     for (Row rowTo : worksheetTo) {
                         if (rowTo.getRowNum() < rowidTo) {
                             continue;
                         }
-                        rowTo = worksheetTo.getRow(rowidTo++);
-                        cellTo = rowTo.getCell(CellReference.convertColStringToIndex("B"));
+                        //rowTo = worksheetTo.getRow(rowidTo++);
+                        cellTo = rowTo.getCell(CellReference.convertColStringToIndex("A"));
                         if (cellTo == null || ((XSSFCell) cellTo).getRawValue() == null) {
                             continue;
                         }
-                        cellTo = rowTo.getCell(CellReference.convertColStringToIndex("C"));
+                        cellTo = rowTo.getCell(CellReference.convertColStringToIndex("B"));
                         if (cellTo == null || ((XSSFCell) cellTo).getRawValue() == null) {
                             continue;
                         }
@@ -300,30 +307,30 @@ public class CurrencyService {
                         Currency toCurrency;
                         BigDecimal usdRate = new BigDecimal("1.0");
                         try {
-                            cellFrom = rowFrom.getCell(CellReference.convertColStringToIndex("E"));
+                            cellFrom = rowFrom.getCell(CellReference.convertColStringToIndex("H"));
                             sourceRate = new BigDecimal(cellFrom.getNumericCellValue());
-                            cellFrom = rowFrom.getCell(CellReference.convertColStringToIndex("C"));
+                            cellFrom = rowFrom.getCell(CellReference.convertColStringToIndex("B"));
                             type = cellFrom.getStringCellValue();
-                            cellFrom = rowFrom.getCell(CellReference.convertColStringToIndex("D"));
+                            cellFrom = rowFrom.getCell(CellReference.convertColStringToIndex("C"));
                             fromCurrency = Currency.getInstance(cellFrom.getStringCellValue());
                         } catch (Exception rce) {
-                            importMSG.add("Oracle Load Rates Sheet Row: " + (rowFrom.getRowNum() + 1) + " Cell:" + (cellFrom.getColumnIndex() + 1) + " Massage: " + rce.getMessage());
-                            throw new Exception("Oracle Load Rates Sheet Row: " + (rowFrom.getRowNum() + 1) + " Cell:" + (cellFrom.getColumnIndex() + 1) + " Massage: " + rce.getMessage());
+                            importMSG.add("Summary Sheet Row: " + (rowFrom.getRowNum() + 1) + " Cell:" + (cellFrom.getColumnIndex() + 1) + " Massage: " + rce.getMessage());
+                            throw new Exception("Summary Sheet Row: " + (rowFrom.getRowNum() + 1) + " Cell:" + (cellFrom.getColumnIndex() + 1) + " Massage: " + rce.getMessage());
                         }
 
                         try {
-                            cellTo = rowTo.getCell(CellReference.convertColStringToIndex("E"));
+                            cellTo = rowTo.getCell(CellReference.convertColStringToIndex("H"));
                             targetRate = new BigDecimal(cellTo.getNumericCellValue());
 
-                            cellTo = rowTo.getCell(CellReference.convertColStringToIndex("D"));
+                            cellTo = rowTo.getCell(CellReference.convertColStringToIndex("C"));
                             toCurrency = Currency.getInstance(cellTo.getStringCellValue());
                         } catch (Exception rce) {
-                            importMSG.add("Oracle Load Rates Sheet Row: " + (rowTo.getRowNum() + 1) + " Cell:" + (cellTo.getColumnIndex() + 1) + " Massage: " + rce.getMessage());
-                            throw new Exception("Oracle Load Rates Sheet Row: " + (rowTo.getRowNum() + 1) + " Cell:" + (cellTo.getColumnIndex() + 1) + " Massage: " + rce.getMessage());
+                            importMSG.add("Summary Sheet Row: " + (rowTo.getRowNum() + 1) + " Cell:" + (cellTo.getColumnIndex() + 1) + " Massage: " + rce.getMessage());
+                            throw new Exception("Summary Sheet Row: " + (rowTo.getRowNum() + 1) + " Cell:" + (cellTo.getColumnIndex() + 1) + " Massage: " + rce.getMessage());
                         }
                         //Currency Conversion Formula
                         BigDecimal rate = usdRate.divide(sourceRate, SCALE, ROUNDING_METHOD).multiply(targetRate);
-
+                        //logger.info("type: " + type + "  fromCurrency: " + fromCurrency + "   toCurrency" + toCurrency + "   period" + period + "   rate" + rate);
                         ExchangeRate exRate = new ExchangeRate();
                         exRate.setType(type);
                         exRate.setFromCurrency(fromCurrency);
@@ -332,7 +339,6 @@ public class CurrencyService {
                         exRate.setConversionRate(rate);
                         exchangeRate.add(exRate);
 
-                        //logger.info("type: " + type + "  fromCurrency: " + fromCurrency + "   toCurrency" + toCurrency + "   period" + period + "   rate" + rate);
                     }
 
                 }
@@ -394,7 +400,7 @@ public class CurrencyService {
             // processing returned data and printing into console
             while (resultSet.next()) {
 
-                if (!resultSet.getString(1).equalsIgnoreCase("2018-5")) {
+                if (!resultSet.getString(1).equalsIgnoreCase("2018-6")) {
                     String periodDate = resultSet.getString(1);
                     String[] sp = periodDate.split("-");
                     try {
