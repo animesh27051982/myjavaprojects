@@ -420,7 +420,9 @@ public class FinancialPeriodService {
         em.merge(financialPeriod);
     }
 
-    public List<FinancialPeriod> getQTDFinancialPeriods(FinancialPeriod period) {
+    
+    public List<FinancialPeriod> getQTDFinancialPeriods(FinancialPeriod period)
+    {
         FinancialPeriod temp, temp2, temp3;
         LocalDate date = LocalDate.of(period.getPeriodYear(), period.getPeriodMonth(), 1);
         List<FinancialPeriod> finacialPeriod = new ArrayList<FinancialPeriod>();
@@ -445,21 +447,24 @@ public class FinancialPeriodService {
             Collections.addAll(finacialPeriod, temp3, temp2, temp);
             return finacialPeriod;
         }
-
+        
+        
         return finacialPeriod;
     }
-
-    public List<FinancialPeriod> getYTDFinancialPeriods(FinancialPeriod period) {
+    
+    public List<FinancialPeriod> getYTDFinancialPeriods(FinancialPeriod period)
+    {
         FinancialPeriod temp;
         LocalDate date = LocalDate.of(period.getPeriodYear(), period.getPeriodMonth(), 1);
         List<FinancialPeriod> finacialPeriod = new ArrayList<FinancialPeriod>();
-        for (int i = 1; i <= period.getPeriodMonth(); i++) {
+        for(int i=1;i<=period.getPeriodMonth();i++)
+        {
             LocalDate tempdate = LocalDate.of(period.getPeriodYear(), i, 1);
             temp = findPeriodByLocalDate(tempdate);
             finacialPeriod.add(temp);
 
             if (i == period.getPeriodMonth()) {
-                return finacialPeriod;
+               return finacialPeriod;
             }
         }
         return finacialPeriod;
