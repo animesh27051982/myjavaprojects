@@ -76,7 +76,7 @@ public class InputLegacyExchangeRate implements Serializable {
 
     public List<DataImportFile> getDataImportFile() throws Exception {
         dataImportFile = adminService.findDataImportFileByType("Legacy Exchange Rate");
-        Logger.getLogger(inputExchangeRate.class.getName()).log(Level.INFO, "message" + dataImportFile);
+        //Logger.getLogger(inputExchangeRate.class.getName()).log(Level.INFO, "message" + dataImportFile);
         //Collections.sort(dataImportFile);
         return dataImportFile;
     }

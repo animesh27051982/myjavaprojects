@@ -72,24 +72,28 @@ public class BatchProcessingService {
             if (reportingUnit.isParent()) {
                 continue;
             }
-            ut.begin();
-            Logger.getLogger(BatchProcessingService.class.getName()).log(Level.INFO, "Calculating RU: " + reportingUnit.getCode() + "...");
+            try {
+                ut.begin();
+                Logger.getLogger(BatchProcessingService.class.getName()).log(Level.INFO, "Calculating RU: " + reportingUnit.getCode() + "...");
 
-            FinancialPeriod calculationPeriod = period;
-            do {
-                calculationService.executeBusinessRulesAndSave((new ArrayList<Measurable>(reportingUnit.getPerformanceObligations())), calculationPeriod);
-            } while ((calculationPeriod = financialPeriodService.calculateNextPeriodUntilCurrent(calculationPeriod)) != null);
+                FinancialPeriod calculationPeriod = period;
+                do {
+                    calculationService.executeBusinessRulesAndSave((new ArrayList<Measurable>(reportingUnit.getPerformanceObligations())), calculationPeriod);
+                } while ((calculationPeriod = financialPeriodService.calculateNextPeriodUntilCurrent(calculationPeriod)) != null);
 
-            calculationPeriod = period;
-            do {
-                calculationService.executeBusinessRulesAndSave((new ArrayList<Measurable>(reportingUnit.getContracts())), calculationPeriod);
-            } while ((calculationPeriod = financialPeriodService.calculateNextPeriodUntilCurrent(calculationPeriod)) != null);
-            Logger.getLogger(BatchProcessingService.class.getName()).log(Level.INFO, "Completed RU: " + reportingUnit.getCode());
-            ut.commit();
-            Logger.getLogger(BatchProcessingService.class.getName()).log(Level.INFO, "Flushing EntityManager");
-            em.flush();
-            Logger.getLogger(BatchProcessingService.class.getName()).log(Level.INFO, "Clearing EntityManager");
-            em.clear();
+                calculationPeriod = period;
+                do {
+                    calculationService.executeBusinessRulesAndSave((new ArrayList<Measurable>(reportingUnit.getContracts())), calculationPeriod);
+                } while ((calculationPeriod = financialPeriodService.calculateNextPeriodUntilCurrent(calculationPeriod)) != null);
+
+                Logger.getLogger(BatchProcessingService.class.getName()).log(Level.INFO, "Flushing and clearing EntityManager");
+                em.flush();
+                em.clear();
+                Logger.getLogger(BatchProcessingService.class.getName()).log(Level.INFO, "Completed RU: " + reportingUnit.getCode());
+                ut.commit();
+            } catch (Exception e) {
+                ut.rollback();
+            }
         }
         Logger.getLogger(BatchProcessingService.class.getName()).log(Level.INFO, "calculateAllFinancials() completed.");
     }
@@ -211,6 +215,7 @@ public class BatchProcessingService {
                     }
 
                 } else {
+                    ut.rollback();
                     importMessages.add("Financial Period not available : " + exPeriod);
                     throw new IllegalStateException("Financial Period not available :" + exPeriod);
 
@@ -218,7 +223,6 @@ public class BatchProcessingService {
 
                 if ((count % 100) == 0) {
                     Logger.getLogger(BatchProcessingService.class.getName()).log(Level.INFO, "Processed " + count + " POCI import records");
-                    Logger.getLogger(BatchProcessingService.class.getName()).log(Level.INFO, "Interval time: " + ((System.currentTimeMillis() - timeInterval)) / 1000);
                     timeInterval = System.currentTimeMillis();
 
                 }
@@ -226,19 +230,16 @@ public class BatchProcessingService {
 
             }
 
-            Logger.getLogger(BatchProcessingService.class.getName()).log(Level.INFO, "Saving RUs...");
             dataImport.setFilename(fileName + " - tbl_POCI_1_POb Changes");
             dataImport.setUploadDate(LocalDateTime.now());
             dataImport.setCompany(adminService.findCompanyById("FLS"));
             dataImport.setDataImportMessages(importMessages);
             adminService.persist(dataImport);
-            Logger.getLogger(BatchProcessingService.class.getName()).log(Level.INFO, "Import completed.");
-
-            ut.commit();
-            Logger.getLogger(BatchProcessingService.class.getName()).log(Level.INFO, "Flushing EntityManager");
+            Logger.getLogger(BatchProcessingService.class.getName()).log(Level.INFO, "Flushing and clearing EntityManager");
             em.flush();
-            Logger.getLogger(BatchProcessingService.class.getName()).log(Level.INFO, "Clearing EntityManager");
             em.clear();
+            ut.commit();
+            Logger.getLogger(BatchProcessingService.class.getName()).log(Level.INFO, "Import completed.");
 
         } catch (SQLException sqlex) {
             Logger.getLogger(BatchProcessingService.class.getName()).log(Level.INFO, "Error processing input file: ", sqlex);
@@ -296,10 +297,6 @@ public class BatchProcessingService {
             }
         }
 
-        Logger.getLogger(BatchProcessingService.class.getName()).log(Level.INFO, "Flushing EntityManager");
-        em.flush();
-        Logger.getLogger(BatchProcessingService.class.getName()).log(Level.INFO, "Clearing EntityManager");
-        em.clear();
         Logger.getLogger(BatchProcessingService.class.getName()).log(Level.INFO, "Contract and POB import completed.");
     }
 
