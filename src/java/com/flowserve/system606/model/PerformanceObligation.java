@@ -41,8 +41,8 @@ public class PerformanceObligation extends BaseEntity<Long> implements MetricSto
     private Long id;
     @Column(name = "NAME")
     private String name;
-    @Column(name = "REV_REC_METHOD")
-    private String revRecMethod;
+    @Column(name = "REVENUE_METHOD")
+    private RevenueMethod revenueMethod;
     @ManyToOne
     @JoinColumn(name = "CONTRACT_ID")
     private Contract contract;
@@ -61,7 +61,6 @@ public class PerformanceObligation extends BaseEntity<Long> implements MetricSto
     @Column(name = "LAST_UPDATE_DATE")
     private LocalDateTime lastUpdateDate;
 
-    //private String deactivationReason;  // create type class
     @OneToMany(fetch = FetchType.LAZY, cascade = {CascadeType.ALL}, orphanRemoval = true)
     @JoinTable(name = "POB_METRIC_SET", joinColumns = @JoinColumn(name = "POB_ID"), inverseJoinColumns = @JoinColumn(name = "METRIC_SET_ID"))
     private Map<FinancialPeriod, MetricSet> periodMetricSetMap = new HashMap<FinancialPeriod, MetricSet>();
@@ -138,12 +137,12 @@ public class PerformanceObligation extends BaseEntity<Long> implements MetricSto
         this.contract = contract;
     }
 
-    public String getRevRecMethod() {
-        return revRecMethod;
+    public RevenueMethod getRevenueMethod() {
+        return revenueMethod;
     }
 
-    public void setRevRecMethod(String revRecMethod) {
-        this.revRecMethod = revRecMethod;
+    public void setRevenueMethod(RevenueMethod revenueMethod) {
+        this.revenueMethod = revenueMethod;
     }
 
     public Metric getPeriodMetric(FinancialPeriod period, MetricType metricType) {

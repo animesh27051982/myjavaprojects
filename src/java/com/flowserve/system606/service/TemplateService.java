@@ -90,14 +90,14 @@ public class TemplateService {
                     row = worksheet.getRow(rowid++);
 
                     // Populate non-input cells
-                    row.getCell(0).setCellValue("AMSS");
+                    row.getCell(0).setCellValue(ru.getBusinessUnit().getName());
                     row.getCell(1).setCellValue(ru.getCode());
                     row.getCell(2).setCellValue(contract.getId());
                     row.getCell(3).setCellValue(contract.getName());  // TODO - Need customer name?
                     row.getCell(4).setCellValue(contract.getSalesOrderNumber());
                     row.getCell(5).setCellValue(pob.getName());
                     row.getCell(6).setCellValue(pob.getId());
-                    row.getCell(7).setCellValue(pob.getRevRecMethod());
+                    row.getCell(7).setCellValue(pob.getRevenueMethod().getShortName());
 
                     for (MetricType metricType : metricTypes) {
                         cell = row.getCell(CellReference.convertColStringToIndex(metricType.getExcelCol()));

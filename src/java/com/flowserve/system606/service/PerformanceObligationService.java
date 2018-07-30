@@ -2,6 +2,7 @@ package com.flowserve.system606.service;
 
 import com.flowserve.system606.model.Contract;
 import com.flowserve.system606.model.PerformanceObligation;
+import com.flowserve.system606.model.RevenueMethod;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.util.logging.Level;
@@ -56,10 +57,8 @@ public class PerformanceObligationService {
                 .getName()).log(Level.INFO, "Test log from Drools call. Pob ID: " + pob.getId());
     }
 
-    public PerformanceObligation
-            findPerformanceObligationById(Long id) {
-        return em.find(PerformanceObligation.class,
-                id);
+    public PerformanceObligation findPerformanceObligationById(Long id) {
+        return em.find(PerformanceObligation.class, id);
     }
 
     public long getPobCount() {
@@ -113,17 +112,12 @@ public class PerformanceObligationService {
                 if (contract == null) {
                     throw new IllegalStateException("POB refers to non-existent contract.  Invalid.  POB ID: " + pobId);
                 }
-//                if (contract == null) {
-//                    contract = new Contract();
-//                    contract.setId(contractId);
-//                    contract.setName(customerName + '-' + contractId);
-//                    contract.setSalesOrderNumber(salesOrderNumber);
-//                }
 
                 pob.setContract(contract);
                 pob.setName(pobName);
                 pob.setId(pobId);
-                pob.setRevRecMethod(revRecMethod);
+                // for testing....
+                pob.setRevenueMethod(RevenueMethod.PERC_OF_COMP);
 
                 pob.setActive(true);
                 //performanceObligationService.initializeInputs(pob);

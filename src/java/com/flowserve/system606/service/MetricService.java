@@ -65,7 +65,7 @@ public class MetricService {
     }
 
     private List<MetricType> findActiveMetricTypesByOwnerEntityType(String ownerEntityType) {
-        Query query = em.createQuery("SELECT it FROM MetricType it WHERE it.ownerEntityType = :OET AND it.active = TRUE");
+        Query query = em.createQuery("SELECT it FROM MetricType it WHERE (it.ownerEntityType = :OET OR it.ownerEntityType = 'ALL') AND it.active = TRUE");
         query.setParameter("OET", ownerEntityType);
         return (List<MetricType>) query.getResultList();
     }

@@ -51,7 +51,7 @@
     </session-config>
 
     <welcome-file-list>
-        <welcome-file>inputDashboard.xhtml</welcome-file>
+        <welcome-file>dashboard.xhtml</welcome-file>
     </welcome-file-list>
 
     <!-- SECURITY -->

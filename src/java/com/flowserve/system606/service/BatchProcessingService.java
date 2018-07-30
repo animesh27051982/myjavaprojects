@@ -11,6 +11,7 @@ import com.flowserve.system606.model.FinancialPeriod;
 import com.flowserve.system606.model.Measurable;
 import com.flowserve.system606.model.PerformanceObligation;
 import com.flowserve.system606.model.ReportingUnit;
+import com.flowserve.system606.model.RevenueMethod;
 import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -62,7 +63,7 @@ public class BatchProcessingService {
     @Resource
     private UserTransaction ut;
 
-    private Map<String, String> methodMap = new HashMap<String, String>();
+    private Map<String, RevenueMethod> methodMap = new HashMap<String, RevenueMethod>();
 
     @Asynchronous
     public void calculateAllFinancials(List<ReportingUnit> reportingUnits, FinancialPeriod period) throws Exception {
@@ -235,7 +236,7 @@ public class BatchProcessingService {
             dataImport.setCompany(adminService.findCompanyById("FLS"));
             dataImport.setDataImportMessages(importMessages);
             adminService.persist(dataImport);
-            Logger.getLogger(BatchProcessingService.class.getName()).log(Level.INFO, "Flushing and clearing EntityManager");
+            Logger.getLogger(BatchProcessingService.class.getName()).log(Level.INFO, "Flushing data to database...");
             em.flush();
             em.clear();
             ut.commit();
@@ -303,10 +304,10 @@ public class BatchProcessingService {
     void processPobs(Connection connection, Statement statement) throws SQLException, Exception {
         ResultSet resultSet = null;
 
-        methodMap.put("POC/Cost-to-Cost", "POC");
-        methodMap.put("Not Over-Time", "NOT");
-        methodMap.put("Straight-line", "SL");
-        methodMap.put("Right to Invoice", "RTI");
+        methodMap.put("POC/Cost-to-Cost", RevenueMethod.PERC_OF_COMP);
+        methodMap.put("Not Over-Time", RevenueMethod.POINT_IN_TIME);
+        methodMap.put("Straight-line", RevenueMethod.STRAIGHT_LINE);
+        methodMap.put("Right to Invoice", RevenueMethod.RIGHT_TO_INVOICE);
 
         String platform = null;
         String ru = null;
@@ -349,7 +350,7 @@ public class BatchProcessingService {
             if (methodMap.get(revRecMethod) == null) {
                 Logger.getLogger(BatchProcessingService.class.getName()).log(Level.SEVERE, "POB revrec method not in our list: " + revRecMethod);
             }
-            pob.setRevRecMethod(methodMap.get(revRecMethod));
+            pob.setRevenueMethod(methodMap.get(revRecMethod));
 
             ut.begin();
             //pobService.update(pob);  // update or persist?

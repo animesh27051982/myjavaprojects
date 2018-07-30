@@ -23,13 +23,13 @@ public class InputController implements Serializable {
     }
 
     public String inputDashboard() {
-        return "inputDashboard";
+        return "dashboard";
     }
 
     public String submitForApproval() {
         FacesMessage msg = new FacesMessage("Succesful", " Submitted for approval.");
         FacesContext.getCurrentInstance().addMessage(null, msg);
-        return "inputDashboard";
+        return "dashboard";
     }
 
     public String proceedToInputDownload() {

@@ -303,9 +303,12 @@ public class CalculationService {
             return metric;
         }
         if (isRootMeasurable(measurable)) {
-            BigDecimal value = getCurrencyMetric(metricCode, measurable, period).getValue();
-            if (value != null) {
-                sum = sum.add(value);
+            CurrencyMetric rootCurrencyMetric = getCurrencyMetric(metricCode, measurable, period);
+            if (rootCurrencyMetric != null) {
+                BigDecimal value = rootCurrencyMetric.getValue();
+                if (value != null) {
+                    sum = sum.add(value);
+                }
             }
             metric.setValue(sum);
             return metric;

@@ -138,30 +138,30 @@
                             <p:menuitem id="custom3" value="Static" icon="fa fa-fw fa-bars" actionListener="#{guestPreferences.setMenuLayout('static')}" ajax="false"/>
                             <p:menuitem id="custom4" value="Overlay" icon="fa fa-fw fa-bars" actionListener="#{guestPreferences.setMenuLayout('overlay')}" ajax="false"/>
                         </p:submenu>
-                        <p:menuitem id="pob_input" value="POB Input Dashboard" icon="fa fa-fw fa-home" outcome="/inputDashboard"/>
+                        <p:menuitem id="pob_input" value="Dashboard" icon="fa fa-fw fa-home" outcome="/dashboard"/>
                         <p:submenu label="Reports" icon="fa fa-fw fa-gg">
                             <p:menuitem value="Contract Level" icon="fa fa-fw fa-sign-in" outcome="/contractList"/>
                             <p:menuitem value="Reporting Unit Level" icon="fa fa-fw fa-sign-in" outcome="/reportReportingUnitList"/>
                             <p:menuitem value="Platform Level" icon="fa fa-fw fa-sign-in" outcome="/reportBusinessUnitList"/>
                             <p:menuitem value="Company Level" icon="fa fa-fw fa-sign-in" outcome="/reportCompanyList"/>
-                   
+
                         </p:submenu>
                         <p:submenu label="Administration" icon="fa fa-fw fa-gg">
                             <p:menuitem value="Users" icon="fa fa-fw fa-sign-in" outcome="/userSearch"/>
                             <p:menuitem value="Business Units" icon="fa fa-fw fa-sign-in" outcome="/businessUnitList"/>
                             <p:menuitem value="Reporting Units" icon="fa fa-fw fa-sign-in" outcome="/reportingUnitSearch"/>
-                            <p:menuitem value="Upload Legacy Exchange Rates" icon="fa fa-fw fa-sign-in" outcome="/inputLegacyExchangeRate"/>
-                            <p:menuitem value="Upload Exchange Rates" icon="fa fa-fw fa-sign-in" outcome="/inputExchangeRate"/>
                             <p:menuitem value="Exchange Rates" icon="fa fa-fw fa-sign-in" outcome="/exchangeRateSearch"/>
+                            <p:menuitem value="Upload Exchange Rates" icon="fa fa-fw fa-sign-in" outcome="/inputExchangeRate"/>
                             <p:menuitem value="Metric Type List" icon="fa fa-fw fa-sign-in" outcome="/metricTypeList"/>
                             <p:menuitem value="Company List" icon="fa fa-fw fa-sign-in" outcome="/companyList"/>
                             <p:submenu label="Customers" icon="fa fa-fw fa-sign-in"></p:submenu>
                             <p:submenu label="Vendors" icon="fa fa-fw fa-sign-in"></p:submenu>
                             <p:menuitem value="Financial Periods" icon="fa fa-fw fa-sign-in" outcome="/financialPeriodList"/>
-                            <p:menuitem id="initial_contract_upload" value="Initial Contract Upload" icon="fa fa-fw fa-home" outcome="/initialContractUpload"/>
-                            <p:menuitem value="Upload POCI Data" icon="fa fa-fw fa-home" outcome="/inputPOCIUpload"/>
                             <p:menuitem value="Calendar" icon="fa fa-fw fa-sign-in" outcome="/calendar"/>
                             <p:menuitem value="Holiday List" icon="fa fa-fw fa-sign-in" outcome="/holidaysList"/>
+                            <p:menuitem value="Upload Legacy Exchange Rates" icon="fa fa-fw fa-sign-in" outcome="/inputLegacyExchangeRate"/>
+                            <p:menuitem id="initial_contract_upload" value="Upload Contract-POB Data" icon="fa fa-fw fa-home" outcome="/initialContractUpload"/>
+                            <p:menuitem value="Upload POCI Data" icon="fa fa-fw fa-home" outcome="/inputPOCIUpload"/>
                         </p:submenu>
                     </pc:menu>
                 </h:form>

@@ -37,9 +37,9 @@ import org.primefaces.model.TreeNode;
  */
 @Named
 @ViewScoped
-public class InputDashboard implements Serializable {
+public class Dashboard implements Serializable {
 
-    private static final Logger logger = Logger.getLogger(InputDashboard.class.getName());
+    private static final Logger logger = Logger.getLogger(Dashboard.class.getName());
 
     private TreeNode rootTreeNode;
     @Inject

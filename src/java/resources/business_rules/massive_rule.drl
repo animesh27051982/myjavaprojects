@@ -2,6 +2,7 @@ dialect "mvel"
 
 import java.math.BigDecimal;
 import com.flowserve.system606.model.PerformanceObligation;
+import com.flowserve.system606.model.PerformanceObligationGroup;
 import com.flowserve.system606.model.Contract;
 import com.flowserve.system606.model.Metric;
 import com.flowserve.system606.model.DecimalMetric;
@@ -216,17 +217,41 @@ rule "Projected Gain/Loss"
         modify (projectedGainLoss) { lcValue = (transactionPriceNetLD.lcValue - estimatedCostAtCompletion.lcValue)};
 end
 
-rule "Contract Level Estimated Gross Profit and Margin"
+//rule "Contract Level Estimated Gross Profit and Margin"
+//    when
+//        contract : Contract()
+//        transactionPrice : CurrencyMetric(metricType.code == "TRANSACTION_PRICE_CC", lcValue != null)
+//        contractLiquidatedDamagesITD : CurrencyMetric(metricType.code == "LIQUIDATED_DAMAGES_ITD_CC", lcValue != null)
+//        estimatedCostAtCompletion : CurrencyMetric(metricType.code == "ESTIMATED_COST_AT_COMPLETION_LC", lcValue != null)
+//        estimatedGrossProfit : CurrencyMetric(metricType.code == "CONTRACT_ESTIMATED_GROSS_PROFIT_LC")
+//        estimatedGrossMargin : Metric(metricType.code == "CONTRACT_ESTIMATED_GROSS_MARGIN")
+//    then
+//        modify (estimatedGrossProfit) { lcValue = (transactionPrice.lcValue - contractLiquidatedDamagesITD.lcValue - estimatedCostAtCompletion.lcValue)};
+//        modify (estimatedGrossMargin) { value = (estimatedGrossProfit.lcValue == 0B || (transactionPrice.lcValue - contractLiquidatedDamagesITD.lcValue) == 0B ? 0B : estimatedGrossProfit.lcValue / (transactionPrice.lcValue - contractLiquidatedDamagesITD.lcValue) )};
+//end
+
+rule "POB Group Level Estimated Gross Profit and Margin"
     when
-        contract : Contract()
+        pobGroup : PerformanceObligationGroup()
         transactionPrice : CurrencyMetric(metricType.code == "TRANSACTION_PRICE_CC", lcValue != null)
-        contractLiquidatedDamagesITD : CurrencyMetric(metricType.code == "LIQUIDATED_DAMAGES_ITD_CC", lcValue != null)
         estimatedCostAtCompletion : CurrencyMetric(metricType.code == "ESTIMATED_COST_AT_COMPLETION_LC", lcValue != null)
-        estimatedGrossProfit : CurrencyMetric(metricType.code == "CONTRACT_ESTIMATED_GROSS_PROFIT_LC")
-        estimatedGrossMargin : Metric(metricType.code == "CONTRACT_ESTIMATED_GROSS_MARGIN")
+        estimatedGrossProfit : CurrencyMetric(metricType.code == "ESTIMATED_GROSS_PROFIT_LC")
+        estimatedGrossMargin : Metric(metricType.code == "ESTIMATED_GROSS_MARGIN")
     then
-        modify (estimatedGrossProfit) { lcValue = (transactionPrice.lcValue - contractLiquidatedDamagesITD.lcValue - estimatedCostAtCompletion.lcValue)};
-        modify (estimatedGrossMargin) { value = (estimatedGrossProfit.lcValue == 0B || (transactionPrice.lcValue - contractLiquidatedDamagesITD.lcValue) == 0B ? 0B : estimatedGrossProfit.lcValue / (transactionPrice.lcValue - contractLiquidatedDamagesITD.lcValue) )};
+        logger.info("Calculating POB Group Level Estimated Gross Profit and Margin");
+        modify (estimatedGrossProfit) { lcValue = (transactionPrice.lcValue - estimatedCostAtCompletion.lcValue)};
+        modify (estimatedGrossMargin) { value = (estimatedGrossProfit.lcValue == 0B ? 0B : estimatedGrossProfit.lcValue / transactionPrice.lcValue)};
+end
+
+rule "POB Group Level Test"
+    when
+        pobGroup : PerformanceObligationGroup()
+        transactionPrice : CurrencyMetric(metricType.code == "TRANSACTION_PRICE_CC", lcValue != null)
+        estimatedCostAtCompletion : CurrencyMetric(metricType.code == "ESTIMATED_COST_AT_COMPLETION_LC", lcValue != null)
+        estimatedGrossProfit : CurrencyMetric(metricType.code == "ESTIMATED_GROSS_PROFIT_LC")
+        estimatedGrossMargin : Metric(metricType.code == "ESTIMATED_GROSS_MARGIN")
+    then
+        logger.info("Calculating POB Group Level Test");
 end
 
 rule "Contract Gross Profit and Margin ITD"
@@ -239,7 +264,7 @@ rule "Contract Gross Profit and Margin ITD"
         contractGrossProfit : CurrencyMetric(metricType.code == "CONTRACT_GROSS_PROFIT_LC")
         contractGrossMargin : Metric(metricType.code == "CONTRACT_GROSS_MARGIN")
     then
-        modify (contractGrossProfit) { lcValue = (contractRevenueITD.lcValue - contractLiquidatedDamagesITD.value - contractCOGSITD.lcValue + contractLossReserve.lcValue)};
+        modify (contractGrossProfit) { lcValue = (contractRevenueITD.lcValue - contractCOGSITD.lcValue + contractLossReserve.lcValue)};
         modify (contractGrossMargin) { value = (contractGrossProfit.lcValue == 0B || (contractRevenueITD.lcValue - contractLiquidatedDamagesITD.lcValue) == 0B ? 0B : contractGrossProfit.lcValue / (contractRevenueITD.lcValue - contractLiquidatedDamagesITD.lcValue) )};
 end
 

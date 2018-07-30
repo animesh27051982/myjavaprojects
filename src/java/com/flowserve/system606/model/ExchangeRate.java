@@ -8,7 +8,6 @@ package com.flowserve.system606.model;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Currency;
-import java.util.logging.Logger;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -41,7 +40,6 @@ cache in CurrencyService.java.  Leaving the query cache settings in place for no
 public class ExchangeRate implements Serializable, Comparable<ExchangeRate> {
 
     private static final long serialVersionUID = -383220321690601009L;
-    private static final Logger LOG = Logger.getLogger(ExchangeRate.class.getName());
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "EXCHANGE_RATE_SEQ")
     @SequenceGenerator(name = "EXCHANGE_RATE_SEQ", sequenceName = "EXCHANGE_RATE_SEQ", allocationSize = 50)
