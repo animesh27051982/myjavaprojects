@@ -5,7 +5,6 @@
  */
 package com.flowserve.system606.service;
 
-import com.flowserve.system606.model.BillingEvent;
 import com.flowserve.system606.model.Contract;
 import com.flowserve.system606.model.FinancialPeriod;
 import com.flowserve.system606.model.Measurable;
@@ -180,43 +179,42 @@ public class TemplateService {
                 }
 
                 // KJG TODO - Billing Events need to move out of the metric types and into an 'Event' category of data.
-                BillingEvent billingEvent = new BillingEvent();
-                List<MetricType> inputTypesContract = metricService.findActiveMetricTypesContract();
-                for (MetricType inputType : inputTypesContract) {
-                    Cell cell = row.getCell(CellReference.convertColStringToIndex(inputType.getExcelCol()));
-                    try {
-                        if (cell == null || pobIdCell.getCellTypeEnum() == CellType.BLANK || ((XSSFCell) cell).getRawValue() == null) {
-                            // TODO - figure out what to do in this blank case.  It will depend on the situation.
-                            continue;
-                        }
-                        if ("BILLING_AMOUNT_CC".equals(inputType.getId())) {
-                            if (cell == null || pobIdCell.getCellTypeEnum() == CellType.BLANK || ((XSSFCell) cell).getRawValue() == null) {
-                                Logger.getLogger(MetricService.class.getName()).log(Level.INFO, "processTemplateUpload: there is no value of BILLING_AMOUNT_CC");
-                            } else {
-                                Logger.getLogger(MetricService.class.getName()).log(Level.INFO, "processTemplateUpload: there is value of BILLING_AMOUNT_CC: "
-                                        + new BigDecimal(NumberToTextConverter.toText(cell.getNumericCellValue())));
-                                billingEvent.setAmountContractCurrency(new BigDecimal(NumberToTextConverter.toText(cell.getNumericCellValue())));
-                            }
-                        } else if ("BILLING_INVOICE_NUMBER".equals(inputType.getId())) {
-                            billingEvent.setInvoiceNumber(NumberToTextConverter.toText(cell.getNumericCellValue()));
-                        } else if ("BILLING_AMOUNT_LC".equals(inputType.getId())) {
-                            billingEvent.setAmountLocalCurrency(new BigDecimal(NumberToTextConverter.toText(cell.getNumericCellValue())));
-                        } else if ("BILLING_DATE".equals(inputType.getId())) {
-                            billingEvent.setBillingDate(cell.getDateCellValue().toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
-                        }
-                    } catch (Exception rce) {
-                        throw new Exception("processTemplateUpload row: " + row.getRowNum() + " cell:" + cell.getColumnIndex() + " " + rce.getMessage());
-                    }
-                }
-                // We only support one billing event via the Excel.  Clear any prior events.
-
-                if (billingEvent.getInvoiceNumber() != null) {
-                    billingEvent.setContract(pob.getContract());
-                    billingEvent = adminService.update(billingEvent);
-                    pob.getContract().getBillingEvents().clear();
-                    pob.getContract().getBillingEvents().add(billingEvent);
-                }
-
+//                BillingEvent billingEvent = new BillingEvent();
+//                List<MetricType> inputTypesContract = metricService.findActiveMetricTypesContract();
+//                for (MetricType inputType : inputTypesContract) {
+//                    Cell cell = row.getCell(CellReference.convertColStringToIndex(inputType.getExcelCol()));
+//                    try {
+//                        if (cell == null || pobIdCell.getCellTypeEnum() == CellType.BLANK || ((XSSFCell) cell).getRawValue() == null) {
+//                            // TODO - figure out what to do in this blank case.  It will depend on the situation.
+//                            continue;
+//                        }
+//                        if ("BILLING_AMOUNT_CC".equals(inputType.getId())) {
+//                            if (cell == null || pobIdCell.getCellTypeEnum() == CellType.BLANK || ((XSSFCell) cell).getRawValue() == null) {
+//                                Logger.getLogger(MetricService.class.getName()).log(Level.INFO, "processTemplateUpload: there is no value of BILLING_AMOUNT_CC");
+//                            } else {
+//                                Logger.getLogger(MetricService.class.getName()).log(Level.INFO, "processTemplateUpload: there is value of BILLING_AMOUNT_CC: "
+//                                        + new BigDecimal(NumberToTextConverter.toText(cell.getNumericCellValue())));
+//                                billingEvent.setAmountContractCurrency(new BigDecimal(NumberToTextConverter.toText(cell.getNumericCellValue())));
+//                            }
+//                        } else if ("BILLING_INVOICE_NUMBER".equals(inputType.getId())) {
+//                            billingEvent.setInvoiceNumber(NumberToTextConverter.toText(cell.getNumericCellValue()));
+//                        } else if ("BILLING_AMOUNT_LC".equals(inputType.getId())) {
+//                            billingEvent.setAmountLocalCurrency(new BigDecimal(NumberToTextConverter.toText(cell.getNumericCellValue())));
+//                        } else if ("BILLING_DATE".equals(inputType.getId())) {
+//                            billingEvent.setBillingDate(cell.getDateCellValue().toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
+//                        }
+//                    } catch (Exception rce) {
+//                        throw new Exception("processTemplateUpload row: " + row.getRowNum() + " cell:" + cell.getColumnIndex() + " " + rce.getMessage());
+//                    }
+//                }
+//                // We only support one billing event via the Excel.  Clear any prior events.
+//
+//                if (billingEvent.getInvoiceNumber() != null) {
+//                    billingEvent.setContract(pob.getContract());
+//                    billingEvent = adminService.update(billingEvent);
+//                    pob.getContract().getBillingEvents().clear();
+//                    pob.getContract().getBillingEvents().add(billingEvent);
+//                }
                 calculationService.executeBusinessRules(pob, webSession.getCurrentPeriod());
                 pob = pobService.update(pob);
             }

@@ -6,6 +6,8 @@
 package com.flowserve.system606.service;
 
 import com.flowserve.system606.model.Contract;
+import com.flowserve.system606.model.FinancialPeriod;
+import com.flowserve.system606.model.Measurable;
 import com.flowserve.system606.model.PerformanceObligation;
 import com.flowserve.system606.model.PerformanceObligationGroup;
 import com.flowserve.system606.model.RevenueMethod;
@@ -38,15 +40,12 @@ public class ReportsService {
     private static Logger logger = Logger.getLogger("com.flowserve.system606");
     @Inject
     private CalculationService calculationService;
-
-    @Inject
-    private MetricService metricService;
-    @Inject
-    private ContractService contractService;
     @Inject
     private ViewSupport viewSupport;
     @Inject
     private WebSession webSession;
+    @Inject
+    private FinancialPeriodService financialPeriodService;
 
     private static final int HEADER_ROW_COUNT = 10;
 
@@ -65,7 +64,6 @@ public class ReportsService {
         }
         inputStream.close();
         outputStream.close();
-
     }
 
     public XSSFSheet writeContractEsimatesReport(XSSFSheet worksheet, Contract contract) throws Exception {
@@ -76,20 +74,49 @@ public class ReportsService {
         cell = rowTitle.getCell(0, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
         cell.setCellValue(contract.getName());
 
-        // Split the contract into groups
+        // For now, get the period from the user's session.  Later we will be passing in the period from the reports generation page.
+        FinancialPeriod period = webSession.getCurrentPeriod();
+
+        // Execute buisness rules on the contract to fill in any values we might need at the contract level (e.g. gross margin)
+        calculationService.executeBusinessRules(contract, period);
+
+        // Get the contract level values for the contract total row on the "Contract Summary Totals" row.
+        BigDecimal transactionPrice = getTransactionPrice(contract, period);
+        BigDecimal loquidatedDamage = getLiquidatedDamages(contract, period);
+        BigDecimal EAC = getEAC(contract, period);
+        BigDecimal estimatedGrossProfit = getEstimatedGrossProfit(contract, period);
+        BigDecimal estimatedGrossMargin = getEstimatedGrossMargin(contract, period);
+
+        row = worksheet.getRow(15);
+
+        // TODO - Please change all setCell lines to the same approach below.
+        setCellValue(row, 1, transactionPrice);
+//        cell = row.getCell(1, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
+//        cell.setCellValue(transactionPrice.doubleValue());
+        cell = row.getCell(2, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
+        cell.setCellValue(loquidatedDamage.doubleValue());
+        cell = row.getCell(3, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
+        cell.setCellValue(EAC.doubleValue());
+        cell = row.getCell(4, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
+        cell.setCellValue(estimatedGrossProfit.doubleValue());
+        cell = row.getCell(5, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
+        cell.setCellValue(estimatedGrossMargin.doubleValue());
+
+        // Split the contract into groups.  We need totals per type of POB, so create 3 groups.  The PerformanceObligationGroup is just a shell Measurable non-entity class used for grouping.
         PerformanceObligationGroup pocPobs = new PerformanceObligationGroup("pocPobs", contract, contract.getPobsByRevenueMethod(RevenueMethod.PERC_OF_COMP));
-        calculationService.executeBusinessRules(pocPobs, webSession.getCurrentPeriod());
-        PerformanceObligationGroup pitPobs = new PerformanceObligationGroup("pocPobs", contract, contract.getPobsByRevenueMethod(RevenueMethod.POINT_IN_TIME));
-        PerformanceObligationGroup slPobs = new PerformanceObligationGroup("pocPobs", contract, contract.getPobsByRevenueMethod(RevenueMethod.STRAIGHT_LINE));
+        calculationService.executeBusinessRules(pocPobs, period);
+        PerformanceObligationGroup pitPobs = new PerformanceObligationGroup("pitPobs", contract, contract.getPobsByRevenueMethod(RevenueMethod.POINT_IN_TIME));
+        calculationService.executeBusinessRules(pitPobs, period);
+        PerformanceObligationGroup slPobs = new PerformanceObligationGroup("slPobs", contract, contract.getPobsByRevenueMethod(RevenueMethod.STRAIGHT_LINE));
+        calculationService.executeBusinessRules(slPobs, period);
 
-        // TODO - remove viewsupport reference here and pass in period to report on.
-        // Percentage of completion Pobs.
-        BigDecimal transactionPrice = viewSupport.getCurrencyMetric("TRANSACTION_PRICE_CC", pocPobs).getValue();
-        BigDecimal loquidatedDamage = viewSupport.getCurrencyMetric("LIQUIDATED_DAMAGES_ITD_CC", pocPobs).getValue();
-        BigDecimal EAC = viewSupport.getCurrencyMetric("ESTIMATED_COST_AT_COMPLETION_LC", pocPobs).getValue();
-        BigDecimal estimatedGrossProfit = viewSupport.getCurrencyMetric("ESTIMATED_GROSS_PROFIT_LC", pocPobs).getValue();
-        BigDecimal estimatedGrossMargin = viewSupport.getDecimalMetric("ESTIMATED_GROSS_MARGIN", pocPobs).getValue();;
+        transactionPrice = getTransactionPrice(pocPobs, period);
+        loquidatedDamage = getLiquidatedDamages(pocPobs, period);
+        EAC = getEAC(pocPobs, period);
+        estimatedGrossProfit = getEstimatedGrossProfit(pocPobs, period);
+        estimatedGrossMargin = getEstimatedGrossMargin(pocPobs, period);;
 
+        // Percentage of completion Pobs.  Set total row for POC POBs
         row = worksheet.getRow(10);
         cell = row.getCell(1, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
         cell.setCellValue(transactionPrice.doubleValue());
@@ -100,7 +127,9 @@ public class ReportsService {
         cell = row.getCell(4, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
         cell.setCellValue(estimatedGrossProfit.doubleValue());
         cell = row.getCell(5, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
-        //cell.setCellValue(estimatedGrossMargin.doubleValue());
+        cell.setCellValue(estimatedGrossMargin.doubleValue());
+
+        // We have the same total 8 rows down
         row = worksheet.getRow(18);
         cell = row.getCell(1, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
         cell.setCellValue(transactionPrice.doubleValue());
@@ -111,54 +140,162 @@ public class ReportsService {
         cell = row.getCell(4, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
         cell.setCellValue(estimatedGrossProfit.doubleValue());
         cell = row.getCell(5, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
-        //cell.setCellValue(estimatedGrossMargin.doubleValue());
+        cell.setCellValue(estimatedGrossMargin.doubleValue());
 
-        /**
-         * // Point in time pobs. transactionPrice = viewSupport.getCurrencyMetric("TRANSACTION_PRICE_CC", pitPobs).getValue(); loquidatedDamage =
-         * viewSupport.getCurrencyMetric("LIQUIDATED_DAMAGES_ITD_CC", pitPobs).getValue(); EAC =
-         * viewSupport.getCurrencyMetric("ESTIMATED_COST_AT_COMPLETION_LC", pitPobs).getValue(); estimatedGrossProfit =
-         * viewSupport.getCurrencyMetric("ESTIMATED_GROSS_PROFIT_LC", pitPobs).getValue(); estimatedGrossMargin =
-         * viewSupport.getDecimalMetric("ESTIMATED_GROSS_MARGIN", pitPobs).getValue();;
-         *
-         * row = worksheet.getRow(11); cell = row.getCell(1, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK); cell.setCellValue(transactionPrice.doubleValue());
-         * cell = row.getCell(2, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK); cell.setCellValue(loquidatedDamage.doubleValue()); cell = row.getCell(3,
-         * Row.MissingCellPolicy.CREATE_NULL_AS_BLANK); cell.setCellValue(EAC.doubleValue()); cell = row.getCell(4, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
-         * cell.setCellValue(estimatedGrossProfit.doubleValue()); cell = row.getCell(5, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
-         * cell.setCellValue(estimatedGrossMargin.doubleValue());
-         *
-         * // straight line pobs. transactionPrice = viewSupport.getCurrencyMetric("TRANSACTION_PRICE_CC", slPobs).getValue(); loquidatedDamage =
-         * viewSupport.getCurrencyMetric("LIQUIDATED_DAMAGES_ITD_CC", slPobs).getValue(); EAC = viewSupport.getCurrencyMetric("ESTIMATED_COST_AT_COMPLETION_LC",
-         * slPobs).getValue(); estimatedGrossProfit = viewSupport.getCurrencyMetric("ESTIMATED_GROSS_PROFIT_LC", slPobs).getValue(); estimatedGrossMargin =
-         * viewSupport.getDecimalMetric("ESTIMATED_GROSS_MARGIN", slPobs).getValue();;
-         *
-         * row = worksheet.getRow(12); cell = row.getCell(1, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK); cell.setCellValue(transactionPrice.doubleValue());
-         * cell = row.getCell(2, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK); cell.setCellValue(loquidatedDamage.doubleValue()); cell = row.getCell(3,
-         * Row.MissingCellPolicy.CREATE_NULL_AS_BLANK); cell.setCellValue(EAC.doubleValue()); cell = row.getCell(4, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
-         * cell.setCellValue(estimatedGrossProfit.doubleValue()); cell = row.getCell(5, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
-         * cell.setCellValue(estimatedGrossMargin.doubleValue());
-         *
-         * int pobInsertionRow = 18;
-         *
-         * List<PerformanceObligation> pobs = contract.getPerformanceObligations(); worksheet.shiftRows(18, 24, pobs.size(), true, false);
-         *
-         * for (PerformanceObligation pob : contract.getPerformanceObligations()) { Logger.getLogger(ReportsService.class.getName()).log(Level.INFO, "row: " +
-         * pobInsertionRow); transactionPrice = viewSupport.getCurrencyMetric("TRANSACTION_PRICE_CC", pob).getValue(); loquidatedDamage =
-         * viewSupport.getCurrencyMetric("LIQUIDATED_DAMAGES_ITD_CC", pob).getValue(); EAC = viewSupport.getCurrencyMetric("ESTIMATED_COST_AT_COMPLETION_LC",
-         * pob).getValue(); estimatedGrossProfit = viewSupport.getCurrencyMetric("ESTIMATED_GROSS_PROFIT_LC", pob).getValue(); estimatedGrossMargin =
-         * viewSupport.getDecimalMetric("ESTIMATED_GROSS_MARGIN", pob).getValue();; row = worksheet.createRow(pobInsertionRow); cell = row.getCell(0,
-         * Row.MissingCellPolicy.CREATE_NULL_AS_BLANK); cell.setCellValue(pob.getName()); cell = row.getCell(1, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
-         * cell.setCellValue(transactionPrice.doubleValue()); cell = row.getCell(2, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
-         * cell.setCellValue(loquidatedDamage.doubleValue()); cell = row.getCell(3, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
-         * cell.setCellValue(EAC.doubleValue()); cell = row.getCell(4, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
-         * cell.setCellValue(estimatedGrossProfit.doubleValue()); cell = row.getCell(5, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
-         * cell.setCellValue(estimatedGrossMargin.doubleValue());
-         *
-         * pobInsertionRow++;
-         *
-         * }
-         *
-         * *
-         */
+        // Point in time pobs.
+        transactionPrice = getTransactionPrice(pitPobs, period);
+        loquidatedDamage = getLiquidatedDamages(pitPobs, period);
+        EAC = getEAC(pitPobs, period);
+        estimatedGrossProfit = getEstimatedGrossProfit(pitPobs, period);
+        estimatedGrossMargin = getEstimatedGrossMargin(pitPobs, period);;
+
+        // Same thing, 2 rows of totals.
+        row = worksheet.getRow(11);
+        cell = row.getCell(1, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
+        cell.setCellValue(transactionPrice.doubleValue());
+        cell = row.getCell(2, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
+        cell.setCellValue(loquidatedDamage.doubleValue());
+        cell = row.getCell(3, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
+        cell.setCellValue(EAC.doubleValue());
+        cell = row.getCell(4, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
+        cell.setCellValue(estimatedGrossProfit.doubleValue());
+        cell = row.getCell(5, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
+        cell.setCellValue(estimatedGrossMargin.doubleValue());
+        row = worksheet.getRow(21);
+        cell = row.getCell(1, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
+        cell.setCellValue(transactionPrice.doubleValue());
+        cell = row.getCell(2, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
+        cell.setCellValue(loquidatedDamage.doubleValue());
+        cell = row.getCell(3, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
+        cell.setCellValue(EAC.doubleValue());
+        cell = row.getCell(4, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
+        cell.setCellValue(estimatedGrossProfit.doubleValue());
+        cell = row.getCell(5, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
+        cell.setCellValue(estimatedGrossMargin.doubleValue());
+
+        // straight line pobs.
+        transactionPrice = getTransactionPrice(slPobs, period);
+        loquidatedDamage = getLiquidatedDamages(slPobs, period);
+        EAC = getEAC(slPobs, period);
+        estimatedGrossProfit = getEstimatedGrossProfit(slPobs, period);
+        estimatedGrossMargin = getEstimatedGrossMargin(slPobs, period);;
+
+        row = worksheet.getRow(12);
+        cell = row.getCell(1, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
+        cell.setCellValue(transactionPrice.doubleValue());
+        cell = row.getCell(2, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
+        cell.setCellValue(loquidatedDamage.doubleValue());
+        cell = row.getCell(3, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
+        cell.setCellValue(EAC.doubleValue());
+        cell = row.getCell(4, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
+        cell.setCellValue(estimatedGrossProfit.doubleValue());
+        cell = row.getCell(5, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
+        cell.setCellValue(estimatedGrossMargin.doubleValue());
+        row = worksheet.getRow(24);
+        cell = row.getCell(1, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
+        cell.setCellValue(transactionPrice.doubleValue());
+        cell = row.getCell(2, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
+        cell.setCellValue(loquidatedDamage.doubleValue());
+        cell = row.getCell(3, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
+        cell.setCellValue(EAC.doubleValue());
+        cell = row.getCell(4, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
+        cell.setCellValue(estimatedGrossProfit.doubleValue());
+        cell = row.getCell(5, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
+        cell.setCellValue(estimatedGrossMargin.doubleValue());
+
+        int pobInsertionRow = 18;
+
+        // Fill in the POB detail lines.  We'll shift the surrounding rows down as we go to make room for the detail lines.
+        if (pocPobs.getPerformanceObligations().size() > 0) {
+            worksheet.shiftRows(pobInsertionRow, pobInsertionRow + 6, pocPobs.getPerformanceObligations().size(), true, false);
+
+            for (PerformanceObligation pob : pocPobs.getPerformanceObligations()) {
+                transactionPrice = getTransactionPrice(pob, period);
+                loquidatedDamage = getLiquidatedDamages(pob, period);
+                EAC = getEAC(pob, period);
+                estimatedGrossProfit = getEstimatedGrossProfit(pob, period);
+                estimatedGrossMargin = getEstimatedGrossMargin(pob, period);;
+
+                row = worksheet.createRow(pobInsertionRow);
+                cell = row.getCell(0, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
+                cell.setCellValue(pob.getName());
+                cell = row.getCell(1, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
+                cell.setCellValue(transactionPrice.doubleValue());
+                cell = row.getCell(2, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
+                cell.setCellValue(loquidatedDamage.doubleValue());
+                cell = row.getCell(3, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
+                cell.setCellValue(EAC.doubleValue());
+                cell = row.getCell(4, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
+                cell.setCellValue(estimatedGrossProfit.doubleValue());
+                cell = row.getCell(5, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
+                cell.setCellValue(estimatedGrossMargin.doubleValue());
+
+                pobInsertionRow++;
+            }
+        }
+
+        pobInsertionRow += 3;
+
+        // Same thing for point in time POBs.  This time we need to shift less due to not as much data below this area.
+        if (pitPobs.getPerformanceObligations().size() > 0) {
+            worksheet.shiftRows(pobInsertionRow, pobInsertionRow + 3, pitPobs.getPerformanceObligations().size(), true, false);
+
+            for (PerformanceObligation pob : pitPobs.getPerformanceObligations()) {
+                transactionPrice = getTransactionPrice(pob, period);
+                loquidatedDamage = getLiquidatedDamages(pob, period);
+                EAC = getEAC(pob, period);
+                estimatedGrossProfit = getEstimatedGrossProfit(pob, period);
+                estimatedGrossMargin = getEstimatedGrossMargin(pob, period);;
+
+                row = worksheet.createRow(pobInsertionRow);
+                cell = row.getCell(0, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
+                cell.setCellValue(pob.getName());
+                cell = row.getCell(1, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
+                cell.setCellValue(transactionPrice.doubleValue());
+                cell = row.getCell(2, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
+                cell.setCellValue(loquidatedDamage.doubleValue());
+                cell = row.getCell(3, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
+                cell.setCellValue(EAC.doubleValue());
+                cell = row.getCell(4, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
+                cell.setCellValue(estimatedGrossProfit.doubleValue());
+                cell = row.getCell(5, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
+                cell.setCellValue(estimatedGrossMargin.doubleValue());
+
+                pobInsertionRow++;
+            }
+        }
+
+        pobInsertionRow += 3;
+
+        // Only need to shift one row
+        if (slPobs.getPerformanceObligations().size() > 0) {
+            worksheet.shiftRows(pobInsertionRow, pobInsertionRow, slPobs.getPerformanceObligations().size(), true, false);
+
+            for (PerformanceObligation pob : slPobs.getPerformanceObligations()) {
+                transactionPrice = getTransactionPrice(pob, period);
+                loquidatedDamage = getLiquidatedDamages(pob, period);
+                EAC = getEAC(pob, period);
+                estimatedGrossProfit = getEstimatedGrossProfit(pob, period);
+                estimatedGrossMargin = getEstimatedGrossMargin(pob, period);;
+
+                row = worksheet.createRow(pobInsertionRow);
+                cell = row.getCell(0, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
+                cell.setCellValue(pob.getName());
+                cell = row.getCell(1, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
+                cell.setCellValue(transactionPrice.doubleValue());
+                cell = row.getCell(2, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
+                cell.setCellValue(loquidatedDamage.doubleValue());
+                cell = row.getCell(3, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
+                cell.setCellValue(EAC.doubleValue());
+                cell = row.getCell(4, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
+                cell.setCellValue(estimatedGrossProfit.doubleValue());
+                cell = row.getCell(5, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
+                cell.setCellValue(estimatedGrossMargin.doubleValue());
+
+                pobInsertionRow++;
+            }
+        }
+
         return worksheet;
     }
 
@@ -186,16 +323,19 @@ public class ReportsService {
         cell = contract_name.getCell(0, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
         cell.setCellValue(contract.getName());
 
-        BigDecimal loquidatedDamage = viewSupport.getCurrencyMetric("LIQUIDATED_DAMAGES_ITD_CC", contract).getValue();
-        BigDecimal localCostITDLC = viewSupport.getCurrencyMetric("COST_OF_GOODS_SOLD_ITD_LC", contract).getValue();
-        BigDecimal percentComplete = viewSupport.getDecimalMetric("CONTRACT_PERCENT_COMPLETE", contract).getValue();
-        BigDecimal revenueITD = viewSupport.getCurrencyMetric("CONTRACT_REVENUE_TO_RECOGNIZE_ITD_LC", contract).getValue();
-        BigDecimal lossReserveITD = viewSupport.getCurrencyMetric("LOSS_RESERVE_ITD_LC", contract).getValue();
-        BigDecimal grossProfitITD = viewSupport.getCurrencyMetric("CONTRACT_GROSS_PROFIT_LC", contract).getValue();
-        BigDecimal grossMarginITD = viewSupport.getDecimalMetric("CONTRACT_GROSS_MARGIN", contract).getValue();
-        BigDecimal costToComplete = viewSupport.getCurrencyMetric("CONTRACT_COST_TO_COMPLETE_LC", contract).getValue();
-        BigDecimal billingsInExcess = viewSupport.getCurrencyMetric("CONTRACT_BILLINGS_IN_EXCESS_LC", contract).getValue();
-        BigDecimal revenueInExcess = viewSupport.getCurrencyMetric("CONTRACT_REVENUE_IN_EXCESS_LC", contract).getValue();
+        FinancialPeriod period = webSession.getCurrentPeriod();
+
+        BigDecimal loquidatedDamage = getLiquidatedDamages(contract, period);
+        //  Please create helper methods for these as well.  Like the line above.
+        BigDecimal localCostITDLC = calculationService.getCurrencyMetric("COST_OF_GOODS_SOLD_ITD_LC", contract, period).getValue();
+        BigDecimal percentComplete = calculationService.getDecimalMetric("PERCENT_COMPLETE", contract, period).getValue();
+        BigDecimal revenueITD = calculationService.getCurrencyMetric("REVENUE_TO_RECOGNIZE_ITD_LC", contract, period).getValue();
+        BigDecimal lossReserveITD = calculationService.getCurrencyMetric("LOSS_RESERVE_ITD_LC", contract, period).getValue();
+        BigDecimal grossProfitITD = getEstimatedGrossProfit(contract, period);
+        BigDecimal grossMarginITD = getEstimatedGrossMargin(contract, period);
+        BigDecimal costToComplete = calculationService.getCurrencyMetric("CONTRACT_COST_TO_COMPLETE_LC", contract, period).getValue();
+        BigDecimal billingsInExcess = calculationService.getCurrencyMetric("CONTRACT_BILLINGS_IN_EXCESS_LC", contract, period).getValue();
+        BigDecimal revenueInExcess = calculationService.getCurrencyMetric("CONTRACT_REVENUE_IN_EXCESS_LC", contract, period).getValue();
 
         BigDecimal billToDate = contract.getTotalBillingsLocalCurrency();
 
@@ -229,16 +369,16 @@ public class ReportsService {
         worksheet.shiftRows(18, 24, pobs.size(), true, false);
 
         for (PerformanceObligation pob : contract.getPerformanceObligations()) {
-            loquidatedDamage = viewSupport.getCurrencyMetric("LIQUIDATED_DAMAGES_ITD_CC", pob).getValue();
-            localCostITDLC = viewSupport.getCurrencyMetric("COST_OF_GOODS_SOLD_ITD_LC", pob).getValue();
-            percentComplete = viewSupport.getDecimalMetric("PERCENT_COMPLETE", pob).getValue();
-            revenueITD = viewSupport.getCurrencyMetric("REVENUE_TO_RECOGNIZE_ITD_LC", pob).getValue();
+            loquidatedDamage = getLiquidatedDamages(pob, period);
+            localCostITDLC = calculationService.getCurrencyMetric("COST_OF_GOODS_SOLD_ITD_LC", pob, period).getValue();
+            percentComplete = calculationService.getDecimalMetric("PERCENT_COMPLETE", pob, period).getValue();
+            revenueITD = calculationService.getCurrencyMetric("REVENUE_TO_RECOGNIZE_ITD_LC", pob, period).getValue();
             //lossReserveITD = viewSupport.getCurrencyMetric("LOSS_RESERVE_ITD_LC", pob).getValue();
-            grossProfitITD = viewSupport.getCurrencyMetric("ESTIMATED_GROSS_PROFIT_LC", pob).getValue();
-            grossMarginITD = viewSupport.getDecimalMetric("ESTIMATED_GROSS_MARGIN", pob).getValue();
-//            costToComplete = viewSupport.getCurrencyMetric("COST_TO_COMPLETE_LC", pob).getValue();
-//            billingsInExcess = viewSupport.getCurrencyMetric("BILLINGS_IN_EXCESS_LC", pob).getValue();
-//            revenueInExcess = viewSupport.getCurrencyMetric("REVENUE_IN_EXCESS_LC", pob).getValue();
+            grossProfitITD = getEstimatedGrossProfit(pob, period);
+            grossMarginITD = getEstimatedGrossMargin(pob, period);
+//            costToComplete = calculationService.getCurrencyMetric("COST_TO_COMPLETE_LC", pob).getValue();
+//            billingsInExcess = calculationService.getCurrencyMetric("BILLINGS_IN_EXCESS_LC", pob).getValue();
+//            revenueInExcess = calculationService.getCurrencyMetric("REVENUE_IN_EXCESS_LC", pob).getValue();
             row = worksheet.createRow(pobInsertionRow);
             cell = row.getCell(0, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
             cell.setCellValue(pob.getName());
@@ -296,10 +436,12 @@ public class ReportsService {
         cell = contract_name.getCell(0, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
         cell.setCellValue(contract.getName());
 
-        BigDecimal revenueToRecognize = viewSupport.getCurrencyMetric("REVENUE_TO_RECOGNIZE_ITD_LC", contract).getValue();
-        BigDecimal loquidatedDamage = viewSupport.getCurrencyMetric("LIQUIDATED_DAMAGES_ITD_CC", contract).getValue();
-        BigDecimal cumulativeCostGoodsSoldLC = viewSupport.getCurrencyMetric("CUMULATIVE_COST_OF_GOODS_SOLD_LC", contract).getValue();
-        BigDecimal EstimatedGrossProfitLC = viewSupport.getCurrencyMetric("ESTIMATED_GROSS_PROFIT_LC", contract).getValue();
+        FinancialPeriod period = webSession.getCurrentPeriod();
+
+        BigDecimal revenueToRecognize = calculationService.getCurrencyMetric("REVENUE_TO_RECOGNIZE_ITD_LC", contract, period).getValue();
+        BigDecimal loquidatedDamage = getLiquidatedDamages(contract, period);
+        BigDecimal cumulativeCostGoodsSoldLC = calculationService.getCurrencyMetric("CUMULATIVE_COST_OF_GOODS_SOLD_LC", contract, period).getValue();
+        BigDecimal EstimatedGrossProfitLC = getEstimatedGrossProfit(contract, period);
 
         row = worksheet.getRow(rowid++);
         cell = row.getCell(1, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
@@ -319,11 +461,13 @@ public class ReportsService {
         worksheet.shiftRows(18, 24, pobs.size(), true, false);
 
         for (PerformanceObligation pob : contract.getPerformanceObligations()) {
-            revenueToRecognize = viewSupport.getCurrencyMetric("REVENUE_TO_RECOGNIZE_ITD_LC", pob).getValue();
-            loquidatedDamage = viewSupport.getCurrencyMetric("LIQUIDATED_DAMAGES_ITD_CC", pob).getValue();
-            cumulativeCostGoodsSoldLC = viewSupport.getCurrencyMetric("CUMULATIVE_COST_OF_GOODS_SOLD_LC", pob).getValue();
-            EstimatedGrossProfitLC = viewSupport.getCurrencyMetric("ESTIMATED_GROSS_PROFIT_LC", pob).getValue();
+            revenueToRecognize = calculationService.getCurrencyMetric("REVENUE_TO_RECOGNIZE_ITD_LC", pob, period).getValue();
+            loquidatedDamage = getLiquidatedDamages(pob, period);
+            cumulativeCostGoodsSoldLC = calculationService.getCurrencyMetric("CUMULATIVE_COST_OF_GOODS_SOLD_LC", pob, period).getValue();
+            EstimatedGrossProfitLC = getEstimatedGrossProfit(pob, period);
 
+            cell = row.getCell(0, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
+            cell.setCellValue(pob.getName());
             row = worksheet.createRow(pobInsertionRow);
             cell = row.getCell(1, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
             cell.setCellValue(revenueToRecognize.doubleValue());
@@ -367,10 +511,12 @@ public class ReportsService {
         cell = contract_name.getCell(0, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
         cell.setCellValue(contract.getName());
 
-        BigDecimal revenueToRecognize = viewSupport.getCurrencyMetric("REVENUE_TO_RECOGNIZE_ITD_LC", contract).getValue();
-        BigDecimal loquidatedDamage = viewSupport.getCurrencyMetric("LIQUIDATED_DAMAGES_ITD_CC", contract).getValue();
-        BigDecimal cumulativeCostGoodsSoldLC = viewSupport.getCurrencyMetric("CUMULATIVE_COST_OF_GOODS_SOLD_LC", contract).getValue();
-        BigDecimal EstimatedGrossProfitLC = viewSupport.getCurrencyMetric("ESTIMATED_GROSS_PROFIT_LC", contract).getValue();
+        List<FinancialPeriod> qtdPeriods = financialPeriodService.getQTDFinancialPeriods(viewSupport.getCurrentPeriod());
+
+        BigDecimal revenueToRecognize = calculationService.getAccumulatedCurrencyMetricAcrossPeriods("REVENUE_TO_RECOGNIZE_ITD_LC", contract, qtdPeriods).getValue();
+        BigDecimal loquidatedDamage = calculationService.getAccumulatedCurrencyMetricAcrossPeriods("LIQUIDATED_DAMAGES_ITD_CC", contract, qtdPeriods).getValue();
+        BigDecimal cumulativeCostGoodsSoldLC = calculationService.getAccumulatedCurrencyMetricAcrossPeriods("CUMULATIVE_COST_OF_GOODS_SOLD_LC", contract, qtdPeriods).getValue();
+        BigDecimal EstimatedGrossProfitLC = calculationService.getAccumulatedCurrencyMetricAcrossPeriods("ESTIMATED_GROSS_PROFIT_LC", contract, qtdPeriods).getValue();
 
         row = worksheet.getRow(rowid++);
         cell = row.getCell(1, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
@@ -390,11 +536,13 @@ public class ReportsService {
         worksheet.shiftRows(18, 24, pobs.size(), true, false);
 
         for (PerformanceObligation pob : contract.getPerformanceObligations()) {
-            revenueToRecognize = viewSupport.getCurrencyMetric("REVENUE_TO_RECOGNIZE_ITD_LC", pob).getValue();
-            loquidatedDamage = viewSupport.getCurrencyMetric("LIQUIDATED_DAMAGES_ITD_CC", pob).getValue();
-            cumulativeCostGoodsSoldLC = viewSupport.getCurrencyMetric("CUMULATIVE_COST_OF_GOODS_SOLD_LC", pob).getValue();
-            EstimatedGrossProfitLC = viewSupport.getCurrencyMetric("ESTIMATED_GROSS_PROFIT_LC", pob).getValue();
+            revenueToRecognize = calculationService.getAccumulatedCurrencyMetricAcrossPeriods("REVENUE_TO_RECOGNIZE_ITD_LC", pob, qtdPeriods).getValue();
+            loquidatedDamage = calculationService.getAccumulatedCurrencyMetricAcrossPeriods("LIQUIDATED_DAMAGES_ITD_CC", pob, qtdPeriods).getValue();
+            cumulativeCostGoodsSoldLC = calculationService.getAccumulatedCurrencyMetricAcrossPeriods("CUMULATIVE_COST_OF_GOODS_SOLD_LC", pob, qtdPeriods).getValue();
+            EstimatedGrossProfitLC = calculationService.getAccumulatedCurrencyMetricAcrossPeriods("ESTIMATED_GROSS_PROFIT_LC", pob, qtdPeriods).getValue();
 
+            cell = row.getCell(0, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
+            cell.setCellValue(pob.getName());
             row = worksheet.createRow(pobInsertionRow);
             cell = row.getCell(1, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
             cell.setCellValue(revenueToRecognize.doubleValue());
@@ -437,10 +585,12 @@ public class ReportsService {
         cell = contract_name.getCell(0, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
         cell.setCellValue(contract.getName());
 
-        BigDecimal revenueToRecognize = viewSupport.getCurrencyMetric("REVENUE_TO_RECOGNIZE_ITD_LC", contract).getValue();
-        BigDecimal loquidatedDamage = viewSupport.getCurrencyMetric("LIQUIDATED_DAMAGES_ITD_CC", contract).getValue();
-        BigDecimal cumulativeCostGoodsSoldLC = viewSupport.getCurrencyMetric("CUMULATIVE_COST_OF_GOODS_SOLD_LC", contract).getValue();
-        BigDecimal EstimatedGrossProfitLC = viewSupport.getCurrencyMetric("ESTIMATED_GROSS_PROFIT_LC", contract).getValue();
+        List<FinancialPeriod> ytdPeriods = financialPeriodService.getYTDFinancialPeriods(viewSupport.getCurrentPeriod());
+
+        BigDecimal revenueToRecognize = calculationService.getAccumulatedCurrencyMetricAcrossPeriods("REVENUE_TO_RECOGNIZE_ITD_LC", contract, ytdPeriods).getValue();
+        BigDecimal loquidatedDamage = calculationService.getAccumulatedCurrencyMetricAcrossPeriods("LIQUIDATED_DAMAGES_ITD_CC", contract, ytdPeriods).getValue();
+        BigDecimal cumulativeCostGoodsSoldLC = calculationService.getAccumulatedCurrencyMetricAcrossPeriods("CUMULATIVE_COST_OF_GOODS_SOLD_LC", contract, ytdPeriods).getValue();
+        BigDecimal EstimatedGrossProfitLC = calculationService.getAccumulatedCurrencyMetricAcrossPeriods("ESTIMATED_GROSS_PROFIT_LC", contract, ytdPeriods).getValue();
 
         row = worksheet.getRow(rowid++);
         cell = row.getCell(1, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
@@ -460,11 +610,13 @@ public class ReportsService {
         worksheet.shiftRows(18, 24, pobs.size(), true, false);
 
         for (PerformanceObligation pob : contract.getPerformanceObligations()) {
-            revenueToRecognize = viewSupport.getCurrencyMetric("REVENUE_TO_RECOGNIZE_ITD_LC", pob).getValue();
-            loquidatedDamage = viewSupport.getCurrencyMetric("LIQUIDATED_DAMAGES_ITD_CC", pob).getValue();
-            cumulativeCostGoodsSoldLC = viewSupport.getCurrencyMetric("CUMULATIVE_COST_OF_GOODS_SOLD_LC", pob).getValue();
-            EstimatedGrossProfitLC = viewSupport.getCurrencyMetric("ESTIMATED_GROSS_PROFIT_LC", pob).getValue();
+            revenueToRecognize = calculationService.getAccumulatedCurrencyMetricAcrossPeriods("REVENUE_TO_RECOGNIZE_ITD_LC", pob, ytdPeriods).getValue();
+            loquidatedDamage = calculationService.getAccumulatedCurrencyMetricAcrossPeriods("LIQUIDATED_DAMAGES_ITD_CC", pob, ytdPeriods).getValue();
+            cumulativeCostGoodsSoldLC = calculationService.getAccumulatedCurrencyMetricAcrossPeriods("CUMULATIVE_COST_OF_GOODS_SOLD_LC", pob, ytdPeriods).getValue();
+            EstimatedGrossProfitLC = calculationService.getAccumulatedCurrencyMetricAcrossPeriods("ESTIMATED_GROSS_PROFIT_LC", pob, ytdPeriods).getValue();
 
+            cell = row.getCell(0, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
+            cell.setCellValue(pob.getName());
             row = worksheet.createRow(pobInsertionRow);
             cell = row.getCell(1, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
             cell.setCellValue(revenueToRecognize.doubleValue());
@@ -588,6 +740,31 @@ public class ReportsService {
         inputStream.close();
         outputStream.close();
 
+    }
+
+    private BigDecimal getTransactionPrice(Measurable measureable, FinancialPeriod period) throws Exception {
+        return calculationService.getCurrencyMetric("TRANSACTION_PRICE_CC", measureable, period).getValue();
+    }
+
+    private BigDecimal getLiquidatedDamages(Measurable measureable, FinancialPeriod period) throws Exception {
+        return calculationService.getCurrencyMetric("LIQUIDATED_DAMAGES_ITD_CC", measureable, period).getValue();
+    }
+
+    private BigDecimal getEAC(Measurable measureable, FinancialPeriod period) throws Exception {
+        return calculationService.getCurrencyMetric("ESTIMATED_COST_AT_COMPLETION_LC", measureable, period).getValue();
+    }
+
+    private BigDecimal getEstimatedGrossProfit(Measurable measureable, FinancialPeriod period) throws Exception {
+        return calculationService.getCurrencyMetric("ESTIMATED_GROSS_PROFIT_LC", measureable, period).getValue();
+    }
+
+    private BigDecimal getEstimatedGrossMargin(Measurable measureable, FinancialPeriod period) {
+        return calculationService.getDecimalMetric("ESTIMATED_GROSS_MARGIN", measureable, period).getValue();
+    }
+
+    private void setCellValue(XSSFRow row, int cellNum, BigDecimal value) {
+        Cell cell = row.getCell(cellNum, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
+        cell.setCellValue(value.doubleValue());
     }
 
 }

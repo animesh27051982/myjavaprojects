@@ -89,19 +89,19 @@ end
 rule "Percent Complete Contract"
     when
         contract : Contract()
-        costOfGoodsSoldITD : CurrencyMetric(metricType.code == "COST_OF_GOODS_SOLD_ITD_LC", lcValue != null && lcValue != 0B)
-        estimatedCostAtCompletion : CurrencyMetric(metricType.code == "ESTIMATED_COST_AT_COMPLETION_LC", lcValue != null && lcValue != 0B)
-        contractPercentComplete : Metric(metricType.code == "CONTRACT_PERCENT_COMPLETE")
+        costOfGoodsSoldITD : CurrencyMetric(metricType.code == "COST_OF_GOODS_SOLD_ITD_LC", lcValue != null)
+        estimatedCostAtCompletion : CurrencyMetric(metricType.code == "ESTIMATED_COST_AT_COMPLETION_LC", lcValue != null)
+        percentComplete : Metric(metricType.code == "PERCENT_COMPLETE")
     then
-        modify (contractPercentComplete) { value = (costOfGoodsSoldITD.lcValue / estimatedCostAtCompletion.lcValue)};
+        modify (percentComplete) { value = (costOfGoodsSoldITD.lcValue == 0B || estimatedCostAtCompletion.lcValue == 0B ? 0B : costOfGoodsSoldITD.lcValue / estimatedCostAtCompletion.lcValue)};
 end
 
 rule "Contract Revenue Earned to Date"
     when
         contract : Contract()
         transactionPrice : CurrencyMetric(metricType.code == "TRANSACTION_PRICE_CC", lcValue != null)
-        contractPercentComplete : Metric(metricType.code == "CONTRACT_PERCENT_COMPLETE", value != null)
-        contractRevenueToRecognizeITD : CurrencyMetric(metricType.code == "CONTRACT_REVENUE_TO_RECOGNIZE_ITD_LC")
+        contractPercentComplete : Metric(metricType.code == "PERCENT_COMPLETE", value != null)
+        contractRevenueToRecognizeITD : CurrencyMetric(metricType.code == "REVENUE_TO_RECOGNIZE_ITD_LC")
     then
         modify (contractRevenueToRecognizeITD) { lcValue = (transactionPrice.lcValue * contractPercentComplete.value)};
 end
@@ -109,7 +109,7 @@ end
 rule "Contract Billings In Excess"
     when
         contract : Contract()
-        contractRevenueToRecognizeITD : CurrencyMetric(metricType.code == "CONTRACT_REVENUE_TO_RECOGNIZE_ITD_LC", lcValue != null)
+        contractRevenueToRecognizeITD : CurrencyMetric(metricType.code == "REVENUE_TO_RECOGNIZE_ITD_LC", lcValue != null)
         contractBillingsInExcess : CurrencyMetric(metricType.code == "CONTRACT_BILLINGS_IN_EXCESS_LC")
     then
         modify (contractBillingsInExcess) { lcValue = (contract.getTotalBillingsLocalCurrency() <= contractRevenueToRecognizeITD.lcValue ? 0B : contract.getTotalBillingsLocalCurrency() - contractRevenueToRecognizeITD.lcValue)};
@@ -118,7 +118,7 @@ end
 rule "Contract Revenue In Excess. Thsi is named Costs in Excess on XLS not sure why"
     when
         contract : Contract()
-        contractRevenueToRecognizeITD : CurrencyMetric(metricType.code == "CONTRACT_REVENUE_TO_RECOGNIZE_ITD_LC", lcValue != null)
+        contractRevenueToRecognizeITD : CurrencyMetric(metricType.code == "REVENUE_TO_RECOGNIZE_ITD_LC", lcValue != null)
         contractRevenueInExcess : CurrencyMetric(metricType.code == "CONTRACT_REVENUE_IN_EXCESS_LC")
     then
         modify (contractRevenueInExcess) { lcValue = (contract.getTotalBillingsLocalCurrency() >= contractRevenueToRecognizeITD.lcValue ? 0B : contractRevenueToRecognizeITD.lcValue - contract.getTotalBillingsLocalCurrency())};
@@ -217,18 +217,18 @@ rule "Projected Gain/Loss"
         modify (projectedGainLoss) { lcValue = (transactionPriceNetLD.lcValue - estimatedCostAtCompletion.lcValue)};
 end
 
-//rule "Contract Level Estimated Gross Profit and Margin"
-//    when
-//        contract : Contract()
-//        transactionPrice : CurrencyMetric(metricType.code == "TRANSACTION_PRICE_CC", lcValue != null)
-//        contractLiquidatedDamagesITD : CurrencyMetric(metricType.code == "LIQUIDATED_DAMAGES_ITD_CC", lcValue != null)
-//        estimatedCostAtCompletion : CurrencyMetric(metricType.code == "ESTIMATED_COST_AT_COMPLETION_LC", lcValue != null)
-//        estimatedGrossProfit : CurrencyMetric(metricType.code == "CONTRACT_ESTIMATED_GROSS_PROFIT_LC")
-//        estimatedGrossMargin : Metric(metricType.code == "CONTRACT_ESTIMATED_GROSS_MARGIN")
-//    then
-//        modify (estimatedGrossProfit) { lcValue = (transactionPrice.lcValue - contractLiquidatedDamagesITD.lcValue - estimatedCostAtCompletion.lcValue)};
-//        modify (estimatedGrossMargin) { value = (estimatedGrossProfit.lcValue == 0B || (transactionPrice.lcValue - contractLiquidatedDamagesITD.lcValue) == 0B ? 0B : estimatedGrossProfit.lcValue / (transactionPrice.lcValue - contractLiquidatedDamagesITD.lcValue) )};
-//end
+rule "Contract Level Estimated Gross Profit and Margin"
+    when
+        contract : Contract()
+        transactionPrice : CurrencyMetric(metricType.code == "TRANSACTION_PRICE_CC", lcValue != null)
+        estimatedCostAtCompletion : CurrencyMetric(metricType.code == "ESTIMATED_COST_AT_COMPLETION_LC", lcValue != null)
+        estimatedGrossProfit : CurrencyMetric(metricType.code == "ESTIMATED_GROSS_PROFIT_LC")
+        estimatedGrossMargin : Metric(metricType.code == "ESTIMATED_GROSS_MARGIN")
+    then
+        logger.info("Calculating Contract Level Estimated Gross Profit and Margin");
+        modify (estimatedGrossProfit) { lcValue = (transactionPrice.lcValue - estimatedCostAtCompletion.lcValue)};
+        modify (estimatedGrossMargin) { value = (estimatedGrossProfit.lcValue == 0B ? 0B : estimatedGrossProfit.lcValue / transactionPrice.lcValue)};
+end
 
 rule "POB Group Level Estimated Gross Profit and Margin"
     when

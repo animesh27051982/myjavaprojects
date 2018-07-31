@@ -19,10 +19,12 @@ import static javax.persistence.TemporalType.DATE;
 public class MetricType extends BaseEntity<Long> implements Comparable<MetricType>, Serializable {
 
     private static final long serialVersionUID = -8382719960002472187L;
+    private static final String DECIMAL_METRIC = "DecimalMetric";
     private static final String CURRENCY_METRIC = "CurrencyMetric";
     public static final String PACKAGE_PREFIX = "com.flowserve.system606.model.";
     private static final String OWNER_ENTITY_TYPE_CONTRACT = "Contract";
     private static final String OWNER_ENTITY_TYPE_POB = "POB";
+    private static final String OWNER_ENTITY_TYPE_ALL = "ALL";
 
 //    @Id
 //    @Column(name = "METRIC_TYPE_ID")
@@ -207,12 +209,16 @@ public class MetricType extends BaseEntity<Long> implements Comparable<MetricTyp
         return CURRENCY_METRIC.equals(this.getMetricClass());
     }
 
+    public boolean isDecimal() {
+        return DECIMAL_METRIC.equals(this.getMetricClass());
+    }
+
     public boolean isContractLevel() {
-        return OWNER_ENTITY_TYPE_CONTRACT.equals(this.ownerEntityType);
+        return OWNER_ENTITY_TYPE_CONTRACT.equals(this.ownerEntityType) || OWNER_ENTITY_TYPE_ALL.equals(this.ownerEntityType);
     }
 
     public boolean isPobLevel() {
-        return OWNER_ENTITY_TYPE_POB.equals((this.ownerEntityType));
+        return OWNER_ENTITY_TYPE_POB.equals(this.ownerEntityType) || OWNER_ENTITY_TYPE_ALL.equals(this.ownerEntityType);
     }
 
     public String getCode() {

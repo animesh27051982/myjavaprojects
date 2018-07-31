@@ -83,4 +83,8 @@ public class PerformanceObligationGroup extends TransientMeasurable<String> impl
         performanceObligations.add(pob);
     }
 
+    public List<PerformanceObligation> getPerformanceObligations() {
+        return performanceObligations;
+    }
+
 }

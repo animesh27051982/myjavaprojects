@@ -106,19 +106,9 @@ public class CalculationService {
     private Metric intelliGetMetric(MetricType metricType, Measurable measurable, FinancialPeriod period) {  // TODO - Exception type to be thrown?
         if (!measurable.metricSetExistsForPeriod(period)) {
             measurable.initializeMetricSetForPeriod(period);
-            //em.persist(measurable.initializeMetricSetForPeriod(period));
         }
         if (!measurable.metricExistsForPeriod(period, metricType)) {
-            /**
-             * KJG - TODO - Need to time this approach for persisting when created. Documentation says we should always persist upon creation, but this seems to
-             * slow down processing. Time it both ways. Disabled for now. Same for above.
-             *
-             *
-             */
-            Metric metric = measurable.initializeMetricForPeriod(period, metricType);
-//            if (metric != null) {
-//                em.persist(metric);
-//            }
+            measurable.initializeMetricForPeriod(period, metricType);
         }
 
         return measurable.getPeriodMetric(period, metricType);
@@ -139,6 +129,43 @@ public class CalculationService {
 
     public DateMetric getDateMetric(String metricTypeId, Measurable measurable, FinancialPeriod period) {
         return (DateMetric) getMetric(metricTypeId, measurable, period);
+    }
+
+    public CurrencyMetric getAccumulatedCurrencyMetricAcrossPeriods(String metricCode, Measurable measurable, List<FinancialPeriod> periods) throws Exception {
+        Logger.getLogger(CalculationService.class.getName()).log(Level.INFO, "getAccumulatedCurrencyMetricAcrossPeriods() " + metricCode + " measurable: " + measurable.getClass().getName());
+        CurrencyMetric metric = new CurrencyMetric();
+        metric.setMetricType(metricService.findMetricTypeByCode(metricCode));
+        metric.setValue(new BigDecimal("0.0"));
+
+        if (isEmptyTransientMesaurable(measurable)) {
+            return metric;
+        }
+
+        for (FinancialPeriod period : periods) {
+            Logger.getLogger(CalculationService.class.getName()).log(Level.INFO, "getAccumulatedCurrencyMetricAcrossPeriods: " + metricCode + " " + period.getId());
+            if (isRootMeasurable(measurable)) {
+                CurrencyMetric rootCurrencyMetric = getCurrencyMetric(metricCode, measurable, period);
+                if (rootCurrencyMetric != null) {
+                    BigDecimal rootValue = rootCurrencyMetric.getValue();
+                    if (rootValue != null) {
+                        metric.setValue(metric.getValue().add(rootValue));
+                    }
+                }
+                continue;
+            }
+
+            for (Measurable childMeasurable : measurable.getChildMeasurables()) {
+                BigDecimal childMetricValue = getAccumulatedCurrencyMetric(metricCode, childMeasurable, period).getValue();
+                Logger.getLogger(CalculationService.class.getName()).log(Level.INFO, "Adding: " + childMetricValue.toPlainString());
+                metric.setValue(metric.getValue().add(childMetricValue));
+            }
+
+            currencyService.convertCurrency(metric, measurable, period);
+        }
+
+        Logger.getLogger(CalculationService.class.getName()).log(Level.INFO, "Final sum: " + metric.getValue().toPlainString());
+
+        return metric;
     }
 
     public CurrencyMetric getCurrencyMetric(String metricCode, Measurable measurable, FinancialPeriod period) throws Exception {
@@ -248,6 +275,13 @@ public class CalculationService {
                     metrics.add(currencyMetric);
                 }
             } else {
+                // Quick hack to test getting decimal metric at all levels.
+                if (metricType.isDecimal()) {
+                    Metric metric = intelliGetMetric(metricType, measurable, period);
+                    if (metric != null) {
+                        metrics.add(metric);
+                    }
+                }
                 if (measurable instanceof MetricStore) {
                     Metric metric = intelliGetMetric(metricType, measurable, period);
                     if (metric != null) {

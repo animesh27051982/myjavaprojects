@@ -12,8 +12,8 @@ INPUT|BOOKING_DATE|Contract||DateMetric||Booking Date (LoA)|Booking Date (LoA)|P
 INPUT|THIRD_PARTY_COMISSION_ITD_LC|Contract||CurrencyMetric|LC|Third Party Comission (LC)|Third Party Comission (LC)|POC Contract Metrics|AE|Group1|10
 OUTPUT|ESTIMATED_GROSS_PROFIT_LC|POB||CurrencyMetric|LC|Estimated Gross Profit (LC)|Estimated Gross Profit (LC)|POC POB Outputs|H|Group1|1
 OUTPUT|CONTRACT_GROSS_PROFIT_LC|Contract||CurrencyMetric|LC|Gross Profit (LC)|Gross Profit (LC)|POC POB Outputs|H|Group1|1
-OUTPUT|ESTIMATED_GROSS_MARGIN|POB||DecimalMetric||Estimated Gross Margin|Estimated Gross Margin|POC POB Outputs|H|Group1|1
-OUTPUT|PERCENT_COMPLETE|POB||DecimalMetric|LC|Percent Complete|Percent Complete|POC POB Outputs|H|Group1|1
+OUTPUT|ESTIMATED_GROSS_MARGIN|ALL||DecimalMetric||Estimated Gross Margin|Estimated Gross Margin|POC POB Outputs|H|Group1|1
+OUTPUT|PERCENT_COMPLETE|ALL||DecimalMetric|LC|Percent Complete|Percent Complete|POC POB Outputs|H|Group1|1
 OUTPUT|CONTRACT_COST_TO_COMPLETE_LC|Contract||CurrencyMetric|LC|Cost to Complete|Cost to Complete|POC POB Outputs|H|Group1|1
 OUTPUT|CONTRACT_BILLINGS_IN_EXCESS_LC|Contract||CurrencyMetric|LC|Billings in Excess|Billings in Excess|POC POB Outputs|H|Group1|1
 OUTPUT|CONTRACT_REVENUE_IN_EXCESS_LC|Contract||CurrencyMetric|LC|Revenue in Excess|Revenue in Excess|POC POB Outputs|H|Group1|1

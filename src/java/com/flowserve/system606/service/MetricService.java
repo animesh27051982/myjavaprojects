@@ -47,18 +47,13 @@ public class MetricService {
 
     private static Logger logger = Logger.getLogger("com.flowserve.system606");
 
-    public List<MetricType> findActiveMetricTypesPob() {
-        return findActiveMetricTypesByOwnerEntityType("POB");
-    }
-
     public List<MetricType> getAllPobExcelInputMetricTypes() {
         return findActiveMetricTypesByOwnerEntityTypeDirection("POB", MetricDirection.INPUT);
     }
 
-    public List<MetricType> findActiveMetricTypesContract() {
-        return findActiveMetricTypesByOwnerEntityType("Contract");
-    }
-
+//    public List<MetricType> findActiveMetricTypesContract() {
+//        return findActiveMetricTypesByOwnerEntityType("Contract");
+//    }
     public List<MetricType> findActiveMetricTypes() {
         Query query = em.createQuery("SELECT it FROM MetricType it WHERE it.active = TRUE");
         return (List<MetricType>) query.getResultList();
