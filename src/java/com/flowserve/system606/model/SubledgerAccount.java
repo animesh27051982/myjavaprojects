@@ -6,7 +6,6 @@
 package com.flowserve.system606.model;
 
 import java.io.Serializable;
-import java.time.LocalDate;
 import javax.persistence.Column;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -25,6 +24,8 @@ public class SubledgerAccount implements Serializable {
     @SequenceGenerator(name = "SL_ACCT_SEQ", sequenceName = "SL_ACCT_SEQ", allocationSize = 1)
     @Column(name = "SL_ACCT_ID")
     private Long id;
+    @Column(name = "ACCT_NAME")
+    private String name;
     @Column(name = "ACCT_DESC")
     private String description;
     @Column(name = "ACCT_CODE")
@@ -32,6 +33,4 @@ public class SubledgerAccount implements Serializable {
     @OneToOne
     @JoinColumn(name = "COMPANY_ID")
     private Company company;
-    @Column(name = "ACCOUNTING_DATE")
-    private LocalDate accountingDate;
 }

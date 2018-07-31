@@ -52,11 +52,11 @@ public class SubledgerHeader implements Serializable {
     @JoinColumn(name = "CURRENCY_METRIC_ID")
     private CurrencyMetric currencyMetric;
     @OneToOne
-    @JoinColumn(name = "COMPANY_ID")
-    private Company company;
+    @JoinColumn(name = "RU_ID")
+    private ReportingUnit reportingUnit;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "subledgerHeader")
-    private List<SubledgerLine> lines = new ArrayList<SubledgerLine>();
+    private List<SubledgerLine> slLines = new ArrayList<SubledgerLine>();
 
     public Long getId() {
         return id;
@@ -138,20 +138,20 @@ public class SubledgerHeader implements Serializable {
         this.currencyMetric = currencyMetric;
     }
 
-    public List<SubledgerLine> getLines() {
-        return lines;
+    public List<SubledgerLine> getSlLines() {
+        return slLines;
     }
 
-    public void setLines(List<SubledgerLine> lines) {
-        this.lines = lines;
+    public void setSlLines(List<SubledgerLine> slLines) {
+        this.slLines = slLines;
     }
 
-    public Company getCompany() {
-        return company;
+    public ReportingUnit getReportingUnit() {
+        return reportingUnit;
     }
 
-    public void setCompany(Company company) {
-        this.company = company;
+    public void setReportingUnit(ReportingUnit reportingUnit) {
+        this.reportingUnit = reportingUnit;
     }
 
 }
