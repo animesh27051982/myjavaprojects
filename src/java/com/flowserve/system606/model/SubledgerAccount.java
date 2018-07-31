@@ -30,6 +30,8 @@ public class SubledgerAccount implements Serializable {
     private String description;
     @Column(name = "ACCT_CODE")
     private String code;
+    @Column(name = "ACCT_TYPE")
+    private String accountType;
     @OneToOne
     @JoinColumn(name = "COMPANY_ID")
     private Company company;
