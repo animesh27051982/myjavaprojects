@@ -25,7 +25,7 @@ public class SamlLogin {
     @Inject
     private SecurityContext securityContext;
 
-    @Inject
+    //@Inject
     private FacesContext facesContext;
 
     @PostConstruct
