@@ -17,6 +17,7 @@ import com.flowserve.system606.model.Holiday;
 import com.flowserve.system606.model.Measurable;
 import com.flowserve.system606.model.MetricType;
 import com.flowserve.system606.model.ReportingUnit;
+import com.flowserve.system606.model.SubledgerAccount;
 import com.flowserve.system606.model.User;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -170,6 +171,28 @@ public class AdminService {
         return em.find(Company.class, id);
     }
 
+    public MetricType findMetricTypeByCode(String code)
+    {
+    Query query = em.createQuery("SELECT m FROM MetricType m WHERE UPPER(m.code)= :code");
+    query.setParameter("code", code.toUpperCase());
+     List<MetricType> list=query.getResultList();
+      if (list.size() > 0) {
+            return list.get(0);
+        }
+      return null;
+    }
+    
+    public SubledgerAccount findSubledgerAccountByName(String name)
+    {
+    Query query = em.createQuery("SELECT s FROM SubledgerAccount s WHERE (s.name)=:name ");
+     query.setParameter("name", name);
+     List<SubledgerAccount> list=query.getResultList();
+     if (list.size() > 0) {
+            return list.get(0);
+        }
+     return null;
+    }
+    
     public List<BillingEvent> findBillingEvents() {
         Query query = em.createQuery("SELECT b FROM BillingEvent b");
         return (List<BillingEvent>) query.getResultList();
@@ -539,6 +562,37 @@ public class AdminService {
         }
     }
 
+    public void initSubledgerAccount()
+    {
+    MetricType mt=findMetricTypeByCode("BOOKING_DATE");
+    MetricType mt2=findMetricTypeByCode("ESTIMATED_COST_AT_COMPLETION_LC");
+    Company com=findCompanyById("FLS");
+     if (findSubledgerAccountByName("DummyDR") == null){
+    SubledgerAccount subledger=new SubledgerAccount();
+    Logger.getLogger(AdminService.class.getName()).log(Level.INFO, "Initializing Subledger Accounts");
+    subledger.setCompany(com);
+    subledger.setName("DummyDR");
+    subledger.setAccountType("Payable");
+    subledger.setDescription("DummyDR");
+    subledger.setCode("DummyDR");
+    subledger.setCreditAccount(mt);
+    subledger.setDebitAccount(mt);
+    persist(subledger);
+     }
+     
+     if (findSubledgerAccountByName("DummyCR") == null){
+    SubledgerAccount ledger=new SubledgerAccount();
+    Logger.getLogger(AdminService.class.getName()).log(Level.INFO, "Initializing Subledger Accounts");
+    ledger.setCompany(com);
+    ledger.setName("DummyCR");
+    ledger.setAccountType("Receivable");
+    ledger.setDescription("DummyCR");
+    ledger.setCode("DummyCR");
+    ledger.setCreditAccount(mt2);
+    ledger.setDebitAccount(mt2);
+    persist(ledger);
+     }
+    }
     public void initPreparersReviewerForRU() throws Exception {
 
         if (findPreparersByReportingUnitCode("8000") == null) {

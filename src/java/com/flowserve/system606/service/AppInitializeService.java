@@ -63,6 +63,7 @@ public class AppInitializeService {
             adminService.initCompaniesInRUs();
             adminService.initPreparersReviewerForRU();
             calculationService.initBusinessRules();
+            adminService.initSubledgerAccount();     
             //calculationService.initBusinessRulesEngine();
 
             // Uncomment for local file based POB loading current month only.

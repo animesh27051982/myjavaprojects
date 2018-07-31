@@ -44,7 +44,8 @@ public class SubledgerLine implements Serializable {
     private BigDecimal accountedCr;
     @Column(name = "CURRENCY")
     private Currency currency;
-    @Column(name = "FINANCIAL_PERIOD_ID")
+    @OneToOne
+    @JoinColumn(name = "FINANCIAL_PERIOD_ID")
     private FinancialPeriod financialPeriod;
     @Column(name = "ACCOUNTING_DATE")
     private LocalDate accountingDate;
