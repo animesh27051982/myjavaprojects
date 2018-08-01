@@ -166,6 +166,23 @@ public class ReportContractEstimate implements Serializable {
         return file;
     }
 
+    public StreamedContent getFinancialSummaryReport() throws Exception {
+        try {
+
+            inputStream = ReportContractEstimate.class.getResourceAsStream("/resources/excel_input_templates/Outputs_Summary_v2_ORIGINAL.xlsx");
+            outputStream = new FileOutputStream(new File("Outputs_Summary_v2_ORIGINAL.xlsx"));
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        reportsService.generateReportFinancialSummary(inputStream, outputStream, contract);
+
+        InputStream inputStreamFromOutputStream = new FileInputStream(new File("Outputs_Summary_v2_ORIGINAL.xlsx"));
+        file = new DefaultStreamedContent(inputStreamFromOutputStream, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "FinancialSummary.xlsx");
+        return file;
+    }
+
     public Contract getContract() {
         return contract;
     }

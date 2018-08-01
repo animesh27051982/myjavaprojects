@@ -16,6 +16,7 @@ import com.flowserve.system606.web.WebSession;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.List;
 import java.util.logging.Logger;
 import javax.ejb.Stateless;
@@ -587,7 +588,206 @@ public class ReportsService {
 
     }
 
-    public void generateReportFinancialSummary(InputStream inputStream, FileOutputStream outputStream) throws Exception {
+    public void generateReportFinancialSummary(InputStream inputStream, FileOutputStream outputStream, Contract contract) throws Exception {
+        try (XSSFWorkbook workbook = new XSSFWorkbook(inputStream)) {
+            workbook.removeSheetAt(workbook.getSheetIndex("Contract Summary"));
+            workbook.removeSheetAt(workbook.getSheetIndex("Contract Summary-1"));
+            workbook.removeSheetAt(workbook.getSheetIndex("Contract Summary-2"));
+            workbook.removeSheetAt(workbook.getSheetIndex("Contract Summary-3"));
+            workbook.removeSheetAt(workbook.getSheetIndex("Contract Summary-4"));
+            workbook.removeSheetAt(workbook.getSheetIndex("Contract Summary-5"));
+            workbook.removeSheetAt(workbook.getSheetIndex("Journal Entry"));
+            workbook.removeSheetAt(workbook.getSheetIndex("Journal Entry-1"));
+            workbook.removeSheetAt(workbook.getSheetIndex("Journal Entry-2"));
+            workbook.removeSheetAt(workbook.getSheetIndex("Financial Summary"));
+            workbook.removeSheetAt(workbook.getSheetIndex("Disclosures"));
+            workbook.removeSheetAt(workbook.getSheetIndex("Disclosures-1"));
+            workbook.removeSheetAt(workbook.getSheetIndex("Disclosures-2"));
+            workbook.removeSheetAt(workbook.getSheetIndex("Disclosures-3"));
+            workbook.removeSheetAt(workbook.getSheetIndex("Disclosures-4"));
+            workbook.removeSheetAt(workbook.getSheetIndex("Disclosures-5"));
+            workbook.removeSheetAt(workbook.getSheetIndex("Disclosures-6"));
+            workbook.removeSheetAt(workbook.getSheetIndex("Disclosures-7"));
+            XSSFSheet worksheet = workbook.getSheet("Financial Summary-1");
+
+            worksheet = writeFinancialSummary1(worksheet, contract);
+            worksheet = workbook.getSheet("Financial Summary-3");
+            worksheet = writeFinancialSummary2(worksheet, contract);
+
+            workbook.write(outputStream);
+        }
+        inputStream.close();
+        outputStream.close();
+
+    }
+
+    public XSSFSheet writeFinancialSummary1(XSSFSheet worksheet, Contract contract) throws Exception {
+        Cell cell = null;
+        XSSFRow rowTitle = worksheet.getRow(1);
+        cell = rowTitle.getCell(0, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
+        cell.setCellValue(contract.getName());
+
+        List<FinancialPeriod> ytdPeriods = financialPeriodService.getYTDFinancialPeriods(viewSupport.getCurrentPeriod());
+        for (int i = 0; i < ytdPeriods.size(); i++) {
+            int colNum = i + 1;
+            printSummaryByPobs(colNum, worksheet, contract, ytdPeriods.get(i));
+        }
+        return worksheet;
+    }
+
+    public void printSummaryByPobs(int colNum, XSSFSheet worksheet, Contract contract, FinancialPeriod period) throws Exception {
+
+        XSSFRow row;
+        int startRow = 7;
+        PerformanceObligationGroup pocPobs = new PerformanceObligationGroup("pocPobs", contract, contract.getPobsByRevenueMethod(RevenueMethod.PERC_OF_COMP));
+        calculationService.executeBusinessRules(pocPobs, period);
+        PerformanceObligationGroup pitPobs = new PerformanceObligationGroup("pitPobs", contract, contract.getPobsByRevenueMethod(RevenueMethod.POINT_IN_TIME));
+        calculationService.executeBusinessRules(pitPobs, period);
+        PerformanceObligationGroup slPobs = new PerformanceObligationGroup("slPobs", contract, contract.getPobsByRevenueMethod(RevenueMethod.STRAIGHT_LINE));
+        calculationService.executeBusinessRules(slPobs, period);
+
+        BigDecimal revenueToRecognize = getRevenueRecognizeITD(pocPobs, period);
+        row = worksheet.getRow(startRow++);
+        setCellValue(row, colNum, revenueToRecognize);
+        revenueToRecognize = getRevenueRecognizeITD(pitPobs, period);
+        row = worksheet.getRow(startRow++);
+        setCellValue(row, colNum, revenueToRecognize);
+        revenueToRecognize = getRevenueRecognizeITD(slPobs, period);
+        row = worksheet.getRow(startRow++);
+        setCellValue(row, colNum, revenueToRecognize);
+
+        startRow = startRow + 2;
+        BigDecimal liquidatedDamage = getLiquidatedDamages(pocPobs, period);
+        row = worksheet.getRow(startRow++);
+        setCellValue(row, colNum, liquidatedDamage);
+        liquidatedDamage = getLiquidatedDamages(pitPobs, period);
+        row = worksheet.getRow(startRow++);
+        //getting NPE
+        //setCellValue(row, colNum, liquidatedDamage);
+        liquidatedDamage = getLiquidatedDamages(slPobs, period);
+        row = worksheet.getRow(startRow++);
+        setCellValue(row, colNum, liquidatedDamage);
+
+        startRow = startRow + 2;
+        BigDecimal cumulativeCostGoodsSoldLC = getCumulativeCostGoodsSoldLC(pocPobs, period);
+        row = worksheet.getRow(startRow++);
+        setCellValue(row, colNum, cumulativeCostGoodsSoldLC);
+        cumulativeCostGoodsSoldLC = getCumulativeCostGoodsSoldLC(pitPobs, period);
+        row = worksheet.getRow(startRow++);
+        setCellValue(row, colNum, cumulativeCostGoodsSoldLC);
+        cumulativeCostGoodsSoldLC = getCumulativeCostGoodsSoldLC(slPobs, period);
+        row = worksheet.getRow(startRow++);
+        setCellValue(row, colNum, cumulativeCostGoodsSoldLC);
+
+        startRow = startRow + 2;
+        BigDecimal costsIncurredCOGS = new BigDecimal(BigInteger.ZERO);//dummay data for now TODO Need to get values for all 3 pob group with real
+        row = worksheet.getRow(startRow++);
+        setCellValue(row, colNum, costsIncurredCOGS);
+        row = worksheet.getRow(startRow++);
+        setCellValue(row, colNum, costsIncurredCOGS);
+        row = worksheet.getRow(startRow++);
+        setCellValue(row, colNum, costsIncurredCOGS);
+
+        startRow = startRow + 2;
+        BigDecimal reserveLCM_COGS = new BigDecimal(BigInteger.ZERO); //dummay data for now TODO Need to get values for all 3 pob group with real
+        row = worksheet.getRow(startRow++);
+        setCellValue(row, colNum, reserveLCM_COGS);
+        row = worksheet.getRow(startRow++);
+        setCellValue(row, colNum, reserveLCM_COGS);
+        row = worksheet.getRow(startRow++);
+        setCellValue(row, colNum, reserveLCM_COGS);
+
+        startRow = startRow + 2;
+        BigDecimal totalCOGS = new BigDecimal(BigInteger.ZERO); //dummay data for now TODO Need to get values for all 3 pob group with real
+        row = worksheet.getRow(startRow++);
+        setCellValue(row, colNum, totalCOGS);
+        row = worksheet.getRow(startRow++);
+        setCellValue(row, colNum, totalCOGS);
+        row = worksheet.getRow(startRow++);
+        setCellValue(row, colNum, totalCOGS);
+
+        startRow = startRow + 3;
+        BigDecimal grossProfitITD = getEstimatedGrossProfit(pocPobs, period);
+        row = worksheet.getRow(startRow++);
+        setCellValue(row, colNum, grossProfitITD);
+        grossProfitITD = getEstimatedGrossProfit(pitPobs, period);
+        row = worksheet.getRow(startRow++);
+        setCellValue(row, colNum, grossProfitITD);
+        grossProfitITD = getEstimatedGrossProfit(slPobs, period);
+        row = worksheet.getRow(startRow++);
+        setCellValue(row, colNum, grossProfitITD);
+
+        startRow = startRow + 2;
+        BigDecimal grossMarginITD = getEstimatedGrossMargin(pocPobs, period);
+        row = worksheet.getRow(startRow++);
+        setCellValue(row, colNum, grossMarginITD);
+        grossMarginITD = getEstimatedGrossMargin(pitPobs, period);
+        row = worksheet.getRow(startRow++);
+        setCellValue(row, colNum, grossMarginITD);
+        grossMarginITD = getEstimatedGrossMargin(slPobs, period);
+        row = worksheet.getRow(startRow++);
+        setCellValue(row, colNum, grossMarginITD);
+
+    }
+
+    public XSSFSheet writeFinancialSummary2(XSSFSheet worksheet, Contract contract) throws Exception {
+
+        Cell cell = null;
+        XSSFRow rowTitle = worksheet.getRow(1);
+        cell = rowTitle.getCell(0, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
+        cell.setCellValue(contract.getName());
+
+        List<FinancialPeriod> ytdPeriods = financialPeriodService.getYTDFinancialPeriods(viewSupport.getCurrentPeriod());
+        for (int i = 0; i < ytdPeriods.size(); i++) {
+            int colNum = i + 1;
+            printSummaryByContract(colNum, worksheet, contract, ytdPeriods.get(i));
+        }
+        return worksheet;
+    }
+
+    public void printSummaryByContract(int colNum, XSSFSheet worksheet, Contract contract, FinancialPeriod period) throws Exception {
+
+        XSSFRow row;
+
+        BigDecimal transactionPrice = getTransactionPrice(contract, period);
+        BigDecimal revenueToRecognize = getRevenueRecognizeITD(contract, period);
+        BigDecimal liquidatedDamage = getLiquidatedDamages(contract, period);
+        BigDecimal EAC = getEAC(contract, period);
+        BigDecimal estimatedGrossProfit = getEstimatedGrossProfit(contract, period);
+        BigDecimal estimatedGrossMargin = getEstimatedGrossMargin(contract, period);
+        BigDecimal localCostITDLC = getCostOfGoodsSold(contract, period);
+        BigDecimal billToDate = contract.getTotalBillingsLocalCurrency();
+
+        row = worksheet.getRow(6);
+        setCellValue(row, colNum, transactionPrice);
+        row = worksheet.getRow(7);
+        setCellValue(row, colNum, revenueToRecognize);
+        row = worksheet.getRow(11);
+        setCellValue(row, colNum, liquidatedDamage);
+        row = worksheet.getRow(16);
+        setCellValue(row, colNum, EAC);
+        row = worksheet.getRow(17);
+        setCellValue(row, colNum, localCostITDLC);
+        row = worksheet.getRow(20);
+        setCellValue(row, colNum, estimatedGrossProfit);
+        row = worksheet.getRow(21);
+        //Getting NPE
+        //setCellValue(row, colNum, estimatedGrossMargin);
+
+        row = worksheet.getRow(25);
+        setCellValue(row, colNum, transactionPrice);
+        row = worksheet.getRow(26);
+        setCellValue(row, colNum, billToDate);
+        row = worksheet.getRow(29);
+        setCellValue(row, colNum, liquidatedDamage);
+        row = worksheet.getRow(32);
+        setCellValue(row, colNum, EAC);
+        row = worksheet.getRow(33);
+        setCellValue(row, colNum, localCostITDLC);
+
+    }
+
+    public void generateCompanyReportFinancialSummary(InputStream inputStream, FileOutputStream outputStream) throws Exception {
         try (XSSFWorkbook workbook = new XSSFWorkbook(inputStream)) {
             workbook.removeSheetAt(workbook.getSheetIndex("Contract Summary"));
             workbook.removeSheetAt(workbook.getSheetIndex("Contract Summary-1"));
