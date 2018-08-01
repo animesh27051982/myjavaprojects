@@ -182,10 +182,10 @@ public class AdminService {
       return null;
     }
     
-    public SubledgerAccount findSubledgerAccountByName(String name)
+    public SubledgerAccount findSubledgerAccountByCode(String code)
     {
-    Query query = em.createQuery("SELECT s FROM SubledgerAccount s WHERE (s.name)=:name ");
-     query.setParameter("name", name);
+    Query query = em.createQuery("SELECT s FROM SubledgerAccount s WHERE (s.code)=:code ");
+     query.setParameter("code", code);
      List<SubledgerAccount> list=query.getResultList();
      if (list.size() > 0) {
             return list.get(0);
@@ -562,37 +562,73 @@ public class AdminService {
         }
     }
 
-    public void initSubledgerAccount()
+//    public void initSubledgerAccount() throws Exception
+//    {
+//        MetricType mt = findMetricTypeByCode("BOOKING_DATE");
+//        MetricType mt2 = findMetricTypeByCode("ESTIMATED_COST_AT_COMPLETION_LC");
+//        
+//        Company com = findCompanyById("FLS");
+//        if (findSubledgerAccountByName("DummyDR") == null) {
+//            SubledgerAccount subledger = new SubledgerAccount();
+//            Logger.getLogger(AdminService.class.getName()).log(Level.INFO, "Initializing Subledger Accounts");
+//            subledger.setCompany(com);
+//            subledger.setName("DummyDR");
+//            subledger.setAccountType("Payable");
+//            subledger.setDescription("DummyDR");
+//            subledger.setCode("DummyDR");
+//            subledger.setCreditAccount(mt);
+//            subledger.setDebitAccount(mt);
+//            persist(subledger);
+//        }
+//     
+//     if (findSubledgerAccountByName("DummyCR") == null){
+//    SubledgerAccount ledger=new SubledgerAccount();
+//    Logger.getLogger(AdminService.class.getName()).log(Level.INFO, "Initializing Subledger Accounts");
+//    ledger.setCompany(com);
+//    ledger.setName("DummyCR");
+//    ledger.setAccountType("Receivable");
+//    ledger.setDescription("DummyCR");
+//    ledger.setCode("DummyCR");
+//    ledger.setCreditAccount(mt2);
+//    ledger.setDebitAccount(mt2);
+//    persist(ledger);
+//     }
+//     initMetricTypeAccounts();
+//     initSubledgerAccountFromTxt();
+//    }
+    
+    public void initSubledgerAccount() throws Exception
     {
-    MetricType mt=findMetricTypeByCode("BOOKING_DATE");
-    MetricType mt2=findMetricTypeByCode("ESTIMATED_COST_AT_COMPLETION_LC");
-    Company com=findCompanyById("FLS");
-     if (findSubledgerAccountByName("DummyDR") == null){
-    SubledgerAccount subledger=new SubledgerAccount();
-    Logger.getLogger(AdminService.class.getName()).log(Level.INFO, "Initializing Subledger Accounts");
-    subledger.setCompany(com);
-    subledger.setName("DummyDR");
-    subledger.setAccountType("Payable");
-    subledger.setDescription("DummyDR");
-    subledger.setCode("DummyDR");
-    subledger.setCreditAccount(mt);
-    subledger.setDebitAccount(mt);
-    persist(subledger);
-     }
-     
-     if (findSubledgerAccountByName("DummyCR") == null){
-    SubledgerAccount ledger=new SubledgerAccount();
-    Logger.getLogger(AdminService.class.getName()).log(Level.INFO, "Initializing Subledger Accounts");
-    ledger.setCompany(com);
-    ledger.setName("DummyCR");
-    ledger.setAccountType("Receivable");
-    ledger.setDescription("DummyCR");
-    ledger.setCode("DummyCR");
-    ledger.setCreditAccount(mt2);
-    ledger.setDebitAccount(mt2);
-    persist(ledger);
-     }
+    logger.info("Initializing SubLedgerAccounts By Reading Text FIle");
+        BufferedReader reader = new BufferedReader(new InputStreamReader(AppInitializeService.class.getResourceAsStream("/resources/app_data_init_files/init_sl_accounts.txt"), "UTF-8"));
+        
+        int count = 0;
+        String line = null;
+        while ((line = reader.readLine()) != null) {
+            if (line.trim().length() == 0) {
+                continue;
+            }
+            
+                count = 0;
+            String[] values = line.split("\\|");
+            SubledgerAccount ledger=new SubledgerAccount();
+            ledger.setAccountType(values[count++]);
+            ledger.setCode(values[count++]);
+            ledger.setDescription(values[count++]);
+            ledger.setName(values[count++]);
+            ledger.setCompany(findCompanyById("FLS"));
+
+            persist(ledger);
+        }
     }
+    
+//    public void initMetricTypeAccounts() throws Exception
+//    {
+//        MetricType mt2 = findMetricTypeByCode("ESTIMATED_COST_AT_COMPLETION_LC");
+//        mt2.setCreditAccount(findSubledgerAccountByName("DummyCR"));
+//        mt2.setDebitAccount(findSubledgerAccountByName("DummyDR"));
+//        persist(mt2);
+//    }
     public void initPreparersReviewerForRU() throws Exception {
 
         if (findPreparersByReportingUnitCode("8000") == null) {

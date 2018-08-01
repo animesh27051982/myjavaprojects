@@ -36,12 +36,7 @@ public class SubledgerAccount implements Serializable {
     @OneToOne
     @JoinColumn(name = "COMPANY_ID")
     private Company company;
-    @OneToOne
-    @JoinColumn(name="CREDIT_ACCOUNT")
-    private MetricType creditAccount;
-    @OneToOne
-    @JoinColumn(name="DEBIT_ACCOUNT")
-    private MetricType debitAccount;
+  
 
     public Long getId() {
         return id;
@@ -90,22 +85,5 @@ public class SubledgerAccount implements Serializable {
     public void setCompany(Company company) {
         this.company = company;
     }
-
-    public MetricType getCreditAccount() {
-        return creditAccount;
-    }
-
-    public void setCreditAccount(MetricType creditAccount) {
-        this.creditAccount = creditAccount;
-    }
-
-    public MetricType getDebitAccount() {
-        return debitAccount;
-    }
-
-    public void setDebitAccount(MetricType debitAccount) {
-        this.debitAccount = debitAccount;
-    }
-    
     
 }

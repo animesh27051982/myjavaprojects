@@ -53,6 +53,7 @@ public class AppInitializeService {
             // TODO - KJG - The legacy file does not contain Oct 17 data but prior period lookups try to find it, so just use dummy rates for now.
             currencyService.initCurrencyConverter(financialPeriodService.findById("OCT-17"));
             currencyService.initCurrencyConverter(financialPeriodService.findById("MAY-18"));
+            adminService.initSubledgerAccount();
             //adminService.initBilings();
             metricService.initMetricTypes();
             adminService.initCountries();    // We don't need this as an Entity.  Convert to standard Java object with converters.
@@ -63,7 +64,7 @@ public class AppInitializeService {
             adminService.initCompaniesInRUs();
             adminService.initPreparersReviewerForRU();
             calculationService.initBusinessRules();
-            adminService.initSubledgerAccount();
+            
             //calculationService.initBusinessRulesEngine();
 
             // Uncomment for local file based POB loading current month only.

@@ -68,7 +68,15 @@
                                 <p:column headerText="Description" sortBy="#{inputType.description}">
                                     <h:outputText value="#{inputType.description}" />
                                 </p:column>
+                                
+                                <p:column headerText="Credit Account" sortBy="#{inputType.creditAccount.name}">
+                                    <h:outputText value="#{inputType.creditAccount.name}" />
+                                </p:column>
 
+                                <p:column headerText="Debit Account" sortBy="#{inputType.debitAccount.name}">
+                                    <h:outputText value="#{inputType.debitAccount.name}" />
+                                </p:column>
+                                
                             </p:dataTable>
                         </div>
                     </div>

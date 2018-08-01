@@ -9,6 +9,8 @@ import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
@@ -67,6 +69,14 @@ public class MetricType extends BaseEntity<Long> implements Comparable<MetricTyp
     private boolean active;   // maybe redundant
     @Column(name = "IS_REQUIRED")
     private boolean required;   // maybe redundant
+    
+    @OneToOne
+    @JoinColumn(name = "SL_ACCT_CR_ID")
+    private SubledgerAccount creditAccount;
+
+    @OneToOne
+    @JoinColumn(name = "SL_ACCT_DR_ID")
+    private SubledgerAccount debitAccount;
 
     public MetricType() {
     }
@@ -228,4 +238,22 @@ public class MetricType extends BaseEntity<Long> implements Comparable<MetricTyp
     public void setCode(String code) {
         this.code = code;
     }
+
+    public SubledgerAccount getCreditAccount() {
+        return creditAccount;
+    }
+
+    public void setCreditAccount(SubledgerAccount creditAccount) {
+        this.creditAccount = creditAccount;
+    }
+
+    public SubledgerAccount getDebitAccount() {
+        return debitAccount;
+    }
+
+    public void setDebitAccount(SubledgerAccount debitAccount) {
+        this.debitAccount = debitAccount;
+    }
+    
+    
 }

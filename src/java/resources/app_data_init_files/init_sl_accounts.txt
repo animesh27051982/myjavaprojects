@@ -1,0 +1,6 @@
+Payable|DummyDR|DummyDR|DummyDR|FLS
+Receivable|DummyCR|DummyCR|DummyCR|FLS
+Payable|Emp|Emp|Emp|FLS
+Payable|RUnit|RUnit|RUnit|FLS
+Receivable|BUnit|BUnit|BUnit|FLS
+Receivable|CUnit|CUnit|CUnit|FLS
