@@ -128,20 +128,20 @@ rule "Revenue to Recognize ITD"
     when
         pob : PerformanceObligation()
         percentComplete : Metric(metricType.code == "PERCENT_COMPLETE", value != null)
-        transactionPrice : CurrencyMetric(metricType.code == "TRANSACTION_PRICE_CC", lcValue != null)
-        revenueToRecognizeITD : CurrencyMetric(metricType.code == "REVENUE_TO_RECOGNIZE_ITD_LC")
+        transactionPrice : CurrencyMetric(metricType.code == "TRANSACTION_PRICE_CC", ccValue != null)
+        revenueToRecognizeITD : CurrencyMetric(metricType.code == "REVENUE_TO_RECOGNIZE_ITD_CC")
     then
-        modify (revenueToRecognizeITD) { lcValue = (percentComplete.value * transactionPrice.lcValue)};
+        modify (revenueToRecognizeITD) { ccValue = (percentComplete.value * transactionPrice.ccValue)};
 end
 
 rule "Revenue to Recognize Current Period"
     when
         pob : PerformanceObligation()
-        revenueToRecognizeITD : CurrencyMetric(metricType.code == "REVENUE_TO_RECOGNIZE_ITD_LC", lcValue != null)
-        revenueToRecognizeITDPriorPeriod : CurrencyMetricPriorPeriod(metricType.code == "REVENUE_TO_RECOGNIZE_ITD_LC")
-        revenueToRecognizeCurrentPeriod : CurrencyMetric(metricType.code == "REVENUE_TO_RECOGNIZE_PERIOD_LC")
+        revenueToRecognizeITD : CurrencyMetric(metricType.code == "REVENUE_TO_RECOGNIZE_ITD_CC", ccValue != null)
+        revenueToRecognizeITDPriorPeriod : CurrencyMetricPriorPeriod(metricType.code == "REVENUE_TO_RECOGNIZE_ITD_CC")
+        revenueToRecognizeCurrentPeriod : CurrencyMetric(metricType.code == "REVENUE_TO_RECOGNIZE_PERIOD_CC")
     then
-        modify (revenueToRecognizeCurrentPeriod) { lcValue = (revenueToRecognizeITDPriorPeriod.lcValue == null ? revenueToRecognizeITD.lcValue : revenueToRecognizeITD.lcValue - revenueToRecognizeITDPriorPeriod.lcValue)};
+        modify (revenueToRecognizeCurrentPeriod) { ccValue = (revenueToRecognizeITDPriorPeriod.ccValue == null ? revenueToRecognizeITD.ccValue : revenueToRecognizeITD.ccValue - revenueToRecognizeITDPriorPeriod.ccValue)};
 end
 
 

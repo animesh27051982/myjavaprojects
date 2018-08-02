@@ -54,23 +54,30 @@ public class InputOnlineEntry implements Serializable {
     private ContractService contractService;
     @Inject
     private WebSession webSession;
-    private String contractFilterText;
 
     private TreeNode selectedNode;
 
     private List<ReportingUnit> reportingUnits = new ArrayList<ReportingUnit>();
     private List<Contract> contracts;
-    private Contract[] selectedContracts;
+
     private String activeTabIndex;
 
     @PostConstruct
     public void init() {
         //reportingUnits = adminService.getPreparableReportingUnits();
+        //contractFilterText = webSession.getFilterText();
         reportingUnits.clear();
         reportingUnits.add(webSession.getCurrentReportingUnit());
         rootTreeNode = viewSupport.generateNodeTree(reportingUnits);
         billingTreeNode = viewSupport.generateNodeTreeForBilling(reportingUnits);
         initContracts(reportingUnits);
+
+        if (webSession.getFilterText() != null) {
+            filterByContractText();
+        }
+        if (webSession.getSelectedContracts() != null) {
+            filterByContracts();
+        }
     }
 
     public void switchPeriod(FinancialPeriod period) {
@@ -89,20 +96,20 @@ public class InputOnlineEntry implements Serializable {
     }
 
     public void filterByContractText() {
-        if (isEmpty(contractFilterText)) {
+        if (isEmpty(webSession.getFilterText())) {
             rootTreeNode = viewSupport.generateNodeTree(reportingUnits);
         } else {
-            viewSupport.filterNodeTree(rootTreeNode, contractFilterText);
+            viewSupport.filterNodeTree(rootTreeNode, webSession.getFilterText());
         }
     }
 
     public void filterByContracts() {
         rootTreeNode = viewSupport.generateNodeTree(reportingUnits);
 
-        if (selectedContracts.length == 0) {
+        if (webSession.getSelectedContracts().length == 0) {
             rootTreeNode = viewSupport.generateNodeTree(reportingUnits);
         } else {
-            viewSupport.filterNodeTreeContracts(rootTreeNode, Arrays.asList(selectedContracts));
+            viewSupport.filterNodeTreeContracts(rootTreeNode, Arrays.asList(webSession.getSelectedContracts()));
         }
     }
 
@@ -127,24 +134,13 @@ public class InputOnlineEntry implements Serializable {
     }
 
     public void clearFilterByContractText() {
-        contractFilterText = null;
+        webSession.setFilterText(null);
+        webSession.setSelectedContracts(null);
         rootTreeNode = viewSupport.generateNodeTree(reportingUnits);
     }
 
-    public Contract[] getSelectedContracts() {
-        return selectedContracts;
-    }
-
-    public void setSelectedContracts(Contract[] selectedContracts) {
-        this.selectedContracts = selectedContracts;
-    }
-
-    public List<Contract> getContracts() {
-        return contracts;
-    }
-
     private boolean isEmpty(String text) {
-        if (text == null || "".equals(contractFilterText.trim())) {
+        if (text == null || "".equals(webSession.getFilterText().trim())) {
             return true;
         }
 
@@ -188,9 +184,7 @@ public class InputOnlineEntry implements Serializable {
     }
 
     public void saveInputs() throws Exception {
-
         adminService.update(reportingUnits);
-
         Logger.getLogger(InputOnlineEntry.class.getName()).log(Level.FINE, "Saving inputs.");
         FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Inputs saved.", ""));
     }
@@ -198,16 +192,7 @@ public class InputOnlineEntry implements Serializable {
     public void cancelEdits() throws Exception {
         Logger.getLogger(InputOnlineEntry.class.getName()).log(Level.FINE, "Current edits canceled.");
         FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Current edits canceled.", ""));
-
         init();
-    }
-
-    public String getContractFilterText() {
-        return contractFilterText;
-    }
-
-    public void setContractFilterText(String contractFilterText) {
-        this.contractFilterText = contractFilterText;
     }
 
     public TreeNode getBillingTreeNode() {
@@ -232,5 +217,13 @@ public class InputOnlineEntry implements Serializable {
 
     public void setActiveTabIndex(String activeTabIndex) {
         this.activeTabIndex = activeTabIndex;
+    }
+
+    public List<Contract> getContracts() {
+        return contracts;
+    }
+
+    public void setContracts(List<Contract> contracts) {
+        this.contracts = contracts;
     }
 }

@@ -91,8 +91,6 @@ public class ReportsService {
 
         // TODO - Please change all setCell lines to the same approach below.
         setCellValue(row, 1, transactionPrice);
-//        cell = row.getCell(1, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
-//        cell.setCellValue(transactionPrice.doubleValue());
         setCellValue(row, 2, loquidatedDamage);
         setCellValue(row, 3, EAC);
         setCellValue(row, 4, estimatedGrossProfit);

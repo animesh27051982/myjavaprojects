@@ -26,9 +26,6 @@ public class MetricType extends BaseEntity<Long> implements Comparable<MetricTyp
     private static final String OWNER_ENTITY_TYPE_POB = "POB";
     private static final String OWNER_ENTITY_TYPE_ALL = "ALL";
 
-//    @Id
-//    @Column(name = "METRIC_TYPE_ID")
-//    private String id;
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "METRIC_TYPE_SEQ")
     @SequenceGenerator(name = "METRIC_TYPE_SEQ", sequenceName = "METRIC_TYPE_SEQ", allocationSize = 1)

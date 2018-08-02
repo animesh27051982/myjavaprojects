@@ -47,19 +47,26 @@ public class PobCalculationReview implements Serializable {
     private AdminService adminService;
     @Inject
     private WebSession webSession;
-    private String contractFilterText;
+    //private String contractFilterText;
     private List<Contract> contracts;
-    private Contract[] selectedContracts;
     List<ReportingUnit> reportingUnits = null;
 
     @PostConstruct
     public void init() {
         try {
+            //contractFilterText = ;
             reportingUnits = new ArrayList<ReportingUnit>();
             reportingUnits.add(webSession.getCurrentReportingUnit());
             Logger.getLogger(PobCalculationReview.class.getName()).log(Level.INFO, "POB Calc review.  Current RU: " + webSession.getCurrentReportingUnit().getCode());
             rootTreeNode = viewSupport.generateNodeTree(reportingUnits);
             initContracts(reportingUnits);
+
+            if (webSession.getFilterText() != null) {
+                filterByContractText();
+            }
+            if (webSession.getSelectedContracts() != null) {
+                filterByContracts();
+            }
         } catch (Exception e) {
             logger.log(Level.SEVERE, "Error init pobs", e);
         }
@@ -71,28 +78,34 @@ public class PobCalculationReview implements Serializable {
     }
 
     public void filterByContractText() {
-        if (isEmpty(contractFilterText)) {
+        if (isEmpty(webSession.getFilterText())) {
             rootTreeNode = viewSupport.generateNodeTree(reportingUnits);
         } else {
-            viewSupport.filterNodeTree(rootTreeNode, contractFilterText);
+            viewSupport.filterNodeTree(rootTreeNode, webSession.getFilterText());
         }
     }
 
     private boolean isEmpty(String text) {
-        if (text == null || "".equals(contractFilterText.trim())) {
+        if (text == null || "".equals(webSession.getFilterText().trim())) {
             return true;
         }
 
         return false;
     }
 
+    public void clearFilterByContractText() {
+        webSession.setFilterText(null);
+        webSession.setSelectedContracts(null);
+        rootTreeNode = viewSupport.generateNodeTree(reportingUnits);
+    }
+
     public void filterByContracts() {
         rootTreeNode = viewSupport.generateNodeTree(reportingUnits);
 
-        if (selectedContracts.length == 0) {
+        if (webSession.getSelectedContracts().length == 0) {
             rootTreeNode = viewSupport.generateNodeTree(reportingUnits);
         } else {
-            viewSupport.filterNodeTreeContracts(rootTreeNode, Arrays.asList(selectedContracts));
+            viewSupport.filterNodeTreeContracts(rootTreeNode, Arrays.asList(webSession.getSelectedContracts()));
         }
     }
 
@@ -119,6 +132,16 @@ public class PobCalculationReview implements Serializable {
         this.eacValue = eacValue;
     }
 
+    public void calculateAndSave() {
+        try {
+            calculationService.calculateAndSave(reportingUnits, webSession.getCurrentPeriod());
+        } catch (Exception e) {
+            Logger.getLogger(PobCalculationReview.class.getName()).log(Level.INFO, "Error recalculating: ", e);
+            FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error recalculating: ", e.getMessage());
+            FacesContext.getCurrentInstance().addMessage(null, msg);
+        }
+    }
+
     public void printInputs(PerformanceObligation pob) {
 //        Map<String, Input> inputs = pob.getInputs();
 //        for (String inputTypeId : inputs.keySet()) {
@@ -135,14 +158,6 @@ public class PobCalculationReview implements Serializable {
         return rootTreeNode;
     }
 
-    public String getContractFilterText() {
-        return contractFilterText;
-    }
-
-    public void setContractFilterText(String contractFilterText) {
-        this.contractFilterText = contractFilterText;
-    }
-
     public List<Contract> getContracts() {
         return contracts;
     }
@@ -151,11 +166,4 @@ public class PobCalculationReview implements Serializable {
         this.contracts = contracts;
     }
 
-    public Contract[] getSelectedContracts() {
-        return selectedContracts;
-    }
-
-    public void setSelectedContracts(Contract[] selectedContracts) {
-        this.selectedContracts = selectedContracts;
-    }
 }

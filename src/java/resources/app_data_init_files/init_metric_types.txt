@@ -21,9 +21,9 @@ OUTPUT|CONTRACT_PERCENT_COMPLETE|Contract||DecimalMetric|LC|Percent Complete|Per
 OUTPUT|COST_OF_GOODS_SOLD_ITD_LC|POB||CurrencyMetric|LC|Cumulative Total ITD Costs|Cumulative Total ITD Costs|POC POB Outputs|O|Group1|2
 OUTPUT|COST_GOODS_SOLD_BACKLOG_LC|POB||CurrencyMetric|LC|Cost of Goods Sold Backlog|Cost of Goods Sold Backlog|POC POB Outputs|O|Group1|2
 OUTPUT|CHANGE_IN_EAC_LC|POB||CurrencyMetric|LC|Change in EAC (LC)|Change in EAC (LC)|POC POB Outputs|O|Group1|2
-OUTPUT|REVENUE_TO_RECOGNIZE_ITD_LC|POB||CurrencyMetric|LC|Total/Cumulative Revenue to Recognize|Total/Cumulative Revenue to Recognize|POC POB Outputs|O|Group1|2
+OUTPUT|REVENUE_TO_RECOGNIZE_ITD_CC|POB||CurrencyMetric|CC|Total/Cumulative Revenue to Recognize|Total/Cumulative Revenue to Recognize|POC POB Outputs|O|Group1|2
 OUTPUT|CONTRACT_REVENUE_TO_RECOGNIZE_ITD_LC|Contract||CurrencyMetric|LC|Total/Cumulative Revenue to Recognize|Total/Cumulative Revenue to Recognize|POC POB Outputs|O|Group1|2
-OUTPUT|REVENUE_TO_RECOGNIZE_PERIOD_LC|POB||CurrencyMetric|LC|Period Revenue To Recognize|Period Revenue To Recognize|POC POB Outputs|O|Group1|2
+OUTPUT|REVENUE_TO_RECOGNIZE_PERIOD_CC|POB||CurrencyMetric|CC|Period Revenue To Recognize|Period Revenue To Recognize|POC POB Outputs|O|Group1|2
 OUTPUT|LIQUIDATED_DAMAGES_TO_RECOGNIZE_ITD_LC|POB||CurrencyMetric|LC|Total Liquidated Damages To Regocnize|Total Liquidated Damages To Regocnize|POC POB Outputs|O|Group1|2
 OUTPUT|LIQUIDATED_DAMAGES_TO_RECOGNIZE_PERIOD_LC|POB||CurrencyMetric|LC|Liquidated Damages To Recognize In Current Period|Liquidated Damages To Recognize In Current Period|POC POB Outputs|O|Group1|2
 OUTPUT|LIQUIDATED_DAMAGES_BACKLOG_LC|POB||CurrencyMetric|LC|Liquidated Damages in Backlog|Liquidated Damages in Backlog|POC POB Outputs|O|Group1|2

@@ -51,12 +51,12 @@
 
                         <p:outputPanel style="margin-top: 20px;">
                             <h:outputText value="Search within list:" />
-                            <p:inputText id="globalFilterText" value="#{pobCalculationReview.contractFilterText}" style="width:150px; margin-left: 10px;">
+                            <p:inputText id="globalFilterText" value="#{webSession.filterText}" style="width:150px; margin-left: 10px;">
                             </p:inputText>
                             <p:commandButton id="globalFilter" style="font-size: 80%; margin-left: 5px;" value="Search" actionListener="#{pobCalculationReview.filterByContractText()}" update=":form:topLevelTabView"/>
                             <p:commandButton id="globalFilterClear" style="font-size: 80%; margin-left: 5px;" value="Reset" actionListener="#{pobCalculationReview.clearFilterByContractText()}" update=":form:topLevelTabView, :form:globalFilterText"/>
                             <h:outputText value="Filter list by contract:" style="margin-left: 30px;"/>
-                            <p:selectCheckboxMenu id="contracts" showHeader="false" label="Contracts" value="#{pobCalculationReview.selectedContracts}" converter="contractConverter" style="width:150px; margin-left: 5px;">
+                            <p:selectCheckboxMenu id="contracts" showHeader="false" label="Contracts" value="#{webSession.selectedContracts}" converter="contractConverter" style="width:150px; margin-left: 5px;">
                                 <p:ajax event="change" update=":form:topLevelTabView" process="@this" listener="#{pobCalculationReview.filterByContracts()}"/>
                                 <f:selectItems var="contract" value="#{pobCalculationReview.contracts}" itemLabel="#{contract.name}"/>
                             </p:selectCheckboxMenu>
@@ -94,17 +94,17 @@
                                         </h:outputText>
                                     </p:column>
                                     <p:column style="white-space:pre-line;" headerText="Cummulative Revenue to Recognize (CC)" >
-                                        <h:outputText value="#{viewSupport.getCurrencyMetric('REVENUE_TO_RECOGNIZE_ITD_LC', pob).ccValue}" rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}">
+                                        <h:outputText value="#{viewSupport.getCurrencyMetric('REVENUE_TO_RECOGNIZE_ITD_CC', pob).ccValue}" rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}">
                                             <f:convertNumber type="currency" />
                                         </h:outputText>
                                     </p:column>
                                     <p:column style="white-space:pre-line;" headerText="Prior Period Cumulative Revenue to Recognize (CC)">
-                                        <h:outputText value="#{viewSupport.getCurrencyMetricPriorPeriod('REVENUE_TO_RECOGNIZE_ITD_LC', pob).ccValue}" rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}">
+                                        <h:outputText value="#{viewSupport.getCurrencyMetricPriorPeriod('REVENUE_TO_RECOGNIZE_ITD_CC', pob).ccValue}" rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}">
                                             <f:convertNumber type="currency" />
                                         </h:outputText>
                                     </p:column>
                                     <p:column style="white-space:pre-line;" headerText="Period Revenue (CC)">
-                                        <h:outputText value="#{viewSupport.getCurrencyMetric('REVENUE_TO_RECOGNIZE_PERIOD_LC', pob).ccValue}" rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}">
+                                        <h:outputText value="#{viewSupport.getCurrencyMetric('REVENUE_TO_RECOGNIZE_PERIOD_CC', pob).ccValue}" rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}">
                                             <f:convertNumber type="currency" />
                                         </h:outputText>
                                     </p:column>
@@ -113,12 +113,12 @@
                                         </h:outputText>
                                     </p:column>
                                     <p:column style="white-space:pre-line;" headerText="Period Revenue (LC)">
-                                        <h:outputText value="#{viewSupport.getCurrencyMetric('REVENUE_TO_RECOGNIZE_PERIOD_LC', pob).lcValue}" rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}">
+                                        <h:outputText value="#{viewSupport.getCurrencyMetric('REVENUE_TO_RECOGNIZE_PERIOD_CC', pob).lcValue}" rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}">
                                             <f:convertNumber type="currency" />
                                         </h:outputText>
                                     </p:column>
                                     <p:column style="white-space:pre-line;" headerText="Cumulative Revenue (LC)">
-                                        <h:outputText value="#{viewSupport.getCurrencyMetric('REVENUE_TO_RECOGNIZE_ITD_LC', pob).lcValue}" rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}">
+                                        <h:outputText value="#{viewSupport.getCurrencyMetric('REVENUE_TO_RECOGNIZE_ITD_CC', pob).lcValue}" rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}">
                                             <f:convertNumber type="currency" />
                                         </h:outputText>
                                     </p:column>
@@ -329,9 +329,13 @@
                         </p:tabView>
 
                         <p:toolbar>
+                            <f:facet name="left">
+                                <p:commandButton value="Recalc All" icon="ui-icon-check" update=":form:topLevelTabView" actionListener="#{pobCalculationReview.calculateAndSave}"/>
+                            </f:facet>
                             <f:facet name="right">
-                                <p:commandButton value="Back to Input Dashboard" icon="ui-icon-arrowthick-1-w" action="#{inputController.inputDashboard}"/>
-                                <p:commandButton value="Submit for Approval" icon="ui-icon-check" action="#{inputController.submitForApproval}"/>
+                                <p:commandButton value="Back to Dashboard" icon="ui-icon-arrowthick-1-w" ajax="false" action="#{pobCalculationReview.inputDashboard}"/>
+                                <p:commandButton value="Back to Online Entry" icon="ui-icon-arrowthick-1-w" ajax="false" action="#{inputController.proceedToOnlineEntry}"/>
+                                <p:commandButton value="Submit for Approval" icon="ui-icon-check" ajax="false" action="#{inputController.submitForApproval}"/>
                             </f:facet>
                         </p:toolbar>
                     </div>

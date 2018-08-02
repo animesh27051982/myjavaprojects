@@ -37,7 +37,9 @@ public class CalcReviewController implements Serializable {
         //adminService.update();
         //adminService.update(reportingUnits);
 
-        calculationService.calculateAndSave(reportingUnits, webSession.getCurrentPeriod());
+        // For now, just save, don't recalc.  For speed.
+        adminService.update(reportingUnits);
+        //calculationService.calculateAndSave(reportingUnits, webSession.getCurrentPeriod());
 
         return "pobCalculationReview";
     }

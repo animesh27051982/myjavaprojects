@@ -43,6 +43,8 @@ public class WebSession implements Serializable {
     private FinancialPeriod priorPeriod;
     private ReportingUnit currentReportingUnit;
     private DataImportFile dataImportFile;
+    private String filterText;
+    private Contract[] selectedContracts;
 
     @PostConstruct
     public void init() {
@@ -155,6 +157,22 @@ public class WebSession implements Serializable {
 
     public void setDataImportFile(DataImportFile dataImportFile) {
         this.dataImportFile = dataImportFile;
+    }
+
+    public String getFilterText() {
+        return filterText;
+    }
+
+    public void setFilterText(String filterText) {
+        this.filterText = filterText;
+    }
+
+    public Contract[] getSelectedContracts() {
+        return selectedContracts;
+    }
+
+    public void setSelectedContracts(Contract[] selectedContracts) {
+        this.selectedContracts = selectedContracts;
     }
 
 }
