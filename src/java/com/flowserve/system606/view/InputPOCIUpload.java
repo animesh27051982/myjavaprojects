@@ -18,7 +18,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -92,7 +91,7 @@ public class InputPOCIUpload implements Serializable {
 
     public List<DataImportFile> getDataImportFile() throws Exception {
         dataImportFile = adminService.findDataImportFileByType("POCI DATA");
-        Collections.sort(dataImportFile);
+        //Collections.sort(dataImportFile);
         return dataImportFile;
     }
 

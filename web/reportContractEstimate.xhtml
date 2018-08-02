@@ -28,39 +28,14 @@
                         <p:toolbar>
                             <f:facet name="left">
                                 <p:panelGrid columns="2" style="width:auto" >
-                                    <h5>Total Contract Estimate by Pob</h5>
+                                    <h5>Contract Estimate to Date By Pob</h5>
                                     <p:commandButton value="Download  Report" ajax="false" style="width:auto;" icon="ui-icon-arrowthick-1-s">
                                         <p:fileDownload value="#{reportContractEstimate.file}" />
                                     </p:commandButton>
 
-                                    <h5>Contract From Inception to Date by Pob</h5>
-                                    <p:commandButton value="Download  Report" ajax="false" style="width:auto;" icon="ui-icon-arrowthick-1-s">
-                                        <p:fileDownload value="#{reportContractEstimate.fileContractInception}" />
-                                    </p:commandButton>
-
-                                    <h5> Monthly Income Statement Impact</h5>
+                                    <h5>Contract Estimate to Financial Period by Pob</h5>
                                     <p:commandButton value="Download  Report" ajax="false" style="width:auto;" icon="ui-icon-arrowthick-1-s">
                                         <p:fileDownload value="#{reportContractEstimate.fileMonthlyIncomeImpact}" />
-                                    </p:commandButton>
-
-                                    <h5> Journal Entry Report</h5>
-                                    <p:commandButton value="Download  Report" ajax="false" style="width:auto;" icon="ui-icon-arrowthick-1-s">
-                                        <p:fileDownload value="#{reportContractEstimate.journalEntryReport}" />
-                                    </p:commandButton>
-
-                                </p:panelGrid>
-                            </f:facet>
-
-                            <f:facet name="right">
-                                <p:panelGrid columns="2">
-                                    <h5> Quarterly Income Statement Impact</h5>
-                                    <p:commandButton value="Download  Report" ajax="false" style="width:auto;" icon="ui-icon-arrowthick-1-s">
-                                        <p:fileDownload value="#{reportContractEstimate.fileQuarterlyIncomeImpact}" />
-                                    </p:commandButton>
-
-                                    <h5> Annual Income Statement Impact</h5>
-                                    <p:commandButton value="Download  Report" ajax="false" style="width:auto;" icon="ui-icon-arrowthick-1-s">
-                                        <p:fileDownload value="#{reportContractEstimate.fileAnnualIncomeImpact}" />
                                     </p:commandButton>
 
                                     <h5> Financial Summary Report</h5>
@@ -68,9 +43,21 @@
                                         <p:fileDownload value="#{reportContractEstimate.financialSummaryReport}" />
                                     </p:commandButton>
 
+
+                                </p:panelGrid>
+                            </f:facet>
+
+                            <f:facet name="right">
+                                <p:panelGrid columns="2">
+
                                     <h5> Combine Report</h5>
                                     <p:commandButton value="Download  Report" ajax="false" style="width:auto;" icon="ui-icon-arrowthick-1-s">
                                         <p:fileDownload value="#{reportContractEstimate.combineReport}" />
+                                    </p:commandButton>
+
+                                    <h5> Journal Entry Report</h5>
+                                    <p:commandButton value="Download  Report" ajax="false" style="width:auto;" icon="ui-icon-arrowthick-1-s">
+                                        <p:fileDownload value="#{reportContractEstimate.journalEntryReport}" />
                                     </p:commandButton>
                                 </p:panelGrid>
                             </f:facet>

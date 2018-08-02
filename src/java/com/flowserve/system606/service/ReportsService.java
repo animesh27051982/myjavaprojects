@@ -54,9 +54,6 @@ public class ReportsService {
         calculationService.executeBusinessRules(contract, webSession.getCurrentPeriod());
         try (XSSFWorkbook workbook = new XSSFWorkbook(inputStream)) {
             workbook.removeSheetAt(workbook.getSheetIndex("Contract Summary-2"));
-            workbook.removeSheetAt(workbook.getSheetIndex("Contract Summary-3"));
-            workbook.removeSheetAt(workbook.getSheetIndex("Contract Summary-4"));
-            workbook.removeSheetAt(workbook.getSheetIndex("Contract Summary-5"));
             XSSFSheet worksheet = workbook.getSheet("Contract Summary-1");
 
             worksheet = writeContractEsimatesReport(worksheet, contract);
@@ -88,6 +85,18 @@ public class ReportsService {
         BigDecimal estimatedGrossProfit = getEstimatedGrossProfit(contract, period);
         BigDecimal estimatedGrossMargin = getEstimatedGrossMargin(contract, period);
 
+        BigDecimal liquidatedDamage = getLiquidatedDamages(contract, period);
+        BigDecimal localCostITDLC = getCostOfGoodsSold(contract, period);
+        BigDecimal percentComplete = getPercentComplete(contract, period);
+        BigDecimal revenueITD = getRevenueRecognizeITD(contract, period);
+        BigDecimal lossReserveITD = getLossReserveITD(contract, period);
+        BigDecimal grossProfitITD = getEstimatedGrossProfit(contract, period);
+        BigDecimal grossMarginITD = getEstimatedGrossMargin(contract, period);
+        BigDecimal costToComplete = getContractCostToCompleteLC(contract, period);
+        BigDecimal billingsInExcess = getContractBillingsInExcess(contract, period);
+        BigDecimal revenueInExcess = getContractRevenueInExcess(contract, period);
+        BigDecimal billToDate = contract.getTotalBillingsLocalCurrency();
+
         row = worksheet.getRow(15);
 
         // TODO - Please change all setCell lines to the same approach below.
@@ -98,6 +107,18 @@ public class ReportsService {
         setCellValue(row, 3, EAC);
         setCellValue(row, 4, estimatedGrossProfit);
         setCellValue(row, 5, estimatedGrossMargin);
+
+        setCellValue(row, 7, percentComplete);
+        setCellValue(row, 8, revenueITD);
+        setCellValue(row, 9, liquidatedDamage);
+        setCellValue(row, 10, localCostITDLC);
+        setCellValue(row, 11, lossReserveITD);
+        setCellValue(row, 12, grossProfitITD);
+        setCellValue(row, 13, grossMarginITD);
+        setCellValue(row, 15, billToDate);
+        setCellValue(row, 16, costToComplete);
+        setCellValue(row, 17, billingsInExcess);
+        setCellValue(row, 18, revenueInExcess);
 
         // Split the contract into groups.  We need totals per type of POB, so create 3 groups.  The PerformanceObligationGroup is just a shell Measurable non-entity class used for grouping.
         PerformanceObligationGroup pocPobs = new PerformanceObligationGroup("pocPobs", contract, contract.getPobsByRevenueMethod(RevenueMethod.PERC_OF_COMP));
@@ -125,7 +146,19 @@ public class ReportsService {
         BigDecimal loquidatedDamage = getLiquidatedDamages(pGroup, period);
         BigDecimal EAC = getEAC(pGroup, period);
         BigDecimal estimatedGrossProfit = getEstimatedGrossProfit(pGroup, period);
-        BigDecimal estimatedGrossMargin = getEstimatedGrossMargin(pGroup, period);;
+        BigDecimal estimatedGrossMargin = getEstimatedGrossMargin(pGroup, period);
+
+        BigDecimal liquidatedDamage = getLiquidatedDamages(pGroup, period);
+        BigDecimal localCostITDLC = getCostOfGoodsSold(pGroup, period);
+        BigDecimal percentComplete = getPercentComplete(pGroup, period);
+        BigDecimal revenueITD = getRevenueRecognizeITD(pGroup, period);
+        BigDecimal lossReserveITD = getLossReserveITD(pGroup, period);
+        BigDecimal grossProfitITD = getEstimatedGrossProfit(pGroup, period);
+        BigDecimal grossMarginITD = getEstimatedGrossMargin(pGroup, period);
+        BigDecimal costToComplete = getContractCostToCompleteLC(pGroup, period);
+        BigDecimal billingsInExcess = getContractBillingsInExcess(pGroup, period);
+        BigDecimal revenueInExcess = getContractRevenueInExcess(pGroup, period);
+        BigDecimal billToDate = new BigDecimal(BigInteger.ZERO);
 
         // Percentage of completion Pobs.  Set total row for POC POBs
         row = worksheet.getRow(single);
@@ -135,6 +168,18 @@ public class ReportsService {
         setCellValue(row, 4, estimatedGrossProfit);
         setCellValue(row, 5, estimatedGrossMargin);
 
+        //setCellValue(row, 7, percentComplete);
+        setCellValue(row, 8, revenueITD);
+        setCellValue(row, 9, liquidatedDamage);
+        setCellValue(row, 10, localCostITDLC);
+        setCellValue(row, 11, lossReserveITD);
+        setCellValue(row, 12, grossProfitITD);
+        setCellValue(row, 13, grossMarginITD);
+        setCellValue(row, 15, billToDate);
+        setCellValue(row, 16, costToComplete);
+        setCellValue(row, 17, billingsInExcess);
+        setCellValue(row, 18, revenueInExcess);
+
         // We have the same total 8 rows down
         row = worksheet.getRow(total);
         setCellValue(row, 1, transactionPrice);
@@ -142,6 +187,18 @@ public class ReportsService {
         setCellValue(row, 3, EAC);
         setCellValue(row, 4, estimatedGrossProfit);
         setCellValue(row, 5, estimatedGrossMargin);
+
+        //setCellValue(row, 7, percentComplete);
+        setCellValue(row, 8, revenueITD);
+        setCellValue(row, 9, liquidatedDamage);
+        setCellValue(row, 10, localCostITDLC);
+        setCellValue(row, 11, lossReserveITD);
+        setCellValue(row, 12, grossProfitITD);
+        setCellValue(row, 13, grossMarginITD);
+        setCellValue(row, 15, billToDate);
+        setCellValue(row, 16, costToComplete);
+        setCellValue(row, 17, billingsInExcess);
+        setCellValue(row, 18, revenueInExcess);
     }
 
     public void printContractEsimatesPobsDetailLines(int insertRow, int shiftRow, XSSFSheet worksheet, PerformanceObligationGroup pGroup, FinancialPeriod period) throws Exception {
@@ -155,141 +212,8 @@ public class ReportsService {
                 BigDecimal loquidatedDamage = getLiquidatedDamages(pob, period);
                 BigDecimal EAC = getEAC(pob, period);
                 BigDecimal estimatedGrossProfit = getEstimatedGrossProfit(pob, period);
-                BigDecimal estimatedGrossMargin = getEstimatedGrossMargin(pob, period);;
+                BigDecimal estimatedGrossMargin = getEstimatedGrossMargin(pob, period);
 
-                row = worksheet.createRow(insertRow);
-                cell = row.getCell(0, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
-                cell.setCellValue(pob.getName());
-                setCellValue(row, 1, transactionPrice);
-                setCellValue(row, 2, loquidatedDamage);
-                setCellValue(row, 3, EAC);
-                setCellValue(row, 4, estimatedGrossProfit);
-                setCellValue(row, 5, estimatedGrossMargin);
-
-                insertRow++;
-            }
-        }
-    }
-
-    public void generateReportfromInceptiontoDate(InputStream inputStream, FileOutputStream outputStream, Contract contract) throws Exception {
-        calculationService.executeBusinessRules(contract, webSession.getCurrentPeriod());
-        try (XSSFWorkbook workbook = new XSSFWorkbook(inputStream)) {
-            workbook.removeSheetAt(workbook.getSheetIndex("Contract Summary-1"));
-            workbook.removeSheetAt(workbook.getSheetIndex("Contract Summary-3"));
-            workbook.removeSheetAt(workbook.getSheetIndex("Contract Summary-4"));
-            workbook.removeSheetAt(workbook.getSheetIndex("Contract Summary-5"));
-            XSSFSheet worksheet = workbook.getSheet("Contract Summary-2");
-            worksheet = writefromInceptiontoDate(worksheet, contract);
-            workbook.write(outputStream);
-        }
-        inputStream.close();
-        outputStream.close();
-
-    }
-
-    public XSSFSheet writefromInceptiontoDate(XSSFSheet worksheet, Contract contract) throws Exception {
-        XSSFRow row;
-        Cell cell = null;
-        int rowid = HEADER_ROW_COUNT;
-        XSSFRow contract_name = worksheet.getRow(1);
-        cell = contract_name.getCell(0, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
-        cell.setCellValue(contract.getName());
-
-        FinancialPeriod period = webSession.getCurrentPeriod();
-
-        BigDecimal liquidatedDamage = getLiquidatedDamages(contract, period);
-        BigDecimal localCostITDLC = getCostOfGoodsSold(contract, period);
-        BigDecimal percentComplete = getPercentComplete(contract, period);
-        BigDecimal revenueITD = getRevenueRecognizeITD(contract, period);
-        BigDecimal lossReserveITD = getLossReserveITD(contract, period);
-        BigDecimal grossProfitITD = getEstimatedGrossProfit(contract, period);
-        BigDecimal grossMarginITD = getEstimatedGrossMargin(contract, period);
-        BigDecimal costToComplete = getContractCostToCompleteLC(contract, period);
-        BigDecimal billingsInExcess = getContractBillingsInExcess(contract, period);
-        BigDecimal revenueInExcess = getContractRevenueInExcess(contract, period);
-        BigDecimal billToDate = contract.getTotalBillingsLocalCurrency();
-
-        row = worksheet.getRow(15);
-        setCellValue(row, 1, percentComplete);
-        setCellValue(row, 2, revenueITD);
-        setCellValue(row, 3, liquidatedDamage);
-        setCellValue(row, 4, localCostITDLC);
-        setCellValue(row, 5, lossReserveITD);
-        setCellValue(row, 6, grossProfitITD);
-        setCellValue(row, 7, grossMarginITD);
-        setCellValue(row, 9, billToDate);
-        setCellValue(row, 10, costToComplete);
-        setCellValue(row, 11, billingsInExcess);
-        setCellValue(row, 12, revenueInExcess);
-
-        // Split the contract into groups.  We need totals per type of POB, so create 3 groups.  The PerformanceObligationGroup is just a shell Measurable non-entity class used for grouping.
-        PerformanceObligationGroup pocPobs = new PerformanceObligationGroup("pocPobs", contract, contract.getPobsByRevenueMethod(RevenueMethod.PERC_OF_COMP));
-        calculationService.executeBusinessRules(pocPobs, period);
-        PerformanceObligationGroup pitPobs = new PerformanceObligationGroup("pitPobs", contract, contract.getPobsByRevenueMethod(RevenueMethod.POINT_IN_TIME));
-        calculationService.executeBusinessRules(pitPobs, period);
-        PerformanceObligationGroup slPobs = new PerformanceObligationGroup("slPobs", contract, contract.getPobsByRevenueMethod(RevenueMethod.STRAIGHT_LINE));
-        calculationService.executeBusinessRules(slPobs, period);
-
-        printInceptiontoDatePobsGroups(10, 18, worksheet, pocPobs, period, billToDate);
-        printInceptiontoDatePobsGroups(11, 21, worksheet, pitPobs, period, billToDate);
-        printInceptiontoDatePobsGroups(12, 24, worksheet, slPobs, period, billToDate);
-
-        printInceptiontoDatePobsDetailLines(18, 24, worksheet, pocPobs, period);
-        printInceptiontoDatePobsDetailLines(21, 24, worksheet, pitPobs, period);
-        printInceptiontoDatePobsDetailLines(24, 24, worksheet, slPobs, period);
-
-        return worksheet;
-    }
-
-    public void printInceptiontoDatePobsGroups(int single, int total, XSSFSheet worksheet, PerformanceObligationGroup pGroup, FinancialPeriod period, BigDecimal billToDate) throws Exception {
-
-        XSSFRow row;
-        BigDecimal liquidatedDamage = getLiquidatedDamages(pGroup, period);
-        BigDecimal localCostITDLC = getCostOfGoodsSold(pGroup, period);
-        BigDecimal percentComplete = getPercentComplete(pGroup, period);
-        BigDecimal revenueITD = getRevenueRecognizeITD(pGroup, period);
-        BigDecimal lossReserveITD = getLossReserveITD(pGroup, period);
-        BigDecimal grossProfitITD = getEstimatedGrossProfit(pGroup, period);
-        BigDecimal grossMarginITD = getEstimatedGrossMargin(pGroup, period);
-        BigDecimal costToComplete = getContractCostToCompleteLC(pGroup, period);
-        BigDecimal billingsInExcess = getContractBillingsInExcess(pGroup, period);
-        BigDecimal revenueInExcess = getContractRevenueInExcess(pGroup, period);
-
-        // Percentage of completion Pobs.  Set total row for POC POBs
-        row = worksheet.getRow(single);
-        //setCellValue(row, 1, percentComplete);
-        setCellValue(row, 2, revenueITD);
-        setCellValue(row, 3, liquidatedDamage);
-        setCellValue(row, 4, localCostITDLC);
-        setCellValue(row, 5, lossReserveITD);
-        setCellValue(row, 6, grossProfitITD);
-        setCellValue(row, 7, grossMarginITD);
-        setCellValue(row, 9, billToDate);
-        setCellValue(row, 10, costToComplete);
-        setCellValue(row, 11, billingsInExcess);
-        setCellValue(row, 12, revenueInExcess);
-
-        // We have the same total 8 rows down
-        row = worksheet.getRow(total);
-        //setCellValue(row, 1, percentComplete);
-        setCellValue(row, 2, revenueITD);
-        setCellValue(row, 3, liquidatedDamage);
-        setCellValue(row, 4, localCostITDLC);
-        setCellValue(row, 5, lossReserveITD);
-        setCellValue(row, 6, grossProfitITD);
-        setCellValue(row, 7, grossMarginITD);
-        setCellValue(row, 9, billToDate);
-        setCellValue(row, 10, costToComplete);
-        setCellValue(row, 11, billingsInExcess);
-        setCellValue(row, 12, revenueInExcess);
-    }
-
-    public void printInceptiontoDatePobsDetailLines(int insertRow, int shiftRow, XSSFSheet worksheet, PerformanceObligationGroup pGroup, FinancialPeriod period) throws Exception {
-        XSSFRow row;
-        Cell cell = null;
-        if (pGroup.getPerformanceObligations().size() > 0) {
-            worksheet.shiftRows(insertRow, shiftRow, pGroup.getPerformanceObligations().size(), true, false);
-            for (PerformanceObligation pob : pGroup.getPerformanceObligations()) {
                 BigDecimal liquidatedDamage = getLiquidatedDamages(pob, period);
                 BigDecimal localCostITDLC = getCostOfGoodsSold(pob, period);
                 BigDecimal percentComplete = getPercentComplete(pob, period);
@@ -304,32 +228,36 @@ public class ReportsService {
                 row = worksheet.createRow(insertRow);
                 cell = row.getCell(0, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
                 cell.setCellValue(pob.getName());
-                setCellValue(row, 1, percentComplete);
-                setCellValue(row, 2, revenueITD);
-                setCellValue(row, 3, liquidatedDamage);
-                setCellValue(row, 4, localCostITDLC);
-                //setCellValue(row, 5, lossReserveITD);
-                setCellValue(row, 6, grossProfitITD);
-                setCellValue(row, 7, grossMarginITD);
-                //setCellValue(row, 10, costToComplete);
-//                setCellValue(row, 11, billingsInExcess);
-//                setCellValue(row, 12, revenueInExcess);
+                setCellValue(row, 1, transactionPrice);
+                setCellValue(row, 2, loquidatedDamage);
+                setCellValue(row, 3, EAC);
+                setCellValue(row, 4, estimatedGrossProfit);
+                setCellValue(row, 5, estimatedGrossMargin);
+
+                //setCellValue(row, 7, percentComplete);
+                setCellValue(row, 8, revenueITD);
+                setCellValue(row, 9, liquidatedDamage);
+                setCellValue(row, 10, localCostITDLC);
+                //setCellValue(row, 11, lossReserveITD);
+                setCellValue(row, 12, grossProfitITD);
+                setCellValue(row, 13, grossMarginITD);
+//                setCellValue(row, 15, billToDate);
+//                setCellValue(row, 16, costToComplete);
+//                setCellValue(row, 17, billingsInExcess);
+//                setCellValue(row, 18, revenueInExcess);
 
                 insertRow++;
             }
         }
     }
 
-    public void generateReportMonthlyIncomeImpact(InputStream inputStream, FileOutputStream outputStream, Contract contract) throws Exception {
+    public void generateReportByFinancialPeriod(InputStream inputStream, FileOutputStream outputStream, Contract contract) throws Exception {
         calculationService.executeBusinessRules(contract, webSession.getCurrentPeriod());
         try (XSSFWorkbook workbook = new XSSFWorkbook(inputStream)) {
             workbook.removeSheetAt(workbook.getSheetIndex("Contract Summary-1"));
-            workbook.removeSheetAt(workbook.getSheetIndex("Contract Summary-2"));
-            workbook.removeSheetAt(workbook.getSheetIndex("Contract Summary-4"));
-            workbook.removeSheetAt(workbook.getSheetIndex("Contract Summary-5"));
-            XSSFSheet worksheet = workbook.getSheet("Contract Summary-3");
+            XSSFSheet worksheet = workbook.getSheet("Contract Summary-2");
 
-            worksheet = writeMonthlyIncomeImpact(worksheet, contract);
+            worksheet = writeReportByFinancialPeriod(worksheet, contract);
             workbook.write(outputStream);
         }
         inputStream.close();
@@ -337,7 +265,7 @@ public class ReportsService {
 
     }
 
-    public XSSFSheet writeMonthlyIncomeImpact(XSSFSheet worksheet, Contract contract) throws Exception {
+    public XSSFSheet writeReportByFinancialPeriod(XSSFSheet worksheet, Contract contract) throws Exception {
         XSSFRow row;
         Cell cell = null;
         int rowid = HEADER_ROW_COUNT;
@@ -358,6 +286,28 @@ public class ReportsService {
         setCellValue(row, 3, cumulativeCostGoodsSoldLC);
         setCellValue(row, 5, EstimatedGrossProfitLC);
 
+        List<FinancialPeriod> qtdPeriods = financialPeriodService.getQTDFinancialPeriods(viewSupport.getCurrentPeriod());
+        revenueToRecognize = getAccuRevenueToRecognizeLC(contract, qtdPeriods);
+        liquidatedDamage = getAccuLiquidatedDamageCC(contract, qtdPeriods);
+        cumulativeCostGoodsSoldLC = getAccuCumulativeCostGoodsSoldLC(contract, qtdPeriods);
+        EstimatedGrossProfitLC = getAccuEstimatedGrossProfitLC(contract, qtdPeriods);
+
+        setCellValue(row, 9, revenueToRecognize);
+        setCellValue(row, 10, liquidatedDamage);
+        setCellValue(row, 11, cumulativeCostGoodsSoldLC);
+        setCellValue(row, 13, EstimatedGrossProfitLC);
+
+        List<FinancialPeriod> ytdPeriods = financialPeriodService.getYTDFinancialPeriods(viewSupport.getCurrentPeriod());
+        revenueToRecognize = getAccuRevenueToRecognizeLC(contract, ytdPeriods);
+        liquidatedDamage = getAccuLiquidatedDamageCC(contract, ytdPeriods);
+        cumulativeCostGoodsSoldLC = getAccuCumulativeCostGoodsSoldLC(contract, ytdPeriods);
+        EstimatedGrossProfitLC = getAccuEstimatedGrossProfitLC(contract, ytdPeriods);
+
+        setCellValue(row, 17, revenueToRecognize);
+        setCellValue(row, 18, liquidatedDamage);
+        setCellValue(row, 19, cumulativeCostGoodsSoldLC);
+        setCellValue(row, 21, EstimatedGrossProfitLC);
+
         // Split the contract into groups.  We need totals per type of POB, so create 3 groups.  The PerformanceObligationGroup is just a shell Measurable non-entity class used for grouping.
         PerformanceObligationGroup pocPobs = new PerformanceObligationGroup("pocPobs", contract, contract.getPobsByRevenueMethod(RevenueMethod.PERC_OF_COMP));
         calculationService.executeBusinessRules(pocPobs, period);
@@ -366,20 +316,21 @@ public class ReportsService {
         PerformanceObligationGroup slPobs = new PerformanceObligationGroup("slPobs", contract, contract.getPobsByRevenueMethod(RevenueMethod.STRAIGHT_LINE));
         calculationService.executeBusinessRules(slPobs, period);
 
-        printMonthlyPobsGroups(10, 18, worksheet, pocPobs, period);
-        printMonthlyPobsGroups(11, 21, worksheet, pitPobs, period);
-        printMonthlyPobsGroups(12, 24, worksheet, slPobs, period);
+        printFinancialPobsGroups(10, 18, worksheet, pocPobs, period, qtdPeriods, ytdPeriods);
+        printFinancialPobsGroups(11, 21, worksheet, pitPobs, period, qtdPeriods, ytdPeriods);
+        printFinancialPobsGroups(12, 24, worksheet, slPobs, period, qtdPeriods, ytdPeriods);
 
-        printMonthlyPobsDetailLines(18, 24, worksheet, pocPobs, period);
-        printMonthlyPobsDetailLines(21, 24, worksheet, pitPobs, period);
-        printMonthlyPobsDetailLines(24, 24, worksheet, slPobs, period);
+        printFinancialPobsDetailLines(18, 24, worksheet, pocPobs, period, qtdPeriods, ytdPeriods);
+        printFinancialPobsDetailLines(21, 24, worksheet, pitPobs, period, qtdPeriods, ytdPeriods);
+        printFinancialPobsDetailLines(24, 24, worksheet, slPobs, period, qtdPeriods, ytdPeriods);
 
         return worksheet;
     }
 
-    public void printMonthlyPobsGroups(int single, int total, XSSFSheet worksheet, PerformanceObligationGroup pGroup, FinancialPeriod period) throws Exception {
+    public void printFinancialPobsGroups(int single, int total, XSSFSheet worksheet, PerformanceObligationGroup pGroup, FinancialPeriod period, List<FinancialPeriod> qtdPeriods, List<FinancialPeriod> ytdPeriods) throws Exception {
 
         XSSFRow row;
+        //for monthly report
         BigDecimal revenueToRecognize = getRevenueRecognizeITD(pGroup, period);
         BigDecimal liquidatedDamage = getLiquidatedDamages(pGroup, period);
         BigDecimal cumulativeCostGoodsSoldLC = getCumulativeCostGoodsSoldLC(pGroup, period);
@@ -396,15 +347,53 @@ public class ReportsService {
         setCellValue(row, 2, liquidatedDamage);
         setCellValue(row, 3, cumulativeCostGoodsSoldLC);
         setCellValue(row, 5, EstimatedGrossProfitLC);
+
+        //for quartly report
+        revenueToRecognize = getAccuRevenueToRecognizeLC(pGroup, qtdPeriods);
+        liquidatedDamage = getAccuLiquidatedDamageCC(pGroup, qtdPeriods);
+        cumulativeCostGoodsSoldLC = getAccuCumulativeCostGoodsSoldLC(pGroup, qtdPeriods);
+        EstimatedGrossProfitLC = getAccuEstimatedGrossProfitLC(pGroup, qtdPeriods);
+
+        row = worksheet.getRow(single);
+        setCellValue(row, 9, revenueToRecognize);
+        setCellValue(row, 10, liquidatedDamage);
+        setCellValue(row, 11, cumulativeCostGoodsSoldLC);
+        setCellValue(row, 13, EstimatedGrossProfitLC);
+
+        row = worksheet.getRow(total);
+        setCellValue(row, 9, revenueToRecognize);
+        setCellValue(row, 10, liquidatedDamage);
+        setCellValue(row, 11, cumulativeCostGoodsSoldLC);
+        setCellValue(row, 13, EstimatedGrossProfitLC);
+
+        //for annually report
+        revenueToRecognize = getAccuRevenueToRecognizeLC(pGroup, ytdPeriods);
+        liquidatedDamage = getAccuLiquidatedDamageCC(pGroup, ytdPeriods);
+        cumulativeCostGoodsSoldLC = getAccuCumulativeCostGoodsSoldLC(pGroup, ytdPeriods);
+        EstimatedGrossProfitLC = getAccuEstimatedGrossProfitLC(pGroup, ytdPeriods);
+
+        row = worksheet.getRow(single);
+        setCellValue(row, 17, revenueToRecognize);
+        setCellValue(row, 18, liquidatedDamage);
+        setCellValue(row, 19, cumulativeCostGoodsSoldLC);
+        setCellValue(row, 21, EstimatedGrossProfitLC);
+
+        row = worksheet.getRow(total);
+        setCellValue(row, 17, revenueToRecognize);
+        setCellValue(row, 18, liquidatedDamage);
+        setCellValue(row, 19, cumulativeCostGoodsSoldLC);
+        setCellValue(row, 21, EstimatedGrossProfitLC);
+
     }
 
-    public void printMonthlyPobsDetailLines(int insertRow, int shiftRow, XSSFSheet worksheet, PerformanceObligationGroup pGroup, FinancialPeriod period) throws Exception {
+    public void printFinancialPobsDetailLines(int insertRow, int shiftRow, XSSFSheet worksheet, PerformanceObligationGroup pGroup, FinancialPeriod period, List<FinancialPeriod> qtdPeriods, List<FinancialPeriod> ytdPeriods) throws Exception {
         XSSFRow row;
         Cell cell = null;
         if (pGroup.getPerformanceObligations().size() > 0) {
             worksheet.shiftRows(insertRow, shiftRow, pGroup.getPerformanceObligations().size(), true, false);
 
             for (PerformanceObligation pob : pGroup.getPerformanceObligations()) {
+                //for monthly report
                 BigDecimal revenueToRecognize = getRevenueRecognizeITD(pob, period);
                 BigDecimal liquidatedDamage = getLiquidatedDamages(pob, period);
                 BigDecimal cumulativeCostGoodsSoldLC = getCumulativeCostGoodsSoldLC(pob, period);
@@ -417,126 +406,28 @@ public class ReportsService {
                 setCellValue(row, 2, liquidatedDamage);
                 //setCellValue(row, 3, cumulativeCostGoodsSoldLC);
                 setCellValue(row, 5, EstimatedGrossProfitLC);
-                insertRow++;
-            }
-        }
-    }
 
-    public void generateReportQuarterlyIncomeImpact(InputStream inputStream, FileOutputStream outputStream, Contract contract) throws Exception {
-        calculationService.executeBusinessRules(contract, webSession.getCurrentPeriod());
-        try (XSSFWorkbook workbook = new XSSFWorkbook(inputStream)) {
-            workbook.removeSheetAt(workbook.getSheetIndex("Contract Summary-1"));
-            workbook.removeSheetAt(workbook.getSheetIndex("Contract Summary-2"));
-            workbook.removeSheetAt(workbook.getSheetIndex("Contract Summary-3"));
-            workbook.removeSheetAt(workbook.getSheetIndex("Contract Summary-5"));
-            XSSFSheet worksheet = workbook.getSheet("Contract Summary-4");
+                //for quaterly report
+                revenueToRecognize = getAccuRevenueToRecognizeLC(pob, qtdPeriods);
+                liquidatedDamage = getAccuLiquidatedDamageCC(pob, qtdPeriods);
+                cumulativeCostGoodsSoldLC = getAccuCumulativeCostGoodsSoldLC(pob, qtdPeriods);
+                EstimatedGrossProfitLC = getAccuEstimatedGrossProfitLC(pob, qtdPeriods);
 
-            List<FinancialPeriod> qtdPeriods = financialPeriodService.getQTDFinancialPeriods(viewSupport.getCurrentPeriod());
-            worksheet = writeQuarterlyOrAnnualIncomeImpact(worksheet, contract, qtdPeriods);
+                setCellValue(row, 9, revenueToRecognize);
+                setCellValue(row, 10, liquidatedDamage);
+                setCellValue(row, 11, cumulativeCostGoodsSoldLC);
+                setCellValue(row, 13, EstimatedGrossProfitLC);
 
-            workbook.write(outputStream);
-        }
-        inputStream.close();
-        outputStream.close();
+                //for annually report
+                revenueToRecognize = getAccuRevenueToRecognizeLC(pob, ytdPeriods);
+                liquidatedDamage = getAccuLiquidatedDamageCC(pob, ytdPeriods);
+                cumulativeCostGoodsSoldLC = getAccuCumulativeCostGoodsSoldLC(pob, ytdPeriods);
+                EstimatedGrossProfitLC = getAccuEstimatedGrossProfitLC(pob, ytdPeriods);
 
-    }
-
-    public void generateReportAnnualIncomeImpact(InputStream inputStream, FileOutputStream outputStream, Contract contract) throws Exception {
-        try (XSSFWorkbook workbook = new XSSFWorkbook(inputStream)) {
-            workbook.removeSheetAt(workbook.getSheetIndex("Contract Summary-1"));
-            workbook.removeSheetAt(workbook.getSheetIndex("Contract Summary-2"));
-            workbook.removeSheetAt(workbook.getSheetIndex("Contract Summary-3"));
-            workbook.removeSheetAt(workbook.getSheetIndex("Contract Summary-4"));
-            XSSFSheet worksheet = workbook.getSheet("Contract Summary-5");
-            List<FinancialPeriod> ytdPeriods = financialPeriodService.getYTDFinancialPeriods(viewSupport.getCurrentPeriod());
-            worksheet = writeQuarterlyOrAnnualIncomeImpact(worksheet, contract, ytdPeriods);
-            workbook.write(outputStream);
-        }
-        inputStream.close();
-        outputStream.close();
-
-    }
-
-    public XSSFSheet writeQuarterlyOrAnnualIncomeImpact(XSSFSheet worksheet, Contract contract, List<FinancialPeriod> listPeriods) throws Exception {
-        XSSFRow row;
-        Cell cell = null;
-        int rowid = HEADER_ROW_COUNT;
-        XSSFRow contract_name = worksheet.getRow(1);
-        cell = contract_name.getCell(0, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
-        cell.setCellValue(contract.getName());
-
-        BigDecimal revenueToRecognize = getAccuRevenueToRecognizeLC(contract, listPeriods);
-        BigDecimal liquidatedDamage = getAccuLiquidatedDamageCC(contract, listPeriods);
-        BigDecimal cumulativeCostGoodsSoldLC = getAccuCumulativeCostGoodsSoldLC(contract, listPeriods);
-        BigDecimal EstimatedGrossProfitLC = getAccuEstimatedGrossProfitLC(contract, listPeriods);
-
-        row = worksheet.getRow(15);
-        setCellValue(row, 1, revenueToRecognize);
-        setCellValue(row, 2, liquidatedDamage);
-        setCellValue(row, 3, cumulativeCostGoodsSoldLC);
-        setCellValue(row, 5, EstimatedGrossProfitLC);
-
-        // Split the contract into groups.  We need totals per type of POB, so create 3 groups.  The PerformanceObligationGroup is just a shell Measurable non-entity class used for grouping.
-        PerformanceObligationGroup pocPobs = new PerformanceObligationGroup("pocPobs", contract, contract.getPobsByRevenueMethod(RevenueMethod.PERC_OF_COMP));
-        //calculationService.executeBusinessRules(pocPobs, period);
-        PerformanceObligationGroup pitPobs = new PerformanceObligationGroup("pitPobs", contract, contract.getPobsByRevenueMethod(RevenueMethod.POINT_IN_TIME));
-        //calculationService.executeBusinessRules(pitPobs, period);
-        PerformanceObligationGroup slPobs = new PerformanceObligationGroup("slPobs", contract, contract.getPobsByRevenueMethod(RevenueMethod.STRAIGHT_LINE));
-        //calculationService.executeBusinessRules(slPobs, period);
-
-        printQAByPobsGroups(10, 18, worksheet, pocPobs, listPeriods);
-        printQAByPobsGroups(11, 21, worksheet, pitPobs, listPeriods);
-        printQAByPobsGroups(12, 24, worksheet, slPobs, listPeriods);
-
-        printQAByPobsDetailLines(18, 24, worksheet, pocPobs, listPeriods);
-        printQAByPobsDetailLines(21, 24, worksheet, pitPobs, listPeriods);
-        printQAByPobsDetailLines(24, 24, worksheet, slPobs, listPeriods);
-
-        return worksheet;
-    }
-
-    public void printQAByPobsGroups(int single, int total, XSSFSheet worksheet, PerformanceObligationGroup pGroup, List<FinancialPeriod> listPeriods) throws Exception {
-
-        BigDecimal revenueToRecognize = getAccuRevenueToRecognizeLC(pGroup, listPeriods);
-        BigDecimal liquidatedDamage = getAccuLiquidatedDamageCC(pGroup, listPeriods);
-        BigDecimal cumulativeCostGoodsSoldLC = getAccuCumulativeCostGoodsSoldLC(pGroup, listPeriods);
-        BigDecimal EstimatedGrossProfitLC = getAccuEstimatedGrossProfitLC(pGroup, listPeriods);
-
-        XSSFRow row;
-        row = worksheet.getRow(single);
-        setCellValue(row, 1, revenueToRecognize);
-        setCellValue(row, 2, liquidatedDamage);
-        setCellValue(row, 3, cumulativeCostGoodsSoldLC);
-        setCellValue(row, 5, EstimatedGrossProfitLC);
-
-        row = worksheet.getRow(total);
-        setCellValue(row, 1, revenueToRecognize);
-        setCellValue(row, 2, liquidatedDamage);
-        setCellValue(row, 3, cumulativeCostGoodsSoldLC);
-        setCellValue(row, 5, EstimatedGrossProfitLC);
-    }
-
-    public void printQAByPobsDetailLines(int insertRow, int shiftRow, XSSFSheet worksheet, PerformanceObligationGroup pGroup, List<FinancialPeriod> listPeriods) throws Exception {
-        XSSFRow row;
-        Cell cell = null;
-        // Fill in the POB detail lines.  We'll shift the surrounding rows down as we go to make room for the detail lines.
-        if (pGroup.getPerformanceObligations().size() > 0) {
-            worksheet.shiftRows(insertRow, shiftRow, pGroup.getPerformanceObligations().size(), true, false);
-
-            for (PerformanceObligation pob : pGroup.getPerformanceObligations()) {
-                BigDecimal revenueToRecognize = getAccuRevenueToRecognizeLC(pob, listPeriods);
-                BigDecimal liquidatedDamage = getAccuLiquidatedDamageCC(pob, listPeriods);
-                BigDecimal cumulativeCostGoodsSoldLC = getAccuCumulativeCostGoodsSoldLC(pob, listPeriods);
-                BigDecimal EstimatedGrossProfitLC = getAccuEstimatedGrossProfitLC(pob, listPeriods);
-
-                row = worksheet.createRow(insertRow);
-                cell = row.getCell(0, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
-                cell.setCellValue(pob.getName());
-                setCellValue(row, 1, revenueToRecognize);
-                setCellValue(row, 2, liquidatedDamage);
-                setCellValue(row, 3, cumulativeCostGoodsSoldLC);
-                setCellValue(row, 5, EstimatedGrossProfitLC);
-
+                setCellValue(row, 17, revenueToRecognize);
+                setCellValue(row, 18, liquidatedDamage);
+                setCellValue(row, 19, cumulativeCostGoodsSoldLC);
+                setCellValue(row, 21, EstimatedGrossProfitLC);
                 insertRow++;
             }
         }
@@ -568,19 +459,7 @@ public class ReportsService {
             worksheet = writeContractEsimatesReport(worksheet, contract);
 
             worksheet = workbook.getSheet("Contract Summary-2");
-            worksheet = writefromInceptiontoDate(worksheet, contract);
-
-            worksheet = workbook.getSheet("Contract Summary-3");
-            worksheet = writeMonthlyIncomeImpact(worksheet, contract);
-
-            worksheet = workbook.getSheet("Contract Summary-4");
-            List<FinancialPeriod> qtdPeriods = financialPeriodService.getQTDFinancialPeriods(viewSupport.getCurrentPeriod());
-            worksheet = writeQuarterlyOrAnnualIncomeImpact(worksheet, contract, qtdPeriods);
-
-            worksheet = workbook.getSheet("Contract Summary-5");
-            List<FinancialPeriod> ytdPeriods = financialPeriodService.getYTDFinancialPeriods(viewSupport.getCurrentPeriod());
-            worksheet = writeQuarterlyOrAnnualIncomeImpact(worksheet, contract, ytdPeriods);
-
+            worksheet = writeReportByFinancialPeriod(worksheet, contract);
             workbook.write(outputStream);
         }
         inputStream.close();
