@@ -172,8 +172,9 @@ public class MetricService {
 
             if (metricType.getCode().equals("ESTIMATED_COST_AT_COMPLETION_LC")) {
                 
-                metricType.setDebitAccount(adminService.findSubledgerAccountByCode("DummyDR"));
-                metricType.setCreditAccount(adminService.findSubledgerAccountByCode("DummyCR"));
+                metricType.setCreditAccount(adminService.findSubledgerAccountByCode(values[count++]));
+                metricType.setDebitAccount(adminService.findSubledgerAccountByCode(values[count++]));
+               
             }        
 
             adminService.persist(metricType);
