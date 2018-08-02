@@ -1,7 +1,7 @@
 INPUT|REVENUE_RECOGNITION_METHOD|POB||StringMetric||Revenue Recognition Method|Revenue Recognition Method|POC POB Metrics|H|Group1|1
 INPUT|TRANSACTION_PRICE_CC|POB|REQUIRED|CurrencyMetric|CC|Allocated Transaction Price (CC)|Allocated Transaction Price (CC)|POC POB Metrics|O|Group1|2
 INPUT|LIQUIDATED_DAMAGES_ITD_CC|POB|REQUIRED|CurrencyMetric|CC|Total Liquidated Damages (CC)|Total LD Penalty Included in Transaction Price (CC)|POC POB Metrics|P|Group1|2
-INPUT|ESTIMATED_COST_AT_COMPLETION_LC|POB|REQUIRED|CurrencyMetric|LC|Estimated Cost at Completion (LC)|Estimated Cost at Completion (LC)|POC POB Metrics|Q|Group1|3
+INPUT|ESTIMATED_COST_AT_COMPLETION_LC|POB|REQUIRED|CurrencyMetric|LC|Estimated Cost at Completion (LC)|Estimated Cost at Completion (LC)|POC POB Metrics|Q|Group1|3|DummyCR|DummyDR
 INPUT|LOCAL_COSTS_ITD_LC|POB||CurrencyMetric|LC|Cumulative Cost Incurred (LC)|Cumulative Cost Incurred (LC)|POC POB Metrics|S|Group1|4
 INPUT|THIRD_PARTY_COSTS_ITD_LC|POB||CurrencyMetric|LC|Cumulative 3rd Party Progress (Not Received) (LC)|Cumulative 3rd Party Progress (Not Received) (LC)|POC POB Metrics|U|Group1|6
 INPUT|INTERCOMPANY_COSTS_ITD_LC|POB||CurrencyMetric|LC|Cumulative Interco Progress (Not Received) (LC)|Cumulative Interco Progress (Not Received) (LC)|POC POB Metrics|T|Group1|5

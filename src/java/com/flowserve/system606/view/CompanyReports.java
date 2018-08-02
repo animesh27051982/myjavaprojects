@@ -5,7 +5,6 @@
  */
 package com.flowserve.system606.view;
 
-import com.flowserve.system606.model.Contract;
 import com.flowserve.system606.model.Company;
 import com.flowserve.system606.service.AdminService;
 import com.flowserve.system606.service.ReportsService;
@@ -27,26 +26,25 @@ import org.primefaces.model.StreamedContent;
  *
  * @author shubhamc
  */
-
 @Named
 @ViewScoped
 public class CompanyReports implements Serializable {
-    
+
     private StreamedContent file;
     private InputStream inputStream;
     private FileOutputStream outputStream;
-    Company comp=new Company();
-    
+    Company comp = new Company();
+
     @Inject
     AdminService adminService;
     @Inject
     ReportsService reportsService;
     @Inject
     private WebSession webSession;
-    
-     @PostConstruct
+
+    @PostConstruct
     public void init() {
-      comp=webSession.getEditCompany();
+        comp = webSession.getEditCompany();
     }
 
     public Company getComp() {
@@ -57,30 +55,27 @@ public class CompanyReports implements Serializable {
         this.comp = comp;
     }
 
-  
-    
     public StreamedContent getFileFinancialSummary() throws Exception {
         try {
 
-           inputStream =CompanyReports.class.getResourceAsStream("/resources/excel_input_templates/Outputs_Summary_v2_ORIGINAL.xlsx");
+            inputStream = CompanyReports.class.getResourceAsStream("/resources/excel_input_templates/Outputs_Summary_v2_ORIGINAL.xlsx");
             outputStream = new FileOutputStream(new File("Outputs_Summary_v2_ORIGINAL.xlsx"));
 
         } catch (IOException e) {
             e.printStackTrace();
         }
 
-        reportsService.generateReportFinancialSummary(inputStream, outputStream);
+        reportsService.generateCompanyReportFinancialSummary(inputStream, outputStream);
 
         InputStream inputStreamFromOutputStream = new FileInputStream(new File("Outputs_Summary_v2_ORIGINAL.xlsx"));
         file = new DefaultStreamedContent(inputStreamFromOutputStream, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "FinancialSummary.xlsx");
         return file;
     }
-    
-    
-     public StreamedContent getFileDisclosures() throws Exception {
+
+    public StreamedContent getFileDisclosures() throws Exception {
         try {
 
-           inputStream =CompanyReports.class.getResourceAsStream("/resources/excel_input_templates/Outputs_Summary_v2_ORIGINAL.xlsx");
+            inputStream = CompanyReports.class.getResourceAsStream("/resources/excel_input_templates/Outputs_Summary_v2_ORIGINAL.xlsx");
             outputStream = new FileOutputStream(new File("Outputs_Summary_v2_ORIGINAL.xlsx"));
 
         } catch (IOException e) {
@@ -93,7 +88,5 @@ public class CompanyReports implements Serializable {
         file = new DefaultStreamedContent(inputStreamFromOutputStream, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "Disclosures.xlsx");
         return file;
     }
-     
-     
-    
+
 }

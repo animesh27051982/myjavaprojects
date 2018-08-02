@@ -166,9 +166,16 @@ public class MetricService {
             metricType.setGroupPosition(Integer.parseInt(values[count++]));
             metricType.setEffectiveFrom(LocalDate.now());
             //metricType.setEffectiveTo(LocalDate.now());
-            metricType.setActive(true);
-
+            metricType.setActive(true);           
+        
             logger.info("Creating MetricType: " + metricType.getName());
+
+            if (metricType.getCode().equals("ESTIMATED_COST_AT_COMPLETION_LC")) {
+                
+                metricType.setCreditAccount(adminService.findSubledgerAccountByCode(values[count++]));
+                metricType.setDebitAccount(adminService.findSubledgerAccountByCode(values[count++]));
+               
+            }        
 
             adminService.persist(metricType);
 
