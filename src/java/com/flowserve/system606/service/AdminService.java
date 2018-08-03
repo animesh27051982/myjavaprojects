@@ -744,8 +744,8 @@ public class AdminService {
         if (searchString == null || searchString.trim().length() < 2) {
             throw new Exception("Please supply a search string with at least 2 characters.");
         }
-        TypedQuery<ExchangeRate> query = em.createQuery("SELECT er FROM ExchangeRate er WHERE UPPER(er.fromCurrency) LIKE :Currency OR UPPER(er.toCurrency) LIKE :Currency", ExchangeRate.class);
-        query.setParameter("Currency", "%" + searchString.toUpperCase() + "%");
+        TypedQuery<ExchangeRate> query = em.createQuery("SELECT er FROM ExchangeRate er WHERE er.financialPeriod = :PERIOD", ExchangeRate.class);
+        query.setParameter("PERIOD", financialPeriodService.findById(searchString.toUpperCase()));
         return (List<ExchangeRate>) query.getResultList();
     }
 

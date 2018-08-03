@@ -7,7 +7,9 @@
 
     <ui:define name="head">
         <style type="text/css">
-
+            body .ui-datatable .ui-paginator{
+                padding: 5px;
+            }
         </style>
     </ui:define>
 
@@ -24,9 +26,16 @@
 
                     <div class="ui-g-12">
                         <div class="card card-w-title">
-                            <h1>File Upload Message</h1>
-                            <p:dataTable id="userTable" var="import" value="#{importMessageList.message}"  paginator="true" rows="30">
+                            <h1>File Upload Messages</h1>
+                            <p:dataTable id="userTable" var="import" value="#{importMessageList.message}"  paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {Exporters}"
+                                         paginator="true" rows="30" style="margin-bottom:20px">
+                                <f:facet name="{Exporters}" >
 
+                                    <h:commandLink style="float:right;" title="Export Table in Excel">
+                                        <p:graphicImage value="images/excel.png" width="28"/>
+                                        <p:dataExporter type="xlsx" target="userTable" fileName="Upload_Messages" />
+                                    </h:commandLink>
+                                </f:facet>
                                 <p:column headerText="Name" >
                                     <h:outputText value="#{importMessageList.name}" />
                                 </p:column>

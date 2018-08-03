@@ -198,13 +198,11 @@ public class BatchProcessingService {
                                 continue;
                             }
                             if (ru.getLocalCurrency() == null) {
-                                //String msg = "No local currency found for RU: " + ru.getCode();
-                                //importMSG.add(msg);
+                                String msg = "No local currency found for RU: " + ru.getCode();
+                                importMessages.add(msg);
                                 Logger.getLogger(BatchProcessingService.class.getName()).log(Level.INFO, "RU local currency is null ");
                                 continue;
                             }
-                            //if (ru.getCode().equalsIgnoreCase("1015")) {
-                            //if (ru.getCode().equalsIgnoreCase("1100") || ru.getCode().equalsIgnoreCase("1015") || ru.getCode().equalsIgnoreCase("8225") || ru.getCode().equalsIgnoreCase("5200")) {
                             if (true) {
                                 Logger.getLogger(BatchProcessingService.class.getName()).log(Level.INFO, "Populating POB metrics: " + pob.getId());
                                 calculationService.getCurrencyMetric("TRANSACTION_PRICE_CC", pob, period).setValue(tp);
@@ -313,7 +311,7 @@ public class BatchProcessingService {
                         contractService.update(contract);
                     } else {
                         importMessages.add("These Contract not found : " + id);
-                        //Logger.getLogger(BatchProcessingService.class.getName()).log(Level.FINER, "These POBs not found : " + id);
+                        Logger.getLogger(BatchProcessingService.class.getName()).log(Level.FINER, "These POBs not found : " + id);
                     }
 
                 }
@@ -333,11 +331,11 @@ public class BatchProcessingService {
         dataImport.setDataImportMessages(importMessages);
         dataImport.setType("POCI DATA");
         adminService.persist(dataImport);
-        Logger.getLogger(BatchProcessingService.class.getName()).log(Level.INFO, "Flushing data to database...");
+        Logger.getLogger(BatchProcessingService.class.getName()).log(Level.INFO, "Flushing POCI data to database...");
         em.flush();
         em.clear();
         ut.commit();
-        Logger.getLogger(BatchProcessingService.class.getName()).log(Level.INFO, "Import completed.");
+        Logger.getLogger(BatchProcessingService.class.getName()).log(Level.INFO, "POCI data Import completed.");
     }
 
     private boolean isGreaterThanZero(BigDecimal value) {
@@ -348,7 +346,7 @@ public class BatchProcessingService {
         return false;
     }
 
-    public void processUploadedContractPobData(String msAccDB) throws Exception {
+    public void processUploadedContractPobData(String msAccDB, String fileName) throws Exception {
         Logger.getLogger(AppInitializeService.class.getName()).log(Level.INFO, "Processing initContract: " + msAccDB);
 
         Connection connection = null;
@@ -360,8 +358,8 @@ public class BatchProcessingService {
             String dbURL = "jdbc:ucanaccess://" + msAccDB;
             connection = DriverManager.getConnection(dbURL);
             statement = connection.createStatement();
-            processContracts(connection, statement);
-            processPobs(connection, statement);
+            processContracts(connection, statement, fileName);
+            processPobs(connection, statement, fileName);
         } finally {
             try {
                 if (null != connection) {
@@ -379,7 +377,7 @@ public class BatchProcessingService {
         Logger.getLogger(BatchProcessingService.class.getName()).log(Level.INFO, "Contract and POB import completed.");
     }
 
-    void processPobs(Connection connection, Statement statement) throws SQLException, Exception {
+    void processPobs(Connection connection, Statement statement, String fileName) throws SQLException, Exception {
         ResultSet resultSet = null;
 
         methodMap.put("POC/Cost-to-Cost", RevenueMethod.PERC_OF_COMP);
@@ -396,10 +394,13 @@ public class BatchProcessingService {
         long pobId = -1;
         String revRecMethod = null;
 
+        DataImportFile dataImport = null;
+        List<String> importMessages = new ArrayList<String>();
+        dataImport = new DataImportFile();
         int count = 0;
 
         resultSet = statement.executeQuery("SELECT ID, Name, Stage, Folders, `Name of POb`, `If OT, identify the revenue recognition method`, `C-Page ID` FROM tbl_POb");
-
+        ut.begin();
         while (resultSet.next()) {
 
             PerformanceObligation pob = new PerformanceObligation();
@@ -417,8 +418,8 @@ public class BatchProcessingService {
             Contract contract = contractService.findContractById(contractId);
 
             if (contract == null) {
-                //throw new IllegalStateException("POB refers to non-existent contract.  Invalid.  POB ID: " + pobId);
-                Logger.getLogger(AppInitializeService.class.getName()).log(Level.WARNING, "POB refers to non-existent contract.  Invalid.  POB ID: " + pobId + " contract Id: " + contractId);
+                importMessages.add("POB refers to non-existent contract.  Invalid.  POB ID: " + pobId + " contract Id: " + contractId);
+                //Logger.getLogger(AppInitializeService.class.getName()).log(Level.WARNING, "POB refers to non-existent contract.  Invalid.  POB ID: " + pobId + " contract Id: " + contractId);
                 continue;
             } else {
                 pob.setContract(contract);
@@ -426,41 +427,50 @@ public class BatchProcessingService {
             pob.setName(pobName);
             pob.setId(pobId);
             if (methodMap.get(revRecMethod) == null) {
-                Logger.getLogger(BatchProcessingService.class.getName()).log(Level.SEVERE, "POB revrec method not in our list: " + revRecMethod);
+                importMessages.add("POB revrec method not in our list: " + revRecMethod);
+                //Logger.getLogger(BatchProcessingService.class.getName()).log(Level.SEVERE, "POB revrec method not in our list: " + revRecMethod);
             }
             pob.setRevenueMethod(methodMap.get(revRecMethod));
 
-            ut.begin();
             //pobService.update(pob);  // update or persist?
             performanceObligationService.persist(pob);
             contract.getPerformanceObligations().add(pob);
             contractService.update(contract);
-            ut.commit();
 
             count++;
             if ((count % 100) == 0) {
                 Logger.getLogger(AppInitializeService.class.getName()).log(Level.INFO, "Contract import count: " + count);
             }
         }
+
+        dataImport.setFilename(fileName + " - tbl_POb");
+        dataImport.setUploadDate(LocalDateTime.now());
+        dataImport.setCompany(adminService.findCompanyById("FLS"));
+        dataImport.setDataImportMessages(importMessages);
+        dataImport.setType("Contract and Pobs");
+        adminService.persist(dataImport);
+
+        ut.commit();
         resultSet.close();
         Logger.getLogger(BatchProcessingService.class.getName()).log(Level.INFO, "POB imoprt complete.");
     }
 
-    void processContracts(Connection connection, Statement statement) throws SQLException, Exception {
+    void processContracts(Connection connection, Statement statement, String fileName) throws SQLException, Exception {
         ResultSet resultSet = null;
 
-//        try {
         String ru = null;
         long contractId = 0;
         String contractName = null;
         String salesOrderNumber = null;
         String contractCurrencyCode = null;
-
+        DataImportFile dataImport = null;
+        List<String> importMessages = new ArrayList<String>();
+        dataImport = new DataImportFile();
         int count = 0;
         String line = null;
 
         resultSet = statement.executeQuery("SELECT ID, Name, `BPC Reporting Unit`, `Sales Order #`, `Contract Currency` FROM tbl_Contracts");
-
+        ut.begin();
         while (resultSet.next()) {
 
             contractId = resultSet.getInt(1);
@@ -482,6 +492,7 @@ public class BatchProcessingService {
             if (contractCurrencyCode != null && !contractCurrencyCode.isEmpty()) {
                 contract.setContractCurrency(Currency.getInstance(contractCurrencyCode));
             } else {
+                importMessages.add("Contract currency not found for contract: " + contractId + " code: " + contractCurrencyCode);
                 Logger.getLogger(BatchProcessingService.class.getName()).log(Level.SEVERE, "Contract currency not found for contract: " + contractId + " code: " + contractCurrencyCode);
                 continue;
             }
@@ -489,6 +500,7 @@ public class BatchProcessingService {
             ReportingUnit reportingUnit = adminService.findReportingUnitByCode(ru);
 
             if (reportingUnit == null) {
+                importMessages.add("Countract refers to a non-existent RU : " + resultSet.getString(3));
                 throw new IllegalStateException("Countract refers to a non-existent RU.  Invalid.");
             }
 
@@ -496,13 +508,12 @@ public class BatchProcessingService {
                 contract.setReportingUnit(reportingUnit);
             }
             //contract = contractService.update(contract);   // this gives us the JPA managed object.
-            ut.begin();
+
             contractService.persist(contract);   // persist or update?
             if (reportingUnit != null) {
                 reportingUnit.getContracts().add(contract);
                 adminService.update(reportingUnit);
             }
-            ut.commit();
 
             count++;
 
@@ -510,6 +521,13 @@ public class BatchProcessingService {
                 Logger.getLogger(AppInitializeService.class.getName()).log(Level.INFO, "Contract import count: " + count);
             }
         }
+        dataImport.setFilename(fileName + " - tbl_Contracts");
+        dataImport.setUploadDate(LocalDateTime.now());
+        dataImport.setCompany(adminService.findCompanyById("FLS"));
+        dataImport.setDataImportMessages(importMessages);
+        dataImport.setType("Contract and Pobs");
+        adminService.persist(dataImport);
+        ut.commit();
 
         resultSet.close();
         Logger.getLogger(BatchProcessingService.class.getName()).log(Level.INFO, "Contract import complete.");
