@@ -76,7 +76,7 @@ public class InputOnlineEntry implements Serializable {
         if (webSession.getFilterText() != null) {
             filterByContractText();
         }
-        if (webSession.getSelectedContracts() != null) {
+        if (webSession.getSelectedContracts() != null && webSession.getSelectedContracts().length > 0) {
             filterByContracts();
         }
     }

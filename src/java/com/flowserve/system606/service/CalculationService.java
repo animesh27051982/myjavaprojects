@@ -175,8 +175,6 @@ public class CalculationService {
                 return currencyMetric;
             }
         }
-        Logger.getLogger(CalculationService.class.getName()).log(Level.INFO, "MetricType: " + metricCode);
-        Logger.getLogger(CalculationService.class.getName()).log(Level.INFO, "Period: " + period.getId());
         Logger.getLogger(CalculationService.class.getName()).log(Level.FINER, "Metric not directly available at level. " + measurable.getClass() + " Returnig accumulated version: " + metricCode);
 
         return getAccumulatedCurrencyMetric(metricCode, measurable, period);

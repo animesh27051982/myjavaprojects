@@ -401,7 +401,9 @@ public class CurrencyService {
             // processing returned data and printing into console
             while (resultSet.next()) {
 
-                if (!resultSet.getString(1).equalsIgnoreCase("2018-5")) {
+                //if (!resultSet.getString(1).equalsIgnoreCase("2018-5")) {
+                // KJG - Re-anabling MAY
+                if (true) {
                     String periodDate = resultSet.getString(1);
                     String[] sp = periodDate.split("-");
                     try {
@@ -443,6 +445,11 @@ public class CurrencyService {
 
                                 sourceRate = resultSet1.getBigDecimal(3);
                                 type = resultSet1.getString(1);
+                                if ("USA".equals(resultSet1.getString(2))) {
+                                    Logger.getLogger(CurrencyService.class.getName()).log(Level.SEVERE, "Invlid: USA Found in ExchangeRate file.");
+                                    importMessages.add("Invlid: USA Found in ExchangeRate file.");
+                                    continue;
+                                }
                                 fromCurrency = Currency.getInstance(resultSet1.getString(2));
 
                                 targetRate = resultSet2.getBigDecimal(2);
@@ -452,6 +459,12 @@ public class CurrencyService {
                                 if (sourceRate == null && resultSet1.getString(2).equalsIgnoreCase("USD")) {
                                     sourceRate = usdRate;
                                     type = "(Dollar)";
+                                }
+
+                                if ("USA".equals(resultSet2.getString(1))) {
+                                    Logger.getLogger(CurrencyService.class.getName()).log(Level.SEVERE, "Invlid: USA Found in ExchangeRate file.");
+                                    importMessages.add("Invlid: USA Found in ExchangeRate file.");
+                                    continue;
                                 }
                                 toCurrency = Currency.getInstance(resultSet2.getString(1));
 
@@ -505,6 +518,8 @@ public class CurrencyService {
             }
         }
 
+        Logger.getLogger(CurrencyService.class.getName()).log(Level.INFO, "Flushing DB...");
+        adminService.flushAndClear();
         Logger.getLogger(CurrencyService.class.getName()).log(Level.INFO, "Exchange rate import complete.");
     }
 }

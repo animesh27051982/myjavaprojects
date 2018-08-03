@@ -48,24 +48,23 @@ public class PobCalculationReview implements Serializable {
     private AdminService adminService;
     @Inject
     private WebSession webSession;
-    //private String contractFilterText;
     private List<Contract> contracts;
     List<ReportingUnit> reportingUnits = null;
 
     @PostConstruct
     public void init() {
         try {
-            //contractFilterText = ;
             reportingUnits = new ArrayList<ReportingUnit>();
             reportingUnits.add(webSession.getCurrentReportingUnit());
             Logger.getLogger(PobCalculationReview.class.getName()).log(Level.INFO, "POB Calc review.  Current RU: " + webSession.getCurrentReportingUnit().getCode());
             rootTreeNode = viewSupport.generateNodeTree(reportingUnits);
             initContracts(reportingUnits);
 
+            Logger.getLogger(PobCalculationReview.class.getName()).log(Level.INFO, "webSession: " + webSession.getFilterText());
             if (webSession.getFilterText() != null) {
                 filterByContractText();
             }
-            if (webSession.getSelectedContracts() != null) {
+            if (webSession.getSelectedContracts() != null && webSession.getSelectedContracts().length > 0) {
                 filterByContracts();
             }
         } catch (Exception e) {
@@ -80,8 +79,10 @@ public class PobCalculationReview implements Serializable {
 
     public void filterByContractText() {
         if (isEmpty(webSession.getFilterText())) {
+            Logger.getLogger(PobCalculationReview.class.getName()).log(Level.INFO, "Not filtering");
             rootTreeNode = viewSupport.generateNodeTree(reportingUnits);
         } else {
+            Logger.getLogger(PobCalculationReview.class.getName()).log(Level.INFO, "filtering...");
             viewSupport.filterNodeTree(rootTreeNode, webSession.getFilterText());
         }
     }

@@ -236,9 +236,14 @@ public class ViewSupport implements Serializable {
                     String pobName = ((PerformanceObligation) pob.getData()).getName();
                     String pobId = ((PerformanceObligation) pob.getData()).getId().toString();
 
-                    if (!Pattern.compile(Pattern.quote(contractFilterText), Pattern.CASE_INSENSITIVE).matcher(pobName).find()
-                            && !Pattern.compile(Pattern.quote(contractFilterText), Pattern.CASE_INSENSITIVE).matcher(pobId).find()) {
+                    if (pobName == null) {
+                        Logger.getLogger(ViewSupport.class.getName()).log(Level.INFO, "Encountered null POB name POB ID: " + pobId);
                         pobsToRemove.add(pob);
+                    } else {
+                        if (!Pattern.compile(Pattern.quote(contractFilterText), Pattern.CASE_INSENSITIVE).matcher(pobName).find()
+                                && !Pattern.compile(Pattern.quote(contractFilterText), Pattern.CASE_INSENSITIVE).matcher(pobId).find()) {
+                            pobsToRemove.add(pob);
+                        }
                     }
                 }
             }
