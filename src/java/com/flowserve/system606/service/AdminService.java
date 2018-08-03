@@ -171,28 +171,26 @@ public class AdminService {
         return em.find(Company.class, id);
     }
 
-    public MetricType findMetricTypeByCode(String code)
-    {
-    Query query = em.createQuery("SELECT m FROM MetricType m WHERE UPPER(m.code)= :code");
-    query.setParameter("code", code.toUpperCase());
-     List<MetricType> list=query.getResultList();
-      if (list.size() > 0) {
+    public MetricType findMetricTypeByCode(String code) {
+        Query query = em.createQuery("SELECT m FROM MetricType m WHERE UPPER(m.code)= :code");
+        query.setParameter("code", code.toUpperCase());
+        List<MetricType> list = query.getResultList();
+        if (list.size() > 0) {
             return list.get(0);
         }
-      return null;
+        return null;
     }
-    
-    public SubledgerAccount findSubledgerAccountByCode(String code)
-    {
-    Query query = em.createQuery("SELECT s FROM SubledgerAccount s WHERE (s.code)=:code ");
-     query.setParameter("code", code);
-     List<SubledgerAccount> list=query.getResultList();
-     if (list.size() > 0) {
+
+    public SubledgerAccount findSubledgerAccountByCode(String code) {
+        Query query = em.createQuery("SELECT s FROM SubledgerAccount s WHERE (s.code)=:code ");
+        query.setParameter("code", code);
+        List<SubledgerAccount> list = query.getResultList();
+        if (list.size() > 0) {
             return list.get(0);
         }
-     return null;
+        return null;
     }
-    
+
     public List<BillingEvent> findBillingEvents() {
         Query query = em.createQuery("SELECT b FROM BillingEvent b");
         return (List<BillingEvent>) query.getResultList();
@@ -566,7 +564,7 @@ public class AdminService {
 //    {
 //        MetricType mt = findMetricTypeByCode("BOOKING_DATE");
 //        MetricType mt2 = findMetricTypeByCode("ESTIMATED_COST_AT_COMPLETION_LC");
-//        
+//
 //        Company com = findCompanyById("FLS");
 //        if (findSubledgerAccountByName("DummyDR") == null) {
 //            SubledgerAccount subledger = new SubledgerAccount();
@@ -580,7 +578,7 @@ public class AdminService {
 //            subledger.setDebitAccount(mt);
 //            persist(subledger);
 //        }
-//     
+//
 //     if (findSubledgerAccountByName("DummyCR") == null){
 //    SubledgerAccount ledger=new SubledgerAccount();
 //    Logger.getLogger(AdminService.class.getName()).log(Level.INFO, "Initializing Subledger Accounts");
@@ -596,22 +594,20 @@ public class AdminService {
 //     initMetricTypeAccounts();
 //     initSubledgerAccountFromTxt();
 //    }
-    
-    public void initSubledgerAccount() throws Exception
-    {
-    logger.info("Initializing SubLedgerAccounts By Reading Text FIle");
+    public void initSubledgerAccount() throws Exception {
+        logger.info("Initializing SubLedgerAccounts By Reading Text FIle");
         BufferedReader reader = new BufferedReader(new InputStreamReader(AppInitializeService.class.getResourceAsStream("/resources/app_data_init_files/init_sl_accounts.txt"), "UTF-8"));
-        
+
         int count = 0;
         String line = null;
         while ((line = reader.readLine()) != null) {
             if (line.trim().length() == 0) {
                 continue;
             }
-            
-                count = 0;
+
+            count = 0;
             String[] values = line.split("\\|");
-            SubledgerAccount ledger=new SubledgerAccount();
+            SubledgerAccount ledger = new SubledgerAccount();
             ledger.setAccountType(values[count++]);
             ledger.setCode(values[count++]);
             ledger.setDescription(values[count++]);
@@ -621,7 +617,7 @@ public class AdminService {
             persist(ledger);
         }
     }
-    
+
 //    public void initMetricTypeAccounts() throws Exception
 //    {
 //        MetricType mt2 = findMetricTypeByCode("ESTIMATED_COST_AT_COMPLETION_LC");
@@ -743,8 +739,8 @@ public class AdminService {
         if (searchString == null || searchString.trim().length() < 2) {
             throw new Exception("Please supply a search string with at least 2 characters.");
         }
-        TypedQuery<ExchangeRate> query = em.createQuery("SELECT er FROM ExchangeRate er WHERE UPPER(er.fromCurrency) LIKE :Currency OR UPPER(er.toCurrency) LIKE :Currency", ExchangeRate.class);
-        query.setParameter("Currency", "%" + searchString.toUpperCase() + "%");
+        TypedQuery<ExchangeRate> query = em.createQuery("SELECT er FROM ExchangeRate er WHERE er.financialPeriod = :PERIOD", ExchangeRate.class);
+        query.setParameter("PERIOD", financialPeriodService.findById(searchString.toUpperCase()));
         return (List<ExchangeRate>) query.getResultList();
     }
 

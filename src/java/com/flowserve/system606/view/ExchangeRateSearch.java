@@ -30,7 +30,7 @@ public class ExchangeRateSearch implements Serializable {
     private String searchString = "";
 
     public void search() throws Exception {
-        exchangeRates = adminService.searchExchangeRates(searchString);
+        exchangeRates = adminService.searchExchangeRates(searchString.replaceAll("\\s+", ""));
         Collections.sort(exchangeRates);
         //System.out.println("search()" + exchangeRates.get(0).getFinancialPeriod().getStartDate());
     }
