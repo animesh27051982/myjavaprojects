@@ -60,7 +60,7 @@
                                 converter="reportingUnitConverter"
                                 style="width: 300px;"
                                 >
-                                <p:ajax event="itemSelect" listener="#{inputOnlineEntry.init}" update=":form" />
+                                <p:ajax event="itemSelect" listener="#{inputOnlineEntry.onReportingUnitSelect}" update=":form" />
                             </p:autoComplete>
                             <h:outputLabel style="vertical-align: sub; white-space: nowrap;" value="Switch Period: "/>
                             <p:selectOneMenu style="margin-top: 0px;" id="period" value="#{webSession.currentPeriod}" converter="periodConverter">
@@ -82,13 +82,12 @@
                             <p:inputText id="globalFilterText" value="#{webSession.filterText}" style="width:150px; margin-left: 10px;">
                             </p:inputText>
                             <p:commandButton id="globalFilter" style="font-size: 80%; margin-left: 5px;" value="Search" actionListener="#{inputOnlineEntry.filterByContractText()}" update=":form:topLevelTabView"/>
-                            <p:commandButton id="globalFilterClear" style="font-size: 80%; margin-left: 5px;" value="Reset" actionListener="#{inputOnlineEntry.clearFilterByContractText()}" update=":form:topLevelTabView, :form:globalFilterText"/>
-                            <h:outputText value="Filter list by contract:" style="margin-left: 30px;"/>
+                            <h:outputText value="Filter list by contract:" style="margin-left: 15px;"/>
                             <p:selectCheckboxMenu id="contracts" showHeader="false" label="Contracts" value="#{webSession.selectedContracts}" converter="contractConverter" style="width:150px; margin-left: 5px;">
                                 <p:ajax event="change" update=":form:topLevelTabView" process="@this" listener="#{inputOnlineEntry.filterByContracts()}"/>
                                 <f:selectItems var="contract" value="#{inputOnlineEntry.contracts}" itemLabel="#{contract.name}"/>
                             </p:selectCheckboxMenu>
-                            <p:commandButton id="globalFilterClear2" style="font-size: 80%; margin-left: 5px;" value="Clear Filter" actionListener="#{inputOnlineEntry.clearFilterByContractText()}" update=":form:topLevelTabView, :form:globalFilterText"/>
+                            <p:commandButton id="globalFilterClear2" style="font-size: 80%; margin-left: 20px;" value="Clear All Filters" actionListener="#{inputOnlineEntry.clearFilterByContractText()}" update=":form:topLevelTabView, :form:globalFilterText, :form:contracts"/>
                             <h:outputText value="Which filter to keep?" style="margin-left: 35px;"/>
                         </p:outputPanel>
 

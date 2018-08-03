@@ -70,7 +70,6 @@ public class InitialContractUpload implements Serializable {
 
     public List<DataImportFile> getDataImportFiles() throws Exception {
         List<DataImportFile> dataImportFiles = adminService.findDataImportFileByType("Contract and Pobs");
-        Logger.getLogger(inputExchangeRate.class.getName()).log(Level.INFO, "message" + dataImportFiles);
         //Collections.sort(dataImportFile);
         return dataImportFiles;
     }

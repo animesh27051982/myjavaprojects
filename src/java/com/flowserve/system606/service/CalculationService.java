@@ -175,7 +175,10 @@ public class CalculationService {
                 return currencyMetric;
             }
         }
+        Logger.getLogger(CalculationService.class.getName()).log(Level.INFO, "MetricType: " + metricCode);
+        Logger.getLogger(CalculationService.class.getName()).log(Level.INFO, "Period: " + period.getId());
         Logger.getLogger(CalculationService.class.getName()).log(Level.FINER, "Metric not directly available at level. " + measurable.getClass() + " Returnig accumulated version: " + metricCode);
+
         return getAccumulatedCurrencyMetric(metricCode, measurable, period);
     }
 
@@ -234,7 +237,7 @@ public class CalculationService {
 
     @TransactionAttribute(NOT_SUPPORTED)
     public void executeBusinessRules(Measurable measurable, FinancialPeriod period) throws Exception {
-        Logger.getLogger(CalculationService.class.getName()).log(Level.INFO, "Firing all business rules: " + period.getId() + " ts: " + measurable.toString());
+        Logger.getLogger(CalculationService.class.getName()).log(Level.FINER, "Firing all business rules: " + period.getId() + " ts: " + measurable.toString());
 
         if (kSession == null) {
             initBusinessRulesEngine();

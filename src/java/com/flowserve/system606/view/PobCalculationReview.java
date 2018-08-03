@@ -26,6 +26,7 @@ import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import org.primefaces.event.CellEditEvent;
+import org.primefaces.event.SelectEvent;
 import org.primefaces.model.TreeNode;
 
 /**
@@ -91,6 +92,12 @@ public class PobCalculationReview implements Serializable {
         }
 
         return false;
+    }
+
+    public void onReportingUnitSelect(SelectEvent event) {
+        webSession.setFilterText(null);
+        webSession.setCurrentReportingUnit((ReportingUnit) event.getObject());
+        init();
     }
 
     public void clearFilterByContractText() {

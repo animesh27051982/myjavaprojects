@@ -212,6 +212,7 @@ public class ViewSupport implements Serializable {
     }
 
     public void filterNodeTree(TreeNode root, String contractFilterText) {
+
         //List<TreeNode> contractsToRemove = new ArrayList<TreeNode>();
         List<TreeNode> pobsToRemove = new ArrayList<TreeNode>();
 

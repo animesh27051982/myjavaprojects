@@ -93,6 +93,7 @@ public class Dashboard implements Serializable {
     }
 
     public void onReportingUnitSelect(SelectEvent event) {
+        webSession.setFilterText(null);
         webSession.setCurrentReportingUnit((ReportingUnit) event.getObject());
         init();
     }

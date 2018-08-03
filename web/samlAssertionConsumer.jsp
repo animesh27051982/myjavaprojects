@@ -44,6 +44,12 @@
                     out.println("<div class=\"alert alert-danger\" role=\"alert\">Not authenticated</div>");
                 }
 
+                if (!auth.isAuthenticated()) {
+                    out.println("<div class=\"alert alert-danger\" role=\"alert\">" + auth.getLastResponseXML() + "</div>");
+                    out.println("<div class=\"alert alert-danger\" role=\"alert\">" + auth.getNameId() + "</div>");
+
+                }
+
                 List<String> errors = auth.getErrors();
 
                 if (!errors.isEmpty()) {
@@ -54,6 +60,9 @@
                             out.println("<p>" + auth.getLastErrorReason() + "</p>");
                         }
                     }
+
+                    out.println("<p>" + auth.getLastMessageId() + "</p>");
+
                     out.println("<a href=\"dologin.jsp\" class=\"btn btn-primary\">Login</a>");
                 } else {
                     Map<String, List<String>> attributes = auth.getAttributes();
