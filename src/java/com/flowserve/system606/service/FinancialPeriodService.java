@@ -76,8 +76,8 @@ public class FinancialPeriodService {
                 String exPeriod = shortMonth[j - 1] + "-" + shortYear;
                 if (findById(exPeriod) == null) {
                     LocalDate date = LocalDate.of(totalYear[i], Month.of(j), 1);
-                    if (date.getYear() == 2018 && date.getMonthValue() > 5) {
-                        continue;  // KJG Tempoararily only create up to MAY-18
+                    if (date.getYear() == 2018 && date.getMonthValue() > 6) {
+                        continue;  // KJG Tempoararily only create up to JUN-18  // KJG Changed for loading exchange rates for June.
                     }
                     LocalDate lastOfMonth = date.with(TemporalAdjusters.lastDayOfMonth());
                     FinancialPeriod fPeriod = new FinancialPeriod(exPeriod, exPeriod, LocalDate.of(totalYear[i], Month.of(j), 1), lastOfMonth, totalYear[i], j, PeriodStatus.OPENED);
@@ -420,9 +420,7 @@ public class FinancialPeriodService {
         em.merge(financialPeriod);
     }
 
-    
-    public List<FinancialPeriod> getQTDFinancialPeriods(FinancialPeriod period)
-    {
+    public List<FinancialPeriod> getQTDFinancialPeriods(FinancialPeriod period) {
         FinancialPeriod temp, temp2, temp3;
         LocalDate date = LocalDate.of(period.getPeriodYear(), period.getPeriodMonth(), 1);
         List<FinancialPeriod> finacialPeriod = new ArrayList<FinancialPeriod>();
@@ -447,24 +445,21 @@ public class FinancialPeriodService {
             Collections.addAll(finacialPeriod, temp3, temp2, temp);
             return finacialPeriod;
         }
-        
-        
+
         return finacialPeriod;
     }
-    
-    public List<FinancialPeriod> getYTDFinancialPeriods(FinancialPeriod period)
-    {
+
+    public List<FinancialPeriod> getYTDFinancialPeriods(FinancialPeriod period) {
         FinancialPeriod temp;
         LocalDate date = LocalDate.of(period.getPeriodYear(), period.getPeriodMonth(), 1);
         List<FinancialPeriod> finacialPeriod = new ArrayList<FinancialPeriod>();
-        for(int i=1;i<=period.getPeriodMonth();i++)
-        {
+        for (int i = 1; i <= period.getPeriodMonth(); i++) {
             LocalDate tempdate = LocalDate.of(period.getPeriodYear(), i, 1);
             temp = findPeriodByLocalDate(tempdate);
             finacialPeriod.add(temp);
 
             if (i == period.getPeriodMonth()) {
-               return finacialPeriod;
+                return finacialPeriod;
             }
         }
         return finacialPeriod;

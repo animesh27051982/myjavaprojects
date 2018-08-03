@@ -25,8 +25,6 @@
             body .ui-treetable .ui-treetable-data tr td {
                 padding: 4px 4px;
             }
-
-
         </style>
 
     </ui:define>
@@ -49,6 +47,8 @@
                                 id="ru"
                                 var="ru"
                                 maxResults="10"
+                                minQueryLength="2"
+                                placeholder="2 char minimum"
                                 required="#{false}"
                                 forceSelection="#{true}"
                                 value="#{webSession.currentReportingUnit}"
@@ -58,7 +58,7 @@
                                 converter="reportingUnitConverter"
                                 style="width: 300px;"
                                 >
-                                <p:ajax event="itemSelect" listener="#{inputOnlineEntry.init}" update=":form" />
+                                <p:ajax event="itemSelect" listener="#{inputOnlineEntry.onReportingUnitSelect}" update=":form" />
                             </p:autoComplete>
                             <h:outputLabel style="vertical-align: sub; white-space: nowrap;" value="Switch Period: "/>
                             <p:selectOneMenu style="margin-top: 0px;" id="period" value="#{webSession.currentPeriod}" converter="periodConverter">
@@ -77,16 +77,15 @@
                         <h4 style="margin: 1px;"><strong>#{webSession.currentPeriod.id} Performance Obligation Inputs</strong></h4>
                         <p:outputPanel style="margin-top: 20px;">
                             <h:outputText value="Search within list:" />
-                            <p:inputText id="globalFilterText" value="#{inputOnlineEntry.contractFilterText}" style="width:150px; margin-left: 10px;">
+                            <p:inputText id="globalFilterText" value="#{webSession.filterText}" style="width:150px; margin-left: 10px;">
                             </p:inputText>
                             <p:commandButton id="globalFilter" style="font-size: 80%; margin-left: 5px;" value="Search" actionListener="#{inputOnlineEntry.filterByContractText()}" update=":form:topLevelTabView"/>
-                            <p:commandButton id="globalFilterClear" style="font-size: 80%; margin-left: 5px;" value="Reset" actionListener="#{inputOnlineEntry.clearFilterByContractText()}" update=":form:topLevelTabView, :form:globalFilterText"/>
-                            <h:outputText value="Filter list by contract:" style="margin-left: 30px;"/>
-                            <p:selectCheckboxMenu id="contracts" showHeader="false" label="Contracts" value="#{inputOnlineEntry.selectedContracts}" converter="contractConverter" style="width:150px; margin-left: 5px;">
+                            <h:outputText value="Filter list by contract:" style="margin-left: 15px;"/>
+                            <p:selectCheckboxMenu id="contracts" showHeader="false" label="Contracts" value="#{webSession.selectedContracts}" converter="contractConverter" style="width:150px; margin-left: 5px;">
                                 <p:ajax event="change" update=":form:topLevelTabView" process="@this" listener="#{inputOnlineEntry.filterByContracts()}"/>
                                 <f:selectItems var="contract" value="#{inputOnlineEntry.contracts}" itemLabel="#{contract.name}"/>
                             </p:selectCheckboxMenu>
-                            <p:commandButton id="globalFilterClear2" style="font-size: 80%; margin-left: 5px;" value="Clear Filter" actionListener="#{inputOnlineEntry.clearFilterByContractText()}" update=":form:topLevelTabView, :form:globalFilterText"/>
+                            <p:commandButton id="globalFilterClear2" style="font-size: 80%; margin-left: 20px;" value="Clear All Filters" actionListener="#{inputOnlineEntry.clearFilterByContractText()}" update=":form:topLevelTabView, :form:globalFilterText, :form:contracts"/>
                             <h:outputText value="Which filter to keep?" style="margin-left: 35px;"/>
                         </p:outputPanel>
 
@@ -107,7 +106,11 @@
                                     </p:column>
 
                                     <p:column style="width: 50px; white-space:pre-line;" headerText="Rev Rec Method">
-                                        <h:outputText value="#{pob.revRecMethod}" rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}"/>
+                                        <h:outputText value="#{pob.revenueMethod.shortName}" rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}"/>
+                                    </p:column>
+
+                                    <p:column style="width: 50px; white-space:pre-line;" headerText="CC Code">
+                                        <h:outputText value="#{pob.contractCurrency.currencyCode}" rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}"/>
                                     </p:column>
 
                                     <p:column style="white-space:pre-line;">
@@ -117,16 +120,17 @@
                                         <p:cellEditor rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}">
                                             <f:facet name="output">
                                                 <p:inputText value="#{viewSupport.getCurrencyMetric('TRANSACTION_PRICE_CC', pob).ccValue}" styleClass="#{empty viewSupport.getCurrencyMetric('TRANSACTION_PRICE_CC', pob).ccValue ? 'ui-state-error' : ''}" readonly="true">
-                                                    <f:validateDoubleRange/>
-                                                    <o:converter converterId="javax.faces.Number" currencySymbol="#{pob.contractCurrency.symbol}" type="currency" />
+                                                    <o:converter converterId="javax.faces.Number" type="currency" />
                                                 </p:inputText>
                                             </f:facet>
                                             <f:facet name="input">
                                                 <p:inputText value="#{viewSupport.getCurrencyMetric('TRANSACTION_PRICE_CC', pob).ccValue}">
+                                                    <f:validateDoubleRange/>
                                                     <p:ajax event="change" update="estGrossProfit, estGrossMargin, :form:messages" process="@this" listener="#{inputOnlineEntry.calculateOutputs(pob)}"/>
                                                 </p:inputText>
                                             </f:facet>
                                         </p:cellEditor>
+
                                     </p:column>
 
                                     <p:column style="white-space:pre-line;">
@@ -148,7 +152,7 @@
                                         </p:cellEditor>
                                     </p:column>
 
-                                    <p:column style="white-space:pre-line;" headerText="Period Fx Rate">
+                                    <p:column style="white-space:pre-line;" headerText="Fx Rate">
                                         <h:outputText value="#{viewSupport.getExchangeRate(pob.contract)}" rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}">
                                         </h:outputText>
                                     </p:column>
@@ -171,6 +175,7 @@
                                             </f:facet>
                                         </p:cellEditor>
                                     </p:column>
+
                                     <p:column style="white-space:pre-line;">
                                         <f:facet name="header">
                                             <h:outputText value="#{viewSupport.getMetricTypeDescription('ESTIMATED_GROSS_PROFIT_LC')}" />
@@ -394,9 +399,6 @@
                         </p:tabView>
 
                         <p:toolbar>
-                            <f:facet name="left">
-
-                            </f:facet>
                             <f:facet name="right">
                                 <p:commandButton value="Return to Dashboard" icon="ui-icon-arrowthick-1-w" ajax="false" action="#{inputController.inputDashboard()}"/>
                                 <p:commandButton value="Cancel Current Edits" icon="ui-icon-cancel" ajax="false" action="#{inputOnlineEntry.cancelEdits()}"/>
