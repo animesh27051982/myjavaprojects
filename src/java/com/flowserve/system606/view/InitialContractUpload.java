@@ -47,7 +47,7 @@ public class InitialContractUpload implements Serializable {
         try {
             File accessFile = stream2file((InputStream) event.getFile().getInputstream());
             String fileName = accessFile.getAbsolutePath();
-            batchProcessingService.processUploadedContractPobData(fileName);
+            batchProcessingService.processUploadedContractPobData(fileName, event.getFile().getFileName());
 
             FacesMessage msg = new FacesMessage("Succesful", event.getFile().getFileName() + " is uploaded.");
 
