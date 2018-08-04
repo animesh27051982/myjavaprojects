@@ -1,30 +1,30 @@
 INPUT|REVENUE_RECOGNITION_METHOD|POB||StringMetric||Revenue Recognition Method|Revenue Recognition Method|POC POB Metrics|H|Group1|1
-INPUT|TRANSACTION_PRICE_CC|POB|REQUIRED|CurrencyMetric|CC|Allocated Transaction Price (CC)|Allocated Transaction Price (CC)|POC POB Metrics|O|Group1|2
-INPUT|LIQUIDATED_DAMAGES_ITD_CC|POB|REQUIRED|CurrencyMetric|CC|Total Liquidated Damages (CC)|Total LD Penalty Included in Transaction Price (CC)|POC POB Metrics|P|Group1|2
-INPUT|ESTIMATED_COST_AT_COMPLETION_LC|POB|REQUIRED|CurrencyMetric|LC|Estimated Cost at Completion (LC)|Estimated Cost at Completion (LC)|POC POB Metrics|Q|Group1|3|DummyCR|DummyDR
-INPUT|LOCAL_COSTS_ITD_LC|POB||CurrencyMetric|LC|Cumulative Cost Incurred (LC)|Cumulative Cost Incurred (LC)|POC POB Metrics|S|Group1|4
-INPUT|THIRD_PARTY_COSTS_ITD_LC|POB||CurrencyMetric|LC|Cumulative 3rd Party Progress (Not Received) (LC)|Cumulative 3rd Party Progress (Not Received) (LC)|POC POB Metrics|U|Group1|6
-INPUT|INTERCOMPANY_COSTS_ITD_LC|POB||CurrencyMetric|LC|Cumulative Interco Progress (Not Received) (LC)|Cumulative Interco Progress (Not Received) (LC)|POC POB Metrics|T|Group1|5
+INPUT|TRANSACTION_PRICE_CC|POB|REQUIRED|CurrencyMetric|CC|Allocated Transaction Price|Allocated Transaction Price|POC POB Metrics|O|Group1|2
+INPUT|LIQUIDATED_DAMAGES_ITD_CC|POB|REQUIRED|CurrencyMetric|CC|Total Liquidated Damages|Estimated Total Liquidated Damages Penalties|POC POB Metrics|P|Group1|2
+INPUT|ESTIMATED_COST_AT_COMPLETION_LC|POB|REQUIRED|CurrencyMetric|LC|Estimated Cost at Completion|Estimated Cost at Completion|POC POB Metrics|Q|Group1|3|DummyCR|DummyDR
+INPUT|LOCAL_COSTS_ITD_LC|POB||CurrencyMetric|LC|Cumulative Cost Incurred|Cumulative Cost Incurred|POC POB Metrics|S|Group1|4
+INPUT|THIRD_PARTY_COSTS_ITD_LC|POB||CurrencyMetric|LC|Cumulative 3rd Party Progress (Not Received)|Cumulative 3rd Party Progress (Not Received)|POC POB Metrics|U|Group1|6
+INPUT|INTERCOMPANY_COSTS_ITD_LC|POB||CurrencyMetric|LC|Cumulative Interco Progress (Not Received)|Cumulative Interco Progress (Not Received)|POC POB Metrics|T|Group1|5
 INPUT|DELIVERY_DATE|POB||DateMetric||Actual Shipment / Delivery Date (if complete)|Actual Shipment / Delivery Date (if complete)|POC POB Metrics|W|Group1|7
-INPUT|CUMULATIVE_COST_OF_GOODS_SOLD_LC|POB||CurrencyMetric|LC|If partial POB shipped: Enter Cumulative COGS (LC)|If partial POB shipped: Enter Cumulative COGS (LC)|POC POB Metrics|X|Group1|8
-INPUT|TOTAL_TRANS_PRICE_CC|Contract||CurrencyMetric|CC|Total Trans Price (CC)|Total Trans Price (CC)|POC POB Metrics|J|Group1|18
+INPUT|CUMULATIVE_COST_OF_GOODS_SOLD_LC|POB||CurrencyMetric|LC|If partial POB shipped: Enter Cumulative COGS|If partial POB shipped: Enter Cumulative COGS|POC POB Metrics|X|Group1|8
+INPUT|TOTAL_TRANS_PRICE_CC|Contract||CurrencyMetric|CC|Total Trans Price|Total Trans Price|POC POB Metrics|J|Group1|18
 INPUT|BOOKING_DATE|Contract||DateMetric||Booking Date (LoA)|Booking Date (LoA)|POC POB Metrics|L|Group1|19
-INPUT|THIRD_PARTY_COMISSION_ITD_LC|Contract||CurrencyMetric|LC|Third Party Comission (LC)|Third Party Comission (LC)|POC Contract Metrics|AE|Group1|10
-OUTPUT|ESTIMATED_GROSS_PROFIT_LC|POB||CurrencyMetric|LC|Estimated Gross Profit (LC)|Estimated Gross Profit (LC)|POC POB Outputs|H|Group1|1
-OUTPUT|CONTRACT_GROSS_PROFIT_LC|Contract||CurrencyMetric|LC|Gross Profit (LC)|Gross Profit (LC)|POC POB Outputs|H|Group1|1
+INPUT|THIRD_PARTY_COMISSION_ITD_LC|Contract||CurrencyMetric|LC|Third Party Comission|Third Party Comission|POC Contract Metrics|AE|Group1|10
+OUTPUT|ESTIMATED_GROSS_PROFIT_LC|POB||CurrencyMetric|LC|Estimated Gross Profit|Estimated Gross Profit|POC POB Outputs|H|Group1|1
+OUTPUT|CONTRACT_GROSS_PROFIT_LC|Contract||CurrencyMetric|LC|Gross Profit|Gross Profit|POC POB Outputs|H|Group1|1
 OUTPUT|ESTIMATED_GROSS_MARGIN|ALL||DecimalMetric||Estimated Gross Margin|Estimated Gross Margin|POC POB Outputs|H|Group1|1
 OUTPUT|PERCENT_COMPLETE|ALL||DecimalMetric|LC|Percent Complete|Percent Complete|POC POB Outputs|H|Group1|1
 OUTPUT|CONTRACT_COST_TO_COMPLETE_LC|Contract||CurrencyMetric|LC|Cost to Complete|Cost to Complete|POC POB Outputs|H|Group1|1
 OUTPUT|CONTRACT_BILLINGS_IN_EXCESS_LC|Contract||CurrencyMetric|LC|Billings in Excess|Billings in Excess|POC POB Outputs|H|Group1|1
 OUTPUT|CONTRACT_REVENUE_IN_EXCESS_LC|Contract||CurrencyMetric|LC|Revenue in Excess|Revenue in Excess|POC POB Outputs|H|Group1|1
 OUTPUT|CONTRACT_PERCENT_COMPLETE|Contract||DecimalMetric|LC|Percent Complete|Percent Complete|POC POB Outputs|H|Group1|1
-OUTPUT|COST_OF_GOODS_SOLD_ITD_LC|POB||CurrencyMetric|LC|Cumulative Total ITD Costs|Cumulative Total ITD Costs|POC POB Outputs|O|Group1|2
-OUTPUT|COST_GOODS_SOLD_BACKLOG_LC|POB||CurrencyMetric|LC|Cost of Goods Sold Backlog|Cost of Goods Sold Backlog|POC POB Outputs|O|Group1|2
-OUTPUT|CHANGE_IN_EAC_LC|POB||CurrencyMetric|LC|Change in EAC (LC)|Change in EAC (LC)|POC POB Outputs|O|Group1|2
-OUTPUT|REVENUE_TO_RECOGNIZE_ITD_CC|POB||CurrencyMetric|CC|Total/Cumulative Revenue to Recognize|Total/Cumulative Revenue to Recognize|POC POB Outputs|O|Group1|2
-OUTPUT|CONTRACT_REVENUE_TO_RECOGNIZE_ITD_LC|Contract||CurrencyMetric|LC|Total/Cumulative Revenue to Recognize|Total/Cumulative Revenue to Recognize|POC POB Outputs|O|Group1|2
+OUTPUT|COST_OF_GOODS_SOLD_ITD_LC|POB||CurrencyMetric|LC|Standard Costs-ITD|Standard Costs-ITD|POC POB Outputs|O|Group1|2
+OUTPUT|COST_GOODS_SOLD_BACKLOG_LC|POB||CurrencyMetric|LC|Standard Costs in Backlog|Standard Costs in Backlog|POC POB Outputs|O|Group1|2
+OUTPUT|CHANGE_IN_EAC_LC|POB||CurrencyMetric|LC|Change in EAC|Change in EAC|POC POB Outputs|O|Group1|2
+OUTPUT|REVENUE_TO_RECOGNIZE_ITD_CC|POB||CurrencyMetric|CC|ITD Revenue to Recognize|ITD Revenue to Recognize|POC POB Outputs|O|Group1|2
+OUTPUT|CONTRACT_REVENUE_TO_RECOGNIZE_ITD_LC|Contract||CurrencyMetric|LC|ITD Revenue to Recognize|ITD Revenue to Recognize|POC POB Outputs|O|Group1|2
 OUTPUT|REVENUE_TO_RECOGNIZE_PERIOD_CC|POB||CurrencyMetric|CC|Period Revenue To Recognize|Period Revenue To Recognize|POC POB Outputs|O|Group1|2
-OUTPUT|LIQUIDATED_DAMAGES_TO_RECOGNIZE_ITD_LC|POB||CurrencyMetric|LC|Total Liquidated Damages To Regocnize|Total Liquidated Damages To Regocnize|POC POB Outputs|O|Group1|2
+OUTPUT|LIQUIDATED_DAMAGES_TO_RECOGNIZE_ITD_LC|POB||CurrencyMetric|LC|Liquidated Damages Penalties To Recognize|Liquidated Damages Penalties To Recognize|POC POB Outputs|O|Group1|2
 OUTPUT|LIQUIDATED_DAMAGES_TO_RECOGNIZE_PERIOD_LC|POB||CurrencyMetric|LC|Liquidated Damages To Recognize In Current Period|Liquidated Damages To Recognize In Current Period|POC POB Outputs|O|Group1|2
 OUTPUT|LIQUIDATED_DAMAGES_BACKLOG_LC|POB||CurrencyMetric|LC|Liquidated Damages in Backlog|Liquidated Damages in Backlog|POC POB Outputs|O|Group1|2
 OUTPUT|NET_PERIOD_SALES_LC|POB||CurrencyMetric|LC|Net Period Sales|Net Period Sales|POC POB Outputs|O|Group1|2
