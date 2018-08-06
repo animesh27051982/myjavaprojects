@@ -204,7 +204,7 @@ public class BatchProcessingService {
                                 continue;
                             }
                             if (true) {
-                                Logger.getLogger(BatchProcessingService.class.getName()).log(Level.INFO, "Populating POB metrics: " + pob.getId());
+                                Logger.getLogger(BatchProcessingService.class.getName()).log(Level.FINER, "Populating POB metrics: " + pob.getId());
                                 calculationService.getCurrencyMetric("TRANSACTION_PRICE_CC", pob, period).setValue(tp);
                                 calculationService.getCurrencyMetric("ESTIMATED_COST_AT_COMPLETION_LC", pob, period).setValue(eac);
                                 calculationService.getCurrencyMetric("LOCAL_COSTS_ITD_LC", pob, period).setValue(costs);

@@ -9,16 +9,18 @@ import com.flowserve.system606.model.FinancialPeriod;
 import com.flowserve.system606.model.Holiday;
 import com.flowserve.system606.model.ReportingUnit;
 import com.flowserve.system606.model.User;
+import com.flowserve.system606.service.AdminService;
 import com.flowserve.system606.service.FinancialPeriodService;
+import com.flowserve.system606.service.ReportingUnitService;
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.SessionScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
-import org.primefaces.model.DefaultTreeNode;
-import org.primefaces.model.TreeNode;
 
 /**
  * @author kgraves
@@ -29,9 +31,12 @@ public class WebSession implements Serializable {
 
     @Inject
     private FinancialPeriodService financialPeriodService;
-
+    @Inject
+    private ReportingUnitService reportingUnitService;
+    @Inject
+    private AdminService adminService;
     private BusinessUnit editBusinessUnit;
-    private TreeNode reportingUnitTreeNode = new DefaultTreeNode();  // this is temp for calculatin testing.
+    //private TreeNode reportingUnitTreeNode = new DefaultTreeNode();  // this is temp for calculatin testing.
     private ReportingUnit editReportingUnit;
     private User editUser;
     private Country country;
@@ -41,10 +46,14 @@ public class WebSession implements Serializable {
     private FinancialPeriod editFinancialPeriod;
     private FinancialPeriod currentPeriod;
     private FinancialPeriod priorPeriod;
-    private ReportingUnit currentReportingUnit;
+    private Long currentReportingUnitId;
     private DataImportFile dataImportFile;
     private String filterText;
     private Contract[] selectedContracts;
+    private ReportingUnit adminReportingUnit;
+
+    // The currently logged in user.
+    private User user;
 
     @PostConstruct
     public void init() {
@@ -52,6 +61,14 @@ public class WebSession implements Serializable {
         priorPeriod = financialPeriodService.getPriorFinancialPeriod();
         Logger.getLogger(WebSession.class.getName()).log(Level.INFO, "WebSession current: " + currentPeriod.getId());
         Logger.getLogger(WebSession.class.getName()).log(Level.INFO, "WebSession prior: " + priorPeriod.getId());
+    }
+
+    public boolean isAdmin() {
+        if (user == null) {
+            return true;
+        }
+
+        return false;
     }
 
     public void switchPeriod(FinancialPeriod newCurrentPeriod) {
@@ -91,10 +108,9 @@ public class WebSession implements Serializable {
         this.country = country;
     }
 
-    public TreeNode getReportingUnitTreeNode() {
-        return reportingUnitTreeNode;
-    }
-
+//    public TreeNode getReportingUnitTreeNode() {
+//        return reportingUnitTreeNode;
+//    }
     public void setEditFinancialPeriod(FinancialPeriod editFinancialPeriod) {
         this.editFinancialPeriod = editFinancialPeriod;
     }
@@ -143,12 +159,12 @@ public class WebSession implements Serializable {
         this.priorPeriod = priorPeriod;
     }
 
-    public ReportingUnit getCurrentReportingUnit() {
-        return currentReportingUnit;
+    public void setCurrentReportingUnitId(Long reportingUnitId) {
+        this.currentReportingUnitId = reportingUnitId;
     }
 
-    public void setCurrentReportingUnit(ReportingUnit currentReportingUnit) {
-        this.currentReportingUnit = currentReportingUnit;
+    public Long getCurrentReportingUnitId() {
+        return currentReportingUnitId;
     }
 
     public DataImportFile getDataImportFile() {
@@ -173,6 +189,65 @@ public class WebSession implements Serializable {
 
     public void setSelectedContracts(Contract[] selectedContracts) {
         this.selectedContracts = selectedContracts;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public String getUsername() {
+        if (user == null) {
+            return "Default Admin";
+        }
+
+        return user.getName();
+    }
+
+    public String getUserTitle() {
+        if (user == null || user.getTitle() == null) {
+            return "";
+        }
+
+        String title = user.getTitle();
+        title = title.replaceAll("_", " ");
+        title = title.substring(9);
+        if (title.contains("Level")) {
+            title = title.substring(0, title.indexOf("Level"));
+        }
+        return title;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    public List<ReportingUnit> getPreparableReportingUnits() {
+        List<ReportingUnit> rus = new ArrayList<ReportingUnit>();
+
+        if (user == null) {
+            if (currentReportingUnitId != null) {
+                rus.add(adminService.findReportingUnitById(currentReportingUnitId));
+            }
+            return rus;
+        }
+
+        for (ReportingUnit ru : reportingUnitService.getPreparableReportingUnits(user)) {
+            if (ru.isParent()) {
+                rus.addAll(ru.getChildReportingUnits());
+            } else {
+                rus.add(ru);
+            }
+        }
+
+        return rus;
+    }
+
+    public ReportingUnit getAdminReportingUnit() {
+        return adminReportingUnit;
+    }
+
+    public void setAdminReportingUnit(ReportingUnit adminReportingUnit) {
+        this.adminReportingUnit = adminReportingUnit;
     }
 
 }

@@ -102,7 +102,7 @@
                                     maxResults="10"
                                     required="#{false}"
                                     forceSelection="#{true}"
-                                    value="#{webSession.currentReportingUnit}"
+                                    value="#{webSession.adminReportingUnit}"
                                     completeMethod="#{viewSupport.completeReportingUnit}"
                                     itemLabel="#{ru.name}"
                                     itemValue="#{ru}"
@@ -116,7 +116,7 @@
                                     <f:selectItems var="period" value="#{viewSupport.allPeriods}" itemLabel="#{period.id}"/>
                                 </p:selectOneMenu>
                             </p:panelGrid>
-                            <h1>#{webSession.currentPeriod.id} Reporting Units Needing Action</h1>
+                            <h1>#{webSession.currentPeriod.id} Reporting Units</h1>
                             <h4>Please note that this is a preview environment for general user feedback on page flow, etc.  Full user testing has not yet begun.</h4>
 
                             <p:dataTable value="#{dashboard.reportingUnits}" var="ru" >
@@ -126,10 +126,12 @@
                                 <p:column headerText="Reporting Unit" sortBy="#{ru.name}">
                                     <h:outputText value="#{ru.name}" />
                                 </p:column>
-                                <p:column headerText="Platform">
-                                    <h:outputText value="N/A" />
+                                <p:column headerText="Status">
+                                    <h:outputText value="#{ru.getWorkflowStatus(webSession.currentPeriod).description}" />
                                 </p:column>
-
+                                <p:column headerText="Business Unit">
+                                    <h:outputText value="#{ru.businessUnit.name}" />
+                                </p:column>
                                 <!--
                                 <p:column style="white-space:pre-line;" headerText="Estimate at Completion">
                                     <h:outputText id="eac" value="#{viewSupport.getCurrencyMetric('ESTIMATED_COST_AT_COMPLETION_LC', ru).getValue()}">
@@ -146,12 +148,15 @@
                                 <p:column headerText="POB Invalid Count">
                                     <h:outputText value="#{ru.pobInvalidCount}" />
                                 </p:column>
+
+                                <p:column headerText="Actions">
+                                    <p:commandButton value="Online Entry" style="width:130px;height:30px" icon="ui-icon-arrowthick-1-e" ajax="false" action="#{inputController.proceedToOnlineEntry(ru)}"/>
+                                    <p:commandButton value="Excel Entry" style="width:130px;height:30px; margin-left: 5px;" icon="ui-icon-arrowthick-1-e" ajax="false" action="#{inputController.proceedToInputDownload(ru)}"/>
+                                </p:column>
                             </p:dataTable>
 
                             <p:toolbar>
                                 <f:facet name="right">
-                                    <p:commandButton value="Proceed via Online Input Entry" icon="ui-icon-arrowthick-1-e" ajax="false" action="#{inputController.proceedToOnlineEntry()}"/>
-                                    <p:commandButton value="Proceed via Download Upload Excel" icon="ui-icon-arrowthick-1-e" ajax="false" action="#{inputController.proceedToInputDownload()}"/>
                                 </f:facet>
                             </p:toolbar>
 

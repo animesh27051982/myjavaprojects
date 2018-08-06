@@ -36,11 +36,11 @@
                                         <p:toolbar>
                                             <f:facet name="left">
                                                 <p:outputLabel for="btnOpen" value="" />
-                                                <p:commandButton id="btnOpen" value="#{financialPeriodEdit.financialPeriod.getId() == null ? 'Add' : 'Open' }" icon="ui-icon-folder-open" action="#{financialPeriodEdit.addOpenCondition()}" style="max-width:100px;"/>
+                                                <p:commandButton id="btnOpen" value="Open" icon="ui-icon-folder-open" ajax="false" action="#{financialPeriodEdit.openPeriod()}" style="max-width:100px;"/>
                                                 <p:outputLabel for="btnFreeze" value="" />
-                                                <p:commandButton id="btnFreeze" value="#{financialPeriodEdit.financialPeriod.getId() == null ? 'Add' : 'Freeze' }" icon="fa fa-fw fa-gg" action="#{financialPeriodEdit.addFreezeCondition()}" style="max-width:100px;"/>
+                                                <p:commandButton id="btnFreeze" value="User Freeze" icon="fa fa-fw fa-gg" action="#{financialPeriodEdit.openPeriod()}" style="max-width:100px;"/>
                                                 <p:outputLabel for="btnClose" value="" />
-                                                <p:commandButton id="btnClose" value="#{financialPeriodEdit.financialPeriod.getId() == null ? 'Add' : 'Close' }" icon="fa fa-fw fa-sign-in" action="#{financialPeriodEdit.addCloseCondition()}" style="max-width:100px;"/>
+                                                <p:commandButton id="btnClose" value="Close" icon="fa fa-fw fa-sign-in" action="#{financialPeriodEdit.openPeriod()}" style="max-width:100px;"/>
                                             </f:facet>
                                         </p:toolbar>
                                     </f:facet>

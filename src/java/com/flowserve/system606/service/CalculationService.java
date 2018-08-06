@@ -205,17 +205,16 @@ public class CalculationService {
         }
     }
 
-    public void calculateAndSave(Long reportingUnitId, FinancialPeriod period) throws Exception {
-        ReportingUnit ru = adminService.findReportingUnitById(reportingUnitId);
+    public void calculateAndSave(ReportingUnit reportingUnit, FinancialPeriod period) throws Exception {
         List<ReportingUnit> rus = new ArrayList<ReportingUnit>();
-        rus.add(ru);
+        rus.add(reportingUnit);
         calculateAndSave(rus, period);
     }
 
     // KJG TODO - More validity work needed.  Just checking TP not good enough.
     private boolean isValidForCalculations(Measurable measurable, FinancialPeriod period) throws Exception {
         if (measurable instanceof PerformanceObligation) {
-            if (getCurrencyMetric("TRANSACTION_PRICE_CC", (PerformanceObligation) measurable, period).getCcValue() != null) {
+            if (isValid((PerformanceObligation) measurable, period)) {
                 return true;
             }
             return false;
@@ -230,6 +229,26 @@ public class CalculationService {
         }
 
         // All other types are valid since they will be rollups.
+        return true;
+    }
+
+    private boolean isValid(PerformanceObligation pob, FinancialPeriod period) throws Exception {
+        if (getCurrencyMetric("TRANSACTION_PRICE_CC", pob, period).getCcValue() != null) {
+            return true;
+        }
+        return false;
+    }
+
+    public boolean isSubmittableForReview(ReportingUnit ru, FinancialPeriod period) throws Exception {
+        if (ru.getPerformanceObligations().size() == 0) {
+            return false;
+        }
+        for (PerformanceObligation pob : ru.getPerformanceObligations()) {
+            if (isValid(pob, period) == false) {
+                return false;
+            }
+        }
+
         return true;
     }
 

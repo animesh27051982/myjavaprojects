@@ -13,10 +13,11 @@ import com.flowserve.system606.model.ReportingUnit;
 import com.flowserve.system606.service.AdminService;
 import com.flowserve.system606.service.CalculationService;
 import com.flowserve.system606.service.ContractService;
+import com.flowserve.system606.service.PerformanceObligationService;
+import com.flowserve.system606.service.ReportingUnitService;
 import com.flowserve.system606.web.WebSession;
 import java.io.Serializable;
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Level;
@@ -48,6 +49,10 @@ public class InputOnlineEntry implements Serializable {
     private AdminService adminService;
     @Inject
     private CalculationService calculationService;
+    @Inject
+    private ReportingUnitService reportingUnitService;
+    @Inject
+    private PerformanceObligationService performanceObligationService;
     private BigDecimal eacValue;
     @Inject
     private ViewSupport viewSupport;
@@ -55,23 +60,21 @@ public class InputOnlineEntry implements Serializable {
     private ContractService contractService;
     @Inject
     private WebSession webSession;
-
     private TreeNode selectedNode;
-
-    private List<ReportingUnit> reportingUnits = new ArrayList<ReportingUnit>();
     private List<Contract> contracts;
-
     private String activeTabIndex;
+    private ReportingUnit reportingUnit;
 
     @PostConstruct
     public void init() {
-        //reportingUnits = adminService.getPreparableReportingUnits();
-        //contractFilterText = webSession.getFilterText();
-        reportingUnits.clear();
-        reportingUnits.add(webSession.getCurrentReportingUnit());
-        rootTreeNode = viewSupport.generateNodeTree(reportingUnits);
-        billingTreeNode = viewSupport.generateNodeTreeForBilling(reportingUnits);
-        initContracts(reportingUnits);
+        if (webSession.isAdmin()) {
+            reportingUnit = adminService.findReportingUnitById(webSession.getAdminReportingUnit().getId());
+        } else {
+            reportingUnit = adminService.findReportingUnitById(webSession.getCurrentReportingUnitId());
+        }
+        rootTreeNode = viewSupport.generateNodeTree(reportingUnit);
+        billingTreeNode = viewSupport.generateNodeTreeForBilling(reportingUnit);
+        initContracts(reportingUnit);
 
         if (webSession.getFilterText() != null) {
             filterByContractText();
@@ -93,28 +96,32 @@ public class InputOnlineEntry implements Serializable {
 
     public void onReportingUnitSelect(SelectEvent event) {
         webSession.setFilterText(null);
-        webSession.setCurrentReportingUnit((ReportingUnit) event.getObject());
+        webSession.setCurrentReportingUnitId(((ReportingUnit) event.getObject()).getId());
         init();
     }
 
-    public void initContracts(List<ReportingUnit> reportingUnits) {
-        contracts = new ArrayList<Contract>();
-        reportingUnits.forEach(reportingUnit -> contracts.addAll(reportingUnit.getContracts()));
+//    public void initContracts(List<ReportingUnit> reportingUnits) {
+//        contracts = new ArrayList<Contract>();
+//        reportingUnits.forEach(reportingUnit -> contracts.addAll(reportingUnit.getContracts()));
+//    }
+    public void initContracts(ReportingUnit reportingUnit) {
+        contracts = reportingUnit.getContracts();
     }
 
     public void filterByContractText() {
         if (isEmpty(webSession.getFilterText())) {
-            rootTreeNode = viewSupport.generateNodeTree(reportingUnits);
+            //rootTreeNode = viewSupport.generateNodeTree(reportingUnits);
+            rootTreeNode = viewSupport.generateNodeTree(reportingUnit);
         } else {
             viewSupport.filterNodeTree(rootTreeNode, webSession.getFilterText());
         }
     }
 
     public void filterByContracts() {
-        rootTreeNode = viewSupport.generateNodeTree(reportingUnits);
+        rootTreeNode = viewSupport.generateNodeTree(reportingUnit);
 
         if (webSession.getSelectedContracts().length == 0) {
-            rootTreeNode = viewSupport.generateNodeTree(reportingUnits);
+            rootTreeNode = viewSupport.generateNodeTree(reportingUnit);
         } else {
             viewSupport.filterNodeTreeContracts(rootTreeNode, Arrays.asList(webSession.getSelectedContracts()));
         }
@@ -127,23 +134,23 @@ public class InputOnlineEntry implements Serializable {
         contract.getBillingEvents().add(billingEvent);
         contractService.update(contract);
 
-        billingTreeNode = viewSupport.generateNodeTreeForBilling(reportingUnits);
+        billingTreeNode = viewSupport.generateNodeTreeForBilling(reportingUnit);
     }
 
     public void removeBillingEvent(BillingEvent bEvent) {
         Contract contract = bEvent.getContract();
         contract.getBillingEvents().remove(bEvent);
-        billingTreeNode = viewSupport.generateNodeTreeForBilling(reportingUnits);
+        billingTreeNode = viewSupport.generateNodeTreeForBilling(reportingUnit);
     }
 
     public void updateCumulativeCurrencies() {
-        billingTreeNode = viewSupport.generateNodeTreeForBilling(reportingUnits);
+        billingTreeNode = viewSupport.generateNodeTreeForBilling(reportingUnit);
     }
 
     public void clearFilterByContractText() {
         webSession.setFilterText(null);
         webSession.setSelectedContracts(null);
-        rootTreeNode = viewSupport.generateNodeTree(reportingUnits);
+        rootTreeNode = viewSupport.generateNodeTree(reportingUnit);
     }
 
     private boolean isEmpty(String text) {
@@ -182,18 +189,22 @@ public class InputOnlineEntry implements Serializable {
         }
     }
 
-    public List<ReportingUnit> getReportingUnits() {
-        return reportingUnits;
-    }
-
     public TreeNode getRootTreeNode() {
         return rootTreeNode;
     }
 
     public void saveInputs() throws Exception {
-        adminService.update(reportingUnits);
         Logger.getLogger(InputOnlineEntry.class.getName()).log(Level.FINE, "Saving inputs.");
+        adminService.update(reportingUnit);
+        for (PerformanceObligation pob : reportingUnit.getPerformanceObligations()) {
+            Logger.getLogger(InputOnlineEntry.class.getName()).log(Level.FINER, "Updating POB: " + pob.getName());
+            performanceObligationService.update(pob);
+        }
         FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Inputs saved.", ""));
+    }
+
+    public boolean isUpdatable() {
+        return reportingUnitService.isUpdatable(reportingUnit, webSession.getCurrentPeriod(), webSession.getUser());
     }
 
     public void cancelEdits() throws Exception {
@@ -232,5 +243,9 @@ public class InputOnlineEntry implements Serializable {
 
     public void setContracts(List<Contract> contracts) {
         this.contracts = contracts;
+    }
+
+    public ReportingUnit getReportingUnit() {
+        return reportingUnit;
     }
 }

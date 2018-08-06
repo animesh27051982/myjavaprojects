@@ -54,6 +54,9 @@
                                 <p:column  headerText="Option" >
                                     <h:commandLink value="Edit User" action="#{adminController.editUser(user)}"></h:commandLink>
                                 </p:column>
+                                <p:column  headerText="Assume Identity" >
+                                    <h:commandLink value="Assume Identity" action="#{adminController.assumeIdentity(user)}"></h:commandLink>
+                                </p:column>
                             </p:dataTable>
                         </div>
                     </div>

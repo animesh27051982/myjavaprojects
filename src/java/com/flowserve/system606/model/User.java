@@ -19,7 +19,6 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
@@ -66,6 +65,8 @@ public class User implements Principal, Comparable<User>, Serializable {
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "COUNTRY_ID")
     private Country country;
+    @Column(name = "IS_ADMIN")
+    private boolean admin;
 
     public User(String flsId, String name, String displayName, String emailAddress) {
         this.flsId = flsId;
@@ -219,6 +220,14 @@ public class User implements Principal, Comparable<User>, Serializable {
 
     public void setCountry(Country country) {
         this.country = country;
+    }
+
+    public boolean isAdmin() {
+        return admin;
+    }
+
+    public void setAdmin(boolean admin) {
+        this.admin = admin;
     }
 
 }

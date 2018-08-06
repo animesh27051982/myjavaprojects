@@ -157,6 +157,12 @@ public class AdminController implements Serializable {
         return "userEdit";
     }
 
+    public String assumeIdentity(User u) throws Exception {
+        webSession.setUser(u);
+
+        return "dashboard";
+    }
+
     public String updateUser(User u) {
         FacesContext context = FacesContext.getCurrentInstance();
 
@@ -172,7 +178,7 @@ public class AdminController implements Serializable {
 
         return "userSearch";
     }
-    
+
     public String updateUserProfile(User u) {
         FacesContext context = FacesContext.getCurrentInstance();
 
@@ -206,21 +212,6 @@ public class AdminController implements Serializable {
         }
 
         context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "FinancialPeriod saved", ""));
-
-        return "financialPeriodList";
-    }
-
-    public String updateFinancialPeriod(FinancialPeriod financialPeriod) {
-        FacesContext context = FacesContext.getCurrentInstance();
-        try {
-            financialPeriodService.updateFinancialPeriod(financialPeriod);
-        } catch (Exception e) {
-            logger.log(Level.SEVERE, e.getMessage(), e);
-            context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Error saving", e.getMessage()));
-            return null;
-        }
-
-        context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "financialPeriod saved", ""));
 
         return "financialPeriodList";
     }
@@ -298,8 +289,8 @@ public class AdminController implements Serializable {
         webSession.setEditContract(c);
         return "reportContractEstimate";
     }
-    
-     public String generateReportCompany(Company c) throws Exception {
+
+    public String generateReportCompany(Company c) throws Exception {
         webSession.setEditCompany(c);
         return "companyReports";
     }

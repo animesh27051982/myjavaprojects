@@ -10,7 +10,7 @@ package com.flowserve.system606.model;
  * @author kgraves
  */
 public enum PeriodStatus {
-    OPENED("O"), USER_FROZEN("UF"), CLOSED("C");
+    OPENED("O"), CLOSED("C"), NEVER_OPENED("NO");
 
     private String shortName;
 
@@ -30,8 +30,8 @@ public enum PeriodStatus {
             case "C":
                 return PeriodStatus.CLOSED;
 
-            case "UF":
-                return PeriodStatus.USER_FROZEN;
+            case "NO":
+                return PeriodStatus.NEVER_OPENED;
 
             default:
                 throw new IllegalArgumentException("ShortName [" + shortName + "] not supported.");

@@ -47,7 +47,7 @@ public class InputTemplateDownload implements Serializable {
     @PostConstruct
     public void init() {
         //reportingUnits = adminService.getPreparableReportingUnits();
-        reportingUnits.add(webSession.getCurrentReportingUnit());
+        //reportingUnits.add(webSession.getCurrentReportingUnit());
         selectedReportingUnits = reportingUnits;
     }
 

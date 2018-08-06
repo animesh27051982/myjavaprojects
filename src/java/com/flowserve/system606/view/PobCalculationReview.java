@@ -14,7 +14,6 @@ import com.flowserve.system606.service.CalculationService;
 import com.flowserve.system606.web.WebSession;
 import java.io.Serializable;
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Level;
@@ -41,24 +40,26 @@ public class PobCalculationReview implements Serializable {
     private TreeNode rootTreeNode;
     @Inject
     private CalculationService calculationService;
+    @Inject
+    private AdminService adminService;
     private BigDecimal eacValue;
     @Inject
     private ViewSupport viewSupport;
     @Inject
-    private AdminService adminService;
-    @Inject
     private WebSession webSession;
     private List<Contract> contracts;
-    List<ReportingUnit> reportingUnits = null;
+    ReportingUnit reportingUnit;
 
     @PostConstruct
     public void init() {
         try {
-            reportingUnits = new ArrayList<ReportingUnit>();
-            reportingUnits.add(webSession.getCurrentReportingUnit());
-            Logger.getLogger(PobCalculationReview.class.getName()).log(Level.INFO, "POB Calc review.  Current RU: " + webSession.getCurrentReportingUnit().getCode());
-            rootTreeNode = viewSupport.generateNodeTree(reportingUnits);
-            initContracts(reportingUnits);
+            if (webSession.isAdmin()) {
+                reportingUnit = adminService.findReportingUnitById(webSession.getAdminReportingUnit().getId());
+            } else {
+                reportingUnit = adminService.findReportingUnitById(webSession.getCurrentReportingUnitId());
+            }
+            rootTreeNode = viewSupport.generateNodeTree(reportingUnit);
+            initContracts();
 
             Logger.getLogger(PobCalculationReview.class.getName()).log(Level.INFO, "webSession: " + webSession.getFilterText());
             if (webSession.getFilterText() != null) {
@@ -72,15 +73,19 @@ public class PobCalculationReview implements Serializable {
         }
     }
 
-    public void initContracts(List<ReportingUnit> reportingUnits) {
-        contracts = new ArrayList<Contract>();
-        reportingUnits.forEach(reportingUnit -> contracts.addAll(reportingUnit.getContracts()));
+//    public void initContracts(List<ReportingUnit> reportingUnits) {
+//        contracts = new ArrayList<Contract>();
+//        reportingUnits.forEach(reportingUnit -> contracts.addAll(reportingUnit.getContracts()));
+//    }
+//
+    public void initContracts() {
+        contracts = reportingUnit.getContracts();
     }
 
     public void filterByContractText() {
         if (isEmpty(webSession.getFilterText())) {
             Logger.getLogger(PobCalculationReview.class.getName()).log(Level.INFO, "Not filtering");
-            rootTreeNode = viewSupport.generateNodeTree(reportingUnits);
+            rootTreeNode = viewSupport.generateNodeTree(reportingUnit);
         } else {
             Logger.getLogger(PobCalculationReview.class.getName()).log(Level.INFO, "filtering...");
             viewSupport.filterNodeTree(rootTreeNode, webSession.getFilterText());
@@ -97,21 +102,21 @@ public class PobCalculationReview implements Serializable {
 
     public void onReportingUnitSelect(SelectEvent event) {
         webSession.setFilterText(null);
-        webSession.setCurrentReportingUnit((ReportingUnit) event.getObject());
+        webSession.setCurrentReportingUnitId(((ReportingUnit) event.getObject()).getId());
         init();
     }
 
     public void clearFilterByContractText() {
         webSession.setFilterText(null);
         webSession.setSelectedContracts(null);
-        rootTreeNode = viewSupport.generateNodeTree(reportingUnits);
+        rootTreeNode = viewSupport.generateNodeTree(reportingUnit);
     }
 
     public void filterByContracts() {
-        rootTreeNode = viewSupport.generateNodeTree(reportingUnits);
+        rootTreeNode = viewSupport.generateNodeTree(reportingUnit);
 
         if (webSession.getSelectedContracts().length == 0) {
-            rootTreeNode = viewSupport.generateNodeTree(reportingUnits);
+            rootTreeNode = viewSupport.generateNodeTree(reportingUnit);
         } else {
             viewSupport.filterNodeTreeContracts(rootTreeNode, Arrays.asList(webSession.getSelectedContracts()));
         }
@@ -142,7 +147,7 @@ public class PobCalculationReview implements Serializable {
 
     public void calculateAndSave() {
         try {
-            calculationService.calculateAndSave(reportingUnits, webSession.getCurrentPeriod());
+            calculationService.calculateAndSave(reportingUnit, webSession.getCurrentPeriod());
         } catch (Exception e) {
             Logger.getLogger(PobCalculationReview.class.getName()).log(Level.INFO, "Error recalculating: ", e);
             FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error recalculating: ", e.getMessage());
@@ -172,6 +177,48 @@ public class PobCalculationReview implements Serializable {
 
     public void setContracts(List<Contract> contracts) {
         this.contracts = contracts;
+    }
+
+    public boolean isDraft() {
+        return reportingUnit.isDraft(webSession.getCurrentPeriod());
+    }
+
+    public boolean isPendingReview() {
+        return reportingUnit.isPendingReview(webSession.getCurrentPeriod());
+    }
+
+    public boolean isPendingApproval() {
+        return reportingUnit.isPendingApproval(webSession.getCurrentPeriod());
+    }
+
+    public boolean isSubmittableForReview() throws Exception {
+        if (!isDraft()) {
+            return false;
+        }
+
+        return calculationService.isSubmittableForReview(reportingUnit, webSession.getCurrentPeriod());
+    }
+
+    public boolean isSubmittableForApproval() throws Exception {
+        if (!isPendingReview()) {
+            return false;
+        }
+
+        // TODO - Check user for reviewer role on the RU.
+        return true;
+    }
+
+    public boolean isApprovable() throws Exception {
+        if (!isPendingApproval()) {
+            return false;
+        }
+
+        // TODO - Check user for reviewer role on the RU.
+        return true;
+    }
+
+    public ReportingUnit getReportingUnit() {
+        return reportingUnit;
     }
 
 }

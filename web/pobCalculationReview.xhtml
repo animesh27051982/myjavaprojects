@@ -32,7 +32,7 @@
                                 maxResults="10"
                                 required="#{false}"
                                 forceSelection="#{true}"
-                                value="#{webSession.currentReportingUnit}"
+                                value="#{webSession.adminReportingUnit}"
                                 completeMethod="#{viewSupport.completeReportingUnit}"
                                 itemLabel="#{ru.name}"
                                 itemValue="#{ru}"
@@ -91,8 +91,8 @@
                                             <p:column colspan="1" style="white-space:pre-line;" headerText="Period Fx Rate" />
 
                                             <p:column colspan="1" style="white-space:pre-line;" headerText="Period Revenue-Net" />
-                                            <p:column colspan="1" style="white-space:pre-line;" headerText="#{viewSupport.getMetricTypeDescription('REVENUE_TO_RECOGNIZE_ITD_LC')} -Prior Period" />
-                                            <p:column colspan="1" style="white-space:pre-line;" headerText="#{viewSupport.getMetricTypeDescription('REVENUE_TO_RECOGNIZE_ITD_LC')}" />
+                                            <p:column colspan="1" style="white-space:pre-line;" headerText="#{viewSupport.getMetricTypeDescription('REVENUE_TO_RECOGNIZE_ITD_CC')} -Prior Period" />
+                                            <p:column colspan="1" style="white-space:pre-line;" headerText="#{viewSupport.getMetricTypeDescription('REVENUE_TO_RECOGNIZE_ITD_CC')}" />
 
                                         </p:row>
                                     </p:columnGroup>
@@ -158,13 +158,13 @@
                                     </p:column>
 
                                     <p:column style="white-space:pre-line;">
-                                        <h:outputText value="#{viewSupport.getCurrencyMetricPriorPeriod('REVENUE_TO_RECOGNIZE_ITD_LC', pob).lcValue}" rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}">
+                                        <h:outputText value="#{viewSupport.getCurrencyMetricPriorPeriod('REVENUE_TO_RECOGNIZE_ITD_CC', pob).lcValue}" rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}">
                                             <f:convertNumber type="currency" currencySymbol=""/>
                                         </h:outputText>
                                     </p:column>
 
                                     <p:column style="white-space:pre-line;">
-                                        <h:outputText value="#{viewSupport.getCurrencyMetric('REVENUE_TO_RECOGNIZE_ITD_LC', pob).lcValue}" rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}">
+                                        <h:outputText value="#{viewSupport.getCurrencyMetric('REVENUE_TO_RECOGNIZE_ITD_CC', pob).lcValue}" rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}">
                                             <f:convertNumber type="currency" currencySymbol=""/>
                                         </h:outputText>
                                     </p:column>
@@ -493,11 +493,15 @@
                         <p:toolbar>
                             <f:facet name="left">
                                 <p:commandButton value="Recalc All" icon="ui-icon-check" update=":form:topLevelTabView" actionListener="#{pobCalculationReview.calculateAndSave}"/>
+                                <p:commandButton value="Download Journal Entry" ajax="false" style="width:auto;" icon="ui-icon-arrowthick-1-s">
+                                </p:commandButton>
                             </f:facet>
                             <f:facet name="right">
                                 <p:commandButton value="Back to Dashboard" icon="ui-icon-arrowthick-1-w" ajax="false" action="#{inputController.inputDashboard}"/>
-                                <p:commandButton value="Back to Online Entry" icon="ui-icon-arrowthick-1-w" ajax="false" action="#{inputController.proceedToOnlineEntry}"/>
-                                <p:commandButton value="Submit for Approval" icon="ui-icon-check" ajax="false" action="#{inputController.submitForApproval}"/>
+                                <p:commandButton value="Back to Online Entry" icon="ui-icon-arrowthick-1-w" ajax="false" action="#{inputController.returnToOnlineEntry()}"/>
+                                <p:commandButton value="Submit for Review" icon="ui-icon-check" ajax="false" action="#{inputController.submitForReview(pobCalculationReview.reportingUnit)}" rendered="#{pobCalculationReview.draft}" disabled="#{not pobCalculationReview.submittableForReview}"/>
+                                <p:commandButton value="Submit for Final Approval" icon="ui-icon-check" ajax="false" action="#{inputController.submitForApproval(pobCalculationReview.reportingUnit)}" rendered="#{pobCalculationReview.submittableForApproval}"/>
+                                <p:commandButton value="Approve" icon="ui-icon-check" ajax="false" action="#{inputController.approve(pobCalculationReview.reportingUnit)}" rendered="#{pobCalculationReview.approvable}"/>
                             </f:facet>
                         </p:toolbar>
                     </div>

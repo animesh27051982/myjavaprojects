@@ -2,12 +2,14 @@ package com.flowserve.system606.view;
 
 import com.flowserve.system606.controller.AdminController;
 import com.flowserve.system606.model.FinancialPeriod;
-import com.flowserve.system606.model.PeriodStatus;
-import com.flowserve.system606.service.AdminService;
+import com.flowserve.system606.service.FinancialPeriodService;
 import com.flowserve.system606.web.WebSession;
 import java.io.Serializable;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
+import javax.faces.application.FacesMessage;
+import javax.faces.context.FacesContext;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -27,6 +29,8 @@ public class FinancialPeriodEdit implements Serializable {
 
     @Inject
     private AdminController adminController;
+    @Inject
+    private FinancialPeriodService financialPeriodService;
 
     public FinancialPeriodEdit() {
     }
@@ -44,22 +48,27 @@ public class FinancialPeriodEdit implements Serializable {
         this.financialPeriod = financialPeriod;
     }
 
-    public String addUpdateCondition() throws Exception {
-        return this.financialPeriod.getId() == null ? adminController.addFinancialPeriod(this.financialPeriod) : adminController.updateFinancialPeriod(this.financialPeriod);
+    public String openPeriod() {
+        FacesContext context = FacesContext.getCurrentInstance();
+        try {
+            financialPeriodService.openPeriod(financialPeriod);
+        } catch (Exception e) {
+            Logger.getLogger(FinancialPeriodEdit.class.getName()).log(Level.INFO, "Error opening period: ", e);
+            context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Error opening period: ", e.getMessage()));
+        }
+
+        context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Period opened.", ""));
+
+        return "financialPeriodEdit";
     }
-    
-    public String addOpenCondition() throws Exception {
-        this.financialPeriod.setStatus(PeriodStatus.OPENED);
-        return this.financialPeriod.getId() == null ? adminController.addFinancialPeriod(this.financialPeriod) : adminController.updateFinancialPeriod(this.financialPeriod);
-    }
-    
-    public String addCloseCondition() throws Exception {
-        this.financialPeriod.setStatus(PeriodStatus.CLOSED);        
-        return this.financialPeriod.getId() == null ? adminController.addFinancialPeriod(this.financialPeriod) : adminController.updateFinancialPeriod(this.financialPeriod);
-    }
-    
-    public String addFreezeCondition() throws Exception {
-        this.financialPeriod.setStatus(PeriodStatus.USER_FROZEN);        
-        return this.financialPeriod.getId() == null ? adminController.addFinancialPeriod(this.financialPeriod) : adminController.updateFinancialPeriod(this.financialPeriod);
-    }
+
+//    public String addCloseCondition() throws Exception {
+//        this.financialPeriod.setStatus(PeriodStatus.CLOSED);
+//        return this.financialPeriod.getId() == null ? adminController.addFinancialPeriod(this.financialPeriod) : adminController.updateFinancialPeriod(this.financialPeriod);
+//    }
+//
+//    public String addFreezeCondition() throws Exception {
+//        this.financialPeriod.setStatus(PeriodStatus.USER_FROZEN);
+//        return this.financialPeriod.getId() == null ? adminController.addFinancialPeriod(this.financialPeriod) : adminController.updateFinancialPeriod(this.financialPeriod);
+//    }
 }

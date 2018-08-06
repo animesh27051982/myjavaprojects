@@ -51,10 +51,10 @@
                                 placeholder="2 char minimum"
                                 required="#{false}"
                                 forceSelection="#{true}"
-                                value="#{webSession.currentReportingUnit}"
+                                value="#{webSession.adminReportingUnit}"
                                 completeMethod="#{viewSupport.completeReportingUnit}"
                                 itemLabel="#{ru.name}"
-                                itemValue="#{ru}"
+                                itemValue="#{ru.id}"
                                 converter="reportingUnitConverter"
                                 style="width: 300px;"
                                 >
@@ -74,7 +74,8 @@
                                 <f:selectItems var="period" value="#{viewSupport.allPeriods}" itemLabel="#{period.id}"/>
                             </p:selectOneMenu>
                         </p:panelGrid>-->
-                        <h4 style="margin: 1px;"><strong>#{webSession.currentPeriod.id} Performance Obligation Inputs</strong></h4>
+                        <h4 style="margin: 1px;"><strong>#{webSession.currentPeriod.id} Performance Obligation Inputs - #{inputOnlineEntry.reportingUnit.name} - #{inputOnlineEntry.reportingUnit.getWorkflowStatus(webSession.currentPeriod).description}</strong></h4>
+
                         <p:outputPanel style="margin-top: 20px;">
                             <h:outputText value="Search within list:" />
                             <p:inputText id="globalFilterText" value="#{webSession.filterText}" style="width:150px; margin-left: 10px;">
@@ -100,9 +101,9 @@
                                     <p:columnGroup type="header">
                                         <p:row>
                                             <p:column style="width: 350px; text-overflow: ellipsis;" colspan="1" headerText="" />
-                                            <p:column colspan="4" style="white-space:pre-line;" headerText="Contract Currency" />
+                                            <p:column style="background-color: #0071bc; color: #ffffff; white-space:pre-line;" colspan="4" headerText="Contract Currency" />
                                             <p:column colspan="1" headerText="" />
-                                            <p:column colspan="4" style="white-space:pre-line;" headerText="Local Currency" />
+                                            <p:column style="background-color: #0071bc; color: #ffffff; white-space:pre-line;" colspan="4" headerText="Local Currency" />
                                         </p:row>
                                         <p:row>
                                             <p:column colspan="1" style="white-space:pre-line;" headerText="RU / Contract / POB" />
@@ -401,8 +402,8 @@
                             <f:facet name="right">
                                 <p:commandButton value="Return to Dashboard" icon="ui-icon-arrowthick-1-w" ajax="false" action="#{inputController.inputDashboard()}"/>
                                 <p:commandButton value="Cancel Current Edits" icon="ui-icon-cancel" ajax="false" action="#{inputOnlineEntry.cancelEdits()}"/>
-                                <p:commandButton value="Save Inputs" icon="ui-icon-disk" ajax="true" update="form" actionListener="#{inputOnlineEntry.saveInputs()}"/>
-                                <p:commandButton value="Save and Proceed to Calculation Review" icon="ui-icon-arrowthick-1-e" ajax="false"  action="#{calcReviewController.reviewCalculations(inputOnlineEntry.reportingUnits)}"/>
+                                <p:commandButton value="Save Inputs" icon="ui-icon-disk" ajax="true" update="form" actionListener="#{inputOnlineEntry.saveInputs()}" rendered="#{inputOnlineEntry.updatable}"/>
+                                <p:commandButton value="Save and Proceed to Calculation Review" icon="ui-icon-arrowthick-1-e" ajax="false" actionListener="#{inputOnlineEntry.saveInputs()}" action="#{calcReviewController.reviewCalculations()}"/>
                             </f:facet>
                         </p:toolbar>
 

@@ -58,6 +58,8 @@
                                         converter="userConverter">
                                         <h:outputText value="Begin typing last name to find a user"/>
                                     </p:autoComplete>
+                                    <p:outputLabel for="admin" value="Administrator"/>
+                                    <p:selectBooleanCheckbox id="admin" value="#{userEdit.editUser.admin}"/>
                                     <!-- Use p:toolbar for nicely stlyed command button area -->
                                     <f:facet name="footer">
                                         <p:toolbar>

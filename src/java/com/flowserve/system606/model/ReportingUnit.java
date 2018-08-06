@@ -9,8 +9,11 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Currency;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Logger;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -48,8 +51,14 @@ public class ReportingUnit extends TransientMeasurable<Long> implements Measurab
     @Column(name = "LOCAL_CURRENCY")
     private Currency localCurrency;
     @OneToMany(fetch = FetchType.EAGER)
+    @JoinTable(name = "REPORTING_UNIT_SUBMITTER", joinColumns = @JoinColumn(name = "REPORTING_UNIT_ID"), inverseJoinColumns = @JoinColumn(name = "USER_ID"))
+    private List<User> submitters = new ArrayList<User>();
+    @OneToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "REPORTING_UNIT_PREPARERS", joinColumns = @JoinColumn(name = "REPORTING_UNIT_ID"), inverseJoinColumns = @JoinColumn(name = "USER_ID"))
     private List<User> preparers = new ArrayList<User>();
+    @OneToMany(fetch = FetchType.EAGER)
+    @JoinTable(name = "REPORTING_UNIT_REVIEWERS", joinColumns = @JoinColumn(name = "REPORTING_UNIT_ID"), inverseJoinColumns = @JoinColumn(name = "USER_ID"))
+    private List<User> reviewers = new ArrayList<User>();
     @OneToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "REPORTING_UNIT_APPROVERS", joinColumns = @JoinColumn(name = "REPORTING_UNIT_ID"), inverseJoinColumns = @JoinColumn(name = "USER_ID"))
     private List<User> approvers = new ArrayList<User>();
@@ -57,7 +66,7 @@ public class ReportingUnit extends TransientMeasurable<Long> implements Measurab
     private boolean active;
     @ManyToOne
     @JoinColumn(name = "PARENT_ID")
-    private ReportingUnit parent;
+    private ReportingUnit parentReportingUnit;
 
     @ManyToOne
     @JoinColumn(name = "COMPANY_ID")
@@ -66,8 +75,12 @@ public class ReportingUnit extends TransientMeasurable<Long> implements Measurab
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "reportingUnit")
     private List<Contract> contracts = new ArrayList<Contract>();
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "parent")
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "parentReportingUnit")
     private List<ReportingUnit> childReportingUnits = new ArrayList<ReportingUnit>();
+
+    @OneToMany(fetch = FetchType.LAZY, cascade = {CascadeType.ALL}, orphanRemoval = true)
+    @JoinTable(name = "RU_APPROVAL_REQUEST", joinColumns = @JoinColumn(name = "REPORTING_UNIT_ID"), inverseJoinColumns = @JoinColumn(name = "APPROVAL_REQUEST_ID"))
+    private Map<FinancialPeriod, ApprovalRequest> periodApprovalRequestMap = new HashMap<FinancialPeriod, ApprovalRequest>();
 
     public ReportingUnit() {
     }
@@ -75,6 +88,51 @@ public class ReportingUnit extends TransientMeasurable<Long> implements Measurab
     @Override
     public int compareTo(ReportingUnit obj) {
         return this.code.compareTo(obj.getCode());
+    }
+
+    public boolean isDraft(FinancialPeriod period) {
+        if (periodApprovalRequestMap.get(period) == null) {
+            return false;
+        }
+        return ApprovalWorkflowStatus.DRAFT.equals(periodApprovalRequestMap.get(period).getApprovalWorkflowStatus());
+    }
+
+    public boolean isPendingReview(FinancialPeriod period) {
+        if (periodApprovalRequestMap.get(period) == null) {
+            return false;
+        }
+        return ApprovalWorkflowStatus.PENDING_REVIEW.equals(periodApprovalRequestMap.get(period).getApprovalWorkflowStatus());
+    }
+
+    public boolean isPendingApproval(FinancialPeriod period) {
+        if (periodApprovalRequestMap.get(period) == null) {
+            return false;
+        }
+        return ApprovalWorkflowStatus.PENDING_APPROVAL.equals(periodApprovalRequestMap.get(period).getApprovalWorkflowStatus());
+    }
+
+    public ApprovalWorkflowStatus getWorkflowStatus(FinancialPeriod period) {
+        return periodApprovalRequestMap.get(period).getApprovalWorkflowStatus();
+    }
+
+    public ApprovalRequest getPeriodApprovalRequest(FinancialPeriod period) {
+        return periodApprovalRequestMap.get(period);
+    }
+
+    public void setPeriodPendingReview(FinancialPeriod period) {
+        periodApprovalRequestMap.get(period).setApprovalWorkflowStatus(ApprovalWorkflowStatus.PENDING_REVIEW);
+    }
+
+    public void setPeriodPendingApproval(FinancialPeriod period) {
+        periodApprovalRequestMap.get(period).setApprovalWorkflowStatus(ApprovalWorkflowStatus.PENDING_APPROVAL);
+    }
+
+    public void setPeriodApproved(FinancialPeriod period) {
+        periodApprovalRequestMap.get(period).setApprovalWorkflowStatus(ApprovalWorkflowStatus.APPROVED);
+    }
+
+    public void putPeriodApprovalRequest(FinancialPeriod period, ApprovalRequest approvalRequest) {
+        periodApprovalRequestMap.put(period, approvalRequest);
     }
 
     public String getName() {
@@ -181,12 +239,12 @@ public class ReportingUnit extends TransientMeasurable<Long> implements Measurab
         return 0L;
     }
 
-    public ReportingUnit getParent() {
-        return parent;
+    public ReportingUnit getParentReportingUnit() {
+        return parentReportingUnit;
     }
 
-    public void setParent(ReportingUnit parent) {
-        this.parent = parent;
+    public void setParentReportingUnit(ReportingUnit parentReportingUnit) {
+        this.parentReportingUnit = parentReportingUnit;
     }
 
     public Company getCompany() {
@@ -207,5 +265,21 @@ public class ReportingUnit extends TransientMeasurable<Long> implements Measurab
 
     public boolean isParent() {
         return childReportingUnits.size() > 0;
+    }
+
+    public List<User> getSubmitters() {
+        return submitters;
+    }
+
+    public void setSubmitters(List<User> submitters) {
+        this.submitters = submitters;
+    }
+
+    public List<User> getReviewers() {
+        return reviewers;
+    }
+
+    public void setReviewers(List<User> reviewers) {
+        this.reviewers = reviewers;
     }
 }

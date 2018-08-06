@@ -58,10 +58,7 @@ public class Dashboard implements Serializable {
 
     @PostConstruct
     public void init() {
-        if (webSession.getCurrentReportingUnit() != null) {
-            reportingUnits.clear();
-            reportingUnits.add(webSession.getCurrentReportingUnit());
-        }
+        reportingUnits.addAll(webSession.getPreparableReportingUnits());
 
         try {
             List<Holiday> holidays = adminService.findHolidayList();
@@ -94,7 +91,7 @@ public class Dashboard implements Serializable {
 
     public void onReportingUnitSelect(SelectEvent event) {
         webSession.setFilterText(null);
-        webSession.setCurrentReportingUnit((ReportingUnit) event.getObject());
+        webSession.setCurrentReportingUnitId(((ReportingUnit) event.getObject()).getId());
         init();
     }
 

@@ -37,9 +37,6 @@ public class MetricSet extends BaseEntity<Long> {
     @Temporal(TIMESTAMP)
     @Column(name = "CREATION_DATE")
     private LocalDateTime creationDate;
-    @OneToOne
-    @JoinColumn(name = "WORKFLOW_STATUS_ID")
-    private WorkflowStatus status;
     @Column(name = "MOST_RECENT")
     private boolean mostRecent;
 //    @OneToOne
@@ -86,14 +83,6 @@ public class MetricSet extends BaseEntity<Long> {
 
     public void setCreatedBy(User createdBy) {
         this.createdBy = createdBy;
-    }
-
-    public WorkflowStatus getStatus() {
-        return status;
-    }
-
-    public void setStatus(WorkflowStatus status) {
-        this.status = status;
     }
 
     public boolean isMostRecent() {

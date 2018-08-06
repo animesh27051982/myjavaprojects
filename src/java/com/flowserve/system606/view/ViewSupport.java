@@ -169,6 +169,12 @@ public class ViewSupport implements Serializable {
         return currencyList;
     }
 
+    public TreeNode generateNodeTree(ReportingUnit reportingUnit) {
+        List<ReportingUnit> rus = new ArrayList<ReportingUnit>();
+        rus.add(reportingUnit);
+        return generateNodeTree(rus);
+    }
+
     public TreeNode generateNodeTree(List<ReportingUnit> reportingUnits) {
         TreeNode root = new DefaultTreeNode(new BusinessUnit(), null);
 
@@ -179,7 +185,7 @@ public class ViewSupport implements Serializable {
             for (Contract contract : reportingUnit.getContracts()) {
                 Logger.getLogger(WebSession.class.getName()).log(Level.FINER, "Adding to tree Contract Name: " + contract.getName());
                 TreeNode contractNode = new DefaultTreeNode(contract, reportingUnitNode);
-                contractNode.setExpanded(false);
+                contractNode.setExpanded(true);
                 for (PerformanceObligation pob : contract.getPerformanceObligations()) {
                     Logger.getLogger(WebSession.class.getName()).log(Level.FINER, "Adding to tree POB ID: " + pob.getId());
                     new DefaultTreeNode(pob, contractNode);
@@ -188,6 +194,12 @@ public class ViewSupport implements Serializable {
         }
 
         return root;
+    }
+
+    public TreeNode generateNodeTreeForBilling(ReportingUnit reportingUnit) {
+        List<ReportingUnit> rus = new ArrayList<ReportingUnit>();
+        rus.add(reportingUnit);
+        return generateNodeTreeForBilling(rus);
     }
 
     public TreeNode generateNodeTreeForBilling(List<ReportingUnit> reportingUnits) {

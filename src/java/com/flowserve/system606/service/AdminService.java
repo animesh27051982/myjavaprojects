@@ -5,6 +5,8 @@
  */
 package com.flowserve.system606.service;
 
+import com.flowserve.system606.model.ApprovalRequest;
+import com.flowserve.system606.model.ApprovalWorkflowStatus;
 import com.flowserve.system606.model.BillingEvent;
 import com.flowserve.system606.model.BusinessUnit;
 import com.flowserve.system606.model.Company;
@@ -160,10 +162,6 @@ public class AdminService {
         return em.find(User.class, id);
     }
 
-    public ReportingUnit findReportingUnitById(String id) {
-        return em.find(ReportingUnit.class, id);
-    }
-
     public ReportingUnit findReportingUnitById(Long id) {
         return em.find(ReportingUnit.class, id);
     }
@@ -174,6 +172,10 @@ public class AdminService {
 
     public Company findCompanyById(String id) {
         return em.find(Company.class, id);
+    }
+
+    public ApprovalWorkflowStatus findWorkflowStatusById(String id) {
+        return em.find(ApprovalWorkflowStatus.class, id);
     }
 
     public MetricType findMetricTypeByCode(String code) {
@@ -253,7 +255,7 @@ public class AdminService {
         Query query = em.createQuery("SELECT reportingUnit FROM ReportingUnit reportingUnit WHERE reportingUnit.code = :CODE");
         query.setParameter("CODE", code);
         List<ReportingUnit> reportingUnits = query.getResultList();
-        ReportingUnit bu = reportingUnits.get(0).getParent();
+        ReportingUnit bu = reportingUnits.get(0).getParentReportingUnit();
         if (bu != null) {
             return reportingUnits.get(0);
         }
@@ -280,6 +282,10 @@ public class AdminService {
         return null;
     }
 
+    public void persist(ApprovalRequest ar) throws Exception {
+        em.persist(ar);
+    }
+
     public void persist(MetricType inputType) throws Exception {
         em.persist(inputType);
     }
@@ -303,6 +309,7 @@ public class AdminService {
     }
 
     public ReportingUnit update(ReportingUnit ru) throws Exception {
+        Logger.getLogger(AdminService.class.getName()).log(Level.INFO, "Updating RU: " + ru.getCode());
         return em.merge(ru);
     }
 
@@ -482,6 +489,26 @@ public class AdminService {
         }
     }
 
+    public void initReportingUnitWorkflowStatus() throws Exception {
+        Logger.getLogger(AdminService.class.getName()).log(Level.INFO, "initReportingUnitWorkflowStatus()");
+        for (FinancialPeriod period : financialPeriodService.findAllPeriods()) {
+            if (period.isNeverOpened()) {
+                for (ReportingUnit ru : findAllReportingUnits()) {
+                    if (ru.isActive() && !ru.isParent() && ru.getPeriodApprovalRequest(period) == null) {
+                        Logger.getLogger(ReportingUnit.class.getName()).log(Level.INFO, "Initializing RU Period ApprovalRequest: " + ru.getName());
+                        ApprovalRequest ar = new ApprovalRequest();
+                        ar.setReportingUnit(ru);
+                        ar.setFinancialPeriod(period);
+                        ar.setApprovalWorkflowStatus(ApprovalWorkflowStatus.DRAFT);
+                        ru.putPeriodApprovalRequest(period, ar);
+                        update(ru);
+                    }
+                }
+            }
+        }
+        Logger.getLogger(AdminService.class.getName()).log(Level.INFO, "Finished initReportingUnitWorkflowStatus()");
+    }
+
     public void initBusinessUnit() throws Exception {
         if (findBusinessUnitById("AMSS") == null) {
             Logger.getLogger(AdminService.class.getName()).log(Level.INFO, "Initializing Business Units");
@@ -554,7 +581,7 @@ public class AdminService {
                         ru = findReportingUnitByCode(code);
                     }
                     ReportingUnit preRU = findReportingUnitByCode(values[1]);
-                    preRU.setParent(ru);
+                    preRU.setParentReportingUnit(ru);
                     ru.getChildReportingUnits().add(preRU);
                     update(preRU);
                     update(ru);

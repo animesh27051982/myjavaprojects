@@ -126,20 +126,19 @@
                                         </p:autoComplete>
                                         <p:commandButton value="Add Approver" style="vertical-align:middle;" ajax="true" actionListener="#{reportingUnitEdit.addApprover(reportingUnitEdit.completedUser)}" update=":mainForm:approvers" process="@this, :mainForm:approverField" />
                                     </p:panelGrid>
-                                    <p:outputLabel for="parentSiteField" value="Parent Reporting Unit"/>
+                                    <p:outputLabel for="parentRU" value="Parent Reporting Unit"/>
                                     <p:autoComplete
-                                        id="parentSiteField"
-                                        var="site"
+                                        id="parentRU"
+                                        var="ru"
                                         maxResults="10"
                                         required="#{false}"
                                         forceSelection="#{true}"
-                                        value="#{reportingUnitEdit.editReporintgUnit.parent}"
+                                        value="#{reportingUnitEdit.editReporintgUnit.parentReportingUnit}"
                                         completeMethod="#{viewSupport.parentReportingUnit}"
-                                        itemLabel="#{site.name}"
-                                        itemValue="#{site}"
+                                        itemLabel="#{ru.name}"
+                                        itemValue="#{ru}"
                                         converter="reportingUnitConverter"
-                                        >
-                                        <h:outputText value="Begin typing reporting unit name"/>
+                                        placeholder="Begin typing..">
                                     </p:autoComplete>
                                     <f:facet name="footer">
                                         <p:toolbar>

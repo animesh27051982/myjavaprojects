@@ -44,6 +44,7 @@ public class FinancialPeriod extends BaseEntity<String> implements Comparable<Fi
     private int periodYear;
     @Column(name = "PERIOD_MONTH")  // TODO - Change to comparable int
     private Integer periodMonth;
+    @Column(name = "STATUS")
     private PeriodStatus status;
     @OneToOne
     @JoinColumn(name = "CREATED_BY_ID")
@@ -174,6 +175,30 @@ public class FinancialPeriod extends BaseEntity<String> implements Comparable<Fi
 
     public void setSequence(Long sequence) {
         this.sequence = sequence;
+    }
+
+    public boolean isOpen() {
+        if (this.status == null) {
+            return false;
+        }
+
+        return this.status.equals(status.OPENED);
+    }
+
+    public boolean isClosed() {
+        if (this.status == null) {
+            return false;
+        }
+
+        return this.status.equals(status.CLOSED);
+    }
+
+    public boolean isNeverOpened() {
+        if (this.status == null) {
+            return false;
+        }
+
+        return this.status.equals(status.NEVER_OPENED);
     }
 
 }

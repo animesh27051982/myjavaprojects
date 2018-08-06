@@ -1,9 +1,12 @@
 package com.flowserve.system606.service;
 
+import com.flowserve.system606.model.ApprovalRequest;
+import com.flowserve.system606.model.ApprovalWorkflowStatus;
 import com.flowserve.system606.model.Company;
 import com.flowserve.system606.model.FinancialPeriod;
 import com.flowserve.system606.model.Holiday;
 import com.flowserve.system606.model.PeriodStatus;
+import com.flowserve.system606.model.ReportingUnit;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.Month;
@@ -31,6 +34,8 @@ public class FinancialPeriodService {
 
     @Inject
     private AdminService adminService;
+    @Inject
+    private ReportingUnitService reportingUnitService;
     private Company company;
 
     private static final Logger logger = Logger.getLogger(FinancialPeriodService.class.getName());
@@ -68,9 +73,7 @@ public class FinancialPeriodService {
             "DEC"};
         Integer[] totalYear = {2017, 2018};
         for (int i = 0; i < totalYear.length; i++) {
-
             for (int j = 1; j <= 12; j++) {
-
                 String yrStr = Integer.toString(totalYear[i]);
                 String shortYear = yrStr.substring(yrStr.length() - 2);
                 String exPeriod = shortMonth[j - 1] + "-" + shortYear;
@@ -80,19 +83,19 @@ public class FinancialPeriodService {
                         continue;  // KJG Tempoararily only create up to JUN-18  // KJG Changed for loading exchange rates for June.
                     }
                     LocalDate lastOfMonth = date.with(TemporalAdjusters.lastDayOfMonth());
-                    FinancialPeriod fPeriod = new FinancialPeriod(exPeriod, exPeriod, LocalDate.of(totalYear[i], Month.of(j), 1), lastOfMonth, totalYear[i], j, PeriodStatus.OPENED);
+                    FinancialPeriod fPeriod = new FinancialPeriod(exPeriod, exPeriod, LocalDate.of(totalYear[i], Month.of(j), 1), lastOfMonth, totalYear[i], j, PeriodStatus.NEVER_OPENED);
                     persist(fPeriod);
                 }
             }
         }
-        if (findById("APR-18") == null) {
-            FinancialPeriod period = new FinancialPeriod("APR-18", "APR-18", LocalDate.of(2018, Month.APRIL, 1), LocalDate.of(2018, Month.APRIL, 30), 2018, 4, PeriodStatus.OPENED);
-            persist(period);
-        }
-        if (findById("MAY-18") == null) {
-            FinancialPeriod period = new FinancialPeriod("MAY-18", "MAY-18", LocalDate.of(2018, Month.MAY, 1), LocalDate.of(2018, Month.MAY, 31), 2018, 5, PeriodStatus.OPENED);
-            persist(period);
-        }
+//        if (findById("APR-18") == null) {
+//            FinancialPeriod period = new FinancialPeriod("APR-18", "APR-18", LocalDate.of(2018, Month.APRIL, 1), LocalDate.of(2018, Month.APRIL, 30), 2018, 4, PeriodStatus.OPENED);
+//            persist(period);
+//        }
+//        if (findById("MAY-18") == null) {
+//            FinancialPeriod period = new FinancialPeriod("MAY-18", "MAY-18", LocalDate.of(2018, Month.MAY, 1), LocalDate.of(2018, Month.MAY, 31), 2018, 5, PeriodStatus.OPENED);
+//            persist(period);
+//        }
 
         Company fls = adminService.findCompanyById("FLS");
 
@@ -464,4 +467,28 @@ public class FinancialPeriodService {
         }
         return finacialPeriod;
     }
+
+    public void openPeriod(FinancialPeriod period) throws Exception {
+
+        if (period.isNeverOpened()) {
+            period.setStatus(PeriodStatus.OPENED);
+            for (ReportingUnit ru : adminService.findAllReportingUnits()) {
+                if (ru.isActive() && !ru.isParent() && ru.getPeriodApprovalRequest(period) == null) {
+                    Logger.getLogger(ReportingUnit.class.getName()).log(Level.INFO, "Opening RU Period: " + ru.getName());
+                    ApprovalRequest ar = new ApprovalRequest();
+                    ar.setApprovalWorkflowStatus(ApprovalWorkflowStatus.DRAFT);
+                    adminService.persist(ar);
+                    ru.putPeriodApprovalRequest(period, ar);
+                    adminService.update(ru);
+                }
+            }
+        }
+
+        if (period.isClosed()) {
+            period.setStatus(PeriodStatus.OPENED);
+        }
+
+        updateFinancialPeriod(period);
+    }
+
 }

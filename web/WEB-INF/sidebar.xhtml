@@ -13,8 +13,8 @@
                     <div class="user-profile">
                         <a id="sidebar-profile-button" href="#">
                             <!--<p:graphicImage name="images/avatar.png" library="california-layout" />-->
-                            <span class="sidebar-profile-name">Pauline Harrell</span>
-                            <span class="sidebar-profile-role">Site Controller</span>
+                            <span class="sidebar-profile-name">#{webSession.getUsername()}</span>
+                            <span class="sidebar-profile-role">#{webSession.getUserTitle()}</span>
                         </a>
                         <ul id="sidebar-usermenu" class="usermenu">
                             <li>
@@ -160,7 +160,7 @@
                             <p:menuitem value="Financial Periods" icon="fa fa-fw fa-sign-in" outcome="/financialPeriodList"/>
                             <p:menuitem value="Calendar" icon="fa fa-fw fa-sign-in" outcome="/calendar"/>
                             <p:menuitem value="Holiday List" icon="fa fa-fw fa-sign-in" outcome="/holidaysList"/>
-                            <p:menuitem value="Upload Legacy Exchange Rates" icon="fa fa-fw fa-sign-in" outcome="/inputLegacyExchangeRate"/>
+                            <p:menuitem value="Upload Legacy Fx Rates" icon="fa fa-fw fa-sign-in" outcome="/inputLegacyExchangeRate"/>
                             <p:menuitem id="initial_contract_upload" value="Upload Contract-POB Data" icon="fa fa-fw fa-home" outcome="/initialContractUpload"/>
                             <p:menuitem value="Upload POCI Data" icon="fa fa-fw fa-home" outcome="/inputPOCIUpload"/>
                         </p:submenu>
