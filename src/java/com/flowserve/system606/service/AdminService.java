@@ -20,6 +20,7 @@ import com.flowserve.system606.model.Measurable;
 import com.flowserve.system606.model.MetricType;
 import com.flowserve.system606.model.ReportingUnit;
 import com.flowserve.system606.model.SubledgerAccount;
+import com.flowserve.system606.model.SubledgerLine;
 import com.flowserve.system606.model.User;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -209,6 +210,11 @@ public class AdminService {
         return (List<BillingEvent>) query.getResultList();
     }
 
+    public List<SubledgerLine> findSubledgerLines()
+    {
+    TypedQuery<SubledgerLine> query = em.createQuery("SELECT s FROM SubledgerLine s", SubledgerLine.class);
+    return (List<SubledgerLine>) query.getResultList();
+    }
     public List<ReportingUnit> findAllReportingUnits() {
         Query query = em.createQuery("SELECT ru FROM ReportingUnit ru ORDER BY ru.code");
         return (List<ReportingUnit>) query.getResultList();
@@ -250,7 +256,9 @@ public class AdminService {
         }
         return null;
     }
-
+   public ReportingUnit findReportingUnitById(String id) {
+        return em.find(ReportingUnit.class, id);
+    }
     public ReportingUnit findParentInReportingUnitCode(String code) {
         Query query = em.createQuery("SELECT reportingUnit FROM ReportingUnit reportingUnit WHERE reportingUnit.code = :CODE");
         query.setParameter("CODE", code);
@@ -632,11 +640,13 @@ public class AdminService {
 
         int count = 0;
         String line = null;
-        while ((line = reader.readLine()) != null) {
-            if (line.trim().length() == 0) {
-                continue;
-            }
-
+        if (findSubledgerAccountByCode("DummyDR") == null) {
+            while ((line = reader.readLine()) != null) {
+                if (line.trim().length() == 0) {
+                    continue;
+                }
+            
+           
             count = 0;
             String[] values = line.split("\\|");
             SubledgerAccount ledger = new SubledgerAccount();
@@ -647,7 +657,8 @@ public class AdminService {
             ledger.setCompany(findCompanyById("FLS"));
 
             persist(ledger);
-        }
+            }
+         }
     }
 
 //    public void initMetricTypeAccounts() throws Exception

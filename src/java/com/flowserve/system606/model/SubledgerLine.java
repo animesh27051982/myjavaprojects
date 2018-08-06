@@ -49,7 +49,10 @@ public class SubledgerLine implements Serializable {
     private FinancialPeriod financialPeriod;
     @Column(name = "ACCOUNTING_DATE")
     private LocalDate accountingDate;
-
+    @OneToOne
+    @JoinColumn(name="SL_BATCH_ID")
+    private SubledgerBatch subledgerBatch;
+    
     public Long getId() {
         return id;
     }
@@ -130,4 +133,14 @@ public class SubledgerLine implements Serializable {
         this.accountingDate = accountingDate;
     }
 
+    public SubledgerBatch getSubledgerBatch() {
+        return subledgerBatch;
+    }
+
+    public void setSubledgerBatch(SubledgerBatch subledgerBatch) {
+        this.subledgerBatch = subledgerBatch;
+    }
+
+    
+    
 }
