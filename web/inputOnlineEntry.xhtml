@@ -284,7 +284,298 @@
                                     </p:column>
                                 </p:treeTable>
                             </p:tab>
+                            <p:tab title="Third Party Inputs">
+                                <p:treeTable value="#{inputOnlineEntry.rootTreeNode}" editable="true" editMode="cell" var="pob">
+                                    <p:columnGroup type="header">
+                                        <p:row>
+                                            <p:column style="width: 350px; text-overflow: ellipsis;" colspan="1" headerText="" />
+                                            <p:column colspan="1" headerText="" />
+                                            <p:column colspan="4" style="background-color: #0071bc; color: #ffffff; white-space:pre-line;" headerText="Local Currency" />
+                                        </p:row>
+                                        <p:row>
+                                            <p:column colspan="1" style="white-space:pre-line;" headerText="RU / Contract / POB" />
+                                            <p:column colspan="1" style="white-space:pre-line;" headerText="#{viewSupport.getMetricTypeDescription('PERCENT_COMPLETE')}" />
+                                            <p:column colspan="1" style="white-space:pre-line;" headerText="Total Estimated Third Party Commissions" />
+                                            <p:column colspan="1" style="white-space:pre-line;" headerText="Third Party Commissions To Recognize" />
+                                            <p:column colspan="1" style="white-space:pre-line;" headerText="Third Party Commissions Recognized-Prior Period" />
+                                            <p:column colspan="1" style="white-space:pre-line;" headerText="Third Part Commissions To Recognize for Period" />
+                                        </p:row>
+                                    </p:columnGroup>
+                                    <p:ajax event="cellEdit" listener="#{inputOnlineEntry.onCellEdit}" />
 
+                                    <p:column style="min-width: 350px; text-overflow: ellipsis;" sortBy="#{pob.name}">
+                                        <h:outputText value="#{pob.name}" />
+                                    </p:column>
+
+                                    <p:column style="white-space:pre-line;">
+                                        <h:outputText id="eacPrior" value="#{viewSupport.getDecimalMetric('PERCENT_COMPLETE', pob).value}" rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}">
+                                            <f:convertNumber type="percent" />
+                                        </h:outputText>
+                                    </p:column>
+
+                                    <p:column style="white-space:pre-line;">
+                                        <p:cellEditor rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}">
+                                            <f:facet name="output">
+                                                <p:inputText value="TODO"  readonly="true">
+                                                    <f:validateDoubleRange/>
+                                                    <o:converter converterId="javax.faces.Number" currencySymbol="" type="currency" />
+                                                </p:inputText>
+                                            </f:facet>
+                                            <f:facet name="input">
+                                                <p:inputText value="TODO">
+                                                    <p:ajax event="change" process="@this" />
+                                                </p:inputText>
+                                            </f:facet>
+                                        </p:cellEditor>
+                                    </p:column>
+                                    <p:column style="white-space:pre-line;">
+                                        <p:cellEditor rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}">
+                                            <f:facet name="output">
+                                                <p:inputText value="TODO"  readonly="true">
+                                                    <f:validateDoubleRange/>
+                                                    <o:converter converterId="javax.faces.Number" currencySymbol="" type="currency" />
+                                                </p:inputText>
+                                            </f:facet>
+                                            <f:facet name="input">
+                                                <p:inputText value="TODO">
+                                                    <p:ajax event="change" process="@this" />
+                                                </p:inputText>
+                                            </f:facet>
+                                        </p:cellEditor>
+                                    </p:column>
+                                    <p:column style="white-space:pre-line;">
+                                        <p:cellEditor rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}">
+                                            <f:facet name="output">
+                                                <p:inputText value="TODO"  readonly="true">
+                                                    <f:validateDoubleRange/>
+                                                    <o:converter converterId="javax.faces.Number" currencySymbol="" type="currency" />
+                                                </p:inputText>
+                                            </f:facet>
+                                            <f:facet name="input">
+                                                <p:inputText value="TODO">
+                                                    <p:ajax event="change" process="@this" />
+                                                </p:inputText>
+                                            </f:facet>
+                                        </p:cellEditor>
+                                    </p:column>
+                                    <p:column style="white-space:pre-line;">
+                                        <p:cellEditor rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}">
+                                            <f:facet name="output">
+                                                <p:inputText value="TODO"  readonly="true">
+                                                    <f:validateDoubleRange/>
+                                                    <o:converter converterId="javax.faces.Number" currencySymbol="" type="currency" />
+                                                </p:inputText>
+                                            </f:facet>
+                                            <f:facet name="input">
+                                                <p:inputText value="TODO">
+                                                    <p:ajax event="change" process="@this" />
+                                                </p:inputText>
+                                            </f:facet>
+                                        </p:cellEditor>
+                                    </p:column>
+                                </p:treeTable>
+                            </p:tab>
+                            <p:tab title="Inter-Company Costing Inputs">
+                                <p:treeTable value="#{inputOnlineEntry.rootTreeNode}" editable="true" editMode="cell" var="pob">
+                                    <p:columnGroup type="header">
+                                        <p:row>
+                                            <p:column style="width: 350px; text-overflow: ellipsis;" colspan="1" headerText="" />
+                                            <p:column colspan="4" headerText="" />
+                                            <p:column colspan="7" style="background-color: #0071bc; color: #ffffff; white-space:pre-line;" headerText="Contract Currency" />
+                                            <p:column colspan="1" headerText="" />
+                                            <p:column colspan="2" style="background-color: #0071bc; color: #ffffff; white-space:pre-line;" headerText="Local Currency" />
+                                        </p:row>
+                                        <p:row>
+                                            <p:column colspan="1" style="white-space:pre-line;" headerText="RU / Contract / POB" />
+                                            <p:column colspan="1" style="white-space:pre-line;" headerText="Interco Supplier Reporting Unit" />
+                                            <p:column colspan="1" style="white-space:pre-line;" headerText="Interco Customer Name" />
+                                            <p:column colspan="1" style="white-space:pre-line;" headerText="BPC Trading Partner" />
+                                            <p:column colspan="1" style="white-space:pre-line;" headerText="Customer PO #" />
+
+                                            <p:column colspan="1" style="white-space:pre-line;" headerText="Currency" />
+                                            <p:column colspan="1" style="white-space:pre-line;" headerText="Customer PO Amount" />
+                                            <p:column colspan="1" style="white-space:pre-line;" headerText="Component Total PO Price" />
+                                            <p:column colspan="1" style="white-space:pre-line;" headerText="Total Prior Period Progress Billings-ITD" />
+                                            <p:column colspan="1" style="white-space:pre-line;" headerText="Component Standard Costs Incurred on Prior Period Billing" />
+                                            <p:column colspan="1" style="white-space:pre-line;" headerText="Percent Complete" />
+                                            <p:column colspan="1" style="white-space:pre-line;" headerText="Total Interco Revenue Less Prior Billings" />
+
+                                            <p:column colspan="1" style="white-space:pre-line;" headerText="Currency" />
+
+                                            <p:column colspan="1" style="white-space:pre-line;" headerText="Component Cost Estimate at Completion" />
+                                            <p:column colspan="1" style="white-space:pre-line;" headerText="Component Standard Costs*-ITD" />
+                                        </p:row>
+                                    </p:columnGroup>
+                                    <p:ajax event="cellEdit" listener="#{inputOnlineEntry.onCellEdit}" />
+
+                                    <p:column style="min-width: 350px; text-overflow: ellipsis;" sortBy="#{pob.name}">
+                                        <h:outputText value="#{pob.name}" />
+                                    </p:column>
+
+                                    <p:column style="white-space:pre-line;">
+                                        <p:cellEditor rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}">
+                                            <f:facet name="output">
+                                                <p:inputText value="0"  readonly="true">
+                                                    <f:validateDoubleRange/>
+                                                    <o:converter converterId="javax.faces.Number" currencySymbol="" type="currency" />
+                                                </p:inputText>
+                                            </f:facet>
+                                            <f:facet name="input">
+                                                <p:inputText value="0"/>
+                                            </f:facet>
+                                        </p:cellEditor>
+                                    </p:column>
+                                    <p:column style="white-space:pre-line;">
+                                        <p:cellEditor rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}">
+                                            <f:facet name="output">
+                                                <p:inputText value="0"  readonly="true">
+                                                    <f:validateDoubleRange/>
+                                                    <o:converter converterId="javax.faces.Number" currencySymbol="" type="currency" />
+                                                </p:inputText>
+                                            </f:facet>
+                                            <f:facet name="input">
+                                                <p:inputText value="0"/>
+                                            </f:facet>
+                                        </p:cellEditor>
+                                    </p:column>
+                                    <p:column style="white-space:pre-line;">
+                                        <p:cellEditor rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}">
+                                            <f:facet name="output">
+                                                <p:inputText value="0"  readonly="true">
+                                                    <f:validateDoubleRange/>
+                                                    <o:converter converterId="javax.faces.Number" currencySymbol="" type="currency" />
+                                                </p:inputText>
+                                            </f:facet>
+                                            <f:facet name="input">
+                                                <p:inputText value="0"/>
+                                            </f:facet>
+                                        </p:cellEditor>
+                                    </p:column>
+                                    <p:column style="white-space:pre-line;">
+                                        <p:cellEditor rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}">
+                                            <f:facet name="output">
+                                                <p:inputText value="0"  readonly="true">
+                                                    <f:validateDoubleRange/>
+                                                    <o:converter converterId="javax.faces.Number" currencySymbol="" type="currency" />
+                                                </p:inputText>
+                                            </f:facet>
+                                            <f:facet name="input">
+                                                <p:inputText value="0"/>
+                                            </f:facet>
+                                        </p:cellEditor>
+                                    </p:column>
+                                    <p:column style="width: 50px; white-space:pre-line;">
+                                        <h:outputText value="#{pob.localCurrency.currencyCode}" rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}"/>
+                                    </p:column>
+                                    <p:column style="white-space:pre-line;">
+                                        <p:cellEditor rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}">
+                                            <f:facet name="output">
+                                                <p:inputText value="0"  readonly="true">
+                                                    <f:validateDoubleRange/>
+                                                    <o:converter converterId="javax.faces.Number" currencySymbol="" type="currency" />
+                                                </p:inputText>
+                                            </f:facet>
+                                            <f:facet name="input">
+                                                <p:inputText value="0"/>
+                                            </f:facet>
+                                        </p:cellEditor>
+                                    </p:column>
+                                    <p:column style="white-space:pre-line;">
+                                        <p:cellEditor rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}">
+                                            <f:facet name="output">
+                                                <p:inputText value="0"  readonly="true">
+                                                    <f:validateDoubleRange/>
+                                                    <o:converter converterId="javax.faces.Number" currencySymbol="" type="currency" />
+                                                </p:inputText>
+                                            </f:facet>
+                                            <f:facet name="input">
+                                                <p:inputText value="0"/>
+                                            </f:facet>
+                                        </p:cellEditor>
+                                    </p:column>
+                                    <p:column style="white-space:pre-line;">
+                                        <p:cellEditor rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}">
+                                            <f:facet name="output">
+                                                <p:inputText value="0"  readonly="true">
+                                                    <f:validateDoubleRange/>
+                                                    <o:converter converterId="javax.faces.Number" currencySymbol="" type="currency" />
+                                                </p:inputText>
+                                            </f:facet>
+                                            <f:facet name="input">
+                                                <p:inputText value="0"/>
+                                            </f:facet>
+                                        </p:cellEditor>
+                                    </p:column>
+                                    <p:column style="white-space:pre-line;">
+                                        <p:cellEditor rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}">
+                                            <f:facet name="output">
+                                                <p:inputText value="0"  readonly="true">
+                                                    <f:validateDoubleRange/>
+                                                    <o:converter converterId="javax.faces.Number" currencySymbol="" type="currency" />
+                                                </p:inputText>
+                                            </f:facet>
+                                            <f:facet name="input">
+                                                <p:inputText value="0"/>
+                                            </f:facet>
+                                        </p:cellEditor>
+                                    </p:column>
+                                    <p:column style="white-space:pre-line;">
+                                        <p:cellEditor rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}">
+                                            <f:facet name="output">
+                                                <p:inputText value="0"  readonly="true">
+                                                    <f:validateDoubleRange/>
+                                                    <o:converter converterId="javax.faces.Number" currencySymbol="" type="currency" />
+                                                </p:inputText>
+                                            </f:facet>
+                                            <f:facet name="input">
+                                                <p:inputText value="0"/>
+                                            </f:facet>
+                                        </p:cellEditor>
+                                    </p:column>
+                                    <p:column style="white-space:pre-line;">
+                                        <p:cellEditor rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}">
+                                            <f:facet name="output">
+                                                <p:inputText value="0"  readonly="true">
+                                                    <f:validateDoubleRange/>
+                                                    <o:converter converterId="javax.faces.Number" currencySymbol="" type="currency" />
+                                                </p:inputText>
+                                            </f:facet>
+                                            <f:facet name="input">
+                                                <p:inputText value="0"/>
+                                            </f:facet>
+                                        </p:cellEditor>
+                                    </p:column>
+                                    <p:column style="width: 50px; white-space:pre-line;">
+                                        <h:outputText value="#{pob.localCurrency.currencyCode}" rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}"/>
+                                    </p:column>
+                                    <p:column style="white-space:pre-line;">
+                                        <p:cellEditor rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}">
+                                            <f:facet name="output">
+                                                <p:inputText value="0"  readonly="true">
+                                                    <f:validateDoubleRange/>
+                                                    <o:converter converterId="javax.faces.Number" currencySymbol="" type="currency" />
+                                                </p:inputText>
+                                            </f:facet>
+                                            <f:facet name="input">
+                                                <p:inputText value="0"/>
+                                            </f:facet>
+                                        </p:cellEditor>
+                                    </p:column>
+                                    <p:column style="white-space:pre-line;">
+                                        <p:cellEditor rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}">
+                                            <f:facet name="output">
+                                                <p:inputText value="0"  readonly="true">
+                                                    <f:validateDoubleRange/>
+                                                    <o:converter converterId="javax.faces.Number" currencySymbol="" type="currency" />
+                                                </p:inputText>
+                                            </f:facet>
+                                            <f:facet name="input">
+                                                <p:inputText value="0"/>
+                                            </f:facet>
+                                        </p:cellEditor>
+                                    </p:column>
+                                </p:treeTable>
+                            </p:tab>
                             <p:tab title="Billing Inputs">
                                 <p:treeTable value="#{inputOnlineEntry.billingTreeNode}" editable="true" id="treeTableId" editMode="cell" var="billEvent">
                                     <f:facet name="header">
