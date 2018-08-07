@@ -326,6 +326,19 @@ public class ViewSupport implements Serializable {
         return webSession.getCurrentPeriod();
     }
 
+    public String getErrorMessage(String metricCode, Measurable measurable) throws Exception {
+        if (calculationService.getCurrencyMetric(metricCode, measurable, webSession.getCurrentPeriod()).isValid()) {
+            return calculationService.getCurrencyMetric(metricCode, measurable, webSession.getCurrentPeriod()).getMessage();
+        } else {
+            return null;
+        }
+
+    }
+
+    public boolean getValidation(String metricCode, Measurable measurable) throws Exception {
+        return calculationService.getCurrencyMetric(metricCode, measurable, webSession.getCurrentPeriod()).isValid();
+    }
+
     public String getMetricTypeDescription(String metricCode) {
         return metricService.findMetricTypeByCode(metricCode).getDescription();
     }
