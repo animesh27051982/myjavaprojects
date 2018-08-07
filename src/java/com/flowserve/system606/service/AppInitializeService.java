@@ -63,6 +63,7 @@ public class AppInitializeService {
             adminService.initCoEtoParentRU();
             adminService.initCompaniesInRUs();
             adminService.initPreparersReviewerForRU();
+            adminService.initPreparersReviewerForCOE();
             adminService.initReportingUnitWorkflowStatus();
             calculationService.initBusinessRules();
 

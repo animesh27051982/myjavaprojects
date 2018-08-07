@@ -210,11 +210,11 @@ public class AdminService {
         return (List<BillingEvent>) query.getResultList();
     }
 
-    public List<SubledgerLine> findSubledgerLines()
-    {
-    TypedQuery<SubledgerLine> query = em.createQuery("SELECT s FROM SubledgerLine s", SubledgerLine.class);
-    return (List<SubledgerLine>) query.getResultList();
+    public List<SubledgerLine> findSubledgerLines() {
+        TypedQuery<SubledgerLine> query = em.createQuery("SELECT s FROM SubledgerLine s", SubledgerLine.class);
+        return (List<SubledgerLine>) query.getResultList();
     }
+
     public List<ReportingUnit> findAllReportingUnits() {
         Query query = em.createQuery("SELECT ru FROM ReportingUnit ru ORDER BY ru.code");
         return (List<ReportingUnit>) query.getResultList();
@@ -256,9 +256,11 @@ public class AdminService {
         }
         return null;
     }
-   public ReportingUnit findReportingUnitById(String id) {
+
+    public ReportingUnit findReportingUnitById(String id) {
         return em.find(ReportingUnit.class, id);
     }
+
     public ReportingUnit findParentInReportingUnitCode(String code) {
         Query query = em.createQuery("SELECT reportingUnit FROM ReportingUnit reportingUnit WHERE reportingUnit.code = :CODE");
         query.setParameter("CODE", code);
@@ -645,20 +647,19 @@ public class AdminService {
                 if (line.trim().length() == 0) {
                     continue;
                 }
-            
-           
-            count = 0;
-            String[] values = line.split("\\|");
-            SubledgerAccount ledger = new SubledgerAccount();
-            ledger.setAccountType(values[count++]);
-            ledger.setCode(values[count++]);
-            ledger.setDescription(values[count++]);
-            ledger.setName(values[count++]);
-            ledger.setCompany(findCompanyById("FLS"));
 
-            persist(ledger);
+                count = 0;
+                String[] values = line.split("\\|");
+                SubledgerAccount ledger = new SubledgerAccount();
+                ledger.setAccountType(values[count++]);
+                ledger.setCode(values[count++]);
+                ledger.setDescription(values[count++]);
+                ledger.setName(values[count++]);
+                ledger.setCompany(findCompanyById("FLS"));
+
+                persist(ledger);
             }
-         }
+        }
     }
 
 //    public void initMetricTypeAccounts() throws Exception
@@ -714,6 +715,49 @@ public class AdminService {
             reader.close();
 
             Logger.getLogger(AdminService.class.getName()).log(Level.INFO, "Finished initializing Reporting Units.");
+        }
+    }
+
+    public void initPreparersReviewerForCOE() throws Exception {
+
+        if (findPreparersByReportingUnitCode("CoE 1") == null) {
+            Logger.getLogger(AdminService.class.getName()).log(Level.INFO, "Initializing COE for Preparers and Approvers");
+            BufferedReader reader = new BufferedReader(new InputStreamReader(AppInitializeService.class.getResourceAsStream("/resources/app_data_init_files/coe.txt"), "UTF-8"));
+
+            String line = null;
+            while ((line = reader.readLine()) != null) {
+                if (line.trim().length() == 0) {
+                    continue;
+                }
+
+                String[] values = line.split("\\t");
+                if (values.length > 2 && values[2].equalsIgnoreCase("Preparer")) {
+
+                    User user = findUserByFlsIdType(values[1]);
+                    ReportingUnit ru = findReportingUnitByCode(values[0]);
+                    if (ru != null && user != null && !ru.getPreparers().contains(user)) {
+                        Logger.getLogger(AdminService.class.getName()).log(Level.INFO, "adding Preparer " + user.getFlsId());
+                        ru.getPreparers().add(user);
+                        update(ru);
+                    }
+
+                } else if (values.length > 2 && values[2].equalsIgnoreCase("Reviewer")) {
+
+                    User user = findUserByFlsIdType(values[1]);
+                    ReportingUnit ru = findReportingUnitByCode(values[0]);
+                    if (ru != null && user != null && !ru.getApprovers().contains(user)) {
+                        Logger.getLogger(AdminService.class.getName()).log(Level.INFO, "adding Reviewer " + user.getFlsId());
+                        ru.getApprovers().add(user);
+                        update(ru);
+                    }
+
+                }
+
+            }
+
+            reader.close();
+
+            Logger.getLogger(AdminService.class.getName()).log(Level.INFO, "Finished initializing COEs.");
         }
     }
 

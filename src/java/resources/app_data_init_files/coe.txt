@@ -1,0 +1,784 @@
+
+Unassigned	BVelasco	Approver
+Unassigned	CEvarts	Approver
+Unassigned	AHiggins	Approver
+Unassigned	EJohansson	Approver
+Unassigned	10143988	Approver
+Unassigned	PwCAudit	Reporting User
+Unassigned	rkeesecker	Site Administrator
+Unassigned	InternalAudit	Reporting User
+Unassigned	Matt Wells	Reporting User
+Unassigned	TSiebert	Reviewer
+Unassigned	10135491	Reviewer
+Unassigned	10135491	Reviewer
+Unassigned	10135491	Reviewer
+Unassigned	DBauernfeind	Reviewer
+Unassigned	10140854	Default - Read Only
+Unassigned	JEastham	Default - Read Only
+Unassigned	10152988	Default - Read Only
+Unassigned	MKretchmar	Default - Read Only
+Unassigned	10152669	Default - Read Only
+Unassigned	50040224	Site Administrator
+Unassigned	kownby	Site Administrator
+Unassigned	left10154783	Site Administrator
+Unassigned	50041949	Preparer
+Unassigned	50052748	Reviewer
+Unassigned	50041124	Preparer
+Unassigned	50045464	Reviewer
+Unassigned	50047215	Reviewer
+Unassigned	jthrustic	Reporting User
+Unassigned	rvancura	Reporting User
+Unassigned	50043609	Reports Administrator
+Unassigned	left50045390	Reports Administrator
+Unassigned	rkeesecker	Site Administrator
+CoE 9	arijsewijk	Preparer
+CoE 4	10156130	Default - Read Only
+SSCoE 4	10156130	Default - Read Only
+SSCoE 4	10156130	Default - Read Only
+SSCoE 4	10156130	Default - Read Only
+SSCoE 4	10156130	Default - Read Only
+SSCoE 4	10156130	Default - Read Only
+SSCoE 5	10132300	Preparer
+SSCoE 5	10132300	Preparer
+SSCoE 13	10142650	Reviewer
+SSCoE 12	10142650	Reviewer
+SSCoE 12	10142650	Reviewer
+CoE 12	10142650	Reviewer
+SSCoE 3	ALadaran	Preparer
+SSCoE 12	10151004	Preparer
+SSCoE 7	10136480	Reviewer
+SSCoE 7	10136480	Reviewer
+SSCoE 5	10141854	Preparer
+SSCoE 10	10153736	Preparer
+SSCoE 10	10153736	Preparer
+SSCoE 9	10156089	Preparer
+SSCoE 13	10109198	Preparer
+SSCoE 4	ARiccardi	Reviewer
+SSCoE 4	ARiccardi	Reviewer
+SSCoE 4	ARiccardi	Reviewer
+SSCoE 10	ARiccardi	Reviewer
+CoE 10	ARiccardi	Reviewer
+SSCoE 10	ARiccardi	Reviewer
+SSCoE 5	ARiccardi	Reviewer
+SSCoE 10	ARiccardi	Reviewer
+CoE 7	10156024	Preparer
+CoE 7	10156024	Preparer
+SSCoE 7	10131723	Reviewer
+SSCoE 7	10131723	Reviewer
+SSCoE 9	10157430	Preparer
+SSCoE 9	10157430	Preparer
+CoE 10	10132400	Default
+SSS	10148437	Preparer
+CoE 2	10152939	Preparer
+SSCoE 1	AFoley	Reviewer
+Unassigned	200allopez	Preparer
+SSCoE 4	50037787	Preparer
+SSCoE 4	50037787	Preparer
+SSCoE 3	ahartman	Preparer
+SSCoE 3	ahartman	Preparer
+SSCoE 3	ahartman	Preparer
+CoE 3	ahartman	Preparer
+SSCoE 3	ahartman	Preparer
+SSCoE 3	ahartman	Preparer
+SSCoE 3	ahartman	Preparer
+SSCoE 3	ahartman	Preparer
+SSCoE 3	ahartman	Preparer
+SSCoE 3	ahartman	Preparer
+SSCoE 3	ahartman	Preparer
+SSCoE 3	ahartman	Preparer
+CoE 2	10151121	Preparer
+CoE 7	10134730	Preparer
+SSCoE 18	10131879	Reviewer
+SSCoE 18	10131879	Reviewer
+SSCoE 6	aholt	Reviewer
+CoE 6	10149913	Reviewer
+SSCoE 6	10149913	Reviewer
+CoE 7	10135003	Preparer
+SSCoE 12	10133605	Reviewer
+SSCoE 18	10150073	Reviewer
+CoE 13	10152110	Preparer
+SSCoE 5	10156695	Preparer
+SSCoE 12	10155654	Preparer
+SSCoE 12	10155654	Preparer
+SSCoE 12	10155654	Preparer
+SSCoE 12	10155654	Preparer
+SSCoE 13	10155654	Preparer
+SSCoE 12	10155654	Preparer
+SSCoE 12	10155654	Preparer
+SSCoE 12	10155654	Preparer
+SSCoE 12	10155654	Preparer
+CoE 12	10155654	Preparer
+SSCoE 12	10155654	Preparer
+SSCoE 12	10155654	Preparer
+SSCoE 12	10155654	Preparer
+SSCoE 12	10155654	Preparer
+SSCoE 12	10155654	Preparer
+CoE 2	BEly	Reviewer
+SSCoE 2	BEly	Reviewer
+SSCoE 2	BEly	Reviewer
+SSCoE 6	10153218	Preparer
+SSCoE 8	10155606	Reviewer
+SSCoE 8	10155606	Reviewer
+CoE 5	250bunadkat	Preparer
+CoE 6	10156488	Reviewer
+SSCoE 6	10156488	Reviewer
+SSCoE 6	10156488	Reviewer
+SSCoE 6	10156488	Reviewer
+SSCoE 6	10156488	Reviewer
+SSCoE 6	10156488	Reviewer
+SSCoE 6	10156488	Reviewer
+SSCoE 6	10156488	Reviewer
+SSCoE 6	10156488	Reviewer
+SSCoE 6	10156488	Reviewer
+SSS	BBrown	Preparer
+CoE 2	CByrd	Reviewer
+Unassigned	200cperez	Default
+SSCoE 5	10137628	Reviewer
+SSCoE 7	10151506	Preparer
+SSCoE 7	10151506	Preparer
+CoE 11	10130206	Reviewer
+SSCoE 1	10136444	Preparer
+CoE 1	10155632	Preparer
+SSCoE 1	cwhite	Preparer
+SSCoE 12	cheeng	Reviewer
+SSCoE 12	cheeng	Reviewer
+SSCoE 12	cheeng	Reviewer
+SSCoE 12	cheeng	Reviewer
+SSCoE 16	cheeng	Reviewer
+SSCoE 5	cheeng	Reviewer
+SSCoE 12	cheeng	Reviewer
+SSCoE 12	cheeng	Reviewer
+SSCoE 16	cheeng	Reviewer
+CoE 17	cheeng	Reviewer
+SSCoE 12	10144088	Preparer
+SSCoE 1	CDimler	Preparer
+CoE 12	10154186	Preparer
+SSCoE 1	10147046	Reviewer
+SSCoE 8	CAlbertz	Reviewer
+Unassigned	10094038	Reviewer
+Unassigned	50051992	Reviewer
+SSCoE 6	CLundberg	Preparer
+CoE 8	10132559	Preparer
+SSS	10082977	Preparer
+SSCoE 12	epai	Reviewer
+SSCoE 12	epai	Reviewer
+SSCoE 12	epai	Reviewer
+SSCoE 16	epai	Reviewer
+SSCoE 12	10137327	Preparer
+CoE 11	10155890	Reviewer
+SSCoE 11	10155890	Reviewer
+SSCoE 11	10155890	Reviewer
+SSCoE 11	10155890	Reviewer
+SSCoE 8	CLieback	Preparer
+CoE 9	CCappellari	Reviewer
+SSS	CCappellari	Reviewer
+SSS	10151021	Preparer
+SSS	10114358	Preparer
+CoE 14	10148219	Preparer
+SSCoE 1	CryBrown	Reviewer
+SSS	DSchwartz	Preparer
+CoE 14	darnaltes	Preparer
+SSCoE 16	10141424	Reviewer
+SSCoE 16	10141424	Reviewer
+SSCoE 16	10141424	Reviewer
+SSCoE 16	10141424	Reviewer
+SSCoE 16	10141424	Reviewer
+SSCoE 3	50053175	Preparer
+SSCoE 3	50053175	Preparer
+SSCoE 3	50053175	Preparer
+CoE 3	50053175	Preparer
+SSCoE 3	50053175	Preparer
+SSCoE 3	50053175	Preparer
+SSCoE 3	50053175	Preparer
+SSCoE 3	50053175	Preparer
+SSCoE 3	50053175	Preparer
+SSCoE 3	50053175	Preparer
+SSCoE 3	50053175	Preparer
+SSCoE 3	50053175	Preparer
+SSCoE 3	50053175	Preparer
+SSCoE 3	50053175	Preparer
+SSCoE 3	50053175	Preparer
+SSCoE 3	50053175	Preparer
+SSCoE 3	50053175	Preparer
+SSCoE 3	50053175	Preparer
+SSCoE 3	50053175	Preparer
+SSCoE 3	50053175	Preparer
+SSCoE 3	50053175	Preparer
+SSCoE 10	10156724	Preparer
+SSCoE 10	10156724	Preparer
+SSCoE 10	10008892	Preparer
+SSCoE 3	10145715	Preparer
+SSCoE 3	10145715	Preparer
+SSCoE 3	10145715	Preparer
+CoE 3	10145715	Preparer
+SSCoE 3	10145715	Preparer
+SSCoE 3	10145715	Preparer
+SSCoE 3	10145715	Preparer
+SSCoE 3	10145715	Preparer
+SSCoE 3	10145715	Preparer
+SSCoE 3	10145715	Preparer
+SSCoE 3	10145715	Preparer
+SSCoE 3	10145715	Preparer
+CoE 2	10156491	Preparer
+CoE 2	10156491	Preparer
+SSCoE 2	10156491	Preparer
+SSCoE 9	10140581	Reviewer
+SSCoE 9	10140581	Reviewer
+CoE 6	10149402	Preparer
+SSS	Dpesce	Preparer
+SSS	DMcKasson	Reviewer
+SSCoE 9	DMcKasson	Reviewer
+SSCoE 9	DMcKasson	Reviewer
+SSCoE 7	DMcKasson	Reviewer
+SSCoE 8	DMcKasson	Reviewer
+SSCoE 10	DMcKasson	Reviewer
+SSCoE 10	DMcKasson	Reviewer
+SSCoE 8	DMcKasson	Reviewer
+SSCoE 6	10149001	Reviewer
+SSCoE 7	10132361	Reviewer
+SSCoE 7	10132361	Reviewer
+SSCoE 7	10132361	Reviewer
+SSCoE 7	10132361	Reviewer
+SSCoE 7	10132361	Reviewer
+SSCoE 7	10132361	Reviewer
+SSCoE 7	10132361	Reviewer
+SSCoE 7	10132361	Reviewer
+CoE 11	ecisneros	Reviewer
+SSCoE 11	ecisneros	Reviewer
+SSCoE 11	ecisneros	Reviewer
+SSCoE 11	ecisneros	Reviewer
+SSCoE 11	ecisneros	Reviewer
+SSCoE 10	ECarminati	Preparer
+CoE 10	ECarminati	Preparer
+SSCoE 10	ECarminati	Preparer
+SSCoE 10	10154588	Preparer
+CoE 8	10151287	Preparer
+CoE 9	EVet	Preparer
+CoE 2	10154285	Preparer
+SSCoE 11	10155767	Preparer
+SSCoE 11	10155767	Preparer
+SSCoE 11	10155767	Preparer
+SSCoE 11	10155767	Preparer
+SSCoE 3	10156873	Preparer
+SSCoE 9	ESoeters	Reviewer
+SSCoE 9	ESoeters	Reviewer
+SSCoE 16	10119621	Reviewer
+CoE 16	10119621	Reviewer
+SSCoE 16	10119621	Reviewer
+SSCoE 16	10119621	Reviewer
+SSCoE 16	10119621	Reviewer
+CoE 1	Ewu	Reviewer
+SSS	EHorvath	Reviewer
+SSS	10150437	Reviewer
+SSCoE 8	EHaselhoff	Preparer
+SSCoE 14	10152157	Preparer
+SSCoE 9	10148949	Reviewer
+SSCoE 10	10122281	Preparer
+CoE 10	10122281	Preparer
+SSCoE 10	10122281	Preparer
+SSCoE 5	10122281	Preparer
+SSCoE 10	10122281	Preparer
+SSCoE 3	FAguirre	Reviewer
+SSS	FAguirre	Reviewer
+SSCoE 3	FAguirre	Reviewer
+SSCoE 3	FAguirre	Reviewer
+SSCoE 3	FAguirre	Reviewer
+SSCoE 9	FClaassens	Reviewer
+SSCoE 18	FClaassens	Reviewer
+SSCoE 18	FClaassens	Reviewer
+SSCoE 8	FClaassens	Reviewer
+SSCoE 9	FClaassens	Reviewer
+SSCoE 10	FClaassens	Reviewer
+SSCoE 10	FClaassens	Reviewer
+SSCoE 5	FClaassens	Reviewer
+SSCoE 10	FClaassens	Reviewer
+SSCoE 14	FClaassens	Reviewer
+SSCoE 10	FClaassens	Reviewer
+SSCoE 3	10153074	Preparer
+SSCoE 3	10153074	Preparer
+SSCoE 3	10153074	Preparer
+CoE 3	10153074	Preparer
+SSCoE 3	10153074	Preparer
+SSCoE 3	10153074	Preparer
+SSCoE 3	10153074	Preparer
+SSCoE 3	10153074	Preparer
+SSCoE 3	10153074	Preparer
+SSCoE 3	10153074	Preparer
+SSCoE 3	10153074	Preparer
+SSCoE 3	10153074	Preparer
+CoE 4	GBotcherby	Reviewer
+SSCoE 4	GBotcherby	Reviewer
+SSCoE 17	GBotcherby	Reviewer
+CoE 8	GBotcherby	Reviewer
+SSCoE 8	GBotcherby	Reviewer
+SSCoE 5	GBotcherby	Reviewer
+SSCoE 12	GBotcherby	Reviewer
+SSCoE 4	10137764	Reviewer
+SSCoE 4	10137764	Reviewer
+SSCoE 4	10137764	Reviewer
+SSCoE 4	10137764	Reviewer
+SSCoE 4	10137764	Reviewer
+SSCoE 12	10140005	Preparer
+SSCoE 12	10140005	Preparer
+CoE 8	50051774	Preparer
+SSCoE 8	50051774	Preparer
+SSCoE 8	50051774	Preparer
+SSCoE 8	50051774	Preparer
+SSCoE 8	50051774	Preparer
+SSCoE 8	50051774	Preparer
+SSCoE 8	50051774	Preparer
+SSS	10135383	Reviewer
+Unassigned	10135383	Reviewer
+CoE 18	250ggregoire	Reviewer
+CoE 18	250ggregoire	Reviewer
+CoE 9	10130759	Reviewer
+SSCoE 3	GFleisher	Preparer
+SSCoE 3	GFleisher	Preparer
+SSCoE 3	GFleisher	Preparer
+CoE 3	GFleisher	Preparer
+SSCoE 3	GFleisher	Preparer
+SSCoE 3	GFleisher	Preparer
+SSCoE 3	GFleisher	Preparer
+SSCoE 3	GFleisher	Preparer
+SSCoE 3	GFleisher	Preparer
+SSCoE 3	GFleisher	Preparer
+SSCoE 3	GFleisher	Preparer
+SSCoE 3	GFleisher	Preparer
+SSS	10153739	Reviewer
+SSCoE 4	10153739	Reviewer
+SSS	10153739	Reviewer
+SSCoE 10	10153739	Reviewer
+SSCoE 6	10153739	Reviewer
+CoE 7	gcalderon	Preparer
+SSS	10038715	Preparer
+Unassigned	10038715	Preparer
+SSCoE 9	10135268	Reviewer
+SSCoE 9	10135268	Reviewer
+SSCoE 9	10135268	Reviewer
+SSCoE 10	HSlabbekoorn	Reviewer
+SSCoE 9	HSlabbekoorn	Reviewer
+SSCoE 3	10036129	Preparer
+SSCoE 3	10036129	Preparer
+SSCoE 3	10036129	Preparer
+CoE 3	10036129	Preparer
+SSCoE 3	10036129	Preparer
+SSCoE 3	10036129	Preparer
+SSCoE 3	10036129	Preparer
+SSCoE 3	10036129	Preparer
+SSCoE 3	10036129	Preparer
+SSCoE 3	10036129	Preparer
+SSCoE 3	10036129	Preparer
+SSCoE 3	10036129	Preparer
+SSCoE 16	AvaLi	Preparer
+SSCoE 16	AvaLi	Preparer
+SSCoE 5	hmohammed	Reviewer
+SSCoE 17	10122021	Reviewer
+SSCoE 13	10138942	Preparer
+SSCoE 9	10031925	Reviewer
+CoE 1	10157311	Preparer
+SSS	10129700	Default - Read Only
+SSCoE 10	iatabay	Preparer
+CoE 14	iatabay	Preparer
+SSCoE 3	jtaube	Preparer
+SSCoE 3	jtaube	Preparer
+SSCoE 3	jtaube	Preparer
+CoE 3	jtaube	Preparer
+SSCoE 3	jtaube	Preparer
+SSCoE 3	jtaube	Preparer
+SSCoE 3	jtaube	Preparer
+SSCoE 3	jtaube	Preparer
+SSCoE 3	jtaube	Preparer
+SSCoE 3	jtaube	Preparer
+SSCoE 3	jtaube	Preparer
+SSCoE 3	jtaube	Preparer
+CoE 6	10149176	Preparer
+SSCoE 12	10143711	Preparer
+SSCoE 1	jegardner	Preparer
+SSCoE 10	10135850	Preparer
+SSCoE 9	JDun	Reviewer
+SSS	10152147	Preparer
+SSCoE 7	10135569	Preparer
+SSCoE 7	10135569	Preparer
+SSCoE 7	10135569	Preparer
+SSCoE 7	10135569	Preparer
+SSCoE 7	10135569	Preparer
+SSCoE 7	10135569	Preparer
+SSCoE 7	10135569	Preparer
+SSCoE 7	10135569	Preparer
+SSCoE 7	10151285	Reviewer
+SSCoE 7	10151285	Reviewer
+SSCoE 14	10149131	Reviewer
+SSS	10140654	Preparer
+Unassigned	10140654	Preparer
+SSCoE 12	KKaruppiah	Reviewer
+SSCoE 6	10154968	Preparer
+SSCoE 8	10154968	Preparer
+SSCoE 8	10154968	Preparer
+SSCoE 10	KJensen	Reviewer
+SSCoE 8	kburgmann	Preparer
+SSCoE 8	kburgmann	Preparer
+SSCoE 10	KMorgan	Preparer
+SSCoE 5	10133566	Preparer
+SSCoE 1	KKarnes	Preparer
+SSCoE 1	10151570	Preparer
+SSCoE 18	10150070	Default - Read Only
+CoE 4	10154844	Preparer
+SSCoE 4	10154844	Preparer
+SSCoE 4	10154844	Preparer
+SSCoE 4	10154844	Preparer
+SSCoE 4	10154844	Preparer
+SSCoE 4	10154844	Preparer
+SSCoE 7	10151602	Preparer
+SSCoE 12	10115679	Preparer
+CoE 9	ldons	Preparer
+SSCoE 3	10153073	Preparer
+SSS	10153073	Preparer
+SSCoE 3	10153073	Preparer
+SSCoE 3	10153073	Preparer
+SSCoE 3	10153073	Preparer
+SSCoE 3	10156115	Preparer
+SSCoE 3	10156115	Preparer
+SSCoE 3	10156115	Preparer
+CoE 3	10156115	Preparer
+SSCoE 3	10156115	Preparer
+SSCoE 3	10156115	Preparer
+SSCoE 3	10156115	Preparer
+SSCoE 3	10156115	Preparer
+SSCoE 3	10156115	Preparer
+SSCoE 3	10156115	Preparer
+SSCoE 3	10156115	Preparer
+SSCoE 3	10156115	Preparer
+SSCoE 3	10156115	Preparer
+SSCoE 3	10156115	Preparer
+SSCoE 3	10156115	Preparer
+SSCoE 3	10156115	Preparer
+SSCoE 3	10156115	Preparer
+SSCoE 3	10156115	Preparer
+SSCoE 3	10156115	Preparer
+SSCoE 3	10156115	Preparer
+SSCoE 3	10156115	Preparer
+SSS	10135153	Reviewer
+CoE 14	10135153	Reviewer
+Unassigned	10135153	Reviewer
+SSCoE 16	10132669	Preparer
+SSS	piazza	Preparer
+CoE 10	250lbellini	Preparer
+SSCoE 7	alperez	Preparer
+SSS	10156342	Preparer
+SSCoE 11	GuGarcia	Preparer
+SSCoE 5	nmahesh	Preparer
+SSCoE 8	mfraesdorf	Preparer
+SSCoE 8	mfraesdorf	Preparer
+SSS	mnagtzaam	Preparer
+SSCoE 8	10081974	Reviewer
+SSCoE 8	10081974	Reviewer
+SSCoE 8	10153480	Preparer
+SSCoE 8	10153480	Preparer
+Unassigned	200mstribling	Preparer
+SSCoE 9	10152619	Preparer
+CoE 11	50039950	Preparer
+CoE 7	10156102	Preparer
+CoE 7	10156102	Preparer
+SSCoE 7	10156102	Preparer
+SSCoE 9	10156102	Preparer
+SSCoE 7	10156102	Preparer
+SSCoE 7	10156102	Preparer
+SSCoE 7	10156102	Preparer
+SSCoE 7	10156102	Preparer
+SSCoE 7	10156102	Preparer
+SSCoE 7	10156102	Preparer
+SSCoE 7	10156102	Preparer
+SSCoE 7	10156102	Preparer
+SSCoE 7	10156102	Preparer
+SSCoE 7	10156102	Preparer
+SSCoE 7	10156102	Preparer
+SSCoE 7	10156102	Preparer
+SSCoE 7	10156102	Preparer
+SSCoE 7	10156102	Preparer
+SSCoE 7	10156102	Preparer
+SSCoE 7	10156102	Preparer
+SSCoE 7	10156102	Preparer
+CoE 2	10154163	Preparer
+CoE 14	10148327	Preparer
+SSCoE 14	MMolero	Reviewer
+SSCoE 14	MMolero	Reviewer
+SSCoE 8	10140897	Preparer
+SSCoE 10	Maedwards	Reviewer
+SSCoE 10	Maedwards	Reviewer
+SSCoE 10	MMallia	Preparer
+SSCoE 10	MMallia	Preparer
+CoE 10	250mgianotti	Preparer
+CoE 2	MTeguh	Preparer
+SSS	MKoenig	Reviewer
+SSCoE 7	MKoenig	Reviewer
+SSCoE 7	MKoenig	Reviewer
+SSCoE 7	MKoenig	Reviewer
+SSCoE 7	MKoenig	Reviewer
+SSCoE 7	MKoenig	Reviewer
+SSCoE 7	MKoenig	Reviewer
+SSCoE 7	MKoenig	Reviewer
+SSCoE 7	MKoenig	Reviewer
+SSCoE 7	MKoenig	Reviewer
+SSCoE 7	MKoenig	Reviewer
+SSCoE 9	MKoenig	Reviewer
+SSS	MKoenig	Reviewer
+SSCoE 11	MKoenig	Reviewer
+SSCoE 11	MKoenig	Reviewer
+SSCoE 11	MKoenig	Reviewer
+SSCoE 11	MKoenig	Reviewer
+SSCoE 11	MKoenig	Reviewer
+SSCoE 7	MKoenig	Reviewer
+SSCoE 7	MKoenig	Reviewer
+SSCoE 7	MKoenig	Reviewer
+SSCoE 7	MKoenig	Reviewer
+SSCoE 7	MKoenig	Reviewer
+SSCoE 7	MKoenig	Reviewer
+SSCoE 12	10150664	Reviewer
+SSCoE 12	10150664	Reviewer
+SSCoE 14	10136613	Preparer
+CoE 14	mfuentes	Preparer
+CoE 18	10145507	Reviewer
+SSCoE 18	10145507	Reviewer
+SSCoE 6	10145507	Reviewer
+SSCoE 5	minamullah	Reviewer
+SSS	10148134	Reviewer
+SSCoE 9	10150703	Reviewer
+SSCoE 9	MKvapilova	Preparer
+SSCoE 5	10142508	Preparer
+SSS	10156483	Preparer
+SSCoE 5	10113858	Reviewer
+CoE 5	10151112	Preparer
+SSCoE 5	10151112	Preparer
+SSCoE 5	10151112	Preparer
+SSCoE 5	10151112	Preparer
+SSCoE 5	10151112	Preparer
+SSCoE 5	10151112	Preparer
+SSCoE 5	10151112	Preparer
+SSCoE 5	10151112	Preparer
+SSCoE 5	10151112	Preparer
+SSCoE 5	10151112	Preparer
+SSCoE 5	10151112	Preparer
+SSCoE 5	10151112	Preparer
+CoE 5	10138160	Default - Read Only
+SSCoE 5	10138160	Default - Read Only
+SSCoE 5	10138160	Default - Read Only
+SSCoE 5	10138160	Default - Read Only
+SSCoE 5	10138160	Default - Read Only
+SSCoE 9	nhaarbeck	Reviewer
+SSCoE 10	10148915	Preparer
+SSCoE 10	10148915	Preparer
+SSCoE 6	10154354	Preparer
+SSCoE 9	okoop	Preparer
+SSCoE 9	okoop	Preparer
+SSCoE 9	10137975	Preparer
+SSCoE 10	10135021	Preparer
+SSCoE 10	10135021	Preparer
+CoE 18	Praimbault	Preparer
+SSCoE 18	Praimbault	Preparer
+Unassigned	200pstradi	Default
+SSCoE 17	PaBowden	Preparer
+SSCoE 10	10148736	Reviewer
+SSCoE 3	PeHill	Reviewer
+SSCoE 3	PeHill	Reviewer
+CoE 17	10130900	Preparer
+SSCoE 16	10135111	Preparer
+SSCoE 12	10131458	Reviewer
+SSCoE 12	10131458	Reviewer
+SSCoE 5	10101806	Reviewer
+SSCoE 5	10101806	Reviewer
+SSS	pjarappa	Preparer
+CoE 5	PKumar	Preparer
+SSCoE 5	PKumar	Preparer
+SSCoE 5	10151112	Preparer
+SSCoE 6	RHeine	Preparer
+SSCoE 3	rbasore	Preparer
+SSS	rbasore	Preparer
+SSCoE 3	rbasore	Preparer
+SSCoE 3	rbasore	Preparer
+SSCoE 3	rbasore	Preparer
+SSCoE 4	10155723	Preparer
+SSS	10155723	Preparer
+SSCoE 4	rroed	Preparer
+SSCoE 4	rroed	Preparer
+SSCoE 11	10151749	Preparer
+CoE 11	10155670	Reviewer
+SSCoE 11	10155670	Reviewer
+SSCoE 11	10155670	Reviewer
+SSCoE 11	10155670	Reviewer
+SSCoE 9	RVeeken	Reviewer
+SSS	RVeeken	Reviewer
+SSCoE 4	rdodd	Reviewer
+SSCoE 4	rdodd	Reviewer
+SSCoE 4	rdodd	Reviewer
+Unassigned	200rramnauth	Default
+SSCoE 5	10121162	Preparer
+CoE 8	EHobel	Reviewer
+SSCoE 16	10136429	Preparer
+CoE 16	10136429	Preparer
+SSCoE 16	10136429	Preparer
+SSCoE 16	10136429	Preparer
+SSCoE 9	10138007	Preparer
+SSCoE 4	10151309	Preparer
+SSCoE 4	10151309	Preparer
+SSCoE 4	10151309	Preparer
+SSCoE 4	10151309	Preparer
+CoE 13	50053358	Preparer
+SSCoE 12	10098960	Preparer
+SSCoE 12	10098960	Preparer
+SSCoE 4	10153562	Preparer
+SSS	10153562	Preparer
+SSCoE 10	SChambers	Reviewer
+SSCoE 9	10138172	Preparer
+SSCoE 9	10138172	Preparer
+CoE 2	SaYoung	Preparer
+SSCoE 14	Santiago Soto Navarro	Preparer
+SSCoE 5	10144086	Reviewer
+SSS	10126019	Preparer
+CoE 9	50046133	Preparer
+SSCoE 5	10125344	Preparer
+SSCoE 7	10151544	Preparer
+SSCoE 5	10111418	Preparer
+SSS	10142932	Preparer
+SSCoE 12	shtan	Preparer
+SSS	SLynch	Preparer
+Unassigned	10135278	Reviewer
+SSCoE 13	MPong	Reviewer
+CoE 12	MPong	Reviewer
+SSCoE 12	MPong	Reviewer
+SSCoE 12	MPong	Reviewer
+SSCoE 16	MPong	Reviewer
+SSCoE 16	MPong	Reviewer
+CoE 2	10150310	Preparer
+SSCoE 16	10148876	Preparer
+SSCoE 12	10148706	Preparer
+CoE 5	10118344	Preparer
+SSCoE 5	10118344	Preparer
+SSCoE 12	10143655	Preparer
+CoE 5	SeSrinivas	Reviewer
+SSCoE 5	SeSrinivas	Reviewer
+CoE 5	10135491	Reviewer
+SSCoE 5	10135491	Reviewer
+SSCoE 5	10135491	Reviewer
+SSCoE 5	10135491	Reviewer
+SSCoE 5	10135491	Reviewer
+SSCoE 5	10135491	Reviewer
+SSS	10090916	Preparer
+SSCoE 8	10157140	Preparer
+Unassigned	200stmarshall	Default
+SSS	svangool	Preparer
+CoE 4	10150905	Preparer
+SSS	10150905	Preparer
+SSCoE 4	10150905	Preparer
+CoE 2	saguilar@flowserve.com	Preparer
+CoE 2	saguilar@flowserve.com	Preparer
+SSCoE 2	saguilar@flowserve.com	Preparer
+SSCoE 3	10145006	Preparer
+SSCoE 3	10145006	Preparer
+SSCoE 3	10145006	Preparer
+CoE 3	10145006	Preparer
+SSCoE 3	10145006	Preparer
+SSCoE 3	10145006	Preparer
+SSCoE 3	10145006	Preparer
+SSCoE 3	10145006	Preparer
+SSCoE 3	10145006	Preparer
+SSCoE 3	10145006	Preparer
+SSCoE 3	10145006	Preparer
+SSCoE 3	10145006	Preparer
+SSCoE 1	10154761	Reviewer
+SSCoE 1	10154761	Reviewer
+SSCoE 1	10157089	Preparer
+SSCoE 3	sfarmand	Preparer
+SSS	sfarmand	Preparer
+SSCoE 3	sfarmand	Preparer
+SSCoE 3	sfarmand	Preparer
+SSCoE 3	sfarmand	Preparer
+SSCoE 3	twilson	Reviewer
+SSCoE 3	twilson	Reviewer
+SSCoE 3	twilson	Reviewer
+SSCoE 3	twilson	Reviewer
+SSCoE 3	twilson	Reviewer
+CoE 3	twilson	Reviewer
+CoE 3	twilson	Reviewer
+SSCoE 3	twilson	Reviewer
+SSCoE 3	twilson	Reviewer
+SSCoE 3	twilson	Reviewer
+SSCoE 3	twilson	Reviewer
+SSCoE 3	twilson	Reviewer
+SSCoE 3	twilson	Reviewer
+SSCoE 3	twilson	Reviewer
+SSCoE 3	twilson	Reviewer
+SSCoE 3	twilson	Reviewer
+SSCoE 3	twilson	Reviewer
+SSCoE 3	twilson	Reviewer
+SSCoE 3	twilson	Reviewer
+SSCoE 3	twilson	Reviewer
+SSCoE 3	twilson	Reviewer
+SSCoE 3	twilson	Reviewer
+SSCoE 3	twilson	Reviewer
+SSS	TRichardson	Reviewer
+SSCoE 1	10142347	Preparer
+CoE 9	TSadee	Preparer
+SSCoE 3	10153690	Preparer
+SSCoE 3	TFath	Reviewer
+SSCoE 3	TFath	Reviewer
+SSCoE 3	TFath	Reviewer
+CoE 10	TFocacci	Preparer
+CoE 1	10147325	Preparer
+SSCoE 8	10111598	Preparer
+SSCoE 8	vbollmann	Preparer
+Unassigned	300vbartolini	Preparer
+CoE 14	10095497	Preparer
+CoE 5	10153040	Preparer
+SSS	cst_vkj	Preparer
+CoE 5	10156770	Preparer
+SSCoE 5	10156770	Preparer
+SSCoE 5	10156770	Preparer
+SSCoE 5	10156770	Preparer
+SSCoE 5	10156770	Preparer
+SSCoE 5	10156770	Preparer
+SSCoE 5	10156770	Preparer
+SSCoE 5	10156770	Preparer
+SSCoE 5	10156770	Preparer
+SSCoE 5	10156770	Preparer
+SSCoE 5	10156770	Preparer
+SSCoE 5	vnayak	Reviewer
+SSCoE 5	vnayak	Reviewer
+SSCoE 7	10000603	Preparer
+SSCoE 7	10000603	Preparer
+SSCoE 7	10000603	Preparer
+SSCoE 7	10000603	Preparer
+SSCoE 7	10000603	Preparer
+SSCoE 12	WaiTan	Preparer
+SSCoE 10	10150293	Preparer
+CoE 12	WLim	Preparer
+CoE 4	10155422	Preparer
+SSCoE 4	10155422	Preparer
+SSCoE 4	10155422	Preparer
+SSCoE 4	10155422	Preparer
+SSCoE 4	10155422	Preparer
+SSCoE 4	10155422	Preparer
+SSCoE 4	10155422	Preparer
+SSCoE 4	10155422	Preparer
+SSCoE 4	10155422	Preparer
+SSCoE 4	10155422	Preparer
+SSCoE 4	10155422	Preparer
+CoE 11	10153284	Preparer
+SSCoE 12	10142351	Preparer
+SSCoE 16	ZYan	Reviewer
+SSCoE 16	ZYan	Reviewer
+SSCoE 16	ZYan	Reviewer
+SSCoE 17	10135474	Reviewer
+CoE 12	10135474	Reviewer
+SSCoE 16	YLei	Preparer
+SSS	10142640	Preparer
+CoE 13	10156887	Reviewer
+SSCoE 1	50055217	Preparer
+SSCoE 10	ybeukes	Reviewer
+SSCoE 10	ybeukes	Reviewer
+CoE 4	YLukins	Reviewer
+CoE 4	10155652	Default - Read Only
+SSCoE 4	10155652	Default - Read Only
+SSCoE 4	10155652	Default - Read Only
+SSCoE 4	10155652	Default - Read Only
+SSCoE 4	10155652	Default - Read Only
+SSCoE 4	10155652	Default - Read Only
