@@ -429,7 +429,7 @@ public class ViewSupport implements Serializable {
     }
 
     public String getExchangeRate(Contract contract) throws Exception {
-        return currencyService.findRateByFromToPeriod(contract.getContractCurrency(), contract.getLocalCurrency(), webSession.getCurrentPeriod()).getPeriodEndRate().toPlainString();
+        return currencyService.findRateByFromToPeriod(contract.getContractCurrency(), contract.getLocalCurrency(), webSession.getCurrentPeriod().getLocalCurrencyRatePeriod()).getPeriodEndRate().toPlainString();
     }
 
     public void setUsers(List<User> users) {

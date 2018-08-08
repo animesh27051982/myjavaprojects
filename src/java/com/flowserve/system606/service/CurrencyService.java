@@ -96,8 +96,8 @@ public class CurrencyService {
                 currencyMetric.setCcValue(BigDecimal.ZERO);
                 currencyMetric.setRcValue(BigDecimal.ZERO);
             } else {
-                currencyMetric.setCcValue(convert(currencyMetric.getLcValue(), measurable.getLocalCurrency(), measurable.getContractCurrency(), period));
-                currencyMetric.setRcValue(convert(currencyMetric.getLcValue(), measurable.getLocalCurrency(), measurable.getReportingCurrency(), period));
+                currencyMetric.setCcValue(convert(currencyMetric.getLcValue(), measurable.getLocalCurrency(), measurable.getContractCurrency(), period.getLocalCurrencyRatePeriod()));
+                currencyMetric.setRcValue(convert(currencyMetric.getLcValue(), measurable.getLocalCurrency(), measurable.getReportingCurrency(), period.getReportingCurrencyRatePeriod()));
             }
         } else if (currencyMetric.isContractCurrencyMetric()) {
 
@@ -110,8 +110,8 @@ public class CurrencyService {
                 currencyMetric.setLcValue(BigDecimal.ZERO);
                 currencyMetric.setRcValue(BigDecimal.ZERO);
             } else {
-                currencyMetric.setLcValue(convert(currencyMetric.getCcValue(), measurable.getContractCurrency(), measurable.getLocalCurrency(), period));
-                currencyMetric.setRcValue(convert(currencyMetric.getCcValue(), measurable.getContractCurrency(), measurable.getReportingCurrency(), period));
+                currencyMetric.setLcValue(convert(currencyMetric.getCcValue(), measurable.getContractCurrency(), measurable.getLocalCurrency(), period.getLocalCurrencyRatePeriod()));
+                currencyMetric.setRcValue(convert(currencyMetric.getCcValue(), measurable.getContractCurrency(), measurable.getReportingCurrency(), period.getReportingCurrencyRatePeriod()));
             }
         }
     }
@@ -494,7 +494,7 @@ public class CurrencyService {
                                 targetPeriodRate = resultSet2.getBigDecimal(2);
                                 targetMonthlyRate = resultSet2.getBigDecimal(3);
                                 targetYTDRate = resultSet2.getBigDecimal(4);
-                                //USD column is empty in access file so this below is for assigning value to USD 
+                                //USD column is empty in access file so this below is for assigning value to USD
                                 if (targetPeriodRate == null && resultSet2.getString(1).equalsIgnoreCase("USD")) {
                                     targetPeriodRate = usdRate;
                                 }

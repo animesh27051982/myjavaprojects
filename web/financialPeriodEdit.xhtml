@@ -23,7 +23,7 @@
                         <div class="ui-g-12">
                             <div class="card card-w-title">
                                 <h1>#{financialPeriodEdit.financialPeriod.getId() == null ? "New" : "Edit" } Financial Period</h1>
-                                <p:panelGrid columns="2" columnClasses="ui-grid-col-2,ui-grid-col-4,ui-grid-col-2,ui-grid-col-4" layout="grid" styleClass="ui-panelgrid-blank form-group" style="border:0px none; background-color:transparent;">
+                                <p:panelGrid columns="2" columnClasses="ui-grid-col-3,ui-grid-col-6,ui-grid-col-3,ui-grid-col-6" layout="grid" styleClass="ui-panelgrid-blank form-group" style="border:0px none; background-color:transparent;">
                                     <p:outputLabel for="name" value="Name"/>
                                     <p:outputLabel id="name" value="#{financialPeriodEdit.financialPeriod.name}"/>
                                     <p:outputLabel for="startDate" value="StartDate"/>
@@ -32,13 +32,18 @@
                                     <p:outputLabel id="endDate" value="#{financialPeriodEdit.financialPeriod.endDate}"/>
                                     <p:outputLabel for="status" value="Status"/>
                                     <p:outputLabel id="status" value="#{financialPeriodEdit.financialPeriod.status}"/>
+
+                                    <p:outputLabel for="local" value="Local Currency Rate Period"/>
+                                    <p:outputLabel id="local" value="#{financialPeriodEdit.financialPeriod.localCurrencyRatePeriod.id}"/>
+                                    <p:outputLabel for="report" value="Reporting Currency Rate Period"/>
+                                    <p:outputLabel id="report" value="#{financialPeriodEdit.financialPeriod.reportingCurrencyRatePeriod.id}"/>
                                     <f:facet name="footer">
                                         <p:toolbar>
                                             <f:facet name="left">
                                                 <p:outputLabel for="btnOpen" value="" />
                                                 <p:commandButton id="btnOpen" value="Open" icon="ui-icon-folder-open" ajax="false" action="#{financialPeriodEdit.openPeriod()}" style="max-width:100px;"/>
                                                 <p:outputLabel for="btnFreeze" value="" />
-                                                <p:commandButton id="btnFreeze" value="User Freeze" icon="fa fa-fw fa-gg" action="#{financialPeriodEdit.openPeriod()}" style="max-width:100px;"/>
+                                                <p:commandButton id="btnFreeze" value="User Freeze" icon="fa fa-fw fa-gg" action="#{financialPeriodEdit.openPeriod()}" style="max-width:150px;"/>
                                                 <p:outputLabel for="btnClose" value="" />
                                                 <p:commandButton id="btnClose" value="Close" icon="fa fa-fw fa-sign-in" action="#{financialPeriodEdit.openPeriod()}" style="max-width:100px;"/>
                                             </f:facet>
