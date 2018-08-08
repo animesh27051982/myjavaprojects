@@ -292,6 +292,75 @@ public class ViewSupport implements Serializable {
         }
     }
 
+    public void filterBillingNodeTree(TreeNode root, String contractFilterText) {
+
+        //List<TreeNode> contractsToRemove = new ArrayList<TreeNode>();
+        List<TreeNode> billsToRemove = new ArrayList<TreeNode>();
+
+        for (TreeNode reportingUnit : root.getChildren()) {
+            String ruName = ((ReportingUnit) reportingUnit.getData()).getName();
+            if (Pattern.compile(Pattern.quote(contractFilterText), Pattern.CASE_INSENSITIVE).matcher(ruName).find()
+                    || Pattern.compile(Pattern.quote(contractFilterText), Pattern.CASE_INSENSITIVE).matcher(ruName).find()) {
+                continue;
+            }
+
+            for (TreeNode contract : reportingUnit.getChildren()) {
+                String contractName = ((Contract) contract.getData()).getName();
+                String contractId = ((Contract) contract.getData()).getId().toString();
+
+                if (Pattern.compile(Pattern.quote(contractFilterText), Pattern.CASE_INSENSITIVE).matcher(contractName).find()
+                        || Pattern.compile(Pattern.quote(contractFilterText), Pattern.CASE_INSENSITIVE).matcher(contractId).find()) {
+                    continue;
+                }
+
+                for (TreeNode bill : contract.getChildren()) {
+                    String billName = ((BillingEvent) bill.getData()).getName();
+                    String billId = ((BillingEvent) bill.getData()).getId().toString();
+
+                    if (billName == null) {
+                        Logger.getLogger(ViewSupport.class.getName()).log(Level.INFO, "Encountered null Bill name Bill ID: " + billId);
+                        billsToRemove.add(bill);
+                    } else {
+                        if (!Pattern.compile(Pattern.quote(contractFilterText), Pattern.CASE_INSENSITIVE).matcher(billName).find()
+                                && !Pattern.compile(Pattern.quote(contractFilterText), Pattern.CASE_INSENSITIVE).matcher(billId).find()) {
+                            billsToRemove.add(bill);
+                        }
+                    }
+                }
+            }
+        }
+
+        // Ugly but necessary to prevent ConcurrentModificationException
+        for (TreeNode bill : billsToRemove) {
+            bill.getParent().getChildren().remove(bill);
+        }
+
+//        for (TreeNode contract : contractsToRemove) {
+//            contract.getParent().getChildren().remove(contract);
+//        }
+        List<TreeNode> reportingUnitsToRemove = new ArrayList<TreeNode>();
+        List<TreeNode> contractsToRemove = new ArrayList<TreeNode>();
+
+        for (TreeNode reportingUnit : root.getChildren()) {
+            if (reportingUnit.getChildCount() == 0) {
+                reportingUnitsToRemove.add(reportingUnit);
+            }
+            for (TreeNode contract : reportingUnit.getChildren()) {
+                if (contract.getChildCount() == 0) {
+                    contractsToRemove.add(contract);
+                }
+            }
+
+        }
+
+        for (TreeNode ru : reportingUnitsToRemove) {
+            ru.getParent().getChildren().remove(ru);
+        }
+        for (TreeNode contract : contractsToRemove) {
+            contract.getParent().getChildren().remove(contract);
+        }
+    }
+
     public void filterNodeTreeContracts(TreeNode root, List<Contract> contracts) {
         List<TreeNode> contractsToRemove = new ArrayList<TreeNode>();
 
@@ -360,7 +429,7 @@ public class ViewSupport implements Serializable {
     }
 
     public String getExchangeRate(Contract contract) throws Exception {
-        return currencyService.findRateByFromToPeriod(contract.getContractCurrency(), contract.getLocalCurrency(), webSession.getCurrentPeriod()).getConversionRate().toPlainString();
+        return currencyService.findRateByFromToPeriod(contract.getContractCurrency(), contract.getLocalCurrency(), webSession.getCurrentPeriod().getLocalCurrencyRatePeriod()).getPeriodEndRate().toPlainString();
     }
 
     public void setUsers(List<User> users) {

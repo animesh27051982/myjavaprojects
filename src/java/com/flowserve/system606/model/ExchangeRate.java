@@ -53,18 +53,24 @@ public class ExchangeRate implements Serializable, Comparable<ExchangeRate> {
     private Currency toCurrency;
     @JoinColumn(name = "FINANCIAL_PERIOD_ID")
     private FinancialPeriod financialPeriod;
-    @Column(name = "CONVERSION_RATE", precision = 38, scale = 14)
-    private BigDecimal conversionRate;
+    @Column(name = "PERIOD_END_RATE", precision = 38, scale = 14)
+    private BigDecimal periodEndRate;
+    @Column(name = "MONTHLY_AVG_RATE", precision = 38, scale = 14)
+    private BigDecimal monthlyAverageRate;
+    @Column(name = "YTD_AVG_RATE", precision = 38, scale = 14)
+    private BigDecimal ytdAverageRate;
 
     public ExchangeRate() {
     }
 
-    public ExchangeRate(String type, Currency fromCurrency, Currency toCurrency, FinancialPeriod financialPeriod, BigDecimal rate) {
+    public ExchangeRate(String type, Currency fromCurrency, Currency toCurrency, FinancialPeriod financialPeriod, BigDecimal periodEndRate, BigDecimal monthlyAverageRate, BigDecimal ytdAverageRate) {
         this.type = type;
         this.fromCurrency = fromCurrency;
         this.toCurrency = toCurrency;
         this.financialPeriod = financialPeriod;
-        this.conversionRate = rate;
+        this.periodEndRate = periodEndRate;
+        this.monthlyAverageRate = monthlyAverageRate;
+        this.ytdAverageRate = ytdAverageRate;
     }
 
     @Override
@@ -107,14 +113,6 @@ public class ExchangeRate implements Serializable, Comparable<ExchangeRate> {
         this.toCurrency = toCurrency;
     }
 
-    public BigDecimal getConversionRate() {
-        return conversionRate;
-    }
-
-    public void setConversionRate(BigDecimal conversionRate) {
-        this.conversionRate = conversionRate;
-    }
-
     public FinancialPeriod getFinancialPeriod() {
         return financialPeriod;
     }
@@ -126,6 +124,30 @@ public class ExchangeRate implements Serializable, Comparable<ExchangeRate> {
     @Override
     public int compareTo(ExchangeRate o) {
         return this.type.compareTo(o.getType());
+    }
+
+    public BigDecimal getPeriodEndRate() {
+        return periodEndRate;
+    }
+
+    public void setPeriodEndRate(BigDecimal periodEndRate) {
+        this.periodEndRate = periodEndRate;
+    }
+
+    public BigDecimal getMonthlyAverageRate() {
+        return monthlyAverageRate;
+    }
+
+    public void setMonthlyAverageRate(BigDecimal monthlyAverageRate) {
+        this.monthlyAverageRate = monthlyAverageRate;
+    }
+
+    public BigDecimal getYtdAverageRate() {
+        return ytdAverageRate;
+    }
+
+    public void setYtdAverageRate(BigDecimal ytdAverageRate) {
+        this.ytdAverageRate = ytdAverageRate;
     }
 
 }

@@ -58,6 +58,12 @@ public class FinancialPeriod extends BaseEntity<String> implements Comparable<Fi
     @Temporal(TIMESTAMP)
     @Column(name = "LAST_UPDATE_DATE")
     private LocalDateTime lastUpdateDate;
+    @OneToOne
+    @JoinColumn(name = "LOCAL_CURRENCY_RATE_PERIOD")
+    private FinancialPeriod localCurrencyRatePeriod;
+    @OneToOne
+    @JoinColumn(name = "REPORTING_CURRENCY_RATE_PERIOD")
+    private FinancialPeriod reportingCurrencyRatePeriod;
 
     public FinancialPeriod() {
     }
@@ -199,6 +205,22 @@ public class FinancialPeriod extends BaseEntity<String> implements Comparable<Fi
         }
 
         return this.status.equals(status.NEVER_OPENED);
+    }
+
+    public FinancialPeriod getLocalCurrencyRatePeriod() {
+        return localCurrencyRatePeriod;
+    }
+
+    public void setLocalCurrencyRatePeriod(FinancialPeriod localCurrencyRatePeriod) {
+        this.localCurrencyRatePeriod = localCurrencyRatePeriod;
+    }
+
+    public FinancialPeriod getReportingCurrencyRatePeriod() {
+        return reportingCurrencyRatePeriod;
+    }
+
+    public void setReportingCurrencyRatePeriod(FinancialPeriod reportingCurrencyRatePeriod) {
+        this.reportingCurrencyRatePeriod = reportingCurrencyRatePeriod;
     }
 
 }

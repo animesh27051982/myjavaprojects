@@ -96,8 +96,8 @@ public class CurrencyService {
                 currencyMetric.setCcValue(BigDecimal.ZERO);
                 currencyMetric.setRcValue(BigDecimal.ZERO);
             } else {
-                currencyMetric.setCcValue(convert(currencyMetric.getLcValue(), measurable.getLocalCurrency(), measurable.getContractCurrency(), period));
-                currencyMetric.setRcValue(convert(currencyMetric.getLcValue(), measurable.getLocalCurrency(), measurable.getReportingCurrency(), period));
+                currencyMetric.setCcValue(convert(currencyMetric.getLcValue(), measurable.getLocalCurrency(), measurable.getContractCurrency(), period.getLocalCurrencyRatePeriod()));
+                currencyMetric.setRcValue(convert(currencyMetric.getLcValue(), measurable.getLocalCurrency(), measurable.getReportingCurrency(), period.getReportingCurrencyRatePeriod()));
             }
         } else if (currencyMetric.isContractCurrencyMetric()) {
 
@@ -110,8 +110,8 @@ public class CurrencyService {
                 currencyMetric.setLcValue(BigDecimal.ZERO);
                 currencyMetric.setRcValue(BigDecimal.ZERO);
             } else {
-                currencyMetric.setLcValue(convert(currencyMetric.getCcValue(), measurable.getContractCurrency(), measurable.getLocalCurrency(), period));
-                currencyMetric.setRcValue(convert(currencyMetric.getCcValue(), measurable.getContractCurrency(), measurable.getReportingCurrency(), period));
+                currencyMetric.setLcValue(convert(currencyMetric.getCcValue(), measurable.getContractCurrency(), measurable.getLocalCurrency(), period.getLocalCurrencyRatePeriod()));
+                currencyMetric.setRcValue(convert(currencyMetric.getCcValue(), measurable.getContractCurrency(), measurable.getReportingCurrency(), period.getReportingCurrencyRatePeriod()));
             }
         }
     }
@@ -158,7 +158,7 @@ public class CurrencyService {
         } catch (Exception e) {
             throw new IllegalStateException("Unable to find an exchange rate from " + fromCurrency.getCurrencyCode() + " to " + toCurrency.getCurrencyCode() + " in period " + period.getId());
         }
-        return amount.multiply(exchangeRate.getConversionRate()).setScale(SCALE, BigDecimal.ROUND_HALF_UP);
+        return amount.multiply(exchangeRate.getPeriodEndRate()).setScale(SCALE, BigDecimal.ROUND_HALF_UP);
     }
 
     public void initCurrencyConverter(FinancialPeriod period) throws Exception {
@@ -184,7 +184,7 @@ public class CurrencyService {
                 }
 
                 String[] from = line.split("\\t");
-                if (!from[2].equalsIgnoreCase("")) {
+                if (!from[0].equalsIgnoreCase("")) {
                     BufferedReader reader2 = new BufferedReader(new InputStreamReader(AppInitializeService.class.getResourceAsStream("/resources/currency_rate_file/currency.txt"), "UTF-8"));
 
                     String innerLine = null;
@@ -194,19 +194,27 @@ public class CurrencyService {
                         }
 
                         String[] to = innerLine.split("\\t");
-                        if (!to[2].equalsIgnoreCase("")) {
+                        if (!to[0].equalsIgnoreCase("")) {
                             BigDecimal usdRate = new BigDecimal("1.0");
-                            BigDecimal sourceRate = new BigDecimal(from[4]);
-                            BigDecimal targetRate = new BigDecimal(to[4]);
+                            BigDecimal sourcePeriodRate = new BigDecimal(from[2]);
+                            BigDecimal targetPeriodRate = new BigDecimal(to[2]);
 
-                            String type = from[2];
-                            Currency fromCurrency = Currency.getInstance(from[3]);
-                            Currency toCurrency = Currency.getInstance(to[3]);
+                            BigDecimal sourceMonthlyRate = new BigDecimal(from[3]);
+                            BigDecimal targetMonthlyRate = new BigDecimal(to[3]);
+
+                            BigDecimal sourceYTDRate = new BigDecimal(from[4]);
+                            BigDecimal targetYTDRate = new BigDecimal(to[4]);
+
+                            String type = from[0];
+                            Currency fromCurrency = Currency.getInstance(from[1]);
+                            Currency toCurrency = Currency.getInstance(to[1]);
                             LocalDate effectiveDate = LocalDate.now().plusDays(30);
                             //Currency Conversion Formula
-                            BigDecimal rate = usdRate.divide(sourceRate, SCALE, ROUNDING_METHOD).multiply(targetRate);
+                            BigDecimal periodRate = usdRate.divide(sourcePeriodRate, SCALE, ROUNDING_METHOD).multiply(targetPeriodRate);
+                            BigDecimal monthlyRate = usdRate.divide(sourceMonthlyRate, SCALE, ROUNDING_METHOD).multiply(targetMonthlyRate);
+                            BigDecimal YTDRate = usdRate.divide(sourceYTDRate, SCALE, ROUNDING_METHOD).multiply(targetYTDRate);
 
-                            ExchangeRate exchangeRate = new ExchangeRate(type, fromCurrency, toCurrency, period, rate);
+                            ExchangeRate exchangeRate = new ExchangeRate(type, fromCurrency, toCurrency, period, periodRate, monthlyRate, YTDRate);
                             persist(exchangeRate);
                             //logger.info("From Country: " + effectiveDate + "  To Country: " + toCurrency + "   Rate" + rate);
                         }
@@ -300,15 +308,23 @@ public class CurrencyService {
                         if (cellTo == null || ((XSSFCell) cellTo).getRawValue() == null) {
                             continue;
                         }
-                        BigDecimal sourceRate;
+                        BigDecimal sourcePeriodRate;
+                        BigDecimal sourceMonthlyRate;
+                        BigDecimal sourceYTDRate;
                         String type;
                         Currency fromCurrency;
-                        BigDecimal targetRate;
+                        BigDecimal targetPeriodRate;
+                        BigDecimal targetMonthlyRate;
+                        BigDecimal targetYTDRate;
                         Currency toCurrency;
                         BigDecimal usdRate = new BigDecimal("1.0");
                         try {
                             cellFrom = rowFrom.getCell(CellReference.convertColStringToIndex("H"));
-                            sourceRate = new BigDecimal(cellFrom.getNumericCellValue());
+                            sourcePeriodRate = new BigDecimal(cellFrom.getNumericCellValue());
+                            cellFrom = rowFrom.getCell(CellReference.convertColStringToIndex("I"));
+                            sourceMonthlyRate = new BigDecimal(cellFrom.getNumericCellValue());
+                            cellFrom = rowFrom.getCell(CellReference.convertColStringToIndex("J"));
+                            sourceYTDRate = new BigDecimal(cellFrom.getNumericCellValue());
                             cellFrom = rowFrom.getCell(CellReference.convertColStringToIndex("B"));
                             type = cellFrom.getStringCellValue();
                             cellFrom = rowFrom.getCell(CellReference.convertColStringToIndex("C"));
@@ -320,7 +336,11 @@ public class CurrencyService {
 
                         try {
                             cellTo = rowTo.getCell(CellReference.convertColStringToIndex("H"));
-                            targetRate = new BigDecimal(cellTo.getNumericCellValue());
+                            targetPeriodRate = new BigDecimal(cellTo.getNumericCellValue());
+                            cellTo = rowTo.getCell(CellReference.convertColStringToIndex("I"));
+                            targetMonthlyRate = new BigDecimal(cellTo.getNumericCellValue());
+                            cellTo = rowTo.getCell(CellReference.convertColStringToIndex("J"));
+                            targetYTDRate = new BigDecimal(cellTo.getNumericCellValue());
 
                             cellTo = rowTo.getCell(CellReference.convertColStringToIndex("C"));
                             toCurrency = Currency.getInstance(cellTo.getStringCellValue());
@@ -329,14 +349,18 @@ public class CurrencyService {
                             throw new Exception("Summary Sheet Row: " + (rowTo.getRowNum() + 1) + " Cell:" + (cellTo.getColumnIndex() + 1) + " Massage: " + rce.getMessage());
                         }
                         //Currency Conversion Formula
-                        BigDecimal rate = usdRate.divide(sourceRate, SCALE, ROUNDING_METHOD).multiply(targetRate);
+                        BigDecimal rate = usdRate.divide(sourcePeriodRate, SCALE, ROUNDING_METHOD).multiply(targetPeriodRate);
+                        BigDecimal monthlyRate = usdRate.divide(sourceMonthlyRate, SCALE, ROUNDING_METHOD).multiply(targetMonthlyRate);
+                        BigDecimal YTDRate = usdRate.divide(sourceYTDRate, SCALE, ROUNDING_METHOD).multiply(targetYTDRate);
 
                         ExchangeRate exRate = new ExchangeRate();
                         exRate.setType(type);
                         exRate.setFromCurrency(fromCurrency);
                         exRate.setToCurrency(toCurrency);
                         exRate.setFinancialPeriod(period);
-                        exRate.setConversionRate(rate);
+                        exRate.setPeriodEndRate(rate);
+                        exRate.setMonthlyAverageRate(monthlyRate);
+                        exRate.setYtdAverageRate(YTDRate);
                         exchangeRate.add(exRate);
 
                         //logger.info("type: " + type + "  fromCurrency: " + fromCurrency + "   toCurrency" + toCurrency + "   period" + period + "   rate" + rate);
@@ -428,23 +452,29 @@ public class CurrencyService {
                     }
                     if (adminService.findExchangeRatesByFinancialPeriod(period) == null) {
                         count++;
-                        PreparedStatement statement1 = connection.prepareStatement("SELECT Currency,ISOCodeAlpha,CUSDPeriodEndRate FROM `tbl_ExchangeRates` WHERE Period = ?");
+                        PreparedStatement statement1 = connection.prepareStatement("SELECT Currency,ISOCodeAlpha,CUSDPeriodEndRate,CUSDMonthlyAverageRate,CUSDYTDAverageRate FROM `tbl_ExchangeRates` WHERE Period = ?");
                         statement1.setString(1, resultSet.getString(1));
                         resultSet1 = statement1.executeQuery();
                         while (resultSet1.next()) {
-                            BigDecimal sourceRate;
+                            BigDecimal sourcePeriodRate;
+                            BigDecimal sourceMonthlyRate;
+                            BigDecimal sourceYTDRate;
                             String type;
                             Currency fromCurrency;
-                            BigDecimal targetRate;
+                            BigDecimal targetPeriodRate;
+                            BigDecimal targetMonthlyRate;
+                            BigDecimal targetYTDRate;
                             Currency toCurrency;
                             BigDecimal usdRate = new BigDecimal("1.0");
 
-                            PreparedStatement statement2 = connection.prepareStatement("SELECT ISOCodeAlpha,CUSDPeriodEndRate FROM `tbl_ExchangeRates` WHERE Period = ?");
+                            PreparedStatement statement2 = connection.prepareStatement("SELECT ISOCodeAlpha,CUSDPeriodEndRate,CUSDMonthlyAverageRate,CUSDYTDAverageRate FROM `tbl_ExchangeRates` WHERE Period = ?");
                             statement2.setString(1, resultSet.getString(1));
                             resultSet2 = statement2.executeQuery();
                             while (resultSet2.next()) {
 
-                                sourceRate = resultSet1.getBigDecimal(3);
+                                sourcePeriodRate = resultSet1.getBigDecimal(3);
+                                sourceMonthlyRate = resultSet1.getBigDecimal(4);
+                                sourceYTDRate = resultSet1.getBigDecimal(5);
                                 type = resultSet1.getString(1);
                                 if ("USA".equals(resultSet1.getString(2))) {
                                     Logger.getLogger(CurrencyService.class.getName()).log(Level.SEVERE, "Invlid: USA Found in ExchangeRate file.");
@@ -453,12 +483,29 @@ public class CurrencyService {
                                 }
                                 fromCurrency = Currency.getInstance(resultSet1.getString(2));
 
-                                targetRate = resultSet2.getBigDecimal(2);
-                                if (targetRate == null && resultSet2.getString(1).equalsIgnoreCase("USD")) {
-                                    targetRate = usdRate;
+                                targetPeriodRate = resultSet2.getBigDecimal(2);
+                                targetMonthlyRate = resultSet2.getBigDecimal(3);
+                                targetYTDRate = resultSet2.getBigDecimal(4);
+                                //USD column is empty in access file so this below is for assigning value to USD
+                                if (targetPeriodRate == null && resultSet2.getString(1).equalsIgnoreCase("USD")) {
+                                    targetPeriodRate = usdRate;
                                 }
-                                if (sourceRate == null && resultSet1.getString(2).equalsIgnoreCase("USD")) {
-                                    sourceRate = usdRate;
+                                if (targetMonthlyRate == null && resultSet2.getString(1).equalsIgnoreCase("USD")) {
+                                    targetMonthlyRate = usdRate;
+                                }
+                                if (targetYTDRate == null && resultSet2.getString(1).equalsIgnoreCase("USD")) {
+                                    targetYTDRate = usdRate;
+                                }
+                                if (sourcePeriodRate == null && resultSet1.getString(2).equalsIgnoreCase("USD")) {
+                                    sourcePeriodRate = usdRate;
+                                    type = "(Dollar)";
+                                }
+                                if (sourceMonthlyRate == null && resultSet1.getString(2).equalsIgnoreCase("USD")) {
+                                    sourceMonthlyRate = usdRate;
+                                    type = "(Dollar)";
+                                }
+                                if (sourceYTDRate == null && resultSet1.getString(2).equalsIgnoreCase("USD")) {
+                                    sourceYTDRate = usdRate;
                                     type = "(Dollar)";
                                 }
 
@@ -470,13 +517,18 @@ public class CurrencyService {
                                 toCurrency = Currency.getInstance(resultSet2.getString(1));
 
                                 //Currency Conversion Formula
-                                BigDecimal rate = usdRate.divide(sourceRate, SCALE, ROUNDING_METHOD).multiply(targetRate);
+                                BigDecimal periodRate = usdRate.divide(sourcePeriodRate, SCALE, ROUNDING_METHOD).multiply(targetPeriodRate);
+                                BigDecimal monthlyRate = usdRate.divide(sourceMonthlyRate, SCALE, ROUNDING_METHOD).multiply(targetMonthlyRate);
+                                BigDecimal YTDRate = usdRate.divide(sourceYTDRate, SCALE, ROUNDING_METHOD).multiply(targetYTDRate);
+
                                 ExchangeRate exRate = new ExchangeRate();
                                 exRate.setType(type);
                                 exRate.setFromCurrency(fromCurrency);
                                 exRate.setToCurrency(toCurrency);
                                 exRate.setFinancialPeriod(period);
-                                exRate.setConversionRate(rate);
+                                exRate.setPeriodEndRate(periodRate);
+                                exRate.setMonthlyAverageRate(monthlyRate);
+                                exRate.setYtdAverageRate(YTDRate);
                                 exchangeRate.add(exRate);
                             }
                         }

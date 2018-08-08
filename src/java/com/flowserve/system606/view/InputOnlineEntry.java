@@ -112,18 +112,22 @@ public class InputOnlineEntry implements Serializable {
         if (isEmpty(webSession.getFilterText())) {
             //rootTreeNode = viewSupport.generateNodeTree(reportingUnits);
             rootTreeNode = viewSupport.generateNodeTree(reportingUnit);
+            billingTreeNode = viewSupport.generateNodeTreeForBilling(reportingUnit);
         } else {
             viewSupport.filterNodeTree(rootTreeNode, webSession.getFilterText());
+            viewSupport.filterBillingNodeTree(billingTreeNode, webSession.getFilterText());
         }
     }
 
     public void filterByContracts() {
         rootTreeNode = viewSupport.generateNodeTree(reportingUnit);
-
+        billingTreeNode = viewSupport.generateNodeTreeForBilling(reportingUnit);
         if (webSession.getSelectedContracts().length == 0) {
             rootTreeNode = viewSupport.generateNodeTree(reportingUnit);
+            billingTreeNode = viewSupport.generateNodeTreeForBilling(reportingUnit);
         } else {
             viewSupport.filterNodeTreeContracts(rootTreeNode, Arrays.asList(webSession.getSelectedContracts()));
+            viewSupport.filterNodeTreeContracts(billingTreeNode, Arrays.asList(webSession.getSelectedContracts()));
         }
     }
 
@@ -151,6 +155,7 @@ public class InputOnlineEntry implements Serializable {
         webSession.setFilterText(null);
         webSession.setSelectedContracts(null);
         rootTreeNode = viewSupport.generateNodeTree(reportingUnit);
+        billingTreeNode = viewSupport.generateNodeTreeForBilling(reportingUnit);
     }
 
     private boolean isEmpty(String text) {

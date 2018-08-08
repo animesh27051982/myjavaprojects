@@ -84,6 +84,8 @@ public class FinancialPeriodService {
                     }
                     LocalDate lastOfMonth = date.with(TemporalAdjusters.lastDayOfMonth());
                     FinancialPeriod fPeriod = new FinancialPeriod(exPeriod, exPeriod, LocalDate.of(totalYear[i], Month.of(j), 1), lastOfMonth, totalYear[i], j, PeriodStatus.NEVER_OPENED);
+                    fPeriod.setLocalCurrencyRatePeriod(calculatePriorPeriod(fPeriod));
+                    fPeriod.setReportingCurrencyRatePeriod(fPeriod);
                     persist(fPeriod);
                 }
             }
