@@ -27,7 +27,7 @@
 
                             <p:inputText id="searchString" value="#{exchangeRateSearch.searchString}" style="width: 160px;"/>
                             <p:watermark for="searchString" value="Enter Period ID (ex: MAY-18)" id="watermark" />
-                            <p:commandButton id="search" value="Search" ajax="true" icon="ui-icon-arrowrefresh-1-w" actionListener="#{exchangeRateSearch.search}" update="reportForm:exchangeTable" style="margin-left:10px" />
+                            <p:commandButton id="search" value="Search" ajax="true" oncomplete="PF('exTable').filter()" icon="ui-icon-arrowrefresh-1-w" actionListener="#{exchangeRateSearch.search}" update="reportForm:exchangeTable" style="margin-left:10px" />
                             <p:ajaxStatus style="width:20px;height:20px;">
                                 <f:facet name="start">
                                     <h:graphicImage value="images/loader.gif" style="width: 20px;"/>
@@ -39,7 +39,7 @@
 
                             <p:defaultCommand target="search" />
 
-                            <p:dataTable id="exchangeTable" var="exchangeRate" value="#{exchangeRateSearch.exchangeRates}"  paginator="true" rows="30">
+                            <p:dataTable id="exchangeTable" widgetVar="exTable" var="exchangeRate" value="#{exchangeRateSearch.exchangeRates}"  paginator="true" rows="30">
 
                                 <p:column headerText="From Currency" sortBy="#{exchangeRate.fromCurrency}" filterBy="#{exchangeRate.fromCurrency}">
                                     <h:outputText value="#{exchangeRate.fromCurrency}" />
@@ -49,8 +49,8 @@
                                     <h:outputText value="#{exchangeRate.toCurrency}" />
                                 </p:column>
 
-                                <p:column headerText="Conversion Rate" sortBy="#{exchangeRate.conversionRate}">
-                                    <h:outputText value="#{exchangeRate.conversionRate}" />
+                                <p:column headerText="Period End Rate" sortBy="#{exchangeRate.periodEndRate}">
+                                    <h:outputText value="#{exchangeRate.periodEndRate}" />
                                 </p:column>
 
                                 <p:column headerText="Financial Period" sortBy="#{exchangeRate.financialPeriod}">
