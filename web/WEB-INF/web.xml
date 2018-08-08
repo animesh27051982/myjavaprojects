@@ -55,6 +55,7 @@
     </welcome-file-list>
 
     <!-- SECURITY -->
+    <!--
     <login-config>
         <auth-method>FORM</auth-method>
         <realm-name>login-realm</realm-name>
@@ -69,7 +70,6 @@
         <role-name>users</role-name>
     </security-role>
 
-    <!--
         <security-constraint>
             <display-name>Restricted to users</display-name>
             <web-resource-collection>

@@ -420,14 +420,6 @@ public class CurrencyService {
 
                         period = financialPeriodService.findById(exPeriod);
 
-                        /**
-                         * KJG - The data in the currency tables actually represents the prior period's month-end rate. This means that we need to shift
-                         * everything forward a month for system integrity reasons. This comment is very confusing to the reader.. Need to revise this comment
-                         * to make it more clear...
-                         *
-                         */
-                        period = financialPeriodService.calculateNextPeriod(period);
-
                     } catch (NumberFormatException e) {
                         Logger.getLogger(CurrencyService.class.getName()).log(Level.INFO, "Error " + e);
                     } catch (Exception e) {
