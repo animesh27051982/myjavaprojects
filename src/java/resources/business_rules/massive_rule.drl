@@ -149,30 +149,30 @@ rule "Liquidated Damages Recognized ITD"
     when
         pob : PerformanceObligation()
         percentComplete : Metric(metricType.code == "PERCENT_COMPLETE", value != null)
-        liquidatedDamagesITD : CurrencyMetric(metricType.code == "LIQUIDATED_DAMAGES_ITD_CC", lcValue != null)
-        liquidatedDamagesITDToRecognize : CurrencyMetric(metricType.code == "LIQUIDATED_DAMAGES_TO_RECOGNIZE_ITD_LC")
+        liquidatedDamagesITD : CurrencyMetric(metricType.code == "LIQUIDATED_DAMAGES_ITD_CC", ccValue != null)
+        liquidatedDamagesITDToRecognize : CurrencyMetric(metricType.code == "LIQUIDATED_DAMAGES_TO_RECOGNIZE_ITD_CC")
     then
-        modify (liquidatedDamagesITDToRecognize) { lcValue = (percentComplete.value * liquidatedDamagesITD.lcValue)};
+        modify (liquidatedDamagesITDToRecognize) { ccValue = (percentComplete.value * liquidatedDamagesITD.ccValue)};
 end
 
 rule "Liquidated Damages to Recognize in Current Period"
     when
         pob : PerformanceObligation()
-        liquidatedDamagesToRecognizeITD : CurrencyMetric(metricType.code == "LIQUIDATED_DAMAGES_TO_RECOGNIZE_ITD_LC", lcValue != null)
-        liquidatedDamagesRecognizedITDPriorPeriod : CurrencyMetricPriorPeriod(metricType.code == "LIQUIDATED_DAMAGES_TO_RECOGNIZE_ITD_LC")
-        liquidatedDamagesToRecognizeCurrentPeriod : CurrencyMetric(metricType.code == "LIQUIDATED_DAMAGES_TO_RECOGNIZE_PERIOD_LC")
+        liquidatedDamagesToRecognizeITD : CurrencyMetric(metricType.code == "LIQUIDATED_DAMAGES_TO_RECOGNIZE_ITD_CC", ccValue != null)
+        liquidatedDamagesRecognizedITDPriorPeriod : CurrencyMetricPriorPeriod(metricType.code == "LIQUIDATED_DAMAGES_TO_RECOGNIZE_ITD_CC")
+        liquidatedDamagesToRecognizeCurrentPeriod : CurrencyMetric(metricType.code == "LIQUIDATED_DAMAGES_TO_RECOGNIZE_PERIOD_CC")
     then
-        modify (liquidatedDamagesToRecognizeCurrentPeriod) { lcValue = (liquidatedDamagesRecognizedITDPriorPeriod.lcValue == null ? liquidatedDamagesToRecognizeITD.lcValue : liquidatedDamagesToRecognizeITD.lcValue - liquidatedDamagesRecognizedITDPriorPeriod.lcValue)};
+        modify (liquidatedDamagesToRecognizeCurrentPeriod) { ccValue = (liquidatedDamagesRecognizedITDPriorPeriod.ccValue == null ? liquidatedDamagesToRecognizeITD.ccValue : liquidatedDamagesToRecognizeITD.ccValue - liquidatedDamagesRecognizedITDPriorPeriod.ccValue)};
 end
 
 rule "Liquidated Damages in Backlog"
     when
         pob : PerformanceObligation()
-        liquidatedDamagesITD : CurrencyMetric(metricType.code == "LIQUIDATED_DAMAGES_ITD_CC", lcValue != null)
-        liquidatedDamagesITDToRecognize : CurrencyMetric(metricType.code == "LIQUIDATED_DAMAGES_TO_RECOGNIZE_ITD_LC", lcValue != null)
-        liquidatedDamagesBacklog : CurrencyMetric(metricType.code == "LIQUIDATED_DAMAGES_BACKLOG_LC")
+        liquidatedDamagesITD : CurrencyMetric(metricType.code == "LIQUIDATED_DAMAGES_ITD_CC", ccValue != null)
+        liquidatedDamagesITDToRecognize : CurrencyMetric(metricType.code == "LIQUIDATED_DAMAGES_TO_RECOGNIZE_ITD_CC", ccValue != null)
+        liquidatedDamagesBacklog : CurrencyMetric(metricType.code == "LIQUIDATED_DAMAGES_BACKLOG_CC")
     then
-        modify (liquidatedDamagesBacklog) { lcValue = (liquidatedDamagesITD.lcValue - liquidatedDamagesITDToRecognize.lcValue)};
+        modify (liquidatedDamagesBacklog) { ccValue = (liquidatedDamagesITD.ccValue - liquidatedDamagesITDToRecognize.ccValue)};
 end
 
 
@@ -180,7 +180,7 @@ rule "Net Period Sales"
     when
         pob : PerformanceObligation()
         revenueToRecognizecCurrentPeriod : CurrencyMetric(metricType.code == "REVENUE_TO_RECOGNIZE_PERIOD_LC", lcValue != null)
-        liquidatedDamagesToRecognizeCurrentPeriod : CurrencyMetric(metricType.code == "LIQUIDATED_DAMAGES_TO_RECOGNIZE_PERIOD_LC", lcValue != null)
+        liquidatedDamagesToRecognizeCurrentPeriod : CurrencyMetric(metricType.code == "LIQUIDATED_DAMAGES_TO_RECOGNIZE_PERIOD_CC", ccValue != null)
         netPeriodSales : CurrencyMetric(metricType.code == "NET_PERIOD_SALES_LC")
     then
         modify (netPeriodSales) { lcValue = (revenueToRecognizecCurrentPeriod.lcValue - liquidatedDamagesToRecognizeCurrentPeriod.lcValue)};
@@ -201,7 +201,7 @@ rule "Transaction Price Net LD"
     when
         pob : PerformanceObligation()
         transactionPrice : CurrencyMetric(metricType.code == "TRANSACTION_PRICE_CC", lcValue != null)
-        liquidatedDamagesITD : CurrencyMetric(metricType.code == "LIQUIDATED_DAMAGES_ITD_CC", lcValue != null)
+        liquidatedDamagesITD : CurrencyMetric(metricType.code == "LIQUIDATED_DAMAGES_ITD_CC", ccValue != null)
         transactionPriceNetLD : CurrencyMetric(metricType.code == "TRANSACTION_PRICE_NET_LD_LC")
     then
         modify (transactionPriceNetLD) { lcValue = (transactionPrice.lcValue - liquidatedDamagesITD.lcValue)};
@@ -257,7 +257,7 @@ rule "Contract Gross Profit and Margin ITD"
     when
         contract : Contract()
         contractRevenueITD : CurrencyMetric(metricType.code == "CONTRACT_REVENUE_TO_RECOGNIZE_ITD_LC", lcValue != null)
-        contractLiquidatedDamagesITD : CurrencyMetric(metricType.code == "LIQUIDATED_DAMAGES_ITD_CC", lcValue != null)
+        contractLiquidatedDamagesITD : CurrencyMetric(metricType.code == "LIQUIDATED_DAMAGES_ITD_CC", ccValue != null)
         contractCOGSITD : CurrencyMetric(metricType.code == "COST_OF_GOODS_SOLD_ITD_LC", lcValue != null)
         contractLossReserve : CurrencyMetric(metricType.code == "LOSS_RESERVE_ITD_LC", lcValue != null)
         contractGrossProfit : CurrencyMetric(metricType.code == "CONTRACT_GROSS_PROFIT_LC")
