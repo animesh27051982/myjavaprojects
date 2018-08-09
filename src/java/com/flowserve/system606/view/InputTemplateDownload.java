@@ -47,15 +47,15 @@ public class InputTemplateDownload implements Serializable {
     @PostConstruct
     public void init() {
         //reportingUnits = adminService.getPreparableReportingUnits();
-        //reportingUnits.add(webSession.getCurrentReportingUnit());
+        reportingUnits.add(webSession.getCurrentReportingUnit());
         selectedReportingUnits = reportingUnits;
     }
 
     public StreamedContent getFile() throws Exception {
         try {
             //reportingUnits = createReportingUnitTree();
-            inputStream = PobInput.class.getResourceAsStream("/resources/excel_input_templates/POCI_Template.xlsx");
-            outputStream = new FileOutputStream(new File("poci_input_template.xlsx"));
+            inputStream = PobInput.class.getResourceAsStream("/resources/excel_input_templates/POCI_Template_New.xlsx");
+            outputStream = new FileOutputStream(new File("POCI_Template_New.xlsx"));
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -63,8 +63,8 @@ public class InputTemplateDownload implements Serializable {
 
         templateService.processTemplateDownload(inputStream, outputStream, selectedReportingUnits);
 
-        InputStream inputStreamFromOutputStream = new FileInputStream(new File("poci_input_template.xlsx"));
-        file = new DefaultStreamedContent(inputStreamFromOutputStream, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "poci_input_template.xlsx");
+        InputStream inputStreamFromOutputStream = new FileInputStream(new File("POCI_Template_New.xlsx"));
+        file = new DefaultStreamedContent(inputStreamFromOutputStream, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "POCI_Template_New.xlsx");
         return file;
     }
 

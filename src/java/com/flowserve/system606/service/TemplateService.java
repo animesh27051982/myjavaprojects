@@ -5,6 +5,7 @@
  */
 package com.flowserve.system606.service;
 
+import com.flowserve.system606.model.BillingEvent;
 import com.flowserve.system606.model.Contract;
 import com.flowserve.system606.model.FinancialPeriod;
 import com.flowserve.system606.model.Measurable;
@@ -13,6 +14,7 @@ import com.flowserve.system606.model.MetricType;
 import com.flowserve.system606.model.PerformanceObligation;
 import com.flowserve.system606.model.ReportingUnit;
 import com.flowserve.system606.view.PobInput;
+import com.flowserve.system606.view.ViewSupport;
 import com.flowserve.system606.web.WebSession;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -21,7 +23,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStreamWriter;
 import java.math.BigDecimal;
-import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -58,6 +59,8 @@ public class TemplateService {
     CurrencyService currencyService;
     @Inject
     AdminService adminService;
+    @Inject
+    ViewSupport viewSupport;
     private static final int HEADER_ROW_COUNT = 2;
     private InputStream inputStream;
     @Inject
@@ -80,32 +83,121 @@ public class TemplateService {
         // TODO - This needs to be read from the file and then checked to make sure it's open.
         FinancialPeriod period = financialPeriodService.getCurrentFinancialPeriod();
 
-        int rowid = HEADER_ROW_COUNT;
+        int rowid = 3;
         for (ReportingUnit ru : reportingUnits) {
             List<Contract> contracts = ru.getContracts();
             for (Contract contract : contracts) {
                 List<PerformanceObligation> pobs = contract.getPerformanceObligations();
                 for (PerformanceObligation pob : pobs) {
-                    row = worksheet.getRow(rowid++);
+                    row = worksheet.getRow(rowid);
+                    if (row == null) {
+                        row = worksheet.createRow(rowid);
+                    }
 
                     // Populate non-input cells
-                    row.getCell(0).setCellValue(ru.getBusinessUnit().getName());
-                    row.getCell(1).setCellValue(ru.getCode());
-                    row.getCell(2).setCellValue(contract.getId());
-                    row.getCell(3).setCellValue(contract.getName());  // TODO - Need customer name?
-                    row.getCell(4).setCellValue(contract.getSalesOrderNumber());
-                    row.getCell(5).setCellValue(pob.getName());
-                    row.getCell(6).setCellValue(pob.getId());
-                    row.getCell(7).setCellValue(pob.getRevenueMethod().getShortName());
+                    cell = row.getCell(0, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
+                    cell.setCellValue(ru.getCode());
+                    cell = row.getCell(1, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
+                    cell.setCellValue(contract.getId());
+                    cell = row.getCell(2, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
+                    cell.setCellValue(pob.getId());
+                    cell = row.getCell(3, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
+                    cell.setCellValue(pob.getRevenueMethod().getShortName());
+                    cell = row.getCell(4, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
+                    cell.setCellValue(contract.getContractCurrency().getCurrencyCode());
 
-                    for (MetricType metricType : metricTypes) {
-                        cell = row.getCell(CellReference.convertColStringToIndex(metricType.getExcelCol()));
-                        if ("CurrencyMetric".equals(metricType.getMetricClass())) {
-                            if (currencyMetricIsNotNull(metricType, pob, period)) {
-                                cell.setCellValue(calculationService.getCurrencyMetric(metricType.getCode(), pob, period).getValue().doubleValue());
+                    BigDecimal value = BigDecimal.ZERO;
+                    value = calculationService.getCurrencyMetric("TRANSACTION_PRICE_CC", pob, period).getCcValue();
+                    setCellValue(row, 5, value);
+                    value = calculationService.getCurrencyMetric("LIQUIDATED_DAMAGES_ITD_CC", pob, period).getCcValue();
+                    setCellValue(row, 6, value);
+                    cell = row.getCell(7, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
+                    cell.setCellValue(contract.getLocalCurrency().getCurrencyCode());
+                    value = calculationService.getCurrencyMetric("ESTIMATED_COST_AT_COMPLETION_LC", pob, period).getLcValue();
+                    setCellValue(row, 8, value);
+                    value = calculationService.getCurrencyMetric("ESTIMATED_COST_AT_COMPLETION_LC", pob, webSession.getPriorPeriod()).getLcValue();
+                    setCellValue(row, 9, value);
+
+                    value = calculationService.getCurrencyMetric("LOCAL_COSTS_ITD_LC", pob, period).getLcValue();
+                    setCellValue(row, 10, value);
+                    value = calculationService.getCurrencyMetric("THIRD_PARTY_COSTS_ITD_LC", pob, period).getLcValue();
+                    setCellValue(row, 11, value);
+                    value = calculationService.getCurrencyMetric("INTERCOMPANY_COSTS_ITD_LC", pob, period).getLcValue();
+                    setCellValue(row, 12, value);
+                    value = calculationService.getCurrencyMetric("COST_OF_GOODS_SOLD_ITD_LC", pob, period).getCcValue();
+                    setCellValue(row, 14, value);
+
+                    value = calculationService.getDecimalMetric("PERCENT_COMPLETE", pob, period).getValue();
+                    setCellValue(row, 15, value);
+                    value = BigDecimal.ZERO; //TODO Metric Type not available
+                    setCellValue(row, 16, value);
+                    value = BigDecimal.ZERO; //TODO Metric Type not available
+                    setCellValue(row, 17, value);
+                    value = BigDecimal.ZERO; //TODO Metric Type not available
+                    setCellValue(row, 18, value);
+                    value = BigDecimal.ZERO; //TODO Metric Type not available
+                    setCellValue(row, 19, value);
+                    List<BillingEvent> bEv = contract.getBillingEvents();
+                    int cnt = 1;
+                    //int rowNum = 20;
+                    for (BillingEvent b : bEv) {
+
+                        if (cnt > 2) {
+                            break;
+                        } else if (cnt == 1) {
+                            String invoiceNum = b.getInvoiceNumber();
+                            if (!invoiceNum.equalsIgnoreCase("")) {
+                                cell = row.getCell(20, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
+                                cell.setCellValue(invoiceNum);
                             }
+                            String date = b.getBillingDate().toString();
+                            if (!date.equalsIgnoreCase("")) {
+                                cell = row.getCell(21, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
+                                cell.setCellValue(date);
+                            }
+                            value = b.getAmountContractCurrency();
+                            setCellValue(row, 22, value);
+                            value = b.getAmountLocalCurrency();
+                            setCellValue(row, 23, value);
+                            value = contract.getTotalBillingsLocalCurrency();
+                            setCellValue(row, 28, value);
+
+                        } else if (cnt == 2) {
+                            String invoiceNum = b.getInvoiceNumber();
+                            if (!invoiceNum.equalsIgnoreCase("")) {
+                                cell = row.getCell(24, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
+                                cell.setCellValue(invoiceNum);
+                            }
+                            String date = b.getBillingDate().toString();
+                            if (!date.equalsIgnoreCase("")) {
+                                cell = row.getCell(25, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
+                                cell.setCellValue(date);
+                            }
+                            value = b.getAmountContractCurrency();
+                            setCellValue(row, 26, value);
+                            value = b.getAmountLocalCurrency();
+                            setCellValue(row, 27, value);
+
                         }
+
+                        cnt++;
                     }
+
+                    rowid++;
+//                    row.getCell(3).setCellValue(contract.getName());  // TODO - Need customer name?
+//                    row.getCell(4).setCellValue(contract.getSalesOrderNumber());
+//                    row.getCell(5).setCellValue(pob.getName());
+//                    row.getCell(6).setCellValue(pob.getId());
+//
+//
+//                    for (MetricType metricType : metricTypes) {
+//                        cell = row.getCell(CellReference.convertColStringToIndex(metricType.getExcelCol()));
+//                        if ("CurrencyMetric".equals(metricType.getMetricClass())) {
+//                            if (currencyMetricIsNotNull(metricType, pob, period)) {
+//                                cell.setCellValue(calculationService.getCurrencyMetric(metricType.getCode(), pob, period).getValue().doubleValue());
+//                            }
+//                        }
+//                    }
                 }
             }
         }
@@ -127,7 +219,7 @@ public class TemplateService {
             XSSFSheet worksheet = workbook.getSheetAt(0);
             MetricSet inputSet = new MetricSet();
             inputSet.setFilename(filename);
-            int pobIdColNumber = CellReference.convertColStringToIndex("G");
+            int pobIdColNumber = CellReference.convertColStringToIndex("C");
 
             if (worksheet == null) {
                 throw new IllegalStateException("Invalid xlsx file.  Report detail to user");
@@ -135,7 +227,7 @@ public class TemplateService {
 
             Logger.getLogger(TemplateService.class.getName()).log(Level.INFO, "Processing POB input template: " + filename);
             for (Row row : worksheet) {
-                if (row.getRowNum() < HEADER_ROW_COUNT) {
+                if (row.getRowNum() < 3) {
                     continue;
                 }
                 Cell pobIdCell = row.getCell(pobIdColNumber);
@@ -153,31 +245,59 @@ public class TemplateService {
                 if (pob == null) {
                     throw new IllegalStateException("Input file invalid.  Invalid POB at row: " + row.getRowNum());
                 }
+                Cell cell = null;
 
-                for (MetricType inputType : inputTypes) {
-                    Logger.getLogger(TemplateService.class.getName()).log(Level.INFO, "Excel upload inputType: " + inputType.getId());
-                    Cell cell = row.getCell(CellReference.convertColStringToIndex(inputType.getExcelCol()));
+                cell = row.getCell(CellReference.convertColStringToIndex("F"));
+                setValueInMetricType(cell, pobIdCell, "TRANSACTION_PRICE_CC", pob, period);
+                cell = row.getCell(CellReference.convertColStringToIndex("G"));
+                setValueInMetricType(cell, pobIdCell, "LIQUIDATED_DAMAGES_ITD_CC", pob, period);
+                cell = row.getCell(CellReference.convertColStringToIndex("I"));
+                setValueInMetricType(cell, pobIdCell, "ESTIMATED_COST_AT_COMPLETION_LC", pob, period);
+                cell = row.getCell(CellReference.convertColStringToIndex("J"));
+                setValueInMetricType(cell, pobIdCell, "ESTIMATED_COST_AT_COMPLETION_LC", pob, webSession.getPriorPeriod());
+                cell = row.getCell(CellReference.convertColStringToIndex("K"));
+                setValueInMetricType(cell, pobIdCell, "LOCAL_COSTS_ITD_LC", pob, period);
+                cell = row.getCell(CellReference.convertColStringToIndex("L"));
+                setValueInMetricType(cell, pobIdCell, "THIRD_PARTY_COSTS_ITD_LC", pob, period);
+                cell = row.getCell(CellReference.convertColStringToIndex("M"));
+                setValueInMetricType(cell, pobIdCell, "INTERCOMPANY_COSTS_ITD_LC", pob, period);
+                cell = row.getCell(CellReference.convertColStringToIndex("O"));
+                setValueInMetricType(cell, pobIdCell, "COST_OF_GOODS_SOLD_ITD_LC", pob, period);
+                cell = row.getCell(CellReference.convertColStringToIndex("P"));
+                if (cell == null || pobIdCell.getCellTypeEnum() == CellType.BLANK || ((XSSFCell) cell).getRawValue() == null) {
+                    // TODO - figure out what to do in this blank case.  It will depend on the situation.
+                } else {
+                    calculationService.getDecimalMetric("PERCENT_COMPLETE", pob, period).setValue(new BigDecimal(NumberToTextConverter.toText(cell.getNumericCellValue())));
 
-                    try {
-                        if (cell == null || pobIdCell.getCellTypeEnum() == CellType.BLANK || ((XSSFCell) cell).getRawValue() == null) {
-                            // TODO - figure out what to do in this blank case.  It will depend on the situation.
-                            continue;
-                        }
-                        if ("CurrencyMetric".equals(inputType.getMetricClass())) {
-                            calculationService.getCurrencyMetric(inputType.getCode(), pob, period).setValue(new BigDecimal(NumberToTextConverter.toText(cell.getNumericCellValue())));
-                        }
-                        if ("StringMetric".equals(inputType.getMetricClass())) {
-                            calculationService.getStringMetric(inputType.getCode(), pob, period).setValue(cell.getStringCellValue());
-                        }
-                        if ("DateMetric".equals(inputType.getMetricClass())) {
-                            calculationService.getDateMetric(inputType.getCode(), pob, period).setValue(cell.getDateCellValue().toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
-                        }
-                    } catch (Exception rce) {
-                        Logger.getLogger(TemplateService.class.getName()).log(Level.SEVERE, "Error processing " + inputType.getId());
-                        throw new Exception("processTemplateUpload row: " + row.getRowNum() + " cell: " + cell.getColumnIndex() + " " + rce.getMessage());
-                    }
                 }
 
+// TODO - We May Use This Approach later
+//                for (MetricType inputType : inputTypes) {
+//                    Logger.getLogger(TemplateService.class.getName()).log(Level.INFO, "Excel upload inputType: " + inputType.getId());
+//                    Cell cell = row.getCell(CellReference.convertColStringToIndex(inputType.getExcelCol()));
+//
+//                    try {
+//                        if (cell == null || pobIdCell.getCellTypeEnum() == CellType.BLANK || ((XSSFCell) cell).getRawValue() == null) {
+//                            // TODO - figure out what to do in this blank case.  It will depend on the situation.
+//                            continue;
+//                        }
+//                        if ("CurrencyMetric".equals(inputType.getMetricClass())) {
+//                            calculationService.getCurrencyMetric(inputType.getCode(), pob, period).setValue(new BigDecimal(NumberToTextConverter.toText(cell.getNumericCellValue())));
+//                        }
+//                        if ("StringMetric".equals(inputType.getMetricClass())) {
+//                            calculationService.getStringMetric(inputType.getCode(), pob, period).setValue(cell.getStringCellValue());
+//                        }
+//                        if ("DateMetric".equals(inputType.getMetricClass())) {
+//                            calculationService.getDateMetric(inputType.getCode(), pob, period).setValue(cell.getDateCellValue().toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
+//                        }
+//                        if ("DecimalMetric".equals(inputType.getMetricClass())) {
+//                            calculationService.getDecimalMetric(inputType.getCode(), pob, period).setValue(new BigDecimal(NumberToTextConverter.toText(cell.getNumericCellValue())));
+//                        }
+//                    } catch (Exception rce) {
+//                        Logger.getLogger(TemplateService.class.getName()).log(Level.SEVERE, "Error processing " + inputType.getId());
+//                        throw new Exception("processTemplateUpload row: " + row.getRowNum() + " cell: " + cell.getColumnIndex() + " " + rce.getMessage());
+//                    }
+//                }
                 // KJG TODO - Billing Events need to move out of the metric types and into an 'Event' category of data.
 //                BillingEvent billingEvent = new BillingEvent();
 //                List<MetricType> inputTypesContract = metricService.findActiveMetricTypesContract();
@@ -329,5 +449,23 @@ public class TemplateService {
     private boolean currencyMetricIsNotNull(MetricType metricType, Measurable measurable, FinancialPeriod period) throws Exception {
         return calculationService.getCurrencyMetric(metricType.getCode(), measurable, period) != null
                 && calculationService.getCurrencyMetric(metricType.getCode(), measurable, period).getValue() != null;
+    }
+
+    private void setCellValue(XSSFRow row, int cellNum, BigDecimal value) {
+        if (value != null) {
+            Cell cell = row.getCell(cellNum, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
+            cell.setCellValue(value.doubleValue());
+        }
+
+    }
+
+    private void setValueInMetricType(Cell cell, Cell pobIdCell, String type, PerformanceObligation pob, FinancialPeriod period) throws Exception {
+        if (cell == null || pobIdCell.getCellTypeEnum() == CellType.BLANK || ((XSSFCell) cell).getRawValue() == null) {
+            // TODO - figure out what to do in this blank case.  It will depend on the situation.
+        } else {
+            calculationService.getCurrencyMetric(type, pob, period).setValue(new BigDecimal(NumberToTextConverter.toText(cell.getNumericCellValue())));
+
+        }
+
     }
 }

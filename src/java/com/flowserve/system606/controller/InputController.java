@@ -32,7 +32,8 @@ public class InputController implements Serializable {
         return "dashboard";
     }
 
-    public String proceedToInputDownload() {
+    public String proceedToInputDownload(ReportingUnit ru) {
+        webSession.setCurrentReportingUnit(ru);
         return "inputTemplateDownload";
     }
 

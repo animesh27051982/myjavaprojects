@@ -51,6 +51,7 @@ public class WebSession implements Serializable {
     private String filterText;
     private Contract[] selectedContracts;
     private ReportingUnit adminReportingUnit;
+    private ReportingUnit currentReportingUnit;
 
     // The currently logged in user.
     private User user;
@@ -248,6 +249,15 @@ public class WebSession implements Serializable {
 
     public void setAdminReportingUnit(ReportingUnit adminReportingUnit) {
         this.adminReportingUnit = adminReportingUnit;
+    }
+
+    public ReportingUnit getCurrentReportingUnit() {
+        return currentReportingUnit;
+    }
+
+    public void setCurrentReportingUnit(ReportingUnit currentReportingUnit) {
+        Logger.getLogger(WebSession.class.getName()).log(Level.INFO, "SET" + currentReportingUnit.getCode());
+        this.currentReportingUnit = currentReportingUnit;
     }
 
 }
