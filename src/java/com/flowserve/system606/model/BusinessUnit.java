@@ -14,6 +14,7 @@ import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
@@ -46,6 +47,10 @@ public class BusinessUnit extends TransientMeasurable<String> implements Compara
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "parent")
     private List<BusinessUnit> childBusinessUnit = new ArrayList<BusinessUnit>();
+
+    @ManyToOne
+    @JoinColumn(name = "COMPANY_ID")
+    private Company company;
 
     public BusinessUnit() {
     }
@@ -117,6 +122,14 @@ public class BusinessUnit extends TransientMeasurable<String> implements Compara
 
     public void setChildBusinessUnit(List<BusinessUnit> childBusinessUnit) {
         this.childBusinessUnit = childBusinessUnit;
+    }
+
+    public Company getCompany() {
+        return company;
+    }
+
+    public void setCompany(Company company) {
+        this.company = company;
     }
 
 }

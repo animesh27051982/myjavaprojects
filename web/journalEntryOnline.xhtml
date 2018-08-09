@@ -7,6 +7,16 @@
 
     <ui:define name="head">
         <style type="text/css">
+            .stripped {
+  padding: 2.25em 1.6875em;
+  background-image: -webkit-repeating-linear-gradient(135deg, rgba(0,0,0,.3), rgba(0,0,0,.3) 1px, transparent 2px, transparent 2px, rgba(0,0,0,.3) 3px);
+  background-image: -moz-repeating-linear-gradient(135deg, rgba(0,0,0,.3), rgba(0,0,0,.3) 1px, transparent 2px, transparent 2px, rgba(0,0,0,.3) 3px);
+  background-image: -o-repeating-linear-gradient(135deg, rgba(0,0,0,.3), rgba(0,0,0,.3) 1px, transparent 2px, transparent 2px, rgba(0,0,0,.3) 3px);
+  background-image: repeating-linear-gradient(135deg, rgba(0,0,0,.3), rgba(0,0,0,.3) 1px, transparent 2px, transparent 2px, rgba(0,0,0,.3) 3px);
+  -webkit-background-size: 4px 4px;
+  -moz-background-size: 4px 4px;
+  background-size: 4px 4px;
+  }
 
         </style>
     </ui:define>
@@ -41,9 +51,9 @@
                                         <p:column colspan="5" ></p:column>
                                         <p:column colspan="26" style="font-weight: bold">Monthly Journal Entry Components - Debit/(Credits)</p:column></p:row>
                                     <p:row>
-                                        <p:column colspan="5" style="text-align: left">Reporting Month End</p:column>
-                                        <p:column colspan="10" style="text-align: left;background-color: #00a6d2">Income Statement</p:column>
-                                        <p:column colspan="16" style="text-align: left;background-color: #1D6833">Balance Sheet</p:column>
+                                        <p:column colspan="5" >Reporting Month End</p:column>
+                                        <p:column colspan="10" style="background-color: #00a6d2;font-weight: bold">Income Statement</p:column>
+                                        <p:column colspan="16" style="background-color: #1D6833;font-weight: bold">Balance Sheet</p:column>
 
                                     </p:row>
 
@@ -82,8 +92,8 @@
                                         <p:column  colspan="2"></p:column>
                                         <p:column  colspan="2"></p:column>
                                         <p:column  colspan="2" ></p:column>
-                                        <p:column  colspan="2" style="background-color:#4d3131"></p:column>
-                                        <p:column  colspan="2" style="background-color:#4d3131"></p:column>
+                                        <p:column  colspan="2"  styleClass="stripped"></p:column>
+                                        <p:column  colspan="2" styleClass="stripped"></p:column>
                                         <p:column  colspan="2"></p:column>
                                         <p:column  colspan="2"></p:column>
                                     </p:row>
@@ -99,8 +109,8 @@
                                         <p:column  colspan="2"></p:column>
                                         <p:column  colspan="2"></p:column>
                                         <p:column  colspan="2"></p:column>
-                                        <p:column  colspan="2" style="background-color:#4d3131"></p:column>
-                                        <p:column  colspan="2" style="background-color:#4d3131"></p:column>
+                                        <p:column  colspan="2" styleClass="stripped"></p:column>
+                                        <p:column  colspan="2" styleClass="stripped"></p:column>
                                         <p:column  colspan="2"></p:column>
                                         <p:column  colspan="2"></p:column>
                                     </p:row>
@@ -116,8 +126,8 @@
                                         <p:column  colspan="2"></p:column>
                                         <p:column  colspan="2"></p:column>
                                         <p:column  colspan="2"></p:column>
-                                        <p:column  colspan="2" style="background-color:#4d3131"></p:column>
-                                        <p:column  colspan="2" style="background-color:#4d3131"></p:column>
+                                        <p:column  colspan="2" styleClass="stripped"></p:column>
+                                        <p:column  colspan="2" styleClass="stripped"></p:column>
                                         <p:column  colspan="2"></p:column>
                                         <p:column  colspan="2"></p:column>
                                     </p:row>
@@ -133,8 +143,8 @@
                                         <p:column  colspan="2"></p:column>
                                         <p:column  colspan="2"></p:column>
                                         <p:column  colspan="2"></p:column>
-                                        <p:column  colspan="2" style="background-color:#4d3131"></p:column>
-                                        <p:column  colspan="2" style="background-color:#4d3131"></p:column>
+                                        <p:column  colspan="2" styleClass="stripped"></p:column>
+                                        <p:column  colspan="2" styleClass="stripped"></p:column>
                                         <p:column  colspan="2"></p:column>
                                         <p:column  colspan="2"></p:column>
                                     </p:row>
@@ -150,8 +160,8 @@
                                         <p:column  colspan="2"></p:column>
                                         <p:column  colspan="2"></p:column>
                                         <p:column  colspan="2"></p:column>
-                                        <p:column  colspan="2" style="background-color:#4d3131"></p:column>
-                                        <p:column  colspan="2" style="background-color: #4d3131"></p:column>
+                                        <p:column  colspan="2" styleClass="stripped"></p:column>
+                                        <p:column  colspan="2" styleClass="stripped"></p:column>
                                         <p:column  colspan="2"></p:column>
                                         <p:column  colspan="2"></p:column>
                                     </p:row>
@@ -178,14 +188,14 @@
                                     </p:row>
 
                                     <p:row>
-                                        <p:column colspan="18" style="text-align:left;font-weight: bold">Journal Entries</p:column>
+                                        <p:column colspan="18" style="text-align:left;font-weight: bolder">Journal Entries</p:column>
                                     </p:row>
 
                                     <p:row>
-                                        <p:column colspan="6">Account Name</p:column>
-                                        <p:column colspan="6">Account Description</p:column>
-                                        <p:column colspan="3">Debit</p:column>
-                                        <p:column colspan="3">Credit</p:column>
+                                        <p:column colspan="6" style="font-weight: bold">Account Name</p:column>
+                                        <p:column colspan="6" style="font-weight: bold">Account Description</p:column>
+                                        <p:column colspan="3" style="font-weight: bold">Debit</p:column>
+                                        <p:column colspan="3" style="font-weight: bold">Credit</p:column>
                                     </p:row>
 
                                     <p:row>

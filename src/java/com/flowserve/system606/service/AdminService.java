@@ -26,6 +26,7 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Currency;
 import java.util.List;
 import java.util.Locale;
@@ -323,6 +324,11 @@ public class AdminService {
         return em.merge(ru);
     }
 
+    public Company updateCompany(Company c) throws Exception {
+        Logger.getLogger(AdminService.class.getName()).log(Level.INFO, "Updating Company: " + c.getId());
+        return em.merge(c);
+    }
+
     public Measurable update(Measurable measurable) throws Exception {
         return em.merge(measurable);
     }
@@ -523,7 +529,7 @@ public class AdminService {
         if (findBusinessUnitById("AMSS") == null) {
             Logger.getLogger(AdminService.class.getName()).log(Level.INFO, "Initializing Business Units");
             BufferedReader reader = new BufferedReader(new InputStreamReader(AppInitializeService.class.getResourceAsStream("/resources/app_data_init_files/business_units.txt"), "UTF-8"));
-
+            List<BusinessUnit> bunit = new ArrayList<BusinessUnit>();
             String line = null;
             while ((line = reader.readLine()) != null) {
                 if (line.trim().length() == 0) {
@@ -534,10 +540,18 @@ public class AdminService {
                 bu.setId(values[0]);
                 bu.setName(values[0]);
                 bu.setType("Platform");
+                bu.setCompany(findCompanyById("FLS"));
                 persist(bu);
+                Company cm = findCompanyById("FLS");
+
+                bunit.add(findBusinessUnitById(values[0]));
+                cm.setBusinessUnit(bunit);
+                updateCompany(cm);
+
             }
             reader.close();
             Logger.getLogger(AdminService.class.getName()).log(Level.INFO, "Finished initializing Business Units.");
+            Logger.getLogger(AdminService.class.getName()).log(Level.INFO, "Finished initializing Business Units." + findCompanyById("FLS").getBusinessUnit().get(0).getId());
         }
     }
 

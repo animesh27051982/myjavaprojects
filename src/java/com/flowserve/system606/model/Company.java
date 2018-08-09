@@ -51,6 +51,9 @@ public class Company extends TransientMeasurable<String> implements Comparable<C
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "company")
     private List<ReportingUnit> reportingUnit = new ArrayList<ReportingUnit>();
 
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "company")
+    private List<BusinessUnit> businessUnit = new ArrayList<BusinessUnit>();
+
     public Company() {
     }
 
@@ -151,4 +154,13 @@ public class Company extends TransientMeasurable<String> implements Comparable<C
     public void setPriorPeriod(FinancialPeriod priorPeriod) {
         this.priorPeriod = priorPeriod;
     }
+
+    public List<BusinessUnit> getBusinessUnit() {
+        return businessUnit;
+    }
+
+    public void setBusinessUnit(List<BusinessUnit> businessUnit) {
+        this.businessUnit = businessUnit;
+    }
+
 }
