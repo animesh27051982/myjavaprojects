@@ -112,7 +112,11 @@ public class ReportingUnit extends TransientMeasurable<Long> implements Measurab
     }
 
     public ApprovalWorkflowStatus getWorkflowStatus(FinancialPeriod period) {
-        return periodApprovalRequestMap.get(period).getApprovalWorkflowStatus();
+        if (periodApprovalRequestMap.get(period) != null) {
+            return periodApprovalRequestMap.get(period).getApprovalWorkflowStatus();
+        }
+
+        return null;
     }
 
     public ApprovalRequest getPeriodApprovalRequest(FinancialPeriod period) {
