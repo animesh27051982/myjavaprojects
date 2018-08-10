@@ -110,11 +110,11 @@
                                         <p:row>
                                             <p:column colspan="1" style="white-space:pre-line;" headerText="RU / Contract / POB" />
                                             <p:column colspan="1" style="white-space:pre-line;" headerText="Rev Rec Method" />
-                                            <p:column colspan="1" style="white-space:pre-line;" headerText="CC Code" />
+                                            <p:column colspan="1" style="white-space:pre-line;" headerText="Currency" />
                                             <p:column colspan="1" style="white-space:pre-line;" headerText="#{viewSupport.getMetricTypeDescription('TRANSACTION_PRICE_CC')}" />
                                             <p:column colspan="1" style="white-space:pre-line;" headerText="#{viewSupport.getMetricTypeDescription('LIQUIDATED_DAMAGES_ITD_CC')}" />
                                             <p:column colspan="1" style="white-space:pre-line;" headerText="Fx Rate" />
-                                            <p:column colspan="1" style="white-space:pre-line;" headerText="LC Code" />
+                                            <p:column colspan="1" style="white-space:pre-line;" headerText="Currency" />
                                             <p:column colspan="1" style="white-space:pre-line;" headerText="#{viewSupport.getMetricTypeDescription('ESTIMATED_COST_AT_COMPLETION_LC')}" />
                                             <p:column colspan="1" style="white-space:pre-line;" headerText="#{viewSupport.getMetricTypeDescription('ESTIMATED_COST_AT_COMPLETION_LC')} Prior Period" />
                                             <p:column colspan="1" style="white-space:pre-line;" headerText="#{viewSupport.getMetricTypeDescription('CHANGE_IN_EAC_LC')}" />
@@ -211,7 +211,7 @@
                                     <p:columnGroup type="header">
                                         <p:row>
                                             <p:column style="width: 350px; text-overflow: ellipsis;" colspan="1" headerText="" />
-                                            <p:column colspan="4" style="white-space:pre-line;" headerText="Local Currency" />
+                                            <p:column colspan="6" style="background-color: #0071bc; color: #ffffff; white-space:pre-line;"  headerText="Local Currency" />
                                         </p:row>
                                         <p:row>
                                             <p:column colspan="1" style="white-space:pre-line;" headerText="RU / Contract / POB" />
@@ -219,6 +219,9 @@
                                             <p:column colspan="1" style="white-space:pre-line;" headerText="#{viewSupport.getMetricTypeDescription('THIRD_PARTY_COSTS_ITD_LC')}" />
                                             <p:column colspan="1" style="white-space:pre-line;" headerText="#{viewSupport.getMetricTypeDescription('INTERCOMPANY_COSTS_ITD_LC')}" />
                                             <p:column colspan="1" style="white-space:pre-line;" headerText="#{viewSupport.getMetricTypeDescription('COST_OF_GOODS_SOLD_ITD_LC')}" />
+                                            <p:column colspan="1" style="white-space:pre-line;" headerText="#{viewSupport.getMetricTypeDescription('DELIVERY_DATE')}" />
+                                            <p:column colspan="1" style="white-space:pre-line;" headerText="#{viewSupport.getMetricTypeDescription('PARTIAL_SHIPMENT_COSTS_LC')}" />
+
 
                                         </p:row>
                                     </p:columnGroup>
@@ -261,9 +264,6 @@
                                     </p:column>
 
                                     <p:column style="white-space:pre-line;">
-                                        <f:facet name="header">
-                                            <h:outputText value="" />
-                                        </f:facet>
                                         <p:cellEditor rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}">
                                             <f:facet name="output">
                                                 <p:inputText value="#{viewSupport.getCurrencyMetric('INTERCOMPANY_COSTS_ITD_LC', pob).lcValue}" styleClass="#{empty viewSupport.getCurrencyMetric('INTERCOMPANY_COSTS_ITD_LC', pob).lcValue ? 'ui-state-error' : ''}" readonly="true">
@@ -284,8 +284,38 @@
                                             <o:converter converterId="javax.faces.Number" currencySymbol="" type="currency" />
                                         </h:outputText>
                                     </p:column>
+
+                                    <p:column style="white-space:pre-line;">
+                                        <p:cellEditor rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}">
+                                            <f:facet name="output">
+                                                <p:inputText value="#{viewSupport.getDateMetric('DELIVERY_DATE', pob).value}" rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}">
+                                                    <f:convertDateTime pattern="dd-MMM-yyyy" type="localDate" />
+                                                </p:inputText>
+                                            </f:facet>
+                                            <f:facet name="input">
+                                                <p:calendar value="#{viewSupport.getDateMetric('DELIVERY_DATE', pob).value}" converter="localDateConverter" pattern="MM/dd/yyyy" navigator="true" mode="popup"/>
+                                            </f:facet>
+                                        </p:cellEditor>
+                                    </p:column>
+
+                                    <p:column style="white-space:pre-line;">
+                                        <p:cellEditor rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}">
+                                            <f:facet name="output">
+                                                <p:inputText value="#{viewSupport.getCurrencyMetric('PARTIAL_SHIPMENT_COSTS_LC', pob).lcValue}" readonly="true">
+
+                                                    <o:converter converterId="javax.faces.Number" currencySymbol="" type="currency" />
+                                                </p:inputText>
+                                            </f:facet>
+                                            <f:facet name="input">
+                                                <p:inputText value="#{viewSupport.getCurrencyMetric('PARTIAL_SHIPMENT_COSTS_LC', pob).lcValue}">
+                                                    <f:validateDoubleRange/>
+                                                </p:inputText>
+                                            </f:facet>
+                                        </p:cellEditor>
+                                    </p:column>
                                 </p:treeTable>
                             </p:tab>
+
                             <p:tab title="Third Party Inputs">
                                 <p:treeTable value="#{inputOnlineEntry.rootTreeNode}" editable="true" editMode="cell" var="pob">
                                     <p:columnGroup type="header">
@@ -297,10 +327,10 @@
                                         <p:row>
                                             <p:column colspan="1" style="white-space:pre-line;" headerText="RU / Contract / POB" />
                                             <p:column colspan="1" style="white-space:pre-line;" headerText="#{viewSupport.getMetricTypeDescription('PERCENT_COMPLETE')}" />
-                                            <p:column colspan="1" style="white-space:pre-line;" headerText="Total Estimated Third Party Commissions" />
-                                            <p:column colspan="1" style="white-space:pre-line;" headerText="Third Party Commissions To Recognize" />
-                                            <p:column colspan="1" style="white-space:pre-line;" headerText="Third Party Commissions Recognized-Prior Period" />
-                                            <p:column colspan="1" style="white-space:pre-line;" headerText="Third Part Commissions To Recognize for Period" />
+                                            <p:column colspan="1" style="white-space:pre-line;" headerText="#{viewSupport.getMetricTypeDescription('THIRD_PARTY_COMMISSION_ITD_LC')}" />
+                                            <p:column colspan="1" style="white-space:pre-line;" headerText="#{viewSupport.getMetricTypeDescription('THIRD_PARTY_COMMISSION_TO_RECOGNIZE_LC')}" />
+                                            <p:column colspan="1" style="white-space:pre-line;" headerText="#{viewSupport.getMetricTypeDescription('THIRD_PARTY_COMMISSION_ITD_LC')} Prior Period" />
+                                            <p:column colspan="1" style="white-space:pre-line;" headerText="#{viewSupport.getMetricTypeDescription('THIRD_PARTY_COMMISSION_TO_RECOGNIZE_LC')} Prior Period" />
                                         </p:row>
                                     </p:columnGroup>
                                     <p:ajax event="cellEdit" listener="#{inputOnlineEntry.onCellEdit}" />
@@ -318,62 +348,31 @@
                                     <p:column style="white-space:pre-line;">
                                         <p:cellEditor rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}">
                                             <f:facet name="output">
-                                                <p:inputText value="TODO"  readonly="true">
-                                                    <f:validateDoubleRange/>
+                                                <p:inputText value="#{viewSupport.getCurrencyMetric('THIRD_PARTY_COMMISSION_ITD_LC', pob).lcValue}" readonly="true">
                                                     <o:converter converterId="javax.faces.Number" currencySymbol="" type="currency" />
                                                 </p:inputText>
                                             </f:facet>
                                             <f:facet name="input">
-                                                <p:inputText value="TODO">
-                                                    <p:ajax event="change" process="@this" />
+                                                <p:inputText value="#{viewSupport.getCurrencyMetric('THIRD_PARTY_COMMISSION_ITD_LC', pob).lcValue}">
+                                                    <f:validateDoubleRange/>
                                                 </p:inputText>
                                             </f:facet>
                                         </p:cellEditor>
                                     </p:column>
                                     <p:column style="white-space:pre-line;">
-                                        <p:cellEditor rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}">
-                                            <f:facet name="output">
-                                                <p:inputText value="TODO"  readonly="true">
-                                                    <f:validateDoubleRange/>
-                                                    <o:converter converterId="javax.faces.Number" currencySymbol="" type="currency" />
-                                                </p:inputText>
-                                            </f:facet>
-                                            <f:facet name="input">
-                                                <p:inputText value="TODO">
-                                                    <p:ajax event="change" process="@this" />
-                                                </p:inputText>
-                                            </f:facet>
-                                        </p:cellEditor>
+                                        <h:outputText value="#{viewSupport.getCurrencyMetric('THIRD_PARTY_COMMISSION_TO_RECOGNIZE_LC', pob).lcValue}" rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}" >
+                                            <o:converter converterId="javax.faces.Number" type="currency" currencySymbol=""/>
+                                        </h:outputText>
                                     </p:column>
                                     <p:column style="white-space:pre-line;">
-                                        <p:cellEditor rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}">
-                                            <f:facet name="output">
-                                                <p:inputText value="TODO"  readonly="true">
-                                                    <f:validateDoubleRange/>
-                                                    <o:converter converterId="javax.faces.Number" currencySymbol="" type="currency" />
-                                                </p:inputText>
-                                            </f:facet>
-                                            <f:facet name="input">
-                                                <p:inputText value="TODO">
-                                                    <p:ajax event="change" process="@this" />
-                                                </p:inputText>
-                                            </f:facet>
-                                        </p:cellEditor>
+                                        <h:outputText value="#{viewSupport.getCurrencyMetricPriorPeriod('THIRD_PARTY_COMMISSION_ITD_LC', pob).lcValue}" rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}" >
+                                            <o:converter converterId="javax.faces.Number" type="currency" currencySymbol=""/>
+                                        </h:outputText>
                                     </p:column>
                                     <p:column style="white-space:pre-line;">
-                                        <p:cellEditor rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}">
-                                            <f:facet name="output">
-                                                <p:inputText value="TODO"  readonly="true">
-                                                    <f:validateDoubleRange/>
-                                                    <o:converter converterId="javax.faces.Number" currencySymbol="" type="currency" />
-                                                </p:inputText>
-                                            </f:facet>
-                                            <f:facet name="input">
-                                                <p:inputText value="TODO">
-                                                    <p:ajax event="change" process="@this" />
-                                                </p:inputText>
-                                            </f:facet>
-                                        </p:cellEditor>
+                                        <h:outputText value="#{viewSupport.getCurrencyMetricPriorPeriod('THIRD_PARTY_COMMISSION_TO_RECOGNIZE_LC', pob).lcValue}" rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}" >
+                                            <o:converter converterId="javax.faces.Number" type="currency" currencySymbol=""/>
+                                        </h:outputText>
                                     </p:column>
                                 </p:treeTable>
                             </p:tab>
@@ -578,6 +577,7 @@
                                     </p:column>
                                 </p:treeTable>
                             </p:tab>
+
                             <p:tab title="Billing Inputs">
                                 <p:treeTable value="#{inputOnlineEntry.billingTreeNode}" editable="true" id="treeTableId" editMode="cell" var="billEvent">
                                     <f:facet name="header">
@@ -692,11 +692,14 @@
                         </p:tabView>
 
                         <p:toolbar>
+                            <f:facet name="left">
+                                <p:commandButton value="Recalc All" icon="ui-icon-check" update=":form:topLevelTabView" actionListener="#{pobCalculationReview.calculateAndSave}"/>
+                            </f:facet>
                             <f:facet name="right">
                                 <p:commandButton value="Return to Dashboard" icon="ui-icon-arrowthick-1-w" ajax="false" action="#{inputController.inputDashboard()}"/>
                                 <p:commandButton value="Cancel Current Edits" icon="ui-icon-cancel" ajax="false" action="#{inputOnlineEntry.cancelEdits()}"/>
                                 <p:commandButton value="Save Inputs" icon="ui-icon-disk" ajax="true" update="form" actionListener="#{inputOnlineEntry.saveInputs()}" rendered="#{inputOnlineEntry.updatable}"/>
-                                <p:commandButton value="Save and Proceed to Calculation Review" icon="ui-icon-arrowthick-1-e" ajax="false" actionListener="#{inputOnlineEntry.saveInputs()}" action="#{calcReviewController.reviewCalculations()}"/>
+                                <p:commandButton value="Proceed to Calculation Review" icon="ui-icon-arrowthick-1-e" ajax="false" actionListener="#{inputOnlineEntry.saveInputs()}" action="#{calcReviewController.reviewCalculations()}"/>
                             </f:facet>
                         </p:toolbar>
 

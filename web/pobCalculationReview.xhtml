@@ -78,7 +78,7 @@
                                             <p:column colspan="1" style="white-space:pre-line;" headerText="Reporting Unit - Contract" sortBy="#{pob.name}"/>
 
                                             <p:column colspan="1" style="white-space:pre-line;" headerText="#{viewSupport.getMetricTypeDescription('COST_OF_GOODS_SOLD_ITD_LC')}" />
-                                            <p:column colspan="1" style="white-space:pre-line;" headerText="#{viewSupport.getMetricTypeDescription('ESTIMATED_COST_TO_COMPLETE_LC')}" />
+                                            <p:column colspan="1" style="white-space:pre-line;" headerText="#{viewSupport.getMetricTypeDescription('REMAINING_ESTIMATE_COMPLETE_LC')}" />
                                             <p:column colspan="1" style="white-space:pre-line;" headerText="#{viewSupport.getMetricTypeDescription('ESTIMATED_COST_AT_COMPLETION_LC')}" />
                                             <p:column colspan="1" style="white-space:pre-line;" headerText="#{viewSupport.getMetricTypeDescription('PERCENT_COMPLETE')}" />
 
@@ -107,8 +107,8 @@
                                     </p:column>
 
                                     <p:column style="white-space:pre-line;">
-                                        <h:outputText value="TODO" rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}" >
-                                            <!--                                            <f:convertNumber type="currency" currencySymbol=""/>-->
+                                        <h:outputText value="#{viewSupport.getCurrencyMetric('REMAINING_ESTIMATE_COMPLETE_LC', pob).lcValue}" rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}" >
+                                            <f:convertNumber type="currency" currencySymbol=""/>
                                         </h:outputText>
                                     </p:column>
 
@@ -128,11 +128,7 @@
                                             <f:convertNumber type="currency" currencySymbol=""/>
                                         </h:outputText>
                                     </p:column>
-                                    <p:column style="white-space:pre-line;">
-                                        <h:outputText value="#{viewSupport.getCurrencyMetric('REVENUE_TO_RECOGNIZE_PERIOD_CC', pob).ccValue}" rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}">
-                                            <f:convertNumber type="currency" currencySymbol=""/>
-                                        </h:outputText>
-                                    </p:column>
+
                                     <p:column style="white-space:pre-line;">
                                         <h:outputText value="#{viewSupport.getCurrencyMetricPriorPeriod('REVENUE_TO_RECOGNIZE_ITD_CC', pob).ccValue}" rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}">
                                             <f:convertNumber type="currency" currencySymbol=""/>
@@ -140,6 +136,11 @@
                                     </p:column>
                                     <p:column style="white-space:pre-line;">
                                         <h:outputText value="#{viewSupport.getCurrencyMetric('REVENUE_TO_RECOGNIZE_ITD_CC', pob).ccValue}" rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}">
+                                            <f:convertNumber type="currency" currencySymbol=""/>
+                                        </h:outputText>
+                                    </p:column>
+                                    <p:column style="white-space:pre-line;">
+                                        <h:outputText value="#{viewSupport.getCurrencyMetric('REVENUE_TO_RECOGNIZE_PERIOD_CC', pob).ccValue}" rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}">
                                             <f:convertNumber type="currency" currencySymbol=""/>
                                         </h:outputText>
                                     </p:column>
@@ -362,6 +363,7 @@
 
                             <p:tab title="Overview">
                                 <p:treeTable value="#{pobCalculationReview.rootTreeNode}" var="pob">
+
                                     <p:columnGroup type="header">
                                         <p:row>
                                             <p:column style="width: 300px; text-overflow: ellipsis;" colspan="1" headerText="" />
@@ -369,12 +371,12 @@
                                         </p:row>
                                         <p:row>
                                             <p:column colspan="1" style="white-space:pre-line;" headerText="Reporting Unit - Contract" sortBy="#{pob.name}"/>
-                                            <p:column colspan="1" style="white-space:pre-line;" headerText="#{viewSupport.getMetricTypeDescription('REVENUE_TO_RECOGNIZE_ITD_CC')}" />
-                                            <p:column colspan="1" style="white-space:pre-line;" headerText="#{viewSupport.getMetricTypeDescription('LIQUIDATED_DAMAGES_TO_RECOGNIZE_PERIOD_LC')}" />
-                                            <p:column colspan="1" style="white-space:pre-line;" headerText="#{viewSupport.getMetricTypeDescription('NET_PERIOD_SALES_LC')}" />
-                                            <p:column colspan="1" style="white-space:pre-line;" headerText="#{viewSupport.getMetricTypeDescription('COST_OF_GOODS_SOLD_ITD_LC')}" />
+                                            <p:column colspan="1" style="white-space:pre-line;" headerText="#{viewSupport.getMetricTypeDescription('REVENUE_TO_RECOGNIZE_PERIOD_CC')}" />
+                                            <p:column colspan="1" style="white-space:pre-line;" headerText="#{viewSupport.getMetricTypeDescription('LIQUIDATED_DAMAGES_TO_RECOGNIZE_PERIOD_CC')}" />
+                                            <p:column colspan="1" style="white-space:pre-line;" headerText="#{viewSupport.getMetricTypeDescription('NET_PERIOD_SALES_CC')}" />
+                                            <p:column colspan="1" style="white-space:pre-line;" headerText="#{viewSupport.getMetricTypeDescription('COST_OF_GOODS_SOLD_PERIOD_LC')}" />
                                             <p:column colspan="1" style="white-space:pre-line;" headerText="#{viewSupport.getMetricTypeDescription('LOSS_RESERVE_PERIOD_ADJ_LC')}" />
-                                            <p:column colspan="1" style="white-space:pre-line;" headerText="TODO - Gross Profit / Loss Current Period" />
+                                            <p:column colspan="1" style="white-space:pre-line;" headerText="#{viewSupport.getMetricTypeDescription('GROSS_PROFIT_LOSS_PERIOD_LC')}" />
                                         </p:row>
 
                                     </p:columnGroup>
@@ -383,7 +385,7 @@
                                     </p:column>
 
                                     <p:column style="white-space:pre-line;">
-                                        <h:outputText value="#{viewSupport.getCurrencyMetric('REVENUE_TO_RECOGNIZE_ITD_CC', pob).lcValue}" rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}">
+                                        <h:outputText value="#{viewSupport.getCurrencyMetric('REVENUE_TO_RECOGNIZE_PERIOD_CC', pob).lcValue}" rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}">
                                             <f:convertNumber type="currency" currencySymbol=""/>
                                         </h:outputText>
                                     </p:column>
@@ -394,12 +396,12 @@
                                         </h:outputText>
                                     </p:column>
                                     <p:column style="white-space:pre-line;">
-                                        <h:outputText value="#{viewSupport.getCurrencyMetric('NET_PERIOD_SALES_LC', pob).lcValue}" rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}" >
+                                        <h:outputText value="#{viewSupport.getCurrencyMetric('NET_PERIOD_SALES_CC', pob).lcValue}" rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}" >
                                             <f:convertNumber type="currency" currencySymbol=""/>
                                         </h:outputText>
                                     </p:column>
                                     <p:column style="white-space:pre-line;">
-                                        <h:outputText value="#{viewSupport.getCurrencyMetric('COST_OF_GOODS_SOLD_ITD_LC', pob).lcValue}" rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}" >
+                                        <h:outputText value="#{viewSupport.getCurrencyMetric('COST_OF_GOODS_SOLD_PERIOD_LC', pob).lcValue}" rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}" >
                                             <f:convertNumber type="currency" currencySymbol=""/>
                                         </h:outputText>
                                     </p:column>
@@ -409,8 +411,8 @@
                                         </h:outputText>
                                     </p:column>
                                     <p:column style="white-space:pre-line;">
-                                        <h:outputText value="TODO" rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}" >
-                                            <!--<f:convertNumber type="currency" currencySymbol=""/>-->
+                                        <h:outputText value="#{viewSupport.getCurrencyMetric('GROSS_PROFIT_LOSS_PERIOD_LC', pob).lcValue}" rendered="#{of:isInstance('com.flowserve.system606.model.Contract', pob)}" >
+                                            <f:convertNumber type="currency" currencySymbol=""/>
                                         </h:outputText>
                                     </p:column>
 

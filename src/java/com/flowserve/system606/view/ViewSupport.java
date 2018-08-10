@@ -10,6 +10,7 @@ import com.flowserve.system606.model.BusinessUnit;
 import com.flowserve.system606.model.Company;
 import com.flowserve.system606.model.Contract;
 import com.flowserve.system606.model.CurrencyMetric;
+import com.flowserve.system606.model.DateMetric;
 import com.flowserve.system606.model.DecimalMetric;
 import com.flowserve.system606.model.FinancialPeriod;
 import com.flowserve.system606.model.Measurable;
@@ -401,7 +402,6 @@ public class ViewSupport implements Serializable {
         } else {
             return null;
         }
-
     }
 
     public boolean getValidation(String metricCode, Measurable measurable) throws Exception {
@@ -414,6 +414,10 @@ public class ViewSupport implements Serializable {
 
     public CurrencyMetric getCurrencyMetric(String metricCode, Measurable measurable) throws Exception {
         return calculationService.getCurrencyMetric(metricCode, measurable, webSession.getCurrentPeriod());
+    }
+
+    public DateMetric getDateMetric(String metricCode, Measurable measurable) throws Exception {
+        return calculationService.getDateMetric(metricCode, measurable, webSession.getCurrentPeriod());
     }
 
     public DecimalMetric getDecimalMetric(String metricCode, Measurable measurable) throws Exception {

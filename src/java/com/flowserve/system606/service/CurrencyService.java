@@ -411,14 +411,11 @@ public class CurrencyService {
             Logger.getLogger(CurrencyService.class.getName()).log(Level.INFO, "Problem in loading or registering MS Access JDBC driver");
             cnfex.printStackTrace();
         }
-        // Step 2: Opening database connection
+
         try {
             String dbURL = "jdbc:ucanaccess://" + msAccDB;
-            // Step 2.A: Create and get connection using DriverManager class
             connection = DriverManager.getConnection(dbURL);
-            // Step 2.B: Creating JDBC Statement
             statement = connection.createStatement();
-            // Step 2.C: Executing SQL &amp; retrieve data into ResultSet
             resultSet = statement.executeQuery("SELECT Period FROM `tbl_ExchangeRates` GROUP BY Period");
 
             int count = 0;
@@ -476,6 +473,7 @@ public class CurrencyService {
                                 sourceMonthlyRate = resultSet1.getBigDecimal(4);
                                 sourceYTDRate = resultSet1.getBigDecimal(5);
                                 type = resultSet1.getString(1);
+
                                 if ("USA".equals(resultSet1.getString(2))) {
                                     Logger.getLogger(CurrencyService.class.getName()).log(Level.SEVERE, "Invlid: USA Found in ExchangeRate file.");
                                     importMessages.add("Invlid: USA Found in ExchangeRate file.");
@@ -486,6 +484,7 @@ public class CurrencyService {
                                 targetPeriodRate = resultSet2.getBigDecimal(2);
                                 targetMonthlyRate = resultSet2.getBigDecimal(3);
                                 targetYTDRate = resultSet2.getBigDecimal(4);
+
                                 //USD column is empty in access file so this below is for assigning value to USD
                                 if (targetPeriodRate == null && resultSet2.getString(1).equalsIgnoreCase("USD")) {
                                     targetPeriodRate = usdRate;

@@ -320,7 +320,7 @@ public class AdminService {
     }
 
     public ReportingUnit update(ReportingUnit ru) throws Exception {
-        Logger.getLogger(AdminService.class.getName()).log(Level.INFO, "Updating RU: " + ru.getCode());
+        Logger.getLogger(AdminService.class.getName()).log(Level.FINER, "Updating RU: " + ru.getCode());
         return em.merge(ru);
     }
 
@@ -750,7 +750,7 @@ public class AdminService {
                     User user = findUserByFlsIdType(values[1]);
                     ReportingUnit ru = findReportingUnitByCode(values[0]);
                     if (ru != null && user != null && !ru.getPreparers().contains(user)) {
-                        Logger.getLogger(AdminService.class.getName()).log(Level.INFO, "adding Preparer " + user.getFlsId());
+                        Logger.getLogger(AdminService.class.getName()).log(Level.FINER, "adding Preparer " + user.getFlsId());
                         ru.getPreparers().add(user);
                         update(ru);
                     }
@@ -760,7 +760,7 @@ public class AdminService {
                     User user = findUserByFlsIdType(values[1]);
                     ReportingUnit ru = findReportingUnitByCode(values[0]);
                     if (ru != null && user != null && !ru.getApprovers().contains(user)) {
-                        Logger.getLogger(AdminService.class.getName()).log(Level.INFO, "adding Reviewer " + user.getFlsId());
+                        Logger.getLogger(AdminService.class.getName()).log(Level.FINER, "adding Reviewer " + user.getFlsId());
                         ru.getApprovers().add(user);
                         update(ru);
                     }

@@ -100,9 +100,9 @@ public class FinancialPeriodService {
 //        }
 
         Company fls = adminService.findCompanyById("FLS");
-
-        fls.setCurrentPeriod(findById("MAY-18"));
-        fls.setPriorPeriod(findById("APR-18"));
+        openPeriod(findById("JUN-18"));
+        fls.setCurrentPeriod(findById("JUN-18"));
+        fls.setPriorPeriod(findById("MAY-18"));
 
         logger.info("Finished initializing FinancialPeriods.");
     }

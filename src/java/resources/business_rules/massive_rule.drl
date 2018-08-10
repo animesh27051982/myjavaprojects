@@ -45,6 +45,16 @@ rule "Cost of Goods Sold ITD"
         modify (costOfGoodsSoldITD) { lcValue = (localCostsITD.lcValue + thirdPartyCostsITD.lcValue + intercoCostsITD.lcValue)};
 end
 
+rule "Cost of Goods Sold Period"
+    when
+        pob : PerformanceObligation()
+        costOfGoodsSoldITD : CurrencyMetric(metricType.code == "COST_OF_GOODS_SOLD_ITD_LC", lcValue != null)
+        costOfGoodsSoldITDPriorPeriod : CurrencyMetricPriorPeriod(metricType.code == "COST_OF_GOODS_SOLD_ITD_LC", lcValue != null)
+        costOfGoodsSoldPeriod : CurrencyMetric(metricType.code == "COST_OF_GOODS_SOLD_PERIOD_LC")
+    then
+        modify (costOfGoodsSoldPeriod) { lcValue = (costOfGoodsSoldITD.lcValue - costOfGoodsSoldITDPriorPeriod.lcValue)};
+end
+
 
 rule "Contract Cost to Complete"
     when
@@ -179,21 +189,21 @@ end
 rule "Net Period Sales"
     when
         pob : PerformanceObligation()
-        revenueToRecognizecCurrentPeriod : CurrencyMetric(metricType.code == "REVENUE_TO_RECOGNIZE_PERIOD_LC", lcValue != null)
+        revenueToRecognizecCurrentPeriod : CurrencyMetric(metricType.code == "REVENUE_TO_RECOGNIZE_PERIOD_CC", ccValue != null)
         liquidatedDamagesToRecognizeCurrentPeriod : CurrencyMetric(metricType.code == "LIQUIDATED_DAMAGES_TO_RECOGNIZE_PERIOD_CC", ccValue != null)
-        netPeriodSales : CurrencyMetric(metricType.code == "NET_PERIOD_SALES_LC")
+        netPeriodSales : CurrencyMetric(metricType.code == "NET_PERIOD_SALES_CC")
     then
-        modify (netPeriodSales) { lcValue = (revenueToRecognizecCurrentPeriod.lcValue - liquidatedDamagesToRecognizeCurrentPeriod.lcValue)};
+        modify (netPeriodSales) { ccValue = (revenueToRecognizecCurrentPeriod.ccValue - liquidatedDamagesToRecognizeCurrentPeriod.ccValue)};
 end
 
 rule "Transaction Price in Backlog"
     when
         pob : PerformanceObligation()
-        transactionPrice : CurrencyMetric(metricType.code == "TRANSACTION_PRICE_CC", lcValue != null)
-        revenueToRecognizeITD : CurrencyMetric(metricType.code == "REVENUE_TO_RECOGNIZE_ITD_LC", lcValue != null)
-        transactionPriceBacklog : CurrencyMetric(metricType.code == "TRANSACTION_PRICE_BACKLOG_LC")
+        transactionPrice : CurrencyMetric(metricType.code == "TRANSACTION_PRICE_CC", ccValue != null)
+        revenueToRecognizeITD : CurrencyMetric(metricType.code == "REVENUE_TO_RECOGNIZE_ITD_CC", ccValue != null)
+        transactionPriceBacklog : CurrencyMetric(metricType.code == "TRANSACTION_PRICE_BACKLOG_CC")
     then
-        modify (transactionPriceBacklog) { lcValue = (transactionPrice.lcValue - revenueToRecognizeITD.lcValue)};
+        modify (transactionPriceBacklog) { ccValue = (transactionPrice.ccValue - revenueToRecognizeITD.ccValue)};
 end
 
 
@@ -294,4 +304,15 @@ rule "Cost of Goods Sold Adjusted"
         costOfGoodsSoldAdjusted : CurrencyMetric(metricType.code == "TOTAL_COST_GOODS_SOLD_LC")
     then
         modify (costOfGoodsSoldAdjusted) { lcValue = (costOfGoodsSoldITD.lcValue - lossReserveAdjustment.lcValue)};
+end
+
+rule "Gross Profit Loss Period"
+    when
+        contract : Contract()
+        netPeriodSales : CurrencyMetric(metricType.code == "NET_PERIOD_SALES_CC", lcValue != null)
+        costOfGoodsSoldPeriod : CurrencyMetric(metricType.code == "COST_OF_GOODS_SOLD_PERIOD_LC", lcValue != null)
+        lossReserveAdjustment : CurrencyMetric(metricType.code == "LOSS_RESERVE_PERIOD_ADJ_LC", lcValue != null)
+        grossProfitLossPeriod : CurrencyMetric(metricType.code == "GROSS_PROFIT_LOSS_PERIOD_LC")
+    then
+        modify (grossProfitLossPeriod) { lcValue = (netPeriodSales.lcValue - costOfGoodsSoldPeriod.lcValue - lossReserveAdjustment.lcValue)};
 end
