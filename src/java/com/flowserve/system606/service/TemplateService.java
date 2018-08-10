@@ -23,6 +23,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStreamWriter;
 import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -124,18 +126,23 @@ public class TemplateService {
                     setCellValue(row, 11, value);
                     value = calculationService.getCurrencyMetric("INTERCOMPANY_COSTS_ITD_LC", pob, period).getLcValue();
                     setCellValue(row, 12, value);
-                    value = calculationService.getCurrencyMetric("COST_OF_GOODS_SOLD_ITD_LC", pob, period).getCcValue();
+                    cell = row.getCell(13, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
+                    LocalDate dDate = calculationService.getDateMetric("DELIVERY_DATE", pob, period).getValue();
+                    if (dDate != null) {
+                        cell.setCellValue(dDate.toString());
+                    }
+                    value = calculationService.getCurrencyMetric("PARTIAL_SHIPMENT_COSTS_LC", pob, period).getCcValue();
                     setCellValue(row, 14, value);
 
                     value = calculationService.getDecimalMetric("PERCENT_COMPLETE", pob, period).getValue();
                     setCellValue(row, 15, value);
-                    value = BigDecimal.ZERO; //TODO Metric Type not available
+                    value = calculationService.getCurrencyMetric("THIRD_PARTY_COMMISSION_ITD_LC", pob, period).getLcValue();
                     setCellValue(row, 16, value);
-                    value = BigDecimal.ZERO; //TODO Metric Type not available
+                    value = calculationService.getCurrencyMetric("THIRD_PARTY_COMMISSION_TO_RECOGNIZE_LC", pob, period).getLcValue();
                     setCellValue(row, 17, value);
-                    value = BigDecimal.ZERO; //TODO Metric Type not available
+                    value = calculationService.getCurrencyMetric("THIRD_PARTY_COMMISSION_ITD_LC", pob, webSession.getPriorPeriod()).getLcValue();
                     setCellValue(row, 18, value);
-                    value = BigDecimal.ZERO; //TODO Metric Type not available
+                    value = calculationService.getCurrencyMetric("THIRD_PARTY_COMMISSION_TO_RECOGNIZE_LC", pob, webSession.getPriorPeriod()).getLcValue();
                     setCellValue(row, 19, value);
                     List<BillingEvent> bEv = contract.getBillingEvents();
                     int cnt = 1;
@@ -246,31 +253,128 @@ public class TemplateService {
                     throw new IllegalStateException("Input file invalid.  Invalid POB at row: " + row.getRowNum());
                 }
                 Cell cell = null;
+                try {
+                    cell = row.getCell(CellReference.convertColStringToIndex("F"));
+                    setValueInMetricType(cell, pobIdCell, "TRANSACTION_PRICE_CC", pob, period);
+                    cell = row.getCell(CellReference.convertColStringToIndex("G"));
+                    setValueInMetricType(cell, pobIdCell, "LIQUIDATED_DAMAGES_ITD_CC", pob, period);
+                    cell = row.getCell(CellReference.convertColStringToIndex("I"));
+                    setValueInMetricType(cell, pobIdCell, "ESTIMATED_COST_AT_COMPLETION_LC", pob, period);
+                    cell = row.getCell(CellReference.convertColStringToIndex("J"));
+                    setValueInMetricType(cell, pobIdCell, "ESTIMATED_COST_AT_COMPLETION_LC", pob, webSession.getPriorPeriod());
+                    cell = row.getCell(CellReference.convertColStringToIndex("K"));
+                    setValueInMetricType(cell, pobIdCell, "LOCAL_COSTS_ITD_LC", pob, period);
+                    cell = row.getCell(CellReference.convertColStringToIndex("L"));
+                    setValueInMetricType(cell, pobIdCell, "THIRD_PARTY_COSTS_ITD_LC", pob, period);
+                    cell = row.getCell(CellReference.convertColStringToIndex("M"));
+                    setValueInMetricType(cell, pobIdCell, "INTERCOMPANY_COSTS_ITD_LC", pob, period);
+                    cell = row.getCell(CellReference.convertColStringToIndex("N"));
+                    if (cell.getCellTypeEnum().toString().equalsIgnoreCase("STRING")) {
+                        calculationService.getDateMetric("DELIVERY_DATE", pob, period).setValue(LocalDate.parse(cell.getStringCellValue()));
+                    } else if (cell.getCellTypeEnum().toString().equalsIgnoreCase("NUMERIC")) {
+                        calculationService.getDateMetric("DELIVERY_DATE", pob, period).setValue(cell.getDateCellValue().toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
 
-                cell = row.getCell(CellReference.convertColStringToIndex("F"));
-                setValueInMetricType(cell, pobIdCell, "TRANSACTION_PRICE_CC", pob, period);
-                cell = row.getCell(CellReference.convertColStringToIndex("G"));
-                setValueInMetricType(cell, pobIdCell, "LIQUIDATED_DAMAGES_ITD_CC", pob, period);
-                cell = row.getCell(CellReference.convertColStringToIndex("I"));
-                setValueInMetricType(cell, pobIdCell, "ESTIMATED_COST_AT_COMPLETION_LC", pob, period);
-                cell = row.getCell(CellReference.convertColStringToIndex("J"));
-                setValueInMetricType(cell, pobIdCell, "ESTIMATED_COST_AT_COMPLETION_LC", pob, webSession.getPriorPeriod());
-                cell = row.getCell(CellReference.convertColStringToIndex("K"));
-                setValueInMetricType(cell, pobIdCell, "LOCAL_COSTS_ITD_LC", pob, period);
-                cell = row.getCell(CellReference.convertColStringToIndex("L"));
-                setValueInMetricType(cell, pobIdCell, "THIRD_PARTY_COSTS_ITD_LC", pob, period);
-                cell = row.getCell(CellReference.convertColStringToIndex("M"));
-                setValueInMetricType(cell, pobIdCell, "INTERCOMPANY_COSTS_ITD_LC", pob, period);
-                cell = row.getCell(CellReference.convertColStringToIndex("O"));
-                setValueInMetricType(cell, pobIdCell, "COST_OF_GOODS_SOLD_ITD_LC", pob, period);
-                cell = row.getCell(CellReference.convertColStringToIndex("P"));
-                if (cell == null || pobIdCell.getCellTypeEnum() == CellType.BLANK || ((XSSFCell) cell).getRawValue() == null) {
-                    // TODO - figure out what to do in this blank case.  It will depend on the situation.
-                } else {
-                    calculationService.getDecimalMetric("PERCENT_COMPLETE", pob, period).setValue(new BigDecimal(NumberToTextConverter.toText(cell.getNumericCellValue())));
-
+                    }
+                    cell = row.getCell(CellReference.convertColStringToIndex("O"));
+                    setValueInMetricType(cell, pobIdCell, "PARTIAL_SHIPMENT_COSTS_LC", pob, period);
+                    cell = row.getCell(CellReference.convertColStringToIndex("P"));
+                    if (cell == null || pobIdCell.getCellTypeEnum() == CellType.BLANK || ((XSSFCell) cell).getRawValue() == null) {
+                        // TODO - figure out what to do in this blank case.  It will depend on the situation.
+                    } else {
+                        calculationService.getDecimalMetric("PERCENT_COMPLETE", pob, period).setValue(new BigDecimal(NumberToTextConverter.toText(cell.getNumericCellValue())));
+                    }
+                    cell = row.getCell(CellReference.convertColStringToIndex("Q"));
+                    setValueInMetricType(cell, pobIdCell, "THIRD_PARTY_COMMISSION_ITD_LC", pob, period);
+                    cell = row.getCell(CellReference.convertColStringToIndex("R"));
+                    setValueInMetricType(cell, pobIdCell, "THIRD_PARTY_COMMISSION_TO_RECOGNIZE_LC", pob, period);
+                    cell = row.getCell(CellReference.convertColStringToIndex("S"));
+                    setValueInMetricType(cell, pobIdCell, "THIRD_PARTY_COMMISSION_ITD_LC", pob, webSession.getPriorPeriod());
+                    cell = row.getCell(CellReference.convertColStringToIndex("T"));
+                    setValueInMetricType(cell, pobIdCell, "THIRD_PARTY_COMMISSION_TO_RECOGNIZE_LC", pob, webSession.getPriorPeriod());
+                } catch (Exception rce) {
+                    Logger.getLogger(TemplateService.class.getName()).log(Level.SEVERE, "Error processing ");
+                    throw new Exception("processTemplateUpload row: " + row.getRowNum() + " cell: " + (cell.getColumnIndex() + 1) + " " + rce.getMessage());
                 }
+                try {
+                    List<BillingEvent> billingEvent = new ArrayList<BillingEvent>();
+                    BillingEvent bEvent = new BillingEvent();
+                    cell = row.getCell(CellReference.convertColStringToIndex("U"));
+                    if (cell == null || pobIdCell.getCellTypeEnum() == CellType.BLANK || ((XSSFCell) cell).getRawValue() == null) {
+                        // TODO - figure out what to do in this blank case.  It will depend on the situation.
+                    } else {
+                        if (cell.getCellTypeEnum().toString().equalsIgnoreCase("STRING")) {
+                            bEvent.setInvoiceNumber(cell.getStringCellValue());
+                        } else if (cell.getCellTypeEnum().toString().equalsIgnoreCase("NUMERIC")) {
+                            bEvent.setInvoiceNumber(NumberToTextConverter.toText(cell.getNumericCellValue()));
+                        }
 
+                        cell = row.getCell(CellReference.convertColStringToIndex("V"));
+                        if (cell.getCellTypeEnum().toString().equalsIgnoreCase("STRING")) {
+                            bEvent.setBillingDate(LocalDate.parse(cell.getStringCellValue()));
+                        } else if (cell.getCellTypeEnum().toString().equalsIgnoreCase("NUMERIC")) {
+                            bEvent.setBillingDate(cell.getDateCellValue().toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
+
+                        }
+                        cell = row.getCell(CellReference.convertColStringToIndex("W"));
+                        if (cell == null || pobIdCell.getCellTypeEnum() == CellType.BLANK || ((XSSFCell) cell).getRawValue() == null) {
+                            // TODO - figure out what to do in this blank case.  It will depend on the situation.
+                        } else {
+                            bEvent.setAmountContractCurrency(new BigDecimal(NumberToTextConverter.toText(cell.getNumericCellValue())));
+                        }
+                        cell = row.getCell(CellReference.convertColStringToIndex("X"));
+                        if (cell == null || pobIdCell.getCellTypeEnum() == CellType.BLANK || ((XSSFCell) cell).getRawValue() == null) {
+                            // TODO - figure out what to do in this blank case.  It will depend on the situation.
+                        } else {
+                            bEvent.setAmountLocalCurrency(new BigDecimal(NumberToTextConverter.toText(cell.getNumericCellValue())));
+                        }
+                    }
+                    billingEvent.add(bEvent);
+                    bEvent = new BillingEvent();
+                    cell = row.getCell(CellReference.convertColStringToIndex("Y"));
+                    if (cell == null || pobIdCell.getCellTypeEnum() == CellType.BLANK || ((XSSFCell) cell).getRawValue() == null) {
+                        // TODO - figure out what to do in this blank case.  It will depend on the situation.
+                    } else {
+                        if (cell.getCellTypeEnum().toString().equalsIgnoreCase("STRING")) {
+                            bEvent.setInvoiceNumber(cell.getStringCellValue());
+                        } else if (cell.getCellTypeEnum().toString().equalsIgnoreCase("NUMERIC")) {
+                            bEvent.setInvoiceNumber(NumberToTextConverter.toText(cell.getNumericCellValue()));
+                        }
+
+                        cell = row.getCell(CellReference.convertColStringToIndex("Z"));
+                        if (cell.getCellTypeEnum().toString().equalsIgnoreCase("STRING")) {
+                            bEvent.setBillingDate(LocalDate.parse(cell.getStringCellValue()));
+                        } else if (cell.getCellTypeEnum().toString().equalsIgnoreCase("NUMERIC")) {
+                            bEvent.setBillingDate(cell.getDateCellValue().toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
+                        }
+                        cell = row.getCell(CellReference.convertColStringToIndex("AA"));
+                        if (cell == null || pobIdCell.getCellTypeEnum() == CellType.BLANK || ((XSSFCell) cell).getRawValue() == null) {
+                            // TODO - figure out what to do in this blank case.  It will depend on the situation.
+                        } else {
+                            bEvent.setAmountContractCurrency(new BigDecimal(NumberToTextConverter.toText(cell.getNumericCellValue())));
+                        }
+                        cell = row.getCell(CellReference.convertColStringToIndex("AB"));
+                        if (cell == null || pobIdCell.getCellTypeEnum() == CellType.BLANK || ((XSSFCell) cell).getRawValue() == null) {
+                            // TODO - figure out what to do in this blank case.  It will depend on the situation.
+                        } else {
+                            bEvent.setAmountLocalCurrency(new BigDecimal(NumberToTextConverter.toText(cell.getNumericCellValue())));
+                        }
+                    }
+                    billingEvent.add(bEvent);
+                    BillingEvent be = new BillingEvent();
+                    if (!billingEvent.isEmpty()) {
+                        billingEvent.get(0).setContract(pob.getContract());
+                        be = adminService.update(billingEvent.get(0));
+                        pob.getContract().getBillingEvents().clear();
+                        pob.getContract().getBillingEvents().add(be);
+
+                        billingEvent.get(1).setContract(pob.getContract());
+                        be = adminService.update(billingEvent.get(1));
+                        pob.getContract().getBillingEvents().add(be);
+                    }
+
+                } catch (Exception rce) {
+                    throw new Exception("processTemplateUpload row: " + row.getRowNum() + " cell:" + cell.getColumnIndex() + " " + rce.getMessage());
+                }
 // TODO - We May Use This Approach later
 //                for (MetricType inputType : inputTypes) {
 //                    Logger.getLogger(TemplateService.class.getName()).log(Level.INFO, "Excel upload inputType: " + inputType.getId());
