@@ -29,6 +29,14 @@
                                     <h:outputText value="#{inputType.name}" />
                                 </p:column>
 
+                                <p:column headerText="Code" sortBy="#{inputType.code}">
+                                    <h:outputText value="#{inputType.code}" />
+                                </p:column>
+
+                                <p:column headerText="Description" sortBy="#{inputType.description}">
+                                    <h:outputText value="#{inputType.description}" />
+                                </p:column>
+
                                 <p:column headerText="Group Name" sortBy="#{inputType.groupName}">
                                     <h:outputText value="#{inputType.groupName}" />
                                 </p:column>
@@ -40,11 +48,11 @@
                                 <p:column headerText="Currency Type" sortBy="#{inputType.metricCurrencyType}">
                                     <h:outputText value="#{inputType.metricCurrencyType}" />
                                 </p:column>
-                                
+
                                 <p:column headerText="Metric Class" sortBy="#{inputType.metricClass}">
                                     <h:outputText value="#{inputType.metricClass}" />
                                 </p:column>
-                                
+
                                 <p:column headerText="Owner Entity Type" sortBy="#{inputType.ownerEntityType}">
                                     <h:outputText value="#{inputType.ownerEntityType}" />
                                 </p:column>
@@ -65,10 +73,6 @@
                                     <h:outputText value="#{inputType.effectiveTo}" />
                                 </p:column>
 
-                                <p:column headerText="Description" sortBy="#{inputType.description}">
-                                    <h:outputText value="#{inputType.description}" />
-                                </p:column>
-                                
                                 <p:column headerText="Credit Account" sortBy="#{inputType.creditAccount.name}">
                                     <h:outputText value="#{inputType.creditAccount.name}" />
                                 </p:column>
@@ -76,7 +80,7 @@
                                 <p:column headerText="Debit Account" sortBy="#{inputType.debitAccount.name}">
                                     <h:outputText value="#{inputType.debitAccount.name}" />
                                 </p:column>
-                                
+
                             </p:dataTable>
                         </div>
                     </div>

@@ -10,8 +10,8 @@ INPUT|CUMULATIVE_COST_OF_GOODS_SOLD_LC|POB||CurrencyMetric|LC|If partial POB shi
 INPUT|PARTIAL_SHIPMENT_COSTS_LC|POB||CurrencyMetric|LC|Partial Shipment Standard Costs|Partial Shipment Standard Costs|POC POB Metrics|X|Group1|8
 INPUT|TOTAL_TRANS_PRICE_CC|Contract||CurrencyMetric|CC|Total Trans Price|Total Trans Price|POC POB Metrics|J|Group1|18
 INPUT|BOOKING_DATE|Contract||DateMetric||Booking Date (LoA)|Booking Date (LoA)|POC POB Metrics|L|Group1|19
-INPUT|THIRD_PARTY_COMMISSION_ITD_LC|POB||CurrencyMetric|LC|Third Party Comission|Third Party Comission|POC Contract Metrics|AE|Group1|10
-INPUT|THIRD_PARTY_COMMISSION_TO_RECOGNIZE_LC|POB||CurrencyMetric|LC|Third Party Comissions To Recognize|Third Party Comission To Recognize|POC Contract Metrics|AE|Group1|10
+INPUT|THIRD_PARTY_COMMISSION_ITD_LC|Contract||CurrencyMetric|LC|Third Party Commission|Third Party Commission|POC Contract Metrics|AE|Group1|10
+INPUT|THIRD_PARTY_COMMISSION_TO_RECOGNIZE_LC|Contract||CurrencyMetric|LC|Third Party Commissions To Recognize|Third Party Commission To Recognize|POC Contract Metrics|AE|Group1|10
 OUTPUT|ESTIMATED_GROSS_PROFIT_LC|POB||CurrencyMetric|LC|Estimated Gross Profit|Estimated Gross Profit|POC POB Outputs|H|Group1|1
 OUTPUT|CONTRACT_GROSS_PROFIT_LC|Contract||CurrencyMetric|LC|Gross Profit|Gross Profit|POC POB Outputs|H|Group1|1
 OUTPUT|ESTIMATED_GROSS_MARGIN|ALL||DecimalMetric||Estimated Gross Margin|Estimated Gross Margin|POC POB Outputs|H|Group1|1
