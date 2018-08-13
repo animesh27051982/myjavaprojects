@@ -138,7 +138,7 @@
                                         <p:column style="white-space:pre-line;">
                                             <p:cellEditor rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}">
                                                 <f:facet name="output">
-                                                    <p:inputText pt:data-tooltip="#{viewSupport.getErrorMessage('TRANSACTION_PRICE_CC', pob)}" value="#{viewSupport.getCurrencyMetric('TRANSACTION_PRICE_CC', pob).ccValue}" styleClass="#{empty viewSupport.getCurrencyMetric('TRANSACTION_PRICE_CC', pob).ccValue ? 'ui-state-error' : ''}" style="#{viewSupport.getValidation('TRANSACTION_PRICE_CC', pob) ? 'color:red' : ''}" readonly="true">
+                                                    <p:inputText pt:data-tooltip="#{viewSupport.getErrorMessage('TRANSACTION_PRICE_CC', pob)}" value="#{viewSupport.getCurrencyMetric('TRANSACTION_PRICE_CC', pob).ccValue}" styleClass="#{empty viewSupport.getCurrencyMetric('TRANSACTION_PRICE_CC', pob).ccValue ? 'ui-state-error' : ''}" readonly="true">
                                                         <o:converter converterId="javax.faces.Number" type="currency" currencySymbol=""/>
                                                     </p:inputText>
                                                 </f:facet>
@@ -155,7 +155,7 @@
                                         <p:column style="white-space:pre-line;">
                                             <p:cellEditor rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}">
                                                 <f:facet name="output">
-                                                    <p:inputText pt:data-tooltip="#{viewSupport.getErrorMessage('LIQUIDATED_DAMAGES_CTD_CC', pob)}" value="#{viewSupport.getCurrencyMetric('LIQUIDATED_DAMAGES_CTD_CC', pob).ccValue}" styleClass="#{empty viewSupport.getCurrencyMetric('LIQUIDATED_DAMAGES_CTD_CC', pob).ccValue ? 'ui-state-error' : ''}" style="#{viewSupport.getValidation('LIQUIDATED_DAMAGES_CTD_CC', pob) ? 'color:red' : ''}" readonly="true">
+                                                    <p:inputText pt:data-tooltip="#{viewSupport.getErrorMessage('LIQUIDATED_DAMAGES_CTD_CC', pob)}" value="#{viewSupport.getCurrencyMetric('LIQUIDATED_DAMAGES_CTD_CC', pob).ccValue}" styleClass="#{empty viewSupport.getCurrencyMetric('LIQUIDATED_DAMAGES_CTD_CC', pob).ccValue ? 'ui-state-error' : ''}" readonly="true">
                                                         <f:validateDoubleRange/>
                                                         <o:converter converterId="javax.faces.Number" currencySymbol="" type="currency" />
                                                     </p:inputText>
@@ -239,7 +239,7 @@
                                         <p:column style="white-space:pre-line;">
                                             <p:cellEditor rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}">
                                                 <f:facet name="output">
-                                                    <p:inputText value="#{viewSupport.getCurrencyMetric('LOCAL_COSTS_CTD_LC', pob).lcValue}" styleClass="#{empty viewSupport.getCurrencyMetric('LOCAL_COSTS_CTD_LC', pob).lcValue ? 'ui-state-error' : ''}" readonly="true">
+                                                    <p:inputText pt:data-tooltip="#{viewSupport.getErrorMessage('LOCAL_COSTS_CTD_LC', pob)}" value="#{viewSupport.getCurrencyMetric('LOCAL_COSTS_CTD_LC', pob).lcValue}" styleClass="#{empty viewSupport.getCurrencyMetric('LOCAL_COSTS_CTD_LC', pob).lcValue ? 'ui-state-error' : ''}" readonly="true">
                                                         <f:validateDoubleRange/>
                                                         <o:converter converterId="javax.faces.Number" currencySymbol="" type="currency" />
                                                     </p:inputText>
@@ -255,7 +255,7 @@
                                         <p:column style="white-space:pre-line;">
                                             <p:cellEditor rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}">
                                                 <f:facet name="output">
-                                                    <p:inputText value="#{viewSupport.getCurrencyMetric('THIRD_PARTY_COSTS_CTD_LC', pob).lcValue}" styleClass="#{empty viewSupport.getCurrencyMetric('THIRD_PARTY_COSTS_CTD_LC', pob).lcValue ? 'ui-state-error' : ''}" readonly="true">
+                                                    <p:inputText pt:data-tooltip="#{viewSupport.getErrorMessage('THIRD_PARTY_COSTS_CTD_LC', pob)}" value="#{viewSupport.getCurrencyMetric('THIRD_PARTY_COSTS_CTD_LC', pob).lcValue}" styleClass="#{empty viewSupport.getCurrencyMetric('THIRD_PARTY_COSTS_CTD_LC', pob).lcValue ? 'ui-state-error' : ''}" readonly="true">
                                                         <f:validateDoubleRange/>
                                                         <o:converter converterId="javax.faces.Number" currencySymbol="" type="currency" />
                                                     </p:inputText>
