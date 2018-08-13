@@ -24,13 +24,15 @@
 
                     <div class="ui-g-12">
                         <div class="card card-w-title">
-                            <h1>Hierarchy</h1>
+                            <h3> Hierarchy</h3>
                             
                             <p:tree value="#{hierarchy.root}" var="node"  animate="true" dynamic="true" style="width: 100%;font-size: 16px;color:black;background-color: activecaption" >
                                 <p:treeNode>
                                     <h:outputText value="#{node}" />
                                 </p:treeNode>
                             </p:tree>
+                            
+                             
                                 
                         </div>
                     </div>
