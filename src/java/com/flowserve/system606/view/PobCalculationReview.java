@@ -11,6 +11,7 @@ import com.flowserve.system606.model.PerformanceObligation;
 import com.flowserve.system606.model.ReportingUnit;
 import com.flowserve.system606.service.AdminService;
 import com.flowserve.system606.service.CalculationService;
+import com.flowserve.system606.service.FinancialPeriodService;
 import com.flowserve.system606.web.WebSession;
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -47,6 +48,8 @@ public class PobCalculationReview implements Serializable {
     private ViewSupport viewSupport;
     @Inject
     private WebSession webSession;
+    @Inject
+    private FinancialPeriodService financialPeriodService;
     private List<Contract> contracts;
     ReportingUnit reportingUnit;
 

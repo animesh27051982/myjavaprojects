@@ -447,7 +447,7 @@
                                 </p:tab>
 
                                 <p:tab title="Workflow">
-                                    <p:treeTable value="#{pobCalculationReview.rootTreeNode}" var="pob">
+                                    <p:treeTable id="workflowTree" value="#{pobCalculationReview.rootTreeNode}" var="pob">
                                         <f:facet name="header">
                                             Performance Obligations
                                         </f:facet>
@@ -460,14 +460,14 @@
                                             <f:facet name="header">
                                                 <h:outputText value="Last Updated By" />
                                             </f:facet>
-                                            <h:outputText value="#{pob.lastUpdatedBy.name}" rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}"/>
+                                            <h:outputText value="#{pob.lastUpdatedBy.name}" rendered="#{of:isInstance('com.flowserve.system606.model.MetricStore', pob)}"/>
                                         </p:column>
 
                                         <p:column style="white-space:pre-line;">
                                             <f:facet name="header">
                                                 <h:outputText value="Last Update Date" />
                                             </f:facet>
-                                            <h:outputText value="#{pob.lastUpdateDate}" rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}">
+                                            <h:outputText value="#{pob.lastUpdateDate}" rendered="#{of:isInstance('com.flowserve.system606.model.MetricStore', pob)}">
                                                 <f:convertDateTime pattern="dd-MMM-yyyy hh:mm a" type="localDateTime" />
                                             </h:outputText>
                                         </p:column>
@@ -478,6 +478,14 @@
                                             </f:facet>
                                             <h:outputText value="#{viewSupport.getPeriodWorkflowStatus(pob).description}"  rendered="#{of:isInstance('com.flowserve.system606.model.Contract', pob)}"/>
                                         </p:column>
+
+                                        <p:column style="white-space:pre-line;">
+                                            <f:facet name="header">
+                                                <h:outputText value="Worflow Actions" />
+                                            </f:facet>
+                                            <p:commandButton value="Submit For Review" ajax="true" style="font-size: 80%;" update="workflowTree" actionListener="#{viewSupport.submitForReview(pob)}" rendered="#{of:isInstance('com.flowserve.system606.model.Contract', pob)}"/>
+                                        </p:column>
+
                                     </p:treeTable>
                                 </p:tab>
 

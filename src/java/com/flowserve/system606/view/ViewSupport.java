@@ -20,6 +20,7 @@ import com.flowserve.system606.model.User;
 import com.flowserve.system606.model.WorkflowStatus;
 import com.flowserve.system606.service.AdminService;
 import com.flowserve.system606.service.CalculationService;
+import com.flowserve.system606.service.ContractService;
 import com.flowserve.system606.service.CurrencyService;
 import com.flowserve.system606.service.FinancialPeriodService;
 import com.flowserve.system606.service.MetricService;
@@ -67,19 +68,16 @@ public class ViewSupport implements Serializable {
     private CalculationService calculationService;
     @Inject
     private CurrencyService currencyService;
+    @Inject
+    private ContractService contractService;
 
     private List<FinancialPeriod> allPeriods = new ArrayList<FinancialPeriod>();
 
-    //FinancialPeriod period = null;
-    //FinancialPeriod priorPeriod = null;
     public ViewSupport() {
     }
 
     @PostConstruct
     public void init() {
-        // TODO - need to pull from elsewhre.
-        //period = financialPeriodService.getCurrentFinancialPeriod();
-        //priorPeriod = financialPeriodService.getPriorFinancialPeriod();
         allPeriods = financialPeriodService.findAllPeriods();
         businessUnit = webSession.getEditBusinessUnit();
         reportingUnit = webSession.getEditReportingUnit();
@@ -471,5 +469,19 @@ public class ViewSupport implements Serializable {
 
     public void setReportingUnit(ReportingUnit reportingUnit) {
         this.reportingUnit = reportingUnit;
+    }
+
+    public void initWorkflowContext(Contract contract) throws Exception {
+        financialPeriodService.initWorkflowContext(webSession.getCurrentPeriod(), contract);
+    }
+
+    public void submitForReview(Contract contract) {
+        try {
+            contractService.submitForReview(webSession.getCurrentPeriod(), contract, webSession.getUser());
+        } catch (Exception e) {
+            FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", " submit for revew:  " + e.getMessage());
+            FacesContext.getCurrentInstance().addMessage(null, msg);
+            logger.log(Level.SEVERE, "Error submit for revew:", e);
+        }
     }
 }

@@ -184,10 +184,9 @@ public class InputOnlineEntry implements Serializable {
     public void calculateOutputs(PerformanceObligation pob) throws Exception {
         try {
             Logger.getLogger(InputOnlineEntry.class.getName()).log(Level.INFO, "Calcing outputs...");
-            //pob.setTransientLastUpdateBy(webSession.getUser());
             Logger.getLogger(InputOnlineEntry.class.getName()).log(Level.INFO, "Setting POB last updated by: " + webSession.getUser().getName());
-            pob.setLastUpdatedBy(webSession.getUser());
-            pob.setLastUpdateDate(LocalDateTime.now());
+            updateAuditInfo(pob);
+
             calculationService.executeBusinessRules(pob, webSession.getCurrentPeriod());
 
         } catch (Exception e) {
@@ -256,5 +255,12 @@ public class InputOnlineEntry implements Serializable {
 
     public ReportingUnit getReportingUnit() {
         return reportingUnit;
+    }
+
+    private void updateAuditInfo(PerformanceObligation pob) {
+        pob.setLastUpdatedBy(webSession.getUser());
+        pob.setLastUpdateDate(LocalDateTime.now());
+        pob.getContract().setLastUpdatedBy(webSession.getUser());
+        pob.getContract().setLastUpdateDate(LocalDateTime.now());
     }
 }

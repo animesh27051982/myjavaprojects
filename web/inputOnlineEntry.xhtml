@@ -162,7 +162,7 @@
                                                 </f:facet>
                                                 <f:facet name="input">
                                                     <p:inputText value="#{viewSupport.getCurrencyMetric('LIQUIDATED_DAMAGES_CTD_CC', pob).ccValue}">
-                                                        <p:ajax event="change" process="@this"/>
+                                                        <p:ajax event="change" update=":form:messages" process="@this" listener="#{inputOnlineEntry.calculateOutputs(pob)}"/>
                                                     </p:inputText>
                                                 </f:facet>
                                             </p:cellEditor>

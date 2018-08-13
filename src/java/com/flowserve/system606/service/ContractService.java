@@ -6,13 +6,17 @@
 package com.flowserve.system606.service;
 
 import com.flowserve.system606.model.Contract;
+import com.flowserve.system606.model.FinancialPeriod;
 import com.flowserve.system606.model.Metric;
 import com.flowserve.system606.model.MetricSet;
 import com.flowserve.system606.model.MetricType;
 import com.flowserve.system606.model.ReportingUnit;
+import com.flowserve.system606.model.User;
+import com.flowserve.system606.model.WorkflowStatus;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.Currency;
 import java.util.List;
 import java.util.logging.Logger;
@@ -327,5 +331,13 @@ public class ContractService {
     public Contract update(Contract contract) throws Exception {
         // contract.setLastUpdateDate(LocalDateTime.now());
         return em.merge(contract);
+    }
+
+    public void submitForReview(FinancialPeriod period, Contract contract, User user) throws Exception {
+        contract.getPeriodApprovalRequest(period).setWorkflowStatus(WorkflowStatus.PENDING_REVIEW);
+        contract.setLastUpdateDate(LocalDateTime.now());
+        contract.setLastUpdatedBy(user);
+
+        update(contract);
     }
 }

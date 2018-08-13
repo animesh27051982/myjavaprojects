@@ -503,4 +503,13 @@ public class FinancialPeriodService {
         updateFinancialPeriod(period);
     }
 
+    public void initWorkflowContext(FinancialPeriod period, Contract contract) throws Exception {
+        ApprovalRequest contractApprovalRequest = new ApprovalRequest();
+        contractApprovalRequest.setWorkflowStatus(WorkflowStatus.DRAFT);
+        adminService.persist(contractApprovalRequest);
+        contract.putPeriodApprovalRequest(period, contractApprovalRequest);
+        adminService.update(contract);
+
+    }
+
 }
