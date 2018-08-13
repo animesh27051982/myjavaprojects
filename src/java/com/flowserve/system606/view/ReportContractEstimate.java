@@ -115,6 +115,12 @@ public class ReportContractEstimate implements Serializable {
         return file;
     }
 
+    public StreamedContent getCombineReport(Contract contract) throws Exception {
+        this.contract = contract;
+
+        return getCombineReport();
+    }
+
     public StreamedContent getJournalEntryReport() throws Exception {
         try {
 

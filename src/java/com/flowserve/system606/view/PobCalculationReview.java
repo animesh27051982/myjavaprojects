@@ -53,11 +53,7 @@ public class PobCalculationReview implements Serializable {
     @PostConstruct
     public void init() {
         try {
-            if (webSession.isAdmin()) {
-                reportingUnit = adminService.findReportingUnitById(webSession.getAdminReportingUnit().getId());
-            } else {
-                reportingUnit = adminService.findReportingUnitById(webSession.getCurrentReportingUnitId());
-            }
+            reportingUnit = adminService.findReportingUnitById(webSession.getCurrentReportingUnit().getId());
             rootTreeNode = viewSupport.generateNodeTree(reportingUnit);
             initContracts();
 
@@ -102,7 +98,7 @@ public class PobCalculationReview implements Serializable {
 
     public void onReportingUnitSelect(SelectEvent event) {
         webSession.setFilterText(null);
-        webSession.setCurrentReportingUnitId(((ReportingUnit) event.getObject()).getId());
+        webSession.setCurrentReportingUnit((ReportingUnit) event.getObject());
         init();
     }
 

@@ -86,12 +86,12 @@ public class ReportsService {
         BigDecimal estimatedGrossMargin = getEstimatedGrossMargin(contract, period);
 
         BigDecimal liquidatedDamage = getLiquidatedDamages(contract, period);
-        BigDecimal localCostITDLC = getCostOfGoodsSold(contract, period);
+        BigDecimal localCostCTDLC = getCostOfGoodsSold(contract, period);
         BigDecimal percentComplete = getPercentComplete(contract, period);
-        BigDecimal revenueITD = getRevenueRecognizeITD(contract, period);
-        BigDecimal lossReserveITD = getLossReserveITD(contract, period);
-        BigDecimal grossProfitITD = getEstimatedGrossProfit(contract, period);
-        BigDecimal grossMarginITD = getEstimatedGrossMargin(contract, period);
+        BigDecimal revenueCTD = getRevenueRecognizeCTD(contract, period);
+        BigDecimal lossReserveCTD = getLossReserveCTD(contract, period);
+        BigDecimal grossProfitCTD = getEstimatedGrossProfit(contract, period);
+        BigDecimal grossMarginCTD = getEstimatedGrossMargin(contract, period);
         BigDecimal costToComplete = getContractCostToCompleteLC(contract, period);
         BigDecimal billingsInExcess = getContractBillingsInExcess(contract, period);
         BigDecimal revenueInExcess = getContractRevenueInExcess(contract, period);
@@ -107,12 +107,12 @@ public class ReportsService {
         setCellValue(row, 5, estimatedGrossMargin);
 
         setCellValue(row, 7, percentComplete);
-        setCellValue(row, 8, revenueITD);
+        setCellValue(row, 8, revenueCTD);
         setCellValue(row, 9, liquidatedDamage);
-        setCellValue(row, 10, localCostITDLC);
-        setCellValue(row, 11, lossReserveITD);
-        setCellValue(row, 12, grossProfitITD);
-        setCellValue(row, 13, grossMarginITD);
+        setCellValue(row, 10, localCostCTDLC);
+        setCellValue(row, 11, lossReserveCTD);
+        setCellValue(row, 12, grossProfitCTD);
+        setCellValue(row, 13, grossMarginCTD);
         setCellValue(row, 15, billToDate);
         setCellValue(row, 16, costToComplete);
         setCellValue(row, 17, billingsInExcess);
@@ -147,12 +147,12 @@ public class ReportsService {
         BigDecimal estimatedGrossMargin = getEstimatedGrossMargin(pGroup, period);
 
         BigDecimal liquidatedDamage = getLiquidatedDamages(pGroup, period);
-        BigDecimal localCostITDLC = getCostOfGoodsSold(pGroup, period);
+        BigDecimal localCostCTDLC = getCostOfGoodsSold(pGroup, period);
         BigDecimal percentComplete = getPercentComplete(pGroup, period);
-        BigDecimal revenueITD = getRevenueRecognizeITD(pGroup, period);
-        BigDecimal lossReserveITD = getLossReserveITD(pGroup, period);
-        BigDecimal grossProfitITD = getEstimatedGrossProfit(pGroup, period);
-        BigDecimal grossMarginITD = getEstimatedGrossMargin(pGroup, period);
+        BigDecimal revenueCTD = getRevenueRecognizeCTD(pGroup, period);
+        BigDecimal lossReserveCTD = getLossReserveCTD(pGroup, period);
+        BigDecimal grossProfitCTD = getEstimatedGrossProfit(pGroup, period);
+        BigDecimal grossMarginCTD = getEstimatedGrossMargin(pGroup, period);
         BigDecimal costToComplete = getContractCostToCompleteLC(pGroup, period);
         BigDecimal billingsInExcess = getContractBillingsInExcess(pGroup, period);
         BigDecimal revenueInExcess = getContractRevenueInExcess(pGroup, period);
@@ -167,12 +167,12 @@ public class ReportsService {
         setCellValue(row, 5, estimatedGrossMargin);
 
         //setCellValue(row, 7, percentComplete);
-        setCellValue(row, 8, revenueITD);
+        setCellValue(row, 8, revenueCTD);
         setCellValue(row, 9, liquidatedDamage);
-        setCellValue(row, 10, localCostITDLC);
-        setCellValue(row, 11, lossReserveITD);
-        setCellValue(row, 12, grossProfitITD);
-        setCellValue(row, 13, grossMarginITD);
+        setCellValue(row, 10, localCostCTDLC);
+        setCellValue(row, 11, lossReserveCTD);
+        setCellValue(row, 12, grossProfitCTD);
+        setCellValue(row, 13, grossMarginCTD);
         setCellValue(row, 15, billToDate);
         setCellValue(row, 16, costToComplete);
         setCellValue(row, 17, billingsInExcess);
@@ -187,12 +187,12 @@ public class ReportsService {
         setCellValue(row, 5, estimatedGrossMargin);
 
         //setCellValue(row, 7, percentComplete);
-        setCellValue(row, 8, revenueITD);
+        setCellValue(row, 8, revenueCTD);
         setCellValue(row, 9, liquidatedDamage);
-        setCellValue(row, 10, localCostITDLC);
-        setCellValue(row, 11, lossReserveITD);
-        setCellValue(row, 12, grossProfitITD);
-        setCellValue(row, 13, grossMarginITD);
+        setCellValue(row, 10, localCostCTDLC);
+        setCellValue(row, 11, lossReserveCTD);
+        setCellValue(row, 12, grossProfitCTD);
+        setCellValue(row, 13, grossMarginCTD);
         setCellValue(row, 15, billToDate);
         setCellValue(row, 16, costToComplete);
         setCellValue(row, 17, billingsInExcess);
@@ -213,12 +213,12 @@ public class ReportsService {
                 BigDecimal estimatedGrossMargin = getEstimatedGrossMargin(pob, period);
 
                 BigDecimal liquidatedDamage = getLiquidatedDamages(pob, period);
-                BigDecimal localCostITDLC = getCostOfGoodsSold(pob, period);
+                BigDecimal localCostCTDLC = getCostOfGoodsSold(pob, period);
                 BigDecimal percentComplete = getPercentComplete(pob, period);
-                BigDecimal revenueITD = getRevenueRecognizeITD(pob, period);
-                //BigDecimal lossReserveITD = getLossReserveITD(pob, period);
-                BigDecimal grossProfitITD = getEstimatedGrossProfit(pob, period);
-                BigDecimal grossMarginITD = getEstimatedGrossMargin(pob, period);
+                BigDecimal revenueCTD = getRevenueRecognizeCTD(pob, period);
+                //BigDecimal lossReserveCTD = getLossReserveCTD(pob, period);
+                BigDecimal grossProfitCTD = getEstimatedGrossProfit(pob, period);
+                BigDecimal grossMarginCTD = getEstimatedGrossMargin(pob, period);
                 //BigDecimal costToComplete = getContractCostToCompleteLC(pob, period);
 //                BigDecimal billingsInExcess = getContractBillingsInExcess(pob, period);
 //                BigDecimal revenueInExcess = getContractRevenueInExcess(pob, period);
@@ -233,12 +233,12 @@ public class ReportsService {
                 setCellValue(row, 5, estimatedGrossMargin);
 
                 //setCellValue(row, 7, percentComplete);
-                setCellValue(row, 8, revenueITD);
+                setCellValue(row, 8, revenueCTD);
                 setCellValue(row, 9, liquidatedDamage);
-                setCellValue(row, 10, localCostITDLC);
-                //setCellValue(row, 11, lossReserveITD);
-                setCellValue(row, 12, grossProfitITD);
-                setCellValue(row, 13, grossMarginITD);
+                setCellValue(row, 10, localCostCTDLC);
+                //setCellValue(row, 11, lossReserveCTD);
+                setCellValue(row, 12, grossProfitCTD);
+                setCellValue(row, 13, grossMarginCTD);
 //                setCellValue(row, 15, billToDate);
 //                setCellValue(row, 16, costToComplete);
 //                setCellValue(row, 17, billingsInExcess);
@@ -273,7 +273,7 @@ public class ReportsService {
 
         FinancialPeriod period = webSession.getCurrentPeriod();
 
-        BigDecimal revenueToRecognize = getRevenueRecognizeITD(contract, period);
+        BigDecimal revenueToRecognize = getRevenueRecognizeCTD(contract, period);
         BigDecimal liquidatedDamage = getLiquidatedDamages(contract, period);
         BigDecimal cumulativeCostGoodsSoldLC = getCumulativeCostGoodsSoldLC(contract, period);
         BigDecimal EstimatedGrossProfitLC = getEstimatedGrossProfit(contract, period);
@@ -329,7 +329,7 @@ public class ReportsService {
 
         XSSFRow row;
         //for monthly report
-        BigDecimal revenueToRecognize = getRevenueRecognizeITD(pGroup, period);
+        BigDecimal revenueToRecognize = getRevenueRecognizeCTD(pGroup, period);
         BigDecimal liquidatedDamage = getLiquidatedDamages(pGroup, period);
         BigDecimal cumulativeCostGoodsSoldLC = getCumulativeCostGoodsSoldLC(pGroup, period);
         BigDecimal EstimatedGrossProfitLC = getEstimatedGrossProfit(pGroup, period);
@@ -392,7 +392,7 @@ public class ReportsService {
 
             for (PerformanceObligation pob : pGroup.getPerformanceObligations()) {
                 //for monthly report
-                BigDecimal revenueToRecognize = getRevenueRecognizeITD(pob, period);
+                BigDecimal revenueToRecognize = getRevenueRecognizeCTD(pob, period);
                 BigDecimal liquidatedDamage = getLiquidatedDamages(pob, period);
                 BigDecimal cumulativeCostGoodsSoldLC = getCumulativeCostGoodsSoldLC(pob, period);
                 BigDecimal EstimatedGrossProfitLC = getEstimatedGrossProfit(pob, period);
@@ -523,13 +523,13 @@ public class ReportsService {
         PerformanceObligationGroup slPobs = new PerformanceObligationGroup("slPobs", contract, contract.getPobsByRevenueMethod(RevenueMethod.STRAIGHT_LINE));
         calculationService.executeBusinessRules(slPobs, period);
 
-        BigDecimal revenueToRecognize = getRevenueRecognizeITD(pocPobs, period);
+        BigDecimal revenueToRecognize = getRevenueRecognizeCTD(pocPobs, period);
         row = worksheet.getRow(startRow++);
         setCellValue(row, colNum, revenueToRecognize);
-        revenueToRecognize = getRevenueRecognizeITD(pitPobs, period);
+        revenueToRecognize = getRevenueRecognizeCTD(pitPobs, period);
         row = worksheet.getRow(startRow++);
         setCellValue(row, colNum, revenueToRecognize);
-        revenueToRecognize = getRevenueRecognizeITD(slPobs, period);
+        revenueToRecognize = getRevenueRecognizeCTD(slPobs, period);
         row = worksheet.getRow(startRow++);
         setCellValue(row, colNum, revenueToRecognize);
 
@@ -584,26 +584,26 @@ public class ReportsService {
         setCellValue(row, colNum, totalCOGS);
 
         startRow = startRow + 3;
-        BigDecimal grossProfitITD = getEstimatedGrossProfit(pocPobs, period);
+        BigDecimal grossProfitCTD = getEstimatedGrossProfit(pocPobs, period);
         row = worksheet.getRow(startRow++);
-        setCellValue(row, colNum, grossProfitITD);
-        grossProfitITD = getEstimatedGrossProfit(pitPobs, period);
+        setCellValue(row, colNum, grossProfitCTD);
+        grossProfitCTD = getEstimatedGrossProfit(pitPobs, period);
         row = worksheet.getRow(startRow++);
-        setCellValue(row, colNum, grossProfitITD);
-        grossProfitITD = getEstimatedGrossProfit(slPobs, period);
+        setCellValue(row, colNum, grossProfitCTD);
+        grossProfitCTD = getEstimatedGrossProfit(slPobs, period);
         row = worksheet.getRow(startRow++);
-        setCellValue(row, colNum, grossProfitITD);
+        setCellValue(row, colNum, grossProfitCTD);
 
         startRow = startRow + 2;
-        BigDecimal grossMarginITD = getEstimatedGrossMargin(pocPobs, period);
+        BigDecimal grossMarginCTD = getEstimatedGrossMargin(pocPobs, period);
         row = worksheet.getRow(startRow++);
-        setCellValue(row, colNum, grossMarginITD);
-        grossMarginITD = getEstimatedGrossMargin(pitPobs, period);
+        setCellValue(row, colNum, grossMarginCTD);
+        grossMarginCTD = getEstimatedGrossMargin(pitPobs, period);
         row = worksheet.getRow(startRow++);
-        setCellValue(row, colNum, grossMarginITD);
-        grossMarginITD = getEstimatedGrossMargin(slPobs, period);
+        setCellValue(row, colNum, grossMarginCTD);
+        grossMarginCTD = getEstimatedGrossMargin(slPobs, period);
         row = worksheet.getRow(startRow++);
-        setCellValue(row, colNum, grossMarginITD);
+        setCellValue(row, colNum, grossMarginCTD);
 
     }
 
@@ -627,12 +627,12 @@ public class ReportsService {
         XSSFRow row;
 
         BigDecimal transactionPrice = getTransactionPrice(contract, period);
-        BigDecimal revenueToRecognize = getRevenueRecognizeITD(contract, period);
+        BigDecimal revenueToRecognize = getRevenueRecognizeCTD(contract, period);
         BigDecimal liquidatedDamage = getLiquidatedDamages(contract, period);
         BigDecimal EAC = getEAC(contract, period);
         BigDecimal estimatedGrossProfit = getEstimatedGrossProfit(contract, period);
         BigDecimal estimatedGrossMargin = getEstimatedGrossMargin(contract, period);
-        BigDecimal localCostITDLC = getCostOfGoodsSold(contract, period);
+        BigDecimal localCostCTDLC = getCostOfGoodsSold(contract, period);
         BigDecimal billToDate = contract.getTotalBillingsLocalCurrency();
 
         row = worksheet.getRow(6);
@@ -644,7 +644,7 @@ public class ReportsService {
         row = worksheet.getRow(16);
         setCellValue(row, colNum, EAC);
         row = worksheet.getRow(17);
-        setCellValue(row, colNum, localCostITDLC);
+        setCellValue(row, colNum, localCostCTDLC);
         row = worksheet.getRow(20);
         setCellValue(row, colNum, estimatedGrossProfit);
         row = worksheet.getRow(21);
@@ -660,7 +660,7 @@ public class ReportsService {
         row = worksheet.getRow(32);
         setCellValue(row, colNum, EAC);
         row = worksheet.getRow(33);
-        setCellValue(row, colNum, localCostITDLC);
+        setCellValue(row, colNum, localCostCTDLC);
 
     }
 
@@ -733,7 +733,7 @@ public class ReportsService {
     }
 
     private BigDecimal getLiquidatedDamages(Measurable measureable, FinancialPeriod period) throws Exception {
-        return calculationService.getCurrencyMetric("LIQUIDATED_DAMAGES_ITD_CC", measureable, period).getValue();
+        return calculationService.getCurrencyMetric("LIQUIDATED_DAMAGES_CTD_CC", measureable, period).getValue();
     }
 
     private BigDecimal getEAC(Measurable measureable, FinancialPeriod period) throws Exception {
@@ -749,24 +749,27 @@ public class ReportsService {
     }
 
     private void setCellValue(XSSFRow row, int cellNum, BigDecimal value) {
+        if (value == null) {
+            return;
+        }
         Cell cell = row.getCell(cellNum, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
         cell.setCellValue(value.doubleValue());
     }
 
     private BigDecimal getCostOfGoodsSold(Measurable measureable, FinancialPeriod period) throws Exception {
-        return calculationService.getCurrencyMetric("COST_OF_GOODS_SOLD_ITD_LC", measureable, period).getValue();
+        return calculationService.getCurrencyMetric("COST_OF_GOODS_SOLD_CTD_LC", measureable, period).getValue();
     }
 
     private BigDecimal getPercentComplete(Measurable measureable, FinancialPeriod period) {
         return calculationService.getDecimalMetric("PERCENT_COMPLETE", measureable, period).getValue();
     }
 
-    private BigDecimal getRevenueRecognizeITD(Measurable measureable, FinancialPeriod period) throws Exception {
-        return calculationService.getCurrencyMetric("REVENUE_TO_RECOGNIZE_ITD_LC", measureable, period).getValue();
+    private BigDecimal getRevenueRecognizeCTD(Measurable measureable, FinancialPeriod period) throws Exception {
+        return calculationService.getCurrencyMetric("REVENUE_TO_RECOGNIZE_CTD_CC", measureable, period).getValue();
     }
 
-    private BigDecimal getLossReserveITD(Measurable measureable, FinancialPeriod period) throws Exception {
-        return calculationService.getCurrencyMetric("LOSS_RESERVE_ITD_LC", measureable, period).getValue();
+    private BigDecimal getLossReserveCTD(Measurable measureable, FinancialPeriod period) throws Exception {
+        return calculationService.getCurrencyMetric("LOSS_RESERVE_CTD_LC", measureable, period).getValue();
     }
 
     private BigDecimal getContractCostToCompleteLC(Measurable measureable, FinancialPeriod period) throws Exception {
@@ -786,11 +789,11 @@ public class ReportsService {
     }
 
     private BigDecimal getAccuRevenueToRecognizeLC(Measurable measureable, List<FinancialPeriod> qtdPeriods) throws Exception {
-        return calculationService.getAccumulatedCurrencyMetricAcrossPeriods("REVENUE_TO_RECOGNIZE_ITD_LC", measureable, qtdPeriods).getValue();
+        return calculationService.getAccumulatedCurrencyMetricAcrossPeriods("REVENUE_TO_RECOGNIZE_CTD_CC", measureable, qtdPeriods).getValue();
     }
 
     private BigDecimal getAccuLiquidatedDamageCC(Measurable measureable, List<FinancialPeriod> qtdPeriods) throws Exception {
-        return calculationService.getAccumulatedCurrencyMetricAcrossPeriods("LIQUIDATED_DAMAGES_ITD_CC", measureable, qtdPeriods).getValue();
+        return calculationService.getAccumulatedCurrencyMetricAcrossPeriods("LIQUIDATED_DAMAGES_CTD_CC", measureable, qtdPeriods).getValue();
     }
 
     private BigDecimal getAccuCumulativeCostGoodsSoldLC(Measurable measureable, List<FinancialPeriod> qtdPeriods) throws Exception {

@@ -32,8 +32,7 @@ import org.primefaces.model.StreamedContent;
 @ViewScoped
 public class InputTemplateDownload implements Serializable {
 
-    private List<ReportingUnit> reportingUnits = new ArrayList<ReportingUnit>();
-    private List<ReportingUnit> selectedReportingUnits;
+    private ReportingUnit reportingUnit;
     private StreamedContent file;
     private InputStream inputStream;
     private FileOutputStream outputStream;
@@ -46,9 +45,7 @@ public class InputTemplateDownload implements Serializable {
 
     @PostConstruct
     public void init() {
-        //reportingUnits = adminService.getPreparableReportingUnits();
-        reportingUnits.add(webSession.getCurrentReportingUnit());
-        selectedReportingUnits = reportingUnits;
+        reportingUnit = webSession.getCurrentReportingUnit();
     }
 
     public StreamedContent getFile() throws Exception {
@@ -61,23 +58,24 @@ public class InputTemplateDownload implements Serializable {
             e.printStackTrace();
         }
 
-        templateService.processTemplateDownload(inputStream, outputStream, selectedReportingUnits);
+        templateService.processTemplateDownload(inputStream, outputStream, reportingUnit);
 
         InputStream inputStreamFromOutputStream = new FileInputStream(new File("POCI_Template_New.xlsx"));
         file = new DefaultStreamedContent(inputStreamFromOutputStream, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "POCI_Template_New.xlsx");
         return file;
     }
 
-    public List<ReportingUnit> getSelectedReportingUnits() {
-        return selectedReportingUnits;
-    }
-
-    public void setSelectedReportingUnits(List<ReportingUnit> selectedReportingUnits) {
-        this.selectedReportingUnits = selectedReportingUnits;
-    }
-
+//    public List<ReportingUnit> getSelectedReportingUnits() {
+//        return selectedReportingUnits;
+//    }
+//
+//    public void setSelectedReportingUnits(List<ReportingUnit> selectedReportingUnits) {
+//        this.selectedReportingUnits = selectedReportingUnits;
+//    }
+//
     public List<ReportingUnit> getReportingUnits() {
+        List<ReportingUnit> reportingUnits = new ArrayList<ReportingUnit>();
+        reportingUnits.add(reportingUnit);
         return reportingUnits;
     }
-
 }

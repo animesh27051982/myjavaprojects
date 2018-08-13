@@ -17,6 +17,7 @@ import com.flowserve.system606.model.Measurable;
 import com.flowserve.system606.model.PerformanceObligation;
 import com.flowserve.system606.model.ReportingUnit;
 import com.flowserve.system606.model.User;
+import com.flowserve.system606.model.WorkflowStatus;
 import com.flowserve.system606.service.AdminService;
 import com.flowserve.system606.service.CalculationService;
 import com.flowserve.system606.service.CurrencyService;
@@ -24,6 +25,7 @@ import com.flowserve.system606.service.FinancialPeriodService;
 import com.flowserve.system606.service.MetricService;
 import com.flowserve.system606.web.WebSession;
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Currency;
@@ -118,7 +120,7 @@ public class ViewSupport implements Serializable {
         } catch (Exception e) {
             FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", " RU search error  " + e.getMessage());
             FacesContext.getCurrentInstance().addMessage(null, msg);
-            logger.log(Level.SEVERE, "Error ru search.", e);
+            //logger.log(Level.SEVERE, "Error ru search.", e);
         }
         return rUnit;
     }
@@ -432,8 +434,15 @@ public class ViewSupport implements Serializable {
         return allPeriods;
     }
 
-    public String getExchangeRate(Contract contract) throws Exception {
-        return currencyService.findRateByFromToPeriod(contract.getContractCurrency(), contract.getLocalCurrency(), webSession.getCurrentPeriod().getLocalCurrencyRatePeriod()).getPeriodEndRate().toPlainString();
+    public BigDecimal getExchangeRate(Contract contract) throws Exception {
+        return currencyService.findRateByFromToPeriod(contract.getContractCurrency(), contract.getLocalCurrency(), webSession.getCurrentPeriod().getLocalCurrencyRatePeriod()).getPeriodEndRate();
+    }
+
+    public WorkflowStatus getPeriodWorkflowStatus(Contract contract) {
+        if (contract.getPeriodApprovalRequest(webSession.getCurrentPeriod()) == null) {
+            return null;
+        }
+        return contract.getPeriodApprovalRequest(webSession.getCurrentPeriod()).getWorkflowStatus();
     }
 
     public void setUsers(List<User> users) {

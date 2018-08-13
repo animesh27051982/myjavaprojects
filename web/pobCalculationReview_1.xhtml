@@ -120,7 +120,7 @@
                                     </p:column>
                                     <p:column style="white-space:pre-line;">
                                         <h:outputText value="#{viewSupport.getDecimalMetric('PERCENT_COMPLETE', pob).value}" rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}" >
-                                            <f:convertNumber type="percent" />
+                                            <f:convertNumber minFractionDigits="1" />
                                         </h:outputText>
                                     </p:column>
 
@@ -202,7 +202,7 @@
 
                                     <p:column style="white-space:pre-line;">
                                         <h:outputText value="#{viewSupport.getDecimalMetric('PERCENT_COMPLETE', pob).value}" rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}" >
-                                            <f:convertNumber type="percent" />
+                                            <f:convertNumber minFractionDigits="1" />
                                         </h:outputText>
                                     </p:column>
 
@@ -529,7 +529,7 @@
                                     </p:column>
                                     <p:column style="white-space:pre-line;">
                                         <h:outputText value="#{viewSupport.getDecimalMetric('PERCENT_COMPLETE', pob).value}" rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}" >
-                                            <f:convertNumber type="percent" />
+                                            <f:convertNumber minFractionDigits="1" />
                                         </h:outputText>
                                     </p:column>
                                     <p:column style="white-space:pre-line;">

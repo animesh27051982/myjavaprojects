@@ -6,7 +6,6 @@
 package com.flowserve.system606.service;
 
 import com.flowserve.system606.model.User;
-import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
@@ -24,15 +23,10 @@ public class AppInitializeService {
 
     private static Logger logger = Logger.getLogger("com.flowserve.system606");
 
-    List<User> admin = null;
-    User ad;
+    User adminUser;
 
     @Inject
     private AdminService adminService;
-    @Inject
-    private PerformanceObligationService pobService;
-    @Inject
-    private ContractService contractService;
     @Inject
     private CurrencyService currencyService;
     @Inject
@@ -47,7 +41,7 @@ public class AppInitializeService {
         logger.info("Initializing App Objects");
 
         try {
-            adminService.initUsers();
+            adminUser = adminService.initUsers();
             adminService.initCompanies();
             financialPeriodService.initFinancialPeriods();
             // TODO - KJG - The legacy file does not contain Oct 17 data but prior period lookups try to find it, so just use dummy rates for now.
@@ -56,7 +50,7 @@ public class AppInitializeService {
             adminService.initSubledgerAccount();
             //adminService.initBilings();
             metricService.initMetricTypes();
-            adminService.initCountries();    // We don't need this as an Entity.  Convert to standard Java object with converters.
+            adminService.initCountries();
             adminService.initBusinessUnit();
             adminService.initReportingUnits();
             adminService.initBUinRU();
@@ -66,6 +60,8 @@ public class AppInitializeService {
             adminService.initPreparersReviewerForCOE();
             adminService.initReportingUnitWorkflowStatus();
             calculationService.initBusinessRules();
+
+            financialPeriodService.openPeriod(financialPeriodService.getCurrentFinancialPeriod());
 
             //calculationService.initBusinessRulesEngine();
             // Uncomment for local file based POB loading current month only.
@@ -78,6 +74,10 @@ public class AppInitializeService {
         }
 
         logger.info("Initializing App Objects Done");
+    }
+
+    public User getAdminUser() {
+        return adminUser;
     }
 
 }

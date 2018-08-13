@@ -74,7 +74,7 @@ public class TemplateService {
         return new ArrayList<ReportingUnit>();
     }
 
-    public void processTemplateDownload(InputStream inputStream, FileOutputStream outputStream, List<ReportingUnit> reportingUnits) throws Exception {
+    public void processTemplateDownload(InputStream inputStream, FileOutputStream outputStream, ReportingUnit reportingUnit) throws Exception {
 
         List<MetricType> metricTypes = metricService.getAllPobExcelInputMetricTypes();
         XSSFWorkbook workbook = new XSSFWorkbook(inputStream);
@@ -86,111 +86,110 @@ public class TemplateService {
         FinancialPeriod period = financialPeriodService.getCurrentFinancialPeriod();
 
         int rowid = 3;
-        for (ReportingUnit ru : reportingUnits) {
-            List<Contract> contracts = ru.getContracts();
-            for (Contract contract : contracts) {
-                List<PerformanceObligation> pobs = contract.getPerformanceObligations();
-                for (PerformanceObligation pob : pobs) {
-                    row = worksheet.getRow(rowid);
-                    if (row == null) {
-                        row = worksheet.createRow(rowid);
-                    }
+        List<Contract> contracts = reportingUnit.getContracts();
+        for (Contract contract : contracts) {
+            List<PerformanceObligation> pobs = contract.getPerformanceObligations();
+            for (PerformanceObligation pob : pobs) {
+                row = worksheet.getRow(rowid);
+                if (row == null) {
+                    row = worksheet.createRow(rowid);
+                }
 
-                    // Populate non-input cells
-                    cell = row.getCell(0, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
-                    cell.setCellValue(ru.getCode());
-                    cell = row.getCell(1, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
-                    cell.setCellValue(contract.getId());
-                    cell = row.getCell(2, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
-                    cell.setCellValue(pob.getId());
-                    cell = row.getCell(3, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
-                    cell.setCellValue(pob.getRevenueMethod().getShortName());
-                    cell = row.getCell(4, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
-                    cell.setCellValue(contract.getContractCurrency().getCurrencyCode());
+                // Populate non-input cells
+                cell = row.getCell(0, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
+                cell.setCellValue(reportingUnit.getCode());
+                cell = row.getCell(1, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
+                cell.setCellValue(contract.getId());
+                cell = row.getCell(2, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
+                cell.setCellValue(pob.getId());
+                cell = row.getCell(3, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
+                cell.setCellValue(pob.getRevenueMethod().getShortName());
+                cell = row.getCell(4, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
+                cell.setCellValue(contract.getContractCurrency().getCurrencyCode());
 
-                    BigDecimal value = BigDecimal.ZERO;
-                    value = calculationService.getCurrencyMetric("TRANSACTION_PRICE_CC", pob, period).getCcValue();
-                    setCellValue(row, 5, value);
-                    value = calculationService.getCurrencyMetric("LIQUIDATED_DAMAGES_ITD_CC", pob, period).getCcValue();
-                    setCellValue(row, 6, value);
-                    cell = row.getCell(7, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
-                    cell.setCellValue(contract.getLocalCurrency().getCurrencyCode());
-                    value = calculationService.getCurrencyMetric("ESTIMATED_COST_AT_COMPLETION_LC", pob, period).getLcValue();
-                    setCellValue(row, 8, value);
-                    value = calculationService.getCurrencyMetric("ESTIMATED_COST_AT_COMPLETION_LC", pob, webSession.getPriorPeriod()).getLcValue();
-                    setCellValue(row, 9, value);
+                BigDecimal value = BigDecimal.ZERO;
+                value = calculationService.getCurrencyMetric("TRANSACTION_PRICE_CC", pob, period).getCcValue();
+                setCellValue(row, 5, value);
+                value = calculationService.getCurrencyMetric("LIQUIDATED_DAMAGES_CTD_CC", pob, period).getCcValue();
+                setCellValue(row, 6, value);
+                cell = row.getCell(7, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
+                cell.setCellValue(contract.getLocalCurrency().getCurrencyCode());
+                value = calculationService.getCurrencyMetric("ESTIMATED_COST_AT_COMPLETION_LC", pob, period).getLcValue();
+                setCellValue(row, 8, value);
+                value = calculationService.getCurrencyMetric("ESTIMATED_COST_AT_COMPLETION_LC", pob, webSession.getPriorPeriod()).getLcValue();
+                setCellValue(row, 9, value);
 
-                    value = calculationService.getCurrencyMetric("LOCAL_COSTS_ITD_LC", pob, period).getLcValue();
-                    setCellValue(row, 10, value);
-                    value = calculationService.getCurrencyMetric("THIRD_PARTY_COSTS_ITD_LC", pob, period).getLcValue();
-                    setCellValue(row, 11, value);
-                    value = calculationService.getCurrencyMetric("INTERCOMPANY_COSTS_ITD_LC", pob, period).getLcValue();
-                    setCellValue(row, 12, value);
-                    cell = row.getCell(13, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
-                    LocalDate dDate = calculationService.getDateMetric("DELIVERY_DATE", pob, period).getValue();
-                    if (dDate != null) {
-                        cell.setCellValue(dDate.toString());
-                    }
-                    value = calculationService.getCurrencyMetric("PARTIAL_SHIPMENT_COSTS_LC", pob, period).getCcValue();
-                    setCellValue(row, 14, value);
+                value = calculationService.getCurrencyMetric("LOCAL_COSTS_CTD_LC", pob, period).getLcValue();
+                setCellValue(row, 10, value);
+                value = calculationService.getCurrencyMetric("THIRD_PARTY_COSTS_CTD_LC", pob, period).getLcValue();
+                setCellValue(row, 11, value);
+                value = calculationService.getCurrencyMetric("INTERCOMPANY_COSTS_CTD_LC", pob, period).getLcValue();
+                setCellValue(row, 12, value);
+                cell = row.getCell(13, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
+                LocalDate dDate = calculationService.getDateMetric("DELIVERY_DATE", pob, period).getValue();
+                if (dDate != null) {
+                    cell.setCellValue(dDate.toString());
+                }
+                value = calculationService.getCurrencyMetric("PARTIAL_SHIPMENT_COSTS_LC", pob, period).getLcValue();
+                setCellValue(row, 14, value);
 
-                    value = calculationService.getDecimalMetric("PERCENT_COMPLETE", pob, period).getValue();
-                    setCellValue(row, 15, value);
-                    value = calculationService.getCurrencyMetric("THIRD_PARTY_COMMISSION_ITD_LC", pob, period).getLcValue();
-                    setCellValue(row, 16, value);
-                    value = calculationService.getCurrencyMetric("THIRD_PARTY_COMMISSION_TO_RECOGNIZE_LC", pob, period).getLcValue();
-                    setCellValue(row, 17, value);
-                    value = calculationService.getCurrencyMetric("THIRD_PARTY_COMMISSION_ITD_LC", pob, webSession.getPriorPeriod()).getLcValue();
-                    setCellValue(row, 18, value);
-                    value = calculationService.getCurrencyMetric("THIRD_PARTY_COMMISSION_TO_RECOGNIZE_LC", pob, webSession.getPriorPeriod()).getLcValue();
-                    setCellValue(row, 19, value);
-                    List<BillingEvent> bEv = contract.getBillingEvents();
-                    int cnt = 1;
-                    //int rowNum = 20;
-                    for (BillingEvent b : bEv) {
+                value = calculationService.getDecimalMetric("PERCENT_COMPLETE", pob, period).getValue();
+                setCellValue(row, 15, value);
+                value = calculationService.getCurrencyMetric("THIRD_PARTY_COMMISSION_CTD_LC", pob.getContract(), period).getLcValue();
+                setCellValue(row, 16, value);
+                value = calculationService.getCurrencyMetric("THIRD_PARTY_COMMISSION_TO_RECOGNIZE_LC", pob.getContract(), period).getLcValue();
+                setCellValue(row, 17, value);
+                value = calculationService.getCurrencyMetric("THIRD_PARTY_COMMISSION_CTD_LC", pob.getContract(), webSession.getPriorPeriod()).getLcValue();
+                setCellValue(row, 18, value);
+                value = calculationService.getCurrencyMetric("THIRD_PARTY_COMMISSION_TO_RECOGNIZE_LC", pob.getContract(), webSession.getPriorPeriod()).getLcValue();
+                setCellValue(row, 19, value);
+                List<BillingEvent> bEv = contract.getBillingEvents();
+                int cnt = 1;
+                //int rowNum = 20;
+                for (BillingEvent b : bEv) {
 
-                        if (cnt > 2) {
-                            break;
-                        } else if (cnt == 1) {
-                            String invoiceNum = b.getInvoiceNumber();
-                            if (!invoiceNum.equalsIgnoreCase("")) {
-                                cell = row.getCell(20, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
-                                cell.setCellValue(invoiceNum);
-                            }
-                            String date = b.getBillingDate().toString();
-                            if (!date.equalsIgnoreCase("")) {
-                                cell = row.getCell(21, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
-                                cell.setCellValue(date);
-                            }
-                            value = b.getAmountContractCurrency();
-                            setCellValue(row, 22, value);
-                            value = b.getAmountLocalCurrency();
-                            setCellValue(row, 23, value);
-                            value = contract.getTotalBillingsLocalCurrency();
-                            setCellValue(row, 28, value);
-
-                        } else if (cnt == 2) {
-                            String invoiceNum = b.getInvoiceNumber();
-                            if (!invoiceNum.equalsIgnoreCase("")) {
-                                cell = row.getCell(24, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
-                                cell.setCellValue(invoiceNum);
-                            }
-                            String date = b.getBillingDate().toString();
-                            if (!date.equalsIgnoreCase("")) {
-                                cell = row.getCell(25, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
-                                cell.setCellValue(date);
-                            }
-                            value = b.getAmountContractCurrency();
-                            setCellValue(row, 26, value);
-                            value = b.getAmountLocalCurrency();
-                            setCellValue(row, 27, value);
-
+                    if (cnt > 2) {
+                        break;
+                    } else if (cnt == 1) {
+                        String invoiceNum = b.getInvoiceNumber();
+                        if (!invoiceNum.equalsIgnoreCase("")) {
+                            cell = row.getCell(20, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
+                            cell.setCellValue(invoiceNum);
                         }
+                        String date = b.getBillingDate().toString();
+                        if (!date.equalsIgnoreCase("")) {
+                            cell = row.getCell(21, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
+                            cell.setCellValue(date);
+                        }
+                        value = b.getAmountContractCurrency();
+                        setCellValue(row, 22, value);
+                        value = b.getAmountLocalCurrency();
+                        setCellValue(row, 23, value);
+                        value = contract.getTotalBillingsLocalCurrency();
+                        setCellValue(row, 28, value);
 
-                        cnt++;
+                    } else if (cnt == 2) {
+                        String invoiceNum = b.getInvoiceNumber();
+                        if (!invoiceNum.equalsIgnoreCase("")) {
+                            cell = row.getCell(24, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
+                            cell.setCellValue(invoiceNum);
+                        }
+                        String date = b.getBillingDate().toString();
+                        if (!date.equalsIgnoreCase("")) {
+                            cell = row.getCell(25, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
+                            cell.setCellValue(date);
+                        }
+                        value = b.getAmountContractCurrency();
+                        setCellValue(row, 26, value);
+                        value = b.getAmountLocalCurrency();
+                        setCellValue(row, 27, value);
+
                     }
 
-                    rowid++;
+                    cnt++;
+                }
+
+                rowid++;
 //                    row.getCell(3).setCellValue(contract.getName());  // TODO - Need customer name?
 //                    row.getCell(4).setCellValue(contract.getSalesOrderNumber());
 //                    row.getCell(5).setCellValue(pob.getName());
@@ -205,7 +204,6 @@ public class TemplateService {
 //                            }
 //                        }
 //                    }
-                }
             }
         }
 
@@ -257,17 +255,17 @@ public class TemplateService {
                     cell = row.getCell(CellReference.convertColStringToIndex("F"));
                     setValueInMetricType(cell, pobIdCell, "TRANSACTION_PRICE_CC", pob, period);
                     cell = row.getCell(CellReference.convertColStringToIndex("G"));
-                    setValueInMetricType(cell, pobIdCell, "LIQUIDATED_DAMAGES_ITD_CC", pob, period);
+                    setValueInMetricType(cell, pobIdCell, "LIQUIDATED_DAMAGES_CTD_CC", pob, period);
                     cell = row.getCell(CellReference.convertColStringToIndex("I"));
                     setValueInMetricType(cell, pobIdCell, "ESTIMATED_COST_AT_COMPLETION_LC", pob, period);
                     cell = row.getCell(CellReference.convertColStringToIndex("J"));
                     setValueInMetricType(cell, pobIdCell, "ESTIMATED_COST_AT_COMPLETION_LC", pob, webSession.getPriorPeriod());
                     cell = row.getCell(CellReference.convertColStringToIndex("K"));
-                    setValueInMetricType(cell, pobIdCell, "LOCAL_COSTS_ITD_LC", pob, period);
+                    setValueInMetricType(cell, pobIdCell, "LOCAL_COSTS_CTD_LC", pob, period);
                     cell = row.getCell(CellReference.convertColStringToIndex("L"));
-                    setValueInMetricType(cell, pobIdCell, "THIRD_PARTY_COSTS_ITD_LC", pob, period);
+                    setValueInMetricType(cell, pobIdCell, "THIRD_PARTY_COSTS_CTD_LC", pob, period);
                     cell = row.getCell(CellReference.convertColStringToIndex("M"));
-                    setValueInMetricType(cell, pobIdCell, "INTERCOMPANY_COSTS_ITD_LC", pob, period);
+                    setValueInMetricType(cell, pobIdCell, "INTERCOMPANY_COSTS_CTD_LC", pob, period);
                     cell = row.getCell(CellReference.convertColStringToIndex("N"));
                     if (cell.getCellTypeEnum().toString().equalsIgnoreCase("STRING")) {
                         calculationService.getDateMetric("DELIVERY_DATE", pob, period).setValue(LocalDate.parse(cell.getStringCellValue()));
@@ -284,11 +282,11 @@ public class TemplateService {
                         calculationService.getDecimalMetric("PERCENT_COMPLETE", pob, period).setValue(new BigDecimal(NumberToTextConverter.toText(cell.getNumericCellValue())));
                     }
                     cell = row.getCell(CellReference.convertColStringToIndex("Q"));
-                    setValueInMetricType(cell, pobIdCell, "THIRD_PARTY_COMMISSION_ITD_LC", pob, period);
+                    setValueInMetricType(cell, pobIdCell, "THIRD_PARTY_COMMISSION_CTD_LC", pob, period);
                     cell = row.getCell(CellReference.convertColStringToIndex("R"));
                     setValueInMetricType(cell, pobIdCell, "THIRD_PARTY_COMMISSION_TO_RECOGNIZE_LC", pob, period);
                     cell = row.getCell(CellReference.convertColStringToIndex("S"));
-                    setValueInMetricType(cell, pobIdCell, "THIRD_PARTY_COMMISSION_ITD_LC", pob, webSession.getPriorPeriod());
+                    setValueInMetricType(cell, pobIdCell, "THIRD_PARTY_COMMISSION_CTD_LC", pob, webSession.getPriorPeriod());
                     cell = row.getCell(CellReference.convertColStringToIndex("T"));
                     setValueInMetricType(cell, pobIdCell, "THIRD_PARTY_COMMISSION_TO_RECOGNIZE_LC", pob, webSession.getPriorPeriod());
                 } catch (Exception rce) {

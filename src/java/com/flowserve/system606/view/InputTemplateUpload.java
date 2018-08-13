@@ -40,14 +40,13 @@ public class InputTemplateUpload implements Serializable {
     private CalculationService calculationService;
     @Inject
     private WebSession webSession;
-    private List<ReportingUnit> reportingUnits = new ArrayList<ReportingUnit>();
+    private ReportingUnit reportingUnit;
 
     private static Logger logger = Logger.getLogger("com.flowserve.system606");
 
     @PostConstruct
     public void init() {
-        //reportingUnits = adminService.getPreparableReportingUnits();
-        //reportingUnits.add(webSession.getCurrentReportingUnit());
+        reportingUnit = webSession.getCurrentReportingUnit();
     }
 
     public void handleTemplateUpload(FileUploadEvent event) {
@@ -66,6 +65,8 @@ public class InputTemplateUpload implements Serializable {
     }
 
     public List<ReportingUnit> getReportingUnits() {
+        List<ReportingUnit> reportingUnits = new ArrayList<ReportingUnit>();
+        reportingUnits.add(reportingUnit);
         return reportingUnits;
     }
 
@@ -73,7 +74,7 @@ public class InputTemplateUpload implements Serializable {
         Logger.getLogger(InputOnlineEntry.class.getName()).log(Level.FINE, "Saving inputs.");
         FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Inputs saved.", ""));
 
-        calculationService.calculateAndSave(reportingUnits, webSession.getCurrentPeriod());
+        calculationService.calculateAndSave(reportingUnit, webSession.getCurrentPeriod());
     }
 
 }

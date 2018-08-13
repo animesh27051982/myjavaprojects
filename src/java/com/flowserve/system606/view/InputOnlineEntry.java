@@ -18,6 +18,7 @@ import com.flowserve.system606.service.ReportingUnitService;
 import com.flowserve.system606.web.WebSession;
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Level;
@@ -67,11 +68,7 @@ public class InputOnlineEntry implements Serializable {
 
     @PostConstruct
     public void init() {
-        if (webSession.isAdmin()) {
-            reportingUnit = adminService.findReportingUnitById(webSession.getAdminReportingUnit().getId());
-        } else {
-            reportingUnit = adminService.findReportingUnitById(webSession.getCurrentReportingUnitId());
-        }
+        reportingUnit = adminService.findReportingUnitById(webSession.getCurrentReportingUnit().getId());
         rootTreeNode = viewSupport.generateNodeTree(reportingUnit);
         billingTreeNode = viewSupport.generateNodeTreeForBilling(reportingUnit);
         initContracts(reportingUnit);
@@ -96,7 +93,7 @@ public class InputOnlineEntry implements Serializable {
 
     public void onReportingUnitSelect(SelectEvent event) {
         webSession.setFilterText(null);
-        webSession.setCurrentReportingUnitId(((ReportingUnit) event.getObject()).getId());
+        //webSession.setAdminReportingUnit(((ReportingUnit) event.getObject()));
         init();
     }
 
@@ -186,7 +183,13 @@ public class InputOnlineEntry implements Serializable {
 
     public void calculateOutputs(PerformanceObligation pob) throws Exception {
         try {
+            Logger.getLogger(InputOnlineEntry.class.getName()).log(Level.INFO, "Calcing outputs...");
+            //pob.setTransientLastUpdateBy(webSession.getUser());
+            Logger.getLogger(InputOnlineEntry.class.getName()).log(Level.INFO, "Setting POB last updated by: " + webSession.getUser().getName());
+            pob.setLastUpdatedBy(webSession.getUser());
+            pob.setLastUpdateDate(LocalDateTime.now());
             calculationService.executeBusinessRules(pob, webSession.getCurrentPeriod());
+
         } catch (Exception e) {
             FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", e.getCause().getCause().getMessage());
             FacesContext.getCurrentInstance().addMessage(null, msg);
@@ -201,11 +204,12 @@ public class InputOnlineEntry implements Serializable {
     public void saveInputs() throws Exception {
         Logger.getLogger(InputOnlineEntry.class.getName()).log(Level.FINE, "Saving inputs.");
         adminService.update(reportingUnit);
-        for (PerformanceObligation pob : reportingUnit.getPerformanceObligations()) {
-            Logger.getLogger(InputOnlineEntry.class.getName()).log(Level.FINER, "Updating POB: " + pob.getName());
-            performanceObligationService.update(pob);
+        for (Contract contract : reportingUnit.getContracts()) {
+            Logger.getLogger(InputOnlineEntry.class.getName()).log(Level.FINER, "Updating Contract: " + contract.getName());
+            contractService.update(contract);
         }
         FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Inputs saved.", ""));
+        Logger.getLogger(InputOnlineEntry.class.getName()).log(Level.FINE, "Inputs saved.");
     }
 
     public boolean isUpdatable() {

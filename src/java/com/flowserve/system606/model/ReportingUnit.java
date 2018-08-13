@@ -24,6 +24,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.OrderBy;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
@@ -67,17 +68,14 @@ public class ReportingUnit extends TransientMeasurable<Long> implements Measurab
     @ManyToOne
     @JoinColumn(name = "PARENT_ID")
     private ReportingUnit parentReportingUnit;
-
     @ManyToOne
     @JoinColumn(name = "COMPANY_ID")
     private Company company;
-
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "reportingUnit")
+    @OrderBy("name ASC")
     private List<Contract> contracts = new ArrayList<Contract>();
-
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "parentReportingUnit")
     private List<ReportingUnit> childReportingUnits = new ArrayList<ReportingUnit>();
-
     @OneToMany(fetch = FetchType.LAZY, cascade = {CascadeType.ALL}, orphanRemoval = true)
     @JoinTable(name = "RU_APPROVAL_REQUEST", joinColumns = @JoinColumn(name = "REPORTING_UNIT_ID"), inverseJoinColumns = @JoinColumn(name = "APPROVAL_REQUEST_ID"))
     private Map<FinancialPeriod, ApprovalRequest> periodApprovalRequestMap = new HashMap<FinancialPeriod, ApprovalRequest>();
@@ -94,45 +92,45 @@ public class ReportingUnit extends TransientMeasurable<Long> implements Measurab
         if (periodApprovalRequestMap.get(period) == null) {
             return false;
         }
-        return ApprovalWorkflowStatus.DRAFT.equals(periodApprovalRequestMap.get(period).getApprovalWorkflowStatus());
+        return WorkflowStatus.DRAFT.equals(periodApprovalRequestMap.get(period).getWorkflowStatus());
     }
 
     public boolean isPendingReview(FinancialPeriod period) {
         if (periodApprovalRequestMap.get(period) == null) {
             return false;
         }
-        return ApprovalWorkflowStatus.PENDING_REVIEW.equals(periodApprovalRequestMap.get(period).getApprovalWorkflowStatus());
+        return WorkflowStatus.PENDING_REVIEW.equals(periodApprovalRequestMap.get(period).getWorkflowStatus());
     }
 
     public boolean isPendingApproval(FinancialPeriod period) {
         if (periodApprovalRequestMap.get(period) == null) {
             return false;
         }
-        return ApprovalWorkflowStatus.PENDING_APPROVAL.equals(periodApprovalRequestMap.get(period).getApprovalWorkflowStatus());
+        return WorkflowStatus.PENDING_APPROVAL.equals(periodApprovalRequestMap.get(period).getWorkflowStatus());
     }
 
-    public ApprovalWorkflowStatus getWorkflowStatus(FinancialPeriod period) {
+    public WorkflowStatus getWorkflowStatus(FinancialPeriod period) {
         if (periodApprovalRequestMap.get(period) != null) {
-            return periodApprovalRequestMap.get(period).getApprovalWorkflowStatus();
+            return periodApprovalRequestMap.get(period).getWorkflowStatus();
         }
 
         return null;
     }
 
-    public ApprovalRequest getPeriodApprovalRequest(FinancialPeriod period) {
-        return periodApprovalRequestMap.get(period);
-    }
-
     public void setPeriodPendingReview(FinancialPeriod period) {
-        periodApprovalRequestMap.get(period).setApprovalWorkflowStatus(ApprovalWorkflowStatus.PENDING_REVIEW);
+        periodApprovalRequestMap.get(period).setWorkflowStatus(WorkflowStatus.PENDING_REVIEW);
     }
 
     public void setPeriodPendingApproval(FinancialPeriod period) {
-        periodApprovalRequestMap.get(period).setApprovalWorkflowStatus(ApprovalWorkflowStatus.PENDING_APPROVAL);
+        periodApprovalRequestMap.get(period).setWorkflowStatus(WorkflowStatus.PENDING_APPROVAL);
     }
 
     public void setPeriodApproved(FinancialPeriod period) {
-        periodApprovalRequestMap.get(period).setApprovalWorkflowStatus(ApprovalWorkflowStatus.APPROVED);
+        periodApprovalRequestMap.get(period).setWorkflowStatus(WorkflowStatus.APPROVED);
+    }
+
+    public ApprovalRequest getPeriodApprovalRequest(FinancialPeriod period) {
+        return periodApprovalRequestMap.get(period);
     }
 
     public void putPeriodApprovalRequest(FinancialPeriod period, ApprovalRequest approvalRequest) {

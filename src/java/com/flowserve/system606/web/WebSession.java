@@ -10,6 +10,7 @@ import com.flowserve.system606.model.Holiday;
 import com.flowserve.system606.model.ReportingUnit;
 import com.flowserve.system606.model.User;
 import com.flowserve.system606.service.AdminService;
+import com.flowserve.system606.service.AppInitializeService;
 import com.flowserve.system606.service.FinancialPeriodService;
 import com.flowserve.system606.service.ReportingUnitService;
 import java.io.Serializable;
@@ -35,6 +36,8 @@ public class WebSession implements Serializable {
     private ReportingUnitService reportingUnitService;
     @Inject
     private AdminService adminService;
+    @Inject
+    private AppInitializeService appInitializeService;
     private BusinessUnit editBusinessUnit;
     //private TreeNode reportingUnitTreeNode = new DefaultTreeNode();  // this is temp for calculatin testing.
     private ReportingUnit editReportingUnit;
@@ -46,11 +49,11 @@ public class WebSession implements Serializable {
     private FinancialPeriod editFinancialPeriod;
     private FinancialPeriod currentPeriod;
     private FinancialPeriod priorPeriod;
-    private Long currentReportingUnitId;
+    //private Long currentReportingUnitId;
     private DataImportFile dataImportFile;
     private String filterText;
     private Contract[] selectedContracts;
-    private ReportingUnit adminReportingUnit;
+    //private ReportingUnit adminReportingUnit;
     private ReportingUnit currentReportingUnit;
 
     // The currently logged in user.
@@ -62,14 +65,12 @@ public class WebSession implements Serializable {
         priorPeriod = financialPeriodService.getPriorFinancialPeriod();
         Logger.getLogger(WebSession.class.getName()).log(Level.INFO, "WebSession current: " + currentPeriod.getId());
         Logger.getLogger(WebSession.class.getName()).log(Level.INFO, "WebSession prior: " + priorPeriod.getId());
+
+        user = appInitializeService.getAdminUser();  // For now, may be overridden later by login.  Remove this call.
     }
 
     public boolean isAdmin() {
-        if (user == null) {
-            return true;
-        }
-
-        return false;
+        return user.isAdmin();
     }
 
     public void switchPeriod(FinancialPeriod newCurrentPeriod) {
@@ -160,14 +161,13 @@ public class WebSession implements Serializable {
         this.priorPeriod = priorPeriod;
     }
 
-    public void setCurrentReportingUnitId(Long reportingUnitId) {
-        this.currentReportingUnitId = reportingUnitId;
-    }
-
-    public Long getCurrentReportingUnitId() {
-        return currentReportingUnitId;
-    }
-
+//    public void setCurrentReportingUnitId(Long reportingUnitId) {
+//        this.currentReportingUnitId = reportingUnitId;
+//    }
+//
+//    public Long getCurrentReportingUnitId() {
+//        return currentReportingUnitId;
+//    }
     public DataImportFile getDataImportFile() {
         return dataImportFile;
     }
@@ -209,13 +209,7 @@ public class WebSession implements Serializable {
             return "";
         }
 
-        String title = user.getTitle();
-        title = title.replaceAll("_", " ");
-        title = title.substring(9);
-        if (title.contains("Level")) {
-            title = title.substring(0, title.indexOf("Level"));
-        }
-        return title;
+        return user.getTitle();
     }
 
     public void setUser(User user) {
@@ -225,9 +219,9 @@ public class WebSession implements Serializable {
     public List<ReportingUnit> getPreparableReportingUnits() {
         List<ReportingUnit> rus = new ArrayList<ReportingUnit>();
 
-        if (user == null) {
-            if (currentReportingUnitId != null) {
-                rus.add(adminService.findReportingUnitById(currentReportingUnitId));
+        if (user.isAdmin()) {
+            if (currentReportingUnit != null) {
+                rus.add(currentReportingUnit);
             }
             return rus;
         }
@@ -243,20 +237,17 @@ public class WebSession implements Serializable {
         return rus;
     }
 
-    public ReportingUnit getAdminReportingUnit() {
-        return adminReportingUnit;
-    }
-
-    public void setAdminReportingUnit(ReportingUnit adminReportingUnit) {
-        this.adminReportingUnit = adminReportingUnit;
-    }
-
+//    public void setAdminReportingUnit(ReportingUnit adminReportingUnit) {
+//        if (adminReportingUnit != null) {
+//            Logger.getLogger(WebSession.class.getName()).log(Level.INFO, "Setting Admin RU: " + adminReportingUnit.getCode());
+//        }
+//        this.adminReportingUnit = adminReportingUnit;
+//    }
     public ReportingUnit getCurrentReportingUnit() {
         return currentReportingUnit;
     }
 
     public void setCurrentReportingUnit(ReportingUnit currentReportingUnit) {
-        Logger.getLogger(WebSession.class.getName()).log(Level.INFO, "SET" + currentReportingUnit.getCode());
         this.currentReportingUnit = currentReportingUnit;
     }
 

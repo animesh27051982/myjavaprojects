@@ -38,13 +38,6 @@ public class PerformanceObligationService {
     }
 
     public PerformanceObligation update(PerformanceObligation pob) throws Exception {
-        //User user = adminService.findUserByFlsId(sessionContext.getCallerPrincipal().getName().toLowerCase());
-        //pob.setLastUpdatedBy(updatedBy);
-//        if (pob.getCreationDate() == null) {
-//            pob.setCreationDate(LocalDateTime.now());
-//        }
-//        pob.setLastUpdateDate(LocalDateTime.now());
-
         return em.merge(pob);
     }
 

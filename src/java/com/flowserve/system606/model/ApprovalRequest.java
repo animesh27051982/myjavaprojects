@@ -33,7 +33,7 @@ public class ApprovalRequest implements Serializable {
     private Long id;
 
     @Column(name = "WORKFLOW_STATUS")
-    private ApprovalWorkflowStatus approvalWorkflowStatus;
+    private WorkflowStatus workflowStatus;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "REPORTING_UNIT_ID")
@@ -66,12 +66,12 @@ public class ApprovalRequest implements Serializable {
         this.id = id;
     }
 
-    public ApprovalWorkflowStatus getApprovalWorkflowStatus() {
-        return approvalWorkflowStatus;
+    public WorkflowStatus getWorkflowStatus() {
+        return workflowStatus;
     }
 
-    public void setApprovalWorkflowStatus(ApprovalWorkflowStatus approvalWorkflowStatus) {
-        this.approvalWorkflowStatus = approvalWorkflowStatus;
+    public void setWorkflowStatus(WorkflowStatus workflowStatus) {
+        this.workflowStatus = workflowStatus;
     }
 
     public ReportingUnit getReportingUnit() {

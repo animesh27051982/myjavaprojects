@@ -60,7 +60,6 @@ public class PerformanceObligation extends BaseEntity<Long> implements MetricSto
     @Temporal(TIMESTAMP)
     @Column(name = "LAST_UPDATE_DATE")
     private LocalDateTime lastUpdateDate;
-
     @OneToMany(fetch = FetchType.LAZY, cascade = {CascadeType.ALL}, orphanRemoval = true)
     @JoinTable(name = "POB_METRIC_SET", joinColumns = @JoinColumn(name = "POB_ID"), inverseJoinColumns = @JoinColumn(name = "METRIC_SET_ID"))
     private Map<FinancialPeriod, MetricSet> periodMetricSetMap = new HashMap<FinancialPeriod, MetricSet>();
@@ -68,6 +67,22 @@ public class PerformanceObligation extends BaseEntity<Long> implements MetricSto
     public PerformanceObligation() {
     }
 
+//    @PrePersist
+//    public void onPrePersist() {
+//        creationDate = LocalDateTime.now();
+//        if (transientLastUpdateBy != null) {
+//            createdBy = transientLastUpdateBy;
+//        }
+//    }
+//
+//    @PreUpdate
+//    public void onPreUpdate() {
+//        Logger.getLogger(PerformanceObligation.class.getName()).log(Level.INFO, "onPreUpate POD: " + this.id);
+//        lastUpdateDate = LocalDateTime.now();
+//        if (transientLastUpdateBy != null) {
+//            lastUpdatedBy = transientLastUpdateBy;
+//        }
+//    }
     @Override
     public int compareTo(PerformanceObligation obj) {
         return this.id.compareTo(obj.getId());
@@ -114,6 +129,7 @@ public class PerformanceObligation extends BaseEntity<Long> implements MetricSto
     }
 
     public User getLastUpdatedBy() {
+        Logger.getLogger(PerformanceObligation.class.getName()).log(Level.INFO, "getLastUpdatedBy: " + lastUpdatedBy);
         return lastUpdatedBy;
     }
 
@@ -215,4 +231,20 @@ public class PerformanceObligation extends BaseEntity<Long> implements MetricSto
     public Currency getContractCurrency() {
         return this.getContract().getContractCurrency();
     }
+
+//    public LocalDateTime getTransientLastUpdateDate() {
+//        return transientLastUpdateDate;
+//    }
+//
+//    public void setTransientLastUpdateDate(LocalDateTime transientLastUpdateDate) {
+//        this.transientLastUpdateDate = transientLastUpdateDate;
+//    }
+//
+//    public User getTransientLastUpdateBy() {
+//        return transientLastUpdateBy;
+//    }
+//
+//    public void setTransientLastUpdateBy(User transientLastUpdateBy) {
+//        this.transientLastUpdateBy = transientLastUpdateBy;
+//    }
 }

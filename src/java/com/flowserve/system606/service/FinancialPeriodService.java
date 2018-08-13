@@ -1,12 +1,13 @@
 package com.flowserve.system606.service;
 
 import com.flowserve.system606.model.ApprovalRequest;
-import com.flowserve.system606.model.ApprovalWorkflowStatus;
 import com.flowserve.system606.model.Company;
+import com.flowserve.system606.model.Contract;
 import com.flowserve.system606.model.FinancialPeriod;
 import com.flowserve.system606.model.Holiday;
 import com.flowserve.system606.model.PeriodStatus;
 import com.flowserve.system606.model.ReportingUnit;
+import com.flowserve.system606.model.WorkflowStatus;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.Month;
@@ -100,7 +101,7 @@ public class FinancialPeriodService {
 //        }
 
         Company fls = adminService.findCompanyById("FLS");
-        openPeriod(findById("JUN-18"));
+
         fls.setCurrentPeriod(findById("JUN-18"));
         fls.setPriorPeriod(findById("MAY-18"));
 
@@ -477,11 +478,20 @@ public class FinancialPeriodService {
             for (ReportingUnit ru : adminService.findAllReportingUnits()) {
                 if (ru.isActive() && !ru.isParent() && ru.getPeriodApprovalRequest(period) == null) {
                     Logger.getLogger(ReportingUnit.class.getName()).log(Level.INFO, "Opening RU Period: " + ru.getName());
-                    ApprovalRequest ar = new ApprovalRequest();
-                    ar.setApprovalWorkflowStatus(ApprovalWorkflowStatus.DRAFT);
-                    adminService.persist(ar);
-                    ru.putPeriodApprovalRequest(period, ar);
+                    ApprovalRequest ruApprovalRequest = new ApprovalRequest();
+                    ruApprovalRequest.setWorkflowStatus(WorkflowStatus.DRAFT);
+                    adminService.persist(ruApprovalRequest);
+                    ru.putPeriodApprovalRequest(period, ruApprovalRequest);
                     adminService.update(ru);
+                    for (Contract contract : ru.getContracts()) {
+                        if (contract.isActive() && contract.getPeriodApprovalRequest(period) == null) {
+                            ApprovalRequest contractApprovalRequest = new ApprovalRequest();
+                            contractApprovalRequest.setWorkflowStatus(WorkflowStatus.DRAFT);
+                            adminService.persist(contractApprovalRequest);
+                            contract.putPeriodApprovalRequest(period, contractApprovalRequest);
+                            adminService.update(contract);
+                        }
+                    }
                 }
             }
         }

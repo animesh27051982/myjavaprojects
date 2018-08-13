@@ -23,15 +23,14 @@
                     <div class="card card-w-title">
                         <p:messages showDetail="true" />
 
-                        <h1><strong>Download MAY-18 Input Template</strong></h1>
+                        <h1 style="margin: 1px;"><strong>#{webSession.currentPeriod.id} Performance Obligation Download - #{webSession.currentReportingUnit.name} - #{webSession.currentReportingUnit.getWorkflowStatus(webSession.currentPeriod).description}</strong></h1>
                         <h4>Instructions here... all checked will be downloaded... user can modify template to remove... missing will not be updated.. zeros will be updated.... display this info here and upload screen.</h4>
 
-                        <p:dataTable value="#{inputTemplateDownload.reportingUnits}" var="ru" selection="#{inputTemplateDownload.selectedReportingUnits}" rowKey="#{ru.id}">
+                        <p:dataTable value="#{inputTemplateDownload.reportingUnits}" var="ru">
                             <f:facet name="header">
-                                Download Selected Reporting Units
+                                Download Reporting Unit Template
                             </f:facet>
-                            <p:column selectionMode="multiple" style="width:16px;text-align:center"/>
-                            <p:column headerText="Reporting Unit / Contract" sortBy="#{ru.name}">
+                            <p:column headerText="Reporting Unit" sortBy="#{ru.name}">
                                 <h:outputText value="#{ru.name}" />
                             </p:column>
                             <p:column headerText="Platform">
@@ -51,7 +50,7 @@
                         <p:toolbar>
                             <f:facet name="right">
                                 <p:commandButton value="Cancel" icon="ui-icon-cancel" action="#{inputController.inputDashboard()}"/>
-                                <p:commandButton value="Download May Template" ajax="false" style="width:auto;" icon="ui-icon-arrowthick-1-s">
+                                <p:commandButton value="Download Template" ajax="false" style="width:auto;" icon="ui-icon-arrowthick-1-s">
                                     <p:fileDownload value="#{inputTemplateDownload.file}" />
                                 </p:commandButton>
                                 <p:commandButton value="Proceed to Upload Processing" icon="ui-icon-check" action="#{inputController.proceedToInputUpload()}"/>

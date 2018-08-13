@@ -4,7 +4,7 @@ package com.flowserve.system606.model;
  *
  * @author kgraves
  */
-public enum ApprovalWorkflowStatus {
+public enum WorkflowStatus {
     DRAFT("D", "Draft", "", ""),
     PENDING_REVIEW("PR", "Pending Review", "", ""),
     PENDING_APPROVAL("PA", "Pending Approval", "", ""),
@@ -16,7 +16,7 @@ public enum ApprovalWorkflowStatus {
     private String icon;
     private String color;
 
-    private ApprovalWorkflowStatus(String shortName, String description, String icon, String color) {
+    private WorkflowStatus(String shortName, String description, String icon, String color) {
         this.shortName = shortName;
         this.description = description;
         this.icon = icon;
@@ -35,22 +35,22 @@ public enum ApprovalWorkflowStatus {
         return description;
     }
 
-    public static ApprovalWorkflowStatus fromShortName(String shortName) {
+    public static WorkflowStatus fromShortName(String shortName) {
         switch (shortName) {
             case "D":
-                return ApprovalWorkflowStatus.DRAFT;
+                return WorkflowStatus.DRAFT;
 
             case "PR":
-                return ApprovalWorkflowStatus.PENDING_REVIEW;
+                return WorkflowStatus.PENDING_REVIEW;
 
             case "PA":
-                return ApprovalWorkflowStatus.PENDING_APPROVAL;
+                return WorkflowStatus.PENDING_APPROVAL;
 
             case "R":
-                return ApprovalWorkflowStatus.REJECTED;
+                return WorkflowStatus.REJECTED;
 
             case "A":
-                return ApprovalWorkflowStatus.APPROVED;
+                return WorkflowStatus.APPROVED;
 
             default:
                 throw new IllegalArgumentException("ShortName [" + shortName + "] not supported.");

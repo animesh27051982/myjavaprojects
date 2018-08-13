@@ -7,6 +7,7 @@ package com.flowserve.system606.model;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Currency;
 import java.util.HashMap;
@@ -24,7 +25,10 @@ import javax.persistence.JoinTable;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
+import javax.persistence.OrderBy;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import static javax.persistence.TemporalType.TIMESTAMP;
 
 @Entity
 @Table(name = "CONTRACTS")
@@ -36,50 +40,55 @@ public class Contract extends BaseEntity<Long> implements MetricStore, Measurabl
     @Id
     @Column(name = "CONTRACT_ID")
     private Long id;
-
     @Column(name = "NAME")
     private String name;
-
     @Column(name = "CONTRACT_TYPE_ID")
     private ContractType contractType;
-
     @ManyToOne
     @JoinColumn(name = "REPORTING_UNIT_ID")
     private ReportingUnit reportingUnit;
-
     @OneToOne
     @JoinColumn(name = "CUSTOMER_ID")
     private Customer customer;
-
     @OneToOne
     @JoinColumn(name = "BUSINESS_PLATFORM_ID")
     private BusinessPlatform businessPlatform;
-
     @Column(name = "CUSOTMER_PURCHASE_ORDER_NUM")
     private String customerPurchaseOrderNumber;
-
     @Column(name = "SALES_ORDER_NUM")
     private String salesOrderNumber;
-
     @Column(name = "TOTAL_TRANSACTION_PRICE")
     private BigDecimal totalTransactionPrice;
-
     @Column(name = "CONTRACT_CURRENCY")
     private Currency contractCurrency;
-
+    @OneToOne
+    @JoinColumn(name = "CREATED_BY_ID")
+    private User createdBy;
+    @Temporal(TIMESTAMP)
+    @Column(name = "CREATION_DATE")
+    private LocalDateTime creationDate;
+    @OneToOne
+    @JoinColumn(name = "LAST_UPDATED_BY_ID")
+    private User lastUpdatedBy;
+    @Temporal(TIMESTAMP)
+    @Column(name = "LAST_UPDATE_DATE")
+    private LocalDateTime lastUpdateDate;
+    @Column(name = "IS_ACTIVE")
+    private boolean active;
     @OneToOne
     @JoinColumn(name = "SALES_DESTINATION_COUNTRY_ID")
     private Country salesDestinationCountry;
-
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "contract")
+    @OneToMany(fetch = FetchType.LAZY, cascade = {CascadeType.ALL}, mappedBy = "contract")
+    @OrderBy("id ASC")
     private List<PerformanceObligation> performanceObligations = new ArrayList<PerformanceObligation>();
-
     @OneToMany(fetch = FetchType.LAZY, cascade = {CascadeType.ALL}, orphanRemoval = true)
     @JoinTable(name = "CONTRACT_METRIC_SET", joinColumns = @JoinColumn(name = "CONTRACT_ID"), inverseJoinColumns = @JoinColumn(name = "METRIC_SET_ID"))
     private Map<FinancialPeriod, MetricSet> periodMetricSetMap = new HashMap<FinancialPeriod, MetricSet>();
-
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "contract", orphanRemoval = true)
     private List<BillingEvent> billingEvents = new ArrayList<BillingEvent>();
+    @OneToMany(fetch = FetchType.LAZY, cascade = {CascadeType.ALL}, orphanRemoval = true)
+    @JoinTable(name = "CONTRACT_APPROVAL_REQUEST", joinColumns = @JoinColumn(name = "CONTRACT_ID"), inverseJoinColumns = @JoinColumn(name = "APPROVAL_REQUEST_ID"))
+    private Map<FinancialPeriod, ApprovalRequest> periodApprovalRequestMap = new HashMap<FinancialPeriod, ApprovalRequest>();
 
     public Contract() {
     }
@@ -119,6 +128,14 @@ public class Contract extends BaseEntity<Long> implements MetricStore, Measurabl
         }
 
         return pobs;
+    }
+
+    public ApprovalRequest getPeriodApprovalRequest(FinancialPeriod period) {
+        return periodApprovalRequestMap.get(period);
+    }
+
+    public void putPeriodApprovalRequest(FinancialPeriod period, ApprovalRequest approvalRequest) {
+        periodApprovalRequestMap.put(period, approvalRequest);
     }
 
     public boolean metricSetExistsForPeriod(FinancialPeriod period) {
@@ -266,5 +283,45 @@ public class Contract extends BaseEntity<Long> implements MetricStore, Measurabl
 
     public void setSalesDestinationCountry(Country salesDestinationCountry) {
         this.salesDestinationCountry = salesDestinationCountry;
+    }
+
+    public User getCreatedBy() {
+        return createdBy;
+    }
+
+    public void setCreatedBy(User createdBy) {
+        this.createdBy = createdBy;
+    }
+
+    public LocalDateTime getCreationDate() {
+        return creationDate;
+    }
+
+    public void setCreationDate(LocalDateTime creationDate) {
+        this.creationDate = creationDate;
+    }
+
+    public User getLastUpdatedBy() {
+        return lastUpdatedBy;
+    }
+
+    public void setLastUpdatedBy(User lastUpdatedBy) {
+        this.lastUpdatedBy = lastUpdatedBy;
+    }
+
+    public LocalDateTime getLastUpdateDate() {
+        return lastUpdateDate;
+    }
+
+    public void setLastUpdateDate(LocalDateTime lastUpdateDate) {
+        this.lastUpdateDate = lastUpdateDate;
+    }
+
+    public boolean isActive() {
+        return active;
+    }
+
+    public void setActive(boolean active) {
+        this.active = active;
     }
 }

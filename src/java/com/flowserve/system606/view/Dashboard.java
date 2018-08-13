@@ -91,7 +91,7 @@ public class Dashboard implements Serializable {
 
     public void onReportingUnitSelect(SelectEvent event) {
         webSession.setFilterText(null);
-        webSession.setCurrentReportingUnitId(((ReportingUnit) event.getObject()).getId());
+        //webSession.setAdminReportingUnit((ReportingUnit) event.getObject());
         init();
     }
 
