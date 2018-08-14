@@ -194,11 +194,13 @@ public class CalculationService {
 
             FinancialPeriod calculationPeriod = period;
             do {
+                Logger.getLogger(CalculationService.class.getName()).log(Level.INFO, "Recalcing POBs for period: " + calculationPeriod.getId());
                 executeBusinessRulesAndSave((new ArrayList<Measurable>(reportingUnit.getPerformanceObligations())), calculationPeriod);
             } while ((calculationPeriod = financialPeriodService.calculateNextPeriodUntilCurrent(calculationPeriod)) != null);
 
             calculationPeriod = period;
             do {
+                Logger.getLogger(CalculationService.class.getName()).log(Level.INFO, "Recalcing Contracts for period: " + calculationPeriod.getId());
                 executeBusinessRulesAndSave((new ArrayList<Measurable>(reportingUnit.getContracts())), calculationPeriod);
             } while ((calculationPeriod = financialPeriodService.calculateNextPeriodUntilCurrent(calculationPeriod)) != null);
             Logger.getLogger(CalculationService.class.getName()).log(Level.INFO, "Completed calcs RU: " + reportingUnit.getCode());

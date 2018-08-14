@@ -407,11 +407,9 @@ public class CurrencyService {
         List<String> importMessages = new ArrayList<String>();
         // Step 1: Loading or registering Oracle JDBC driver class
         try {
-
             Class.forName("net.ucanaccess.jdbc.UcanaccessDriver");
         } catch (ClassNotFoundException cnfex) {
             Logger.getLogger(CurrencyService.class.getName()).log(Level.INFO, "Problem in loading or registering MS Access JDBC driver");
-            cnfex.printStackTrace();
         }
 
         try {
@@ -440,7 +438,6 @@ public class CurrencyService {
                         String yrStr = Integer.toString(year);
                         String finalYear = yrStr.substring(yrStr.length() - 2);
                         String exPeriod = monthName[month - 1] + "-" + finalYear;
-
                         period = financialPeriodService.findById(exPeriod);
 
                     } catch (NumberFormatException e) {
@@ -477,7 +474,7 @@ public class CurrencyService {
                                 type = resultSet1.getString(1);
 
                                 if ("USA".equals(resultSet1.getString(2))) {
-                                    Logger.getLogger(CurrencyService.class.getName()).log(Level.SEVERE, "Invlid: USA Found in ExchangeRate file.");
+                                    //Logger.getLogger(CurrencyService.class.getName()).log(Level.SEVERE, "Invlid: USA Found in ExchangeRate file.");
                                     importMessages.add("Invlid: USA Found in ExchangeRate file.");
                                     continue;
                                 }
@@ -511,7 +508,7 @@ public class CurrencyService {
                                 }
 
                                 if ("USA".equals(resultSet2.getString(1))) {
-                                    Logger.getLogger(CurrencyService.class.getName()).log(Level.SEVERE, "Invlid: USA Found in ExchangeRate file.");
+                                    //Logger.getLogger(CurrencyService.class.getName()).log(Level.SEVERE, "Invlid: USA Found in ExchangeRate file.");
                                     importMessages.add("Invlid: USA Found in ExchangeRate file.");
                                     continue;
                                 }
@@ -521,6 +518,15 @@ public class CurrencyService {
                                 BigDecimal periodRate = usdRate.divide(sourcePeriodRate, SCALE, ROUNDING_METHOD).multiply(targetPeriodRate);
                                 BigDecimal monthlyRate = usdRate.divide(sourceMonthlyRate, SCALE, ROUNDING_METHOD).multiply(targetMonthlyRate);
                                 BigDecimal YTDRate = usdRate.divide(sourceYTDRate, SCALE, ROUNDING_METHOD).multiply(targetYTDRate);
+
+                                if (fromCurrency == null || toCurrency == null) {
+                                    Logger.getLogger(CurrencyService.class.getName()).log(Level.INFO, "Issue with currency load.!!  Please investigate.  Currency is null");
+                                }
+//                                if (fromCurrency != null && toCurrency != null && "USD".equals(fromCurrency.getCurrencyCode()) && "INR".equals(toCurrency.getCurrencyCode()) && "JAN-18".equals(period.getId())) {
+//                                    Logger.getLogger(CurrencyService.class.getName()).log(Level.INFO, "USD/INR periodRate: " + periodRate.toPlainString());
+//                                    Logger.getLogger(CurrencyService.class.getName()).log(Level.INFO, "USD/INR: monthly avg rate: " + monthlyRate.toPlainString());
+//                                    Logger.getLogger(CurrencyService.class.getName()).log(Level.INFO, "USD/INR: ytd avg rate: " + YTDRate.toPlainString());
+//                                }
 
                                 ExchangeRate exRate = new ExchangeRate();
                                 exRate.setType(type);

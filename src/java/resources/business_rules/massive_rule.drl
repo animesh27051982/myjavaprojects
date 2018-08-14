@@ -125,7 +125,7 @@ rule "Contract Billings In Excess"
         modify (contractBillingsInExcess) { lcValue = (contract.getTotalBillingsLocalCurrency() <= contractRevenueToRecognizeCTD.lcValue ? 0B : contract.getTotalBillingsLocalCurrency() - contractRevenueToRecognizeCTD.lcValue)};
 end
 
-rule "Contract Revenue In Excess. Thsi is named Costs in Excess on XLS not sure why"
+rule "Contract Revenue In Excess. This is named Costs in Excess on XLS not sure why"
     when
         contract : Contract()
         contractRevenueToRecognizeCTD : CurrencyMetric(metricType.code == "REVENUE_TO_RECOGNIZE_CTD_LC", lcValue != null)
