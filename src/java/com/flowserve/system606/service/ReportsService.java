@@ -24,7 +24,9 @@ import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.util.CellAddress;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -57,6 +59,8 @@ public class ReportsService {
             XSSFSheet worksheet = workbook.getSheet("Contract Summary-1");
 
             worksheet = writeContractEsimatesReport(worksheet, contract);
+            ((XSSFSheet) worksheet).getCTWorksheet().getSheetViews().getSheetViewArray(0).setTopLeftCell("A1");
+            ((XSSFSheet) worksheet).setActiveCell(new CellAddress("A2"));
             workbook.write(outputStream);
             workbook.close();
         }
@@ -256,6 +260,8 @@ public class ReportsService {
             XSSFSheet worksheet = workbook.getSheet("Contract Summary-2");
 
             worksheet = writeReportByFinancialPeriod(worksheet, contract);
+            ((XSSFSheet) worksheet).getCTWorksheet().getSheetViews().getSheetViewArray(0).setTopLeftCell("A1");
+            ((XSSFSheet) worksheet).setActiveCell(new CellAddress("A2"));
             workbook.write(outputStream);
         }
         inputStream.close();
@@ -443,6 +449,8 @@ public class ReportsService {
             cell = contract_name.getCell(0, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
             cell.setCellValue(contract.getName());
 
+            ((XSSFSheet) worksheet).getCTWorksheet().getSheetViews().getSheetViewArray(0).setTopLeftCell("A1");
+            ((XSSFSheet) worksheet).setActiveCell(new CellAddress("A2"));
             workbook.write(outputStream);
         }
         inputStream.close();
@@ -455,6 +463,8 @@ public class ReportsService {
             XSSFSheet worksheet = workbook.getSheet("Contract Summary-1");
             calculationService.executeBusinessRules(contract, webSession.getCurrentPeriod());
             worksheet = writeContractEsimatesReport(worksheet, contract);
+            ((XSSFSheet) worksheet).getCTWorksheet().getSheetViews().getSheetViewArray(0).setTopLeftCell("A1");
+            ((XSSFSheet) worksheet).setActiveCell(new CellAddress("A2"));
 
             worksheet = workbook.getSheet("Contract Summary-2");
             worksheet = writeReportByFinancialPeriod(worksheet, contract);
@@ -488,6 +498,8 @@ public class ReportsService {
             XSSFSheet worksheet = workbook.getSheet("Financial Summary-1");
 
             worksheet = writeFinancialSummary1(worksheet, contract);
+            ((XSSFSheet) worksheet).getCTWorksheet().getSheetViews().getSheetViewArray(0).setTopLeftCell("A1");
+            ((XSSFSheet) worksheet).setActiveCell(new CellAddress("A2"));
             worksheet = workbook.getSheet("Financial Summary-3");
             worksheet = writeFinancialSummary2(worksheet, contract);
 
@@ -753,7 +765,10 @@ public class ReportsService {
             return;
         }
         Cell cell = row.getCell(cellNum, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
+        CellStyle currentStyle = cell.getCellStyle();
         cell.setCellValue(value.doubleValue());
+        cell.setCellStyle(currentStyle);
+
     }
 
     private BigDecimal getCostOfGoodsSold(Measurable measureable, FinancialPeriod period) throws Exception {

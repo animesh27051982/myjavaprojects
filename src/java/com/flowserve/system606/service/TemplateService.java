@@ -35,8 +35,10 @@ import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.util.CellAddress;
 import org.apache.poi.ss.util.CellReference;
 import org.apache.poi.ss.util.NumberToTextConverter;
 import org.apache.poi.xssf.usermodel.XSSFCell;
@@ -81,7 +83,6 @@ public class TemplateService {
         XSSFSheet worksheet = workbook.getSheetAt(0);
         XSSFRow row;
         Cell cell = null;
-
         // TODO - This needs to be read from the file and then checked to make sure it's open.
         FinancialPeriod period = financialPeriodService.getCurrentFinancialPeriod();
 
@@ -126,9 +127,12 @@ public class TemplateService {
                 value = calculationService.getCurrencyMetric("INTERCOMPANY_COSTS_CTD_LC", pob, period).getLcValue();
                 setCellValue(row, 12, value);
                 cell = row.getCell(13, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
+                CellStyle currentStyle = cell.getCellStyle();
+
                 LocalDate dDate = calculationService.getDateMetric("DELIVERY_DATE", pob, period).getValue();
                 if (dDate != null) {
                     cell.setCellValue(dDate.toString());
+                    cell.setCellStyle(currentStyle);
                 }
                 value = calculationService.getCurrencyMetric("PARTIAL_SHIPMENT_COSTS_LC", pob, period).getLcValue();
                 setCellValue(row, 14, value);
@@ -143,52 +147,6 @@ public class TemplateService {
                 setCellValue(row, 18, value);
                 value = calculationService.getCurrencyMetric("THIRD_PARTY_COMMISSION_TO_RECOGNIZE_LC", pob.getContract(), webSession.getPriorPeriod()).getLcValue();
                 setCellValue(row, 19, value);
-                List<BillingEvent> bEv = contract.getBillingEvents();
-                int cnt = 1;
-                //int rowNum = 20;
-                for (BillingEvent b : bEv) {
-
-                    if (cnt > 2) {
-                        break;
-                    } else if (cnt == 1) {
-                        String invoiceNum = b.getInvoiceNumber();
-                        if (!invoiceNum.equalsIgnoreCase("")) {
-                            cell = row.getCell(20, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
-                            cell.setCellValue(invoiceNum);
-                        }
-                        String date = b.getBillingDate().toString();
-                        if (!date.equalsIgnoreCase("")) {
-                            cell = row.getCell(21, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
-                            cell.setCellValue(date);
-                        }
-                        value = b.getAmountContractCurrency();
-                        setCellValue(row, 22, value);
-                        value = b.getAmountLocalCurrency();
-                        setCellValue(row, 23, value);
-                        value = contract.getTotalBillingsLocalCurrency();
-                        setCellValue(row, 28, value);
-
-                    } else if (cnt == 2) {
-                        String invoiceNum = b.getInvoiceNumber();
-                        if (!invoiceNum.equalsIgnoreCase("")) {
-                            cell = row.getCell(24, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
-                            cell.setCellValue(invoiceNum);
-                        }
-                        String date = b.getBillingDate().toString();
-                        if (!date.equalsIgnoreCase("")) {
-                            cell = row.getCell(25, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
-                            cell.setCellValue(date);
-                        }
-                        value = b.getAmountContractCurrency();
-                        setCellValue(row, 26, value);
-                        value = b.getAmountLocalCurrency();
-                        setCellValue(row, 27, value);
-
-                    }
-
-                    cnt++;
-                }
-
                 rowid++;
 //                    row.getCell(3).setCellValue(contract.getName());  // TODO - Need customer name?
 //                    row.getCell(4).setCellValue(contract.getSalesOrderNumber());
@@ -206,7 +164,8 @@ public class TemplateService {
 //                    }
             }
         }
-
+        ((XSSFSheet) worksheet).getCTWorksheet().getSheetViews().getSheetViewArray(0).setTopLeftCell("A1");
+        ((XSSFSheet) worksheet).setActiveCell(new CellAddress("A4"));
         workbook.write(outputStream);
         workbook.close();
         inputStream.close();
@@ -360,14 +319,18 @@ public class TemplateService {
                     billingEvent.add(bEvent);
                     BillingEvent be = new BillingEvent();
                     if (!billingEvent.isEmpty()) {
-                        billingEvent.get(0).setContract(pob.getContract());
-                        be = adminService.update(billingEvent.get(0));
-                        pob.getContract().getBillingEvents().clear();
-                        pob.getContract().getBillingEvents().add(be);
+                        if (adminService.findBillingEventsByInvoiceInContract(billingEvent.get(0).getInvoiceNumber(), pob.getContract()).isEmpty()) {
+                            billingEvent.get(0).setContract(pob.getContract());
+                            be = adminService.update(billingEvent.get(0));
+                            pob.getContract().getBillingEvents().add(be);
+                        }
 
-                        billingEvent.get(1).setContract(pob.getContract());
-                        be = adminService.update(billingEvent.get(1));
-                        pob.getContract().getBillingEvents().add(be);
+                        if (adminService.findBillingEventsByInvoiceInContract(billingEvent.get(1).getInvoiceNumber(), pob.getContract()).isEmpty()) {
+                            billingEvent.get(1).setContract(pob.getContract());
+                            be = adminService.update(billingEvent.get(1));
+                            pob.getContract().getBillingEvents().add(be);
+                        }
+
                     }
 
                 } catch (Exception rce) {
@@ -556,7 +519,9 @@ public class TemplateService {
     private void setCellValue(XSSFRow row, int cellNum, BigDecimal value) {
         if (value != null) {
             Cell cell = row.getCell(cellNum, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
+            CellStyle currentStyle = cell.getCellStyle();
             cell.setCellValue(value.doubleValue());
+            cell.setCellStyle(currentStyle);
         }
 
     }

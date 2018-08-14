@@ -211,6 +211,13 @@ public class AdminService {
         return (List<BillingEvent>) query.getResultList();
     }
 
+    public List<BillingEvent> findBillingEventsByInvoiceInContract(String invoice, Contract contract) {
+        Query query = em.createQuery("SELECT b FROM BillingEvent b WHERE b.contract = :CNT AND b.invoiceNumber = :INVOICE");
+        query.setParameter("CNT", contract);
+        query.setParameter("INVOICE", invoice);
+        return (List<BillingEvent>) query.getResultList();
+    }
+
     public List<SubledgerLine> findSubledgerLines() {
         TypedQuery<SubledgerLine> query = em.createQuery("SELECT s FROM SubledgerLine s", SubledgerLine.class);
         return (List<SubledgerLine>) query.getResultList();
