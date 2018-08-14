@@ -144,6 +144,24 @@ public class InputOnlineEntry implements Serializable {
         billingTreeNode = viewSupport.generateNodeTreeForBilling(reportingUnit);
     }
 
+    public boolean renderAddBillingEvent(Contract contract) {
+        FinancialPeriod period = webSession.getCurrentPeriod();
+        if (period.isOpen() && contract instanceof Contract) {
+
+            return true;
+        }
+        return false;
+    }
+
+    public boolean renderRemoveBillingEvent(BillingEvent bEvent) {
+        FinancialPeriod period = webSession.getCurrentPeriod();
+        if (period.isOpen() && bEvent instanceof BillingEvent) {
+
+            return true;
+        }
+        return false;
+    }
+
     public void updateCumulativeCurrencies() {
         billingTreeNode = viewSupport.generateNodeTreeForBilling(reportingUnit);
     }
@@ -201,18 +219,29 @@ public class InputOnlineEntry implements Serializable {
     }
 
     public void saveInputs() throws Exception {
-        Logger.getLogger(InputOnlineEntry.class.getName()).log(Level.FINE, "Saving inputs.");
-        adminService.update(reportingUnit);
-        for (Contract contract : reportingUnit.getContracts()) {
-            Logger.getLogger(InputOnlineEntry.class.getName()).log(Level.FINER, "Updating Contract: " + contract.getName());
-            contractService.update(contract);
+        FinancialPeriod period = webSession.getCurrentPeriod();
+        if (period.isOpen()) {
+            Logger.getLogger(InputOnlineEntry.class.getName()).log(Level.FINE, "Saving inputs.");
+            adminService.update(reportingUnit);
+            for (Contract contract : reportingUnit.getContracts()) {
+                Logger.getLogger(InputOnlineEntry.class.getName()).log(Level.FINER, "Updating Contract: " + contract.getName());
+                contractService.update(contract);
+            }
+            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Inputs saved.", ""));
+            Logger.getLogger(InputOnlineEntry.class.getName()).log(Level.FINE, "Inputs saved.");
         }
-        FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Inputs saved.", ""));
-        Logger.getLogger(InputOnlineEntry.class.getName()).log(Level.FINE, "Inputs saved.");
     }
 
     public boolean isUpdatable() {
         return reportingUnitService.isUpdatable(reportingUnit, webSession.getCurrentPeriod(), webSession.getUser());
+    }
+
+    public boolean renderButton() {
+        FinancialPeriod period = webSession.getCurrentPeriod();
+        if (period.isOpen()) {
+            return true;
+        }
+        return false;
     }
 
     public void cancelEdits() throws Exception {
