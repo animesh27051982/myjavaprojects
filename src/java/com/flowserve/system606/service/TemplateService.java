@@ -282,13 +282,13 @@ public class TemplateService {
                         calculationService.getDecimalMetric("PERCENT_COMPLETE", pob, period).setValue(new BigDecimal(NumberToTextConverter.toText(cell.getNumericCellValue())));
                     }
                     cell = row.getCell(CellReference.convertColStringToIndex("Q"));
-                    setValueInMetricType(cell, pobIdCell, "THIRD_PARTY_COMMISSION_CTD_LC", pob, period);
+                    setValueInMetricType(cell, pobIdCell, "THIRD_PARTY_COMMISSION_CTD_LC", pob.getContract(), period);
                     cell = row.getCell(CellReference.convertColStringToIndex("R"));
-                    setValueInMetricType(cell, pobIdCell, "THIRD_PARTY_COMMISSION_TO_RECOGNIZE_LC", pob, period);
-                    cell = row.getCell(CellReference.convertColStringToIndex("S"));
-                    setValueInMetricType(cell, pobIdCell, "THIRD_PARTY_COMMISSION_CTD_LC", pob, webSession.getPriorPeriod());
+                    setValueInMetricType(cell, pobIdCell, "THIRD_PARTY_COMMISSION_TO_RECOGNIZE_LC", pob.getContract(), period);
+                    //cell = row.getCell(CellReference.convertColStringToIndex("S"));
+                    //setValueInMetricType(cell, pobIdCell, "THIRD_PARTY_COMMISSION_CTD_LC", pob, webSession.getPriorPeriod());
                     cell = row.getCell(CellReference.convertColStringToIndex("T"));
-                    setValueInMetricType(cell, pobIdCell, "THIRD_PARTY_COMMISSION_TO_RECOGNIZE_LC", pob, webSession.getPriorPeriod());
+                    setValueInMetricType(cell, pobIdCell, "THIRD_PARTY_COMMISSION_TO_RECOGNIZE_LC", pob.getContract(), webSession.getPriorPeriod());
                 } catch (Exception rce) {
                     Logger.getLogger(TemplateService.class.getName()).log(Level.SEVERE, "Error processing ");
                     throw new Exception("processTemplateUpload row: " + row.getRowNum() + " cell: " + (cell.getColumnIndex() + 1) + " " + rce.getMessage());
@@ -561,11 +561,11 @@ public class TemplateService {
 
     }
 
-    private void setValueInMetricType(Cell cell, Cell pobIdCell, String type, PerformanceObligation pob, FinancialPeriod period) throws Exception {
+    private void setValueInMetricType(Cell cell, Cell pobIdCell, String type, Measurable measurable, FinancialPeriod period) throws Exception {
         if (cell == null || pobIdCell.getCellTypeEnum() == CellType.BLANK || ((XSSFCell) cell).getRawValue() == null) {
             // TODO - figure out what to do in this blank case.  It will depend on the situation.
         } else {
-            calculationService.getCurrencyMetric(type, pob, period).setValue(new BigDecimal(NumberToTextConverter.toText(cell.getNumericCellValue())));
+            calculationService.getCurrencyMetric(type, measurable, period).setValue(new BigDecimal(NumberToTextConverter.toText(cell.getNumericCellValue())));
 
         }
 
