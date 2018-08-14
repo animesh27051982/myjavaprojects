@@ -162,9 +162,11 @@ public class CurrencyService {
     }
 
     public void initCurrencyConverter(FinancialPeriod period) throws Exception {
-
+        logger.info("initCurrencyConverter" + period.getId());
         exchangeRateCache.clear();
+        logger.info("Checkpoint 1");
         List<ExchangeRate> er = findRatesByPeriod(period);
+        logger.info("Checkpoint 2");
         //Logger.getLogger(CurrencyService.class.getName()).log(Level.INFO, "rate count: " + er.size());
         //Logger.getLogger(CurrencyService.class.getName()).log(Level.INFO, "period: " + period.getId());
 

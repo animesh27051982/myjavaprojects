@@ -315,7 +315,7 @@ public class AdminService {
 
     public void update(List<ReportingUnit> rus) throws Exception {
         for (ReportingUnit ru : rus) {
-            AdminService.this.update(ru);
+            update(ru);
         }
     }
 
@@ -414,7 +414,7 @@ public class AdminService {
         logger.info("Clearing the entity cache.");
         em.flush();
         em.clear();
-        logger.info("Finished learing the entity cache.");
+        logger.info("Finished clearing the entity cache.");
 
         List<User> admin = findUserByFlsId("rcs_admin");
         User ad;
@@ -520,14 +520,14 @@ public class AdminService {
                     }
                 }
                 ru.setActive(true);
-                AdminService.this.persist(ru);
+                persist(ru);
                 //initializing RUs in Countries
                 if (values.length > 2) {
                     Country cnt = findCountryByName(values[2]);
                     if (cnt != null) {
                         ReportingUnit addRU = findReportingUnitByCode(values[1].trim());
                         cnt.getReportingUnit().add(addRU);
-                        AdminService.this.update(cnt);
+                        update(cnt);
                     }
                 }
             }
@@ -548,7 +548,7 @@ public class AdminService {
                         ar.setFinancialPeriod(period);
                         ar.setWorkflowStatus(WorkflowStatus.DRAFT);
                         ru.putPeriodApprovalRequest(period, ar);
-                        AdminService.this.update(ru);
+                        update(ru);
                     }
                 }
             }
@@ -572,7 +572,7 @@ public class AdminService {
                 bu.setName(values[0]);
                 bu.setType("Platform");
                 bu.setCompany(findCompanyById("FLS"));
-                AdminService.this.persist(bu);
+                persist(bu);
                 Company cm = findCompanyById("FLS");
 
                 bunit.add(findBusinessUnitById(values[0]));
@@ -602,7 +602,7 @@ public class AdminService {
                     BusinessUnit bu = findBusinessUnitById(values[2]);
                     ru.setBusinessUnit(bu);
                     bu.getReportingUnit().add(ru);
-                    AdminService.this.update(ru);
+                    update(ru);
                     updateBusinessUnit(bu);
                 }
             }
@@ -632,14 +632,14 @@ public class AdminService {
                         String CoENumber = sp[sp.length - 1];
                         addRU.setName("Center of Excellence " + CoENumber);
                         addRU.setActive(true);
-                        AdminService.this.persist(addRU);
+                        persist(addRU);
                         ru = findReportingUnitByCode(code);
                     }
                     ReportingUnit preRU = findReportingUnitByCode(values[1]);
                     preRU.setParentReportingUnit(ru);
                     ru.getChildReportingUnits().add(preRU);
-                    AdminService.this.update(preRU);
-                    AdminService.this.update(ru);
+                    update(preRU);
+                    update(ru);
                 }
             }
             reader.close();
@@ -702,7 +702,7 @@ public class AdminService {
                 ledger.setName(values[count++]);
                 ledger.setCompany(findCompanyById("FLS"));
 
-                AdminService.this.persist(ledger);
+                persist(ledger);
             }
         }
     }
@@ -736,7 +736,7 @@ public class AdminService {
                         ReportingUnit ru = findReportingUnitByCode(code[i]);
                         if (ru != null && user != null) {
                             ru.getPreparers().add(user);
-                            AdminService.this.update(ru);
+                            update(ru);
                         }
 
                     }
@@ -749,7 +749,7 @@ public class AdminService {
                         ReportingUnit ru = findReportingUnitByCode(code[i]);
                         if (ru != null && user != null) {
                             ru.getApprovers().add(user);
-                            AdminService.this.update(ru);
+                            update(ru);
                         }
 
                     }
@@ -783,7 +783,7 @@ public class AdminService {
                     if (ru != null && user != null && !ru.getPreparers().contains(user)) {
                         Logger.getLogger(AdminService.class.getName()).log(Level.FINER, "adding Preparer " + user.getFlsId());
                         ru.getPreparers().add(user);
-                        AdminService.this.update(ru);
+                        update(ru);
                     }
 
                 } else if (values.length > 2 && values[2].equalsIgnoreCase("Reviewer")) {
@@ -793,7 +793,7 @@ public class AdminService {
                     if (ru != null && user != null && !ru.getApprovers().contains(user)) {
                         Logger.getLogger(AdminService.class.getName()).log(Level.FINER, "adding Reviewer " + user.getFlsId());
                         ru.getApprovers().add(user);
-                        AdminService.this.update(ru);
+                        update(ru);
                     }
 
                 }
@@ -815,8 +815,8 @@ public class AdminService {
             for (ReportingUnit ru : reportingUnits) {
                 cm.getReportingUnit().add(ru);
                 ru.setCompany(cm);
-                AdminService.this.update(ru);
-                AdminService.this.update(cm);
+                update(ru);
+                update(cm);
             }
         }
 
@@ -831,8 +831,7 @@ public class AdminService {
             fls.setInputFreezeWorkday(15);
             fls.setReportingCurrency(Currency.getInstance(new Locale("en", "US")));
             fls.setPociDueWorkday(10);
-
-            AdminService.this.update(fls);
+            persist(fls);
         }
     }
 
@@ -847,7 +846,7 @@ public class AdminService {
             be.setContract(ct);
             be.setDeliveryDate(LocalDate.now());
             be.setInvoiceNumber("1234");
-            AdminService.this.persist(be);
+            persist(be);
         }
     }
 
@@ -860,7 +859,7 @@ public class AdminService {
 
                 Locale locale = new Locale("", countryCode);
                 Country country = new Country(locale.getISO3Country(), locale.getCountry(), locale.getDisplayCountry());
-                AdminService.this.persist(country);
+                persist(country);
             }
 
             Logger.getLogger(AdminService.class.getName()).log(Level.INFO, "Finished initializing Countries.");

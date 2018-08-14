@@ -9,7 +9,6 @@ import com.flowserve.system606.model.BillingEvent;
 import com.flowserve.system606.model.Contract;
 import com.flowserve.system606.model.DataImportFile;
 import com.flowserve.system606.model.FinancialPeriod;
-import com.flowserve.system606.model.Measurable;
 import com.flowserve.system606.model.PerformanceObligation;
 import com.flowserve.system606.model.ReportingUnit;
 import com.flowserve.system606.model.RevenueMethod;
@@ -67,7 +66,7 @@ public class BatchProcessingService {
     private static Logger logger = Logger.getLogger(BatchProcessingService.class.getName());
 
     //@Asynchronous
-    public void calculateAllFinancials(List<ReportingUnit> reportingUnits, FinancialPeriod period) throws Exception {
+    public void calculateAllFinancials(List<ReportingUnit> reportingUnits, FinancialPeriod startPeriod) throws Exception {
 
         for (ReportingUnit reportingUnit : reportingUnits) {
 
@@ -78,21 +77,34 @@ public class BatchProcessingService {
                 ut.begin();
                 logger.log(Level.INFO, "Calculating RU: " + reportingUnit.getCode() + " POB Count: " + reportingUnit.getPerformanceObligations().size());
 
-                FinancialPeriod calculationPeriod = period;
-                do {
-                    calculationService.executeBusinessRulesAndSave((new ArrayList<Measurable>(reportingUnit.getPerformanceObligations())), calculationPeriod);
-                } while ((calculationPeriod = financialPeriodService.calculateNextPeriodUntilCurrent(calculationPeriod)) != null);
+                FinancialPeriod calculationPeriod;
 
-                calculationPeriod = period;
-                do {
-                    calculationService.executeBusinessRulesAndSave((new ArrayList<Measurable>(reportingUnit.getContracts())), calculationPeriod);
-                } while ((calculationPeriod = financialPeriodService.calculateNextPeriodUntilCurrent(calculationPeriod)) != null);
+                for (Contract contract : reportingUnit.getContracts()) {
+                    for (PerformanceObligation pob : contract.getPerformanceObligations()) {
+                        calculationPeriod = startPeriod;
+                        do {
+                            calculationService.executeBusinessRulesAndSave(pob, calculationPeriod);
+                        } while ((calculationPeriod = financialPeriodService.calculateNextPeriodUntilCurrent(calculationPeriod)) != null);
+                    }
+                    calculationPeriod = startPeriod;
+                    do {
+                        calculationService.executeBusinessRulesAndSave(contract, calculationPeriod);
+                    } while ((calculationPeriod = financialPeriodService.calculateNextPeriodUntilCurrent(calculationPeriod)) != null);
+                }
+//                do {
+//                    calculationService.executeBusinessRulesAndSave((new ArrayList<Measurable>(reportingUnit.getPerformanceObligations())), calculationPeriod);
+//                } while ((calculationPeriod = financialPeriodService.calculateNextPeriodUntilCurrent(calculationPeriod)) != null);
+//
+//                calculationPeriod = startPeriod;
+//                do {
+//                    calculationService.executeBusinessRulesAndSave((new ArrayList<Measurable>(reportingUnit.getContracts())), calculationPeriod);
+//                } while ((calculationPeriod = financialPeriodService.calculateNextPeriodUntilCurrent(calculationPeriod)) != null);
 
                 logger.log(Level.INFO, "Flushing and clearing EntityManager");
                 em.flush();
                 em.clear();
-                logger.log(Level.INFO, "Completed RU: " + reportingUnit.getCode());
                 ut.commit();
+                logger.log(Level.INFO, "Completed RU: " + reportingUnit.getCode());
             } catch (Exception e) {
                 ut.rollback();
             }
@@ -115,9 +127,9 @@ public class BatchProcessingService {
             logger.info("Processing POCI Core finance data");
             processPOCIData(connection, statement, fileName);
             logger.info("Processing POCI billing data");
-            processBillingInfoFromPOCI(connection, statement, fileName);
+            //processBillingInfoFromPOCI(connection, statement, fileName);
             logger.info("Processing POCI Third Party Commission data.");
-            processPOCIThirdPartyCommissions(connection, statement, fileName);
+            //processPOCIThirdPartyCommissions(connection, statement, fileName);
         } catch (Exception e) {
             logger.log(Level.INFO, "Error processing POCI/O data: ", e);
         } finally {
@@ -250,9 +262,7 @@ public class BatchProcessingService {
                 em.flush();
                 em.clear();
             }
-
             count++;
-
         }
 
         dataImport.setFilename(fileName + " - tbl_POCI_1_POb Changes");

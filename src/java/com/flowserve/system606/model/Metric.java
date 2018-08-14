@@ -7,6 +7,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Index;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.JoinColumn;
@@ -19,7 +20,9 @@ import static javax.persistence.TemporalType.TIMESTAMP;
 @Entity
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "VALUE_TYPE")
-@Table(name = "METRICS")
+@Table(name = "METRICS",
+        indexes = {
+            @Index(name = "IDX_METRIC_SET", columnList = "METRIC_SET_ID", unique = false)})
 public abstract class Metric<T> extends BaseEntity<Long> {
 
     @Id

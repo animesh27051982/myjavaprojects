@@ -46,7 +46,7 @@ public class MetricSet extends BaseEntity<Long> {
     //@JoinColumn(name = "CONTRACT_ID")
     //private Contract contract;
 
-    @OneToMany(cascade = {CascadeType.ALL}, fetch = FetchType.EAGER, mappedBy = "metricSet")
+    @OneToMany(cascade = {CascadeType.ALL}, fetch = FetchType.LAZY, mappedBy = "metricSet")
     private Map<MetricType, Metric> typeMetricMap = new HashMap<MetricType, Metric>();
 
     public MetricSet() {

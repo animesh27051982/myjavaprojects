@@ -48,7 +48,7 @@ public class AppInitializeService {
             currencyService.initCurrencyConverter(financialPeriodService.findById("OCT-17"));
             //currencyService.initCurrencyConverter(financialPeriodService.findById("MAY-18"));
             adminService.initSubledgerAccount();
-            //adminService.initBilings();
+            adminService.initBilings();
             metricService.initMetricTypes();
             adminService.initCountries();
             adminService.initBusinessUnit();

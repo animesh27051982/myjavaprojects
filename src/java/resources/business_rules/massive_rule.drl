@@ -21,7 +21,7 @@ rule "Estimated Gross Profit and Margin"
         estimatedGrossMargin : Metric(metricType.code == "ESTIMATED_GROSS_MARGIN")
     then
         modify (estimatedGrossProfit) { lcValue = (transactionPrice.lcValue - estimatedCostAtCompletion.lcValue)};
-        modify (estimatedGrossMargin) { value = (estimatedGrossProfit.lcValue == 0B ? 0B : estimatedGrossProfit.lcValue / transactionPrice.lcValue)};
+        modify (estimatedGrossMargin) { value = ((estimatedGrossProfit.lcValue == 0B || transactionPrice.lcValue == 0B) ? 0B : estimatedGrossProfit.lcValue / transactionPrice.lcValue)};
 end
 
 rule "EAC Change"
@@ -247,7 +247,7 @@ rule "POB Group Level Estimated Gross Profit and Margin"
         estimatedGrossProfit : CurrencyMetric(metricType.code == "ESTIMATED_GROSS_PROFIT_LC")
         estimatedGrossMargin : Metric(metricType.code == "ESTIMATED_GROSS_MARGIN")
     then
-        logger.info("Calculating POB Group Level Estimated Gross Profit and Margin");
+        //logger.info("Calculating POB Group Level Estimated Gross Profit and Margin");
         modify (estimatedGrossProfit) { lcValue = (transactionPrice.lcValue - estimatedCostAtCompletion.lcValue)};
         modify (estimatedGrossMargin) { value = (estimatedGrossProfit.lcValue == 0B ? 0B : estimatedGrossProfit.lcValue / transactionPrice.lcValue)};
 end
@@ -260,7 +260,7 @@ rule "POB Group Level Test"
         estimatedGrossProfit : CurrencyMetric(metricType.code == "ESTIMATED_GROSS_PROFIT_LC")
         estimatedGrossMargin : Metric(metricType.code == "ESTIMATED_GROSS_MARGIN")
     then
-        logger.info("Calculating POB Group Level Test");
+        //logger.info("Calculating POB Group Level Test");
 end
 
 rule "Contract Gross Profit and Margin CTD"
@@ -317,15 +317,15 @@ rule "Gross Profit Loss Period"
         modify (grossProfitLossPeriod) { lcValue = (netPeriodSales.lcValue - costOfGoodsSoldPeriod.lcValue - lossReserveAdjustment.lcValue)};
 end
 
-rule "Validation rule"
-    when
-        // Pull input values needed for this calculation.
-        pob : PerformanceObligation()  // If a pob exists
-        transactionPrice : CurrencyMetric(metricType.code == "TRANSACTION_PRICE_CC", ccValue != null)  // if this metric exists and is not null, initialize variable.
-        transactionPricePriorPeriod : CurrencyMetricPriorPeriod(metricType.code == "TRANSACTION_PRICE_CC", ccValue < transactionPrice.ccValue)
-        transactionPriceResult : Metric(metricType.code == "TRANSACTION_PRICE_CC")
-    then
-        //logger.info("Contract transactionPrice ");
-        modify (transactionPriceResult) { valid = true};
-        modify (transactionPriceResult) { message = "Please verify that contract revision was entered/reviewed/approved. Please verify the accuracy of the Transaction Price."};
-end
+//rule "Validation rule"
+//    when
+//        // Pull input values needed for this calculation.
+//        pob : PerformanceObligation()  // If a pob exists
+//        transactionPrice : CurrencyMetric(metricType.code == "TRANSACTION_PRICE_CC", ccValue != null)  // if this metric exists and is not null, initialize variable.
+//        transactionPricePriorPeriod : CurrencyMetricPriorPeriod(metricType.code == "TRANSACTION_PRICE_CC", ccValue < transactionPrice.ccValue)
+//        transactionPriceResult : Metric(metricType.code == "TRANSACTION_PRICE_CC")
+ //   then
+//        //logger.info("Contract transactionPrice ");
+//        modify (transactionPriceResult) { valid = true};
+//        modify (transactionPriceResult) { message = "Please verify that contract revision was entered/reviewed/approved. Please verify the accuracy of the Transaction Price."};
+//end

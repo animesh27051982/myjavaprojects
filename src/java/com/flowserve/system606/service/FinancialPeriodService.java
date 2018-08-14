@@ -61,6 +61,10 @@ public class FinancialPeriodService {
         em.persist(fp);
     }
 
+    public void update(FinancialPeriod fp) throws Exception {
+        em.merge(fp);
+    }
+
     public List<FinancialPeriod> findAllPeriods() {
         Query query = em.createQuery("SELECT p FROM FinancialPeriod p ORDER BY p.sequence DESC");
         return (List<FinancialPeriod>) query.getResultList();
@@ -73,6 +77,7 @@ public class FinancialPeriodService {
             "AUG", "SEP", "OCT", "NOV",
             "DEC"};
         Integer[] totalYear = {2017, 2018};
+        FinancialPeriod priorPeriod = null;
         for (int i = 0; i < totalYear.length; i++) {
             for (int j = 1; j <= 12; j++) {
                 String yrStr = Integer.toString(totalYear[i]);
@@ -85,9 +90,15 @@ public class FinancialPeriodService {
                     }
                     LocalDate lastOfMonth = date.with(TemporalAdjusters.lastDayOfMonth());
                     FinancialPeriod fPeriod = new FinancialPeriod(exPeriod, exPeriod, LocalDate.of(totalYear[i], Month.of(j), 1), lastOfMonth, totalYear[i], j, PeriodStatus.NEVER_OPENED);
-                    fPeriod.setLocalCurrencyRatePeriod(calculatePriorPeriod(fPeriod));
-                    fPeriod.setReportingCurrencyRatePeriod(fPeriod);
+                    //fPeriod.setLocalCurrencyRatePeriod(calculatePriorPeriod(fPeriod));
+                    //fPeriod.setReportingCurrencyRatePeriod(fPeriod);
+                    logger.info("persist " + fPeriod.getId());
                     persist(fPeriod);
+                    fPeriod.setReportingCurrencyRatePeriod(fPeriod);
+                    if (priorPeriod != null) {
+                        fPeriod.setLocalCurrencyRatePeriod(priorPeriod);
+                    }
+                    priorPeriod = fPeriod;
                 }
             }
         }
@@ -100,6 +111,7 @@ public class FinancialPeriodService {
 //            persist(period);
 //        }
 
+        logger.info("Finding company");
         Company fls = adminService.findCompanyById("FLS");
 
         fls.setCurrentPeriod(findById("JUN-18"));
