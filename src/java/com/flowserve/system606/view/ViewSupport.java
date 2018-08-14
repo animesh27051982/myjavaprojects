@@ -397,11 +397,7 @@ public class ViewSupport implements Serializable {
     }
 
     public String getErrorMessage(String metricCode, Measurable measurable) throws Exception {
-        if (calculationService.getCurrencyMetric(metricCode, measurable, webSession.getCurrentPeriod()).isValid()) {
-            return calculationService.getCurrencyMetric(metricCode, measurable, webSession.getCurrentPeriod()).getMessage();
-        } else {
-            return null;
-        }
+        return calculationService.getCurrencyMetric(metricCode, measurable, webSession.getCurrentPeriod()).getMessage();
     }
 
     public boolean getValidation(String metricCode, Measurable measurable) throws Exception {
