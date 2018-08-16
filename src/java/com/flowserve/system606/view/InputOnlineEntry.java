@@ -144,24 +144,6 @@ public class InputOnlineEntry implements Serializable {
         billingTreeNode = viewSupport.generateNodeTreeForBilling(reportingUnit);
     }
 
-    public boolean renderAddBillingEvent(Contract contract) {
-        FinancialPeriod period = webSession.getCurrentPeriod();
-        if (period.isOpen() && contract instanceof Contract) {
-
-            return true;
-        }
-        return false;
-    }
-
-    public boolean renderRemoveBillingEvent(BillingEvent bEvent) {
-        FinancialPeriod period = webSession.getCurrentPeriod();
-        if (period.isOpen() && bEvent instanceof BillingEvent) {
-
-            return true;
-        }
-        return false;
-    }
-
     public void updateCumulativeCurrencies() {
         billingTreeNode = viewSupport.generateNodeTreeForBilling(reportingUnit);
     }
@@ -231,16 +213,8 @@ public class InputOnlineEntry implements Serializable {
         }
     }
 
-    public boolean isUpdatable() {
-        return reportingUnitService.isUpdatable(reportingUnit, webSession.getCurrentPeriod(), webSession.getUser());
-    }
-
-//    public boolean renderButton() {
-//        FinancialPeriod period = webSession.getCurrentPeriod();
-//        if (period.isOpen()) {
-//            return true;
-//        }
-//        return false;
+//    public boolean isUpdatable() {
+//        return reportingUnitService.isUpdatable(reportingUnit, webSession.getCurrentPeriod(), webSession.getUser());
 //    }
     public void cancelEdits() throws Exception {
         Logger.getLogger(InputOnlineEntry.class.getName()).log(Level.FINE, "Current edits canceled.");

@@ -10,7 +10,7 @@ package com.flowserve.system606.model;
  * @author kgraves
  */
 public enum PeriodStatus {
-    OPENED("O"), CLOSED("C"), NEVER_OPENED("NO"), USER_FREEZE("F");
+    OPENED("O"), CLOSED("C"), NEVER_OPENED("NO"), USER_FREEZE("UF");
 
     private String shortName;
 
@@ -32,7 +32,7 @@ public enum PeriodStatus {
 
             case "NO":
                 return PeriodStatus.NEVER_OPENED;
-            case "F":
+            case "UF":
                 return PeriodStatus.USER_FREEZE;
 
             default:
