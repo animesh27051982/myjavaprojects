@@ -447,6 +447,19 @@ public class ViewSupport implements Serializable {
         return searchString;
     }
 
+    public boolean isPeriodClosed() {
+        FinancialPeriod period = webSession.getCurrentPeriod();
+        ReportingUnit ru = webSession.getCurrentReportingUnit();
+        User user = webSession.getUser();
+        if (period.isOpen() && ru.isDraft(period)) {
+            return true;
+        } else if (period.isUserFreeze() && user.isAdmin()) {
+            return true;
+        }
+
+        return false;
+    }
+
     public void setSearchString(String searchString) {
         this.searchString = searchString;
     }

@@ -219,8 +219,7 @@ public class InputOnlineEntry implements Serializable {
     }
 
     public void saveInputs() throws Exception {
-        FinancialPeriod period = webSession.getCurrentPeriod();
-        if (period.isOpen()) {
+        if (viewSupport.isPeriodClosed()) {
             Logger.getLogger(InputOnlineEntry.class.getName()).log(Level.FINE, "Saving inputs.");
             adminService.update(reportingUnit);
             for (Contract contract : reportingUnit.getContracts()) {
@@ -236,14 +235,13 @@ public class InputOnlineEntry implements Serializable {
         return reportingUnitService.isUpdatable(reportingUnit, webSession.getCurrentPeriod(), webSession.getUser());
     }
 
-    public boolean renderButton() {
-        FinancialPeriod period = webSession.getCurrentPeriod();
-        if (period.isOpen()) {
-            return true;
-        }
-        return false;
-    }
-
+//    public boolean renderButton() {
+//        FinancialPeriod period = webSession.getCurrentPeriod();
+//        if (period.isOpen()) {
+//            return true;
+//        }
+//        return false;
+//    }
     public void cancelEdits() throws Exception {
         Logger.getLogger(InputOnlineEntry.class.getName()).log(Level.FINE, "Current edits canceled.");
         FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Current edits canceled.", ""));
