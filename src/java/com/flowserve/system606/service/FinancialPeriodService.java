@@ -523,10 +523,16 @@ public class FinancialPeriodService {
     }
 
     public void freezePeriod(FinancialPeriod period) throws Exception {
-        if (period.isOpen() || period.isClosed()) {
-            period.setStatus(PeriodStatus.USER_FREEZE);
+        try {
+            if (period.isOpen() || period.isClosed()) {
+                period.setStatus(PeriodStatus.USER_FREEZE);
+                updateFinancialPeriod(period);
+            } else if (period.isNeverOpened()) {
+                throw new IllegalStateException("This Period Never Opened.");
+            }
+        } catch (Exception ex) {
+            throw new Exception(ex.getMessage());
         }
-        updateFinancialPeriod(period);
     }
 
     public void initWorkflowContext(FinancialPeriod period, Contract contract) throws Exception {

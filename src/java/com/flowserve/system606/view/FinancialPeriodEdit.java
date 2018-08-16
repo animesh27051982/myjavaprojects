@@ -80,12 +80,11 @@ public class FinancialPeriodEdit implements Serializable {
         FacesContext context = FacesContext.getCurrentInstance();
         try {
             financialPeriodService.freezePeriod(financialPeriod);
+            context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Period freezed.", ""));
         } catch (Exception e) {
             Logger.getLogger(FinancialPeriodEdit.class.getName()).log(Level.INFO, "Error freezing period: ", e);
             context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Error freezing period: ", e.getMessage()));
         }
-
-        context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Period freezed.", ""));
 
         return "financialPeriodEdit";
     }
