@@ -468,6 +468,8 @@ public class ReportsService {
 
             worksheet = workbook.getSheet("Contract Summary-2");
             worksheet = writeReportByFinancialPeriod(worksheet, contract);
+            ((XSSFSheet) worksheet).getCTWorksheet().getSheetViews().getSheetViewArray(0).setTopLeftCell("A1");
+            ((XSSFSheet) worksheet).setActiveCell(new CellAddress("A2"));
             workbook.write(outputStream);
         }
         inputStream.close();

@@ -510,11 +510,31 @@ public class FinancialPeriodService {
             }
         }
 
-        if (period.isClosed()) {
+        if (period.isClosed() || period.isUserFreeze()) {
             period.setStatus(PeriodStatus.OPENED);
         }
 
         updateFinancialPeriod(period);
+    }
+
+    public void closePeriod(FinancialPeriod period) throws Exception {
+        if (period.isOpen() || period.isUserFreeze()) {
+            period.setStatus(PeriodStatus.CLOSED);
+        }
+        updateFinancialPeriod(period);
+    }
+
+    public void freezePeriod(FinancialPeriod period) throws Exception {
+        try {
+            if (period.isOpen() || period.isClosed()) {
+                period.setStatus(PeriodStatus.USER_FREEZE);
+                updateFinancialPeriod(period);
+            } else if (period.isNeverOpened()) {
+                throw new IllegalStateException("This Period Never Opened.");
+            }
+        } catch (Exception ex) {
+            throw new Exception(ex.getMessage());
+        }
     }
 
     public void initWorkflowContext(FinancialPeriod period, Contract contract) throws Exception {

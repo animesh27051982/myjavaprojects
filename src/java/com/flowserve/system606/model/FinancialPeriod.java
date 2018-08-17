@@ -205,6 +205,14 @@ public class FinancialPeriod extends BaseEntity<String> implements Comparable<Fi
         return this.status.equals(status.CLOSED);
     }
 
+    public boolean isUserFreeze() {
+        if (this.status == null) {
+            return false;
+        }
+
+        return this.status.equals(status.USER_FREEZE);
+    }
+
     public boolean isNeverOpened() {
         if (this.status == null) {
             return false;

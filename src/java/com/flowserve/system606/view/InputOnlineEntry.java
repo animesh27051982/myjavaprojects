@@ -201,20 +201,21 @@ public class InputOnlineEntry implements Serializable {
     }
 
     public void saveInputs() throws Exception {
-        Logger.getLogger(InputOnlineEntry.class.getName()).log(Level.FINE, "Saving inputs.");
-        adminService.update(reportingUnit);
-        for (Contract contract : reportingUnit.getContracts()) {
-            Logger.getLogger(InputOnlineEntry.class.getName()).log(Level.FINER, "Updating Contract: " + contract.getName());
-            contractService.update(contract);
+        if (viewSupport.isPeriodClosed()) {
+            Logger.getLogger(InputOnlineEntry.class.getName()).log(Level.FINE, "Saving inputs.");
+            adminService.update(reportingUnit);
+            for (Contract contract : reportingUnit.getContracts()) {
+                Logger.getLogger(InputOnlineEntry.class.getName()).log(Level.FINER, "Updating Contract: " + contract.getName());
+                contractService.update(contract);
+            }
+            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Inputs saved.", ""));
+            Logger.getLogger(InputOnlineEntry.class.getName()).log(Level.FINE, "Inputs saved.");
         }
-        FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Inputs saved.", ""));
-        Logger.getLogger(InputOnlineEntry.class.getName()).log(Level.FINE, "Inputs saved.");
     }
 
-    public boolean isUpdatable() {
-        return reportingUnitService.isUpdatable(reportingUnit, webSession.getCurrentPeriod(), webSession.getUser());
-    }
-
+//    public boolean isUpdatable() {
+//        return reportingUnitService.isUpdatable(reportingUnit, webSession.getCurrentPeriod(), webSession.getUser());
+//    }
     public void cancelEdits() throws Exception {
         Logger.getLogger(InputOnlineEntry.class.getName()).log(Level.FINE, "Current edits canceled.");
         FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Current edits canceled.", ""));

@@ -62,6 +62,33 @@ public class FinancialPeriodEdit implements Serializable {
         return "financialPeriodEdit";
     }
 
+    public String closePeriod() {
+        FacesContext context = FacesContext.getCurrentInstance();
+        try {
+            financialPeriodService.closePeriod(financialPeriod);
+        } catch (Exception e) {
+            Logger.getLogger(FinancialPeriodEdit.class.getName()).log(Level.INFO, "Error closing period: ", e);
+            context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Error closing period: ", e.getMessage()));
+        }
+
+        context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Period closed.", ""));
+
+        return "financialPeriodEdit";
+    }
+
+    public String freezePeriod() {
+        FacesContext context = FacesContext.getCurrentInstance();
+        try {
+            financialPeriodService.freezePeriod(financialPeriod);
+            context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Period freezed.", ""));
+        } catch (Exception e) {
+            Logger.getLogger(FinancialPeriodEdit.class.getName()).log(Level.INFO, "Error freezing period: ", e);
+            context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Error freezing period: ", e.getMessage()));
+        }
+
+        return "financialPeriodEdit";
+    }
+
 //    public String addCloseCondition() throws Exception {
 //        this.financialPeriod.setStatus(PeriodStatus.CLOSED);
 //        return this.financialPeriod.getId() == null ? adminController.addFinancialPeriod(this.financialPeriod) : adminController.updateFinancialPeriod(this.financialPeriod);
