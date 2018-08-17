@@ -30,6 +30,8 @@ public class BillingEvent implements Comparable<BillingEvent>, Serializable {
     @SequenceGenerator(name = "BILLING_EVENT_SEQ", sequenceName = "BILLING_EVENT_SEQ", allocationSize = 50)
     @Column(name = "BILL_ID")
     private Long id;
+    @Column(name = "DESCRIPTION")
+    private String description;
 
     @Column(name = "BILLING_DATE")
     private LocalDate billingDate;
@@ -129,5 +131,13 @@ public class BillingEvent implements Comparable<BillingEvent>, Serializable {
 
     public void setContract(Contract contract) {
         this.contract = contract;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 }

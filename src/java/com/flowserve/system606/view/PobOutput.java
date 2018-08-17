@@ -7,8 +7,6 @@ package com.flowserve.system606.view;
 
 import com.flowserve.system606.service.ReportsService;
 import java.io.Serializable;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.faces.view.ViewScoped;
@@ -29,9 +27,8 @@ public class PobOutput implements Serializable {
     public void downloadFile() throws Exception {
 
         try {
-            String dbPath = "D:/Users/shubhamv/Downloads/POB_Output.accdb";
-            Logger.getLogger(PobOutput.class.getName()).log(Level.INFO, "dbPath" + dbPath);
-            reportsService.generatePobOutput(dbPath);
+
+            reportsService.generatePobOutput();
             FacesMessage msg = new FacesMessage("Succesful", "File write completed.");
 
             FacesContext.getCurrentInstance().addMessage(null, msg);

@@ -312,25 +312,26 @@ end
 //        modify (lossReserveAdjustment) { lcValue = (priorPeriodLossReserve.lcValue == null ? lossReserve.lcValue : lossReserve.lcValue - priorPeriodLossReserve.lcValue) };
 //end
 
-//rule "Loss Reserve Adjustment"
-//    when
-//        contract : Contract()
-//        lossReserveAdjustmentCumulativePrior : CurrencyMetricPriorPeriod(metricType.code == "LOSS_RESERVE_ADJ_CUMULATIVE_LC")
-//        projectedGainLossBacklog : CurrencyMetric(metricType.code == "PROJECT_GAIN_LOSS_BACKLOG_LC")
-//        lossReserveAdjustment : CurrencyMetric(metricType.code == "LOSS_RESERVE_PERIOD_ADJ_LC")
-//    then
-//        modify (lossReserveAdjustment) { lcValue = ((lossReserveAdjustmentCumulativePrior.lcValue == null ? 0B : lossReserveAdjustmentCumulativePrior.lcValue) + (projectedGainLossBacklog.lcValue == null ? 0B : projectedGainLossBacklog.lcValue)};
-//end
+rule "Loss Reserve Adjustment"
+    when
+        contract : Contract()
+        lossReserveAdjustmentCumulativePrior : CurrencyMetricPriorPeriod(metricType.code == "LOSS_RESERVE_ADJ_CUMULATIVE_LC")
+        projectedGainLossBacklog : CurrencyMetric(metricType.code == "PROJECT_GAIN_LOSS_BACKLOG_LC", lcValue != null)
+        lossReserveAdjustment : CurrencyMetric(metricType.code == "LOSS_RESERVE_PERIOD_ADJ_LC")
+    then
+        modify (lossReserveAdjustment) { lcValue = ((lossReserveAdjustmentCumulativePrior.lcValue == null ? 0B : lossReserveAdjustmentCumulativePrior.lcValue) + projectedGainLossBacklog.lcValue)};
+end
 
-//rule "Loss Reserve Adjustment Cumulative"
-//    when
-//        contract : Contract()
-//        lossReserveAdjustmentPrior : CurrencyMetricPriorPeriod(metricType.code == "LOSS_RESERVE_ADJ_CUMULATIVE_LC")
-//        lossReserveAdjustmentCumulative : CurrencyMetric(metricType.code == "LOSS_RESERVE_ADJ_CUMULATIVE_LC")
-//    then
-//        logger.info("Calculating Cumulative Loss Adjustment");
-//       modify (lossReserveAdjustmentCumulative) {lcValue = (lossReserveAdjustment.lcValue + (lossReserveAdjustmentPrior.lcValue == null ? 0B : lossReserveAdjustmentPrior.lcValue))};
-//end
+rule "Loss Reserve Adjustment Cumulative"
+    when
+        contract : Contract()
+        lossReserveAdjustment : CurrencyMetric(metricType.code == "LOSS_RESERVE_PERIOD_ADJ_LC")
+        lossReserveAdjustmentPrior : CurrencyMetricPriorPeriod(metricType.code == "LOSS_RESERVE_ADJ_CUMULATIVE_LC")
+        lossReserveAdjustmentCumulative : CurrencyMetric(metricType.code == "LOSS_RESERVE_ADJ_CUMULATIVE_LC")
+    then
+        logger.info("Calculating Cumulative Loss Adjustment");
+        modify (lossReserveAdjustmentCumulative) {lcValue = ((lossReserveAdjustment.lcValue == null ? 0B : lossReserveAdjustment.lcValue) + (lossReserveAdjustmentPrior.lcValue == null ? 0B : lossReserveAdjustmentPrior.lcValue))};
+end
 
 rule "Cost of Goods Sold Adjusted"
     when
