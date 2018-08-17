@@ -8,8 +8,10 @@ package com.flowserve.system606.service;
 import com.flowserve.system606.model.Contract;
 import com.flowserve.system606.model.FinancialPeriod;
 import com.flowserve.system606.model.Measurable;
+import com.flowserve.system606.model.MetricType;
 import com.flowserve.system606.model.PerformanceObligation;
 import com.flowserve.system606.model.PerformanceObligationGroup;
+import com.flowserve.system606.model.ReportingUnit;
 import com.flowserve.system606.model.RevenueMethod;
 import com.flowserve.system606.view.ViewSupport;
 import com.flowserve.system606.web.WebSession;
@@ -17,7 +19,14 @@ import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.List;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
@@ -41,6 +50,10 @@ public class ReportsService {
     @PersistenceContext(unitName = "FlowServePU")
     private EntityManager em;
     private static Logger logger = Logger.getLogger("com.flowserve.system606");
+    @Inject
+    private MetricService metricService;
+    @Inject
+    private AdminService adminService;
     @Inject
     private CalculationService calculationService;
     @Inject
@@ -819,6 +832,106 @@ public class ReportsService {
 
     private BigDecimal getAccuEstimatedGrossProfitLC(Measurable measureable, List<FinancialPeriod> qtdPeriods) throws Exception {
         return calculationService.getAccumulatedCurrencyMetricAcrossPeriods("ESTIMATED_GROSS_PROFIT_LC", measureable, qtdPeriods).getValue();
+    }
+
+    public void generatePobOutput(String inputFile) throws Exception {
+        Logger.getLogger(CurrencyService.class.getName()).log(Level.INFO, "Processing POCI Data: " + inputFile);
+        List<MetricType> metricTypes = metricService.getAllPobExcelInputMetricTypes();
+        Connection connection = null;
+        Statement statement = null;
+        ResultSet resultSet = null;
+        // Step 1: Loading or registering Oracle JDBC driver class
+        try {
+            Class.forName("net.ucanaccess.jdbc.UcanaccessDriver");
+        } catch (ClassNotFoundException cnfex) {
+            Logger.getLogger(CurrencyService.class.getName()).log(Level.INFO, "Problem in loading or registering MS Access JDBC driver");
+        }
+
+        try {
+            String dbURL = "jdbc:ucanaccess://" + inputFile;
+            Logger.getLogger(ReportsService.class.getName()).log(Level.INFO, "dbURL : " + dbURL);
+            connection = DriverManager.getConnection(dbURL);
+            PreparedStatement pst = connection.prepareStatement("INSERT INTO POB_Output "
+                    + "(RU_CODE, CONTRACT_ID, POB_NAME, REVENUE_RECOGNITION_METHOD, TRANSACTION_PRICE_CC,LIQUIDATED_DAMAGES_CTD_CC,"
+                    + "ESTIMATED_COST_AT_COMPLETION_LC,LOCAL_COSTS_CTD_LC,THIRD_PARTY_COSTS_CTD_LC,INTERCOMPANY_COSTS_CTD_LC,DELIVERY_DATE,"
+                    + "CUMULATIVE_COST_OF_GOODS_SOLD_LC,PARTIAL_SHIPMENT_COSTS_LC,TOTAL_TRANS_PRICE_CC,BOOKING_DATE,THIRD_PARTY_COMMISSION_CTD_LC,"
+                    + "THIRD_PARTY_COMMISSION_TO_RECOGNIZE_LC,ESTIMATED_GROSS_PROFIT_LC,CONTRACT_GROSS_PROFIT_LC,ESTIMATED_GROSS_MARGIN,PERCENT_COMPLETE,"
+                    + "CONTRACT_COST_TO_COMPLETE_LC,CONTRACT_BILLINGS_IN_EXCESS_LC,CONTRACT_REVENUE_IN_EXCESS_LC,CONTRACT_PERCENT_COMPLETE,COST_OF_GOODS_SOLD_CTD_LC,"
+                    + "COST_OF_GOODS_SOLD_PERIOD_LC,COST_GOODS_SOLD_BACKLOG_LC,CHANGE_IN_EAC_LC,REVENUE_TO_RECOGNIZE_CTD_CC,CONTRACT_REVENUE_TO_RECOGNIZE_CTD_CC,"
+                    + "REVENUE_TO_RECOGNIZE_PERIOD_CC,LIQUIDATED_DAMAGES_TO_RECOGNIZE_CTD_CC,LIQUIDATED_DAMAGES_TO_RECOGNIZE_PERIOD_CC,LIQUIDATED_DAMAGES_BACKLOG_CC,"
+                    + "NET_PERIOD_SALES_CC,TRANSACTION_PRICE_BACKLOG_CC,TRANSACTION_PRICE_NET_LD_LC,REMAINING_ESTIMATE_COMPLETE_LC,PROJECT_GAIN_LOSS_LC,"
+                    + "PROJECT_GAIN_LOSS_BACKLOG_LC,CTD_STANDARD_COSTS_COGS_LC,LOSS_CONTRACT_ADJUSTED_LC,TOTAL_COST_GOODS_SOLD_LC,LOSS_RESERVE_CTD_LC,"
+                    + "LOSS_RESERVE_PERIOD_ADJ_LC,LOSS_RESERVE_ADJ_CUMULATIVE_LC,GROSS_PROFIT_LOSS_PERIOD_LC) "
+                    + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?"
+                    + ", ?, ?, ?, ?, ?)");
+
+            String[] reportingUnits = {"1100", "5050",
+                "7866", "8405", "1205", "8225"};
+
+            for (String code : reportingUnits) {
+                ReportingUnit reportingUnit = adminService.findReportingUnitByCode(code);
+                for (Contract contract : reportingUnit.getContracts()) {
+                    for (PerformanceObligation pob : contract.getPerformanceObligations()) {
+                        Logger.getLogger(WebSession.class.getName()).log(Level.FINER, "Adding to tree POB ID: " + pob.getId());
+                        //pst.setString(1,name);
+                        pst.setString(1, reportingUnit.getCode());
+                        pst.setString(2, String.valueOf(contract.getId()));
+                        pst.setString(3, pob.getName());
+                        pst.setBigDecimal(4, BigDecimal.ZERO);//TODO REVENUE_RECOGNITION_METHOD
+                        pst.setBigDecimal(5, viewSupport.getCurrencyMetric("TRANSACTION_PRICE_CC", pob).getCcValue());
+                        pst.setBigDecimal(6, viewSupport.getCurrencyMetric("LIQUIDATED_DAMAGES_CTD_CC", pob).getCcValue());
+                        pst.setBigDecimal(7, viewSupport.getCurrencyMetric("ESTIMATED_COST_AT_COMPLETION_LC", pob).getLcValue());
+                        pst.setBigDecimal(8, viewSupport.getCurrencyMetric("LOCAL_COSTS_CTD_LC", pob).getLcValue());
+                        pst.setBigDecimal(9, viewSupport.getCurrencyMetric("THIRD_PARTY_COSTS_CTD_LC", pob).getLcValue());
+                        pst.setBigDecimal(10, viewSupport.getCurrencyMetric("INTERCOMPANY_COSTS_CTD_LC", pob).getLcValue());
+                        pst.setDate(11, null);//TODO DELIVERY_DATE
+                        pst.setBigDecimal(12, viewSupport.getCurrencyMetric("CUMULATIVE_COST_OF_GOODS_SOLD_LC", pob).getLcValue());
+                        pst.setBigDecimal(13, viewSupport.getCurrencyMetric("PARTIAL_SHIPMENT_COSTS_LC", pob).getLcValue());
+                        pst.setBigDecimal(14, BigDecimal.ZERO);//TODO NPE viewSupport.getCurrencyMetric("TOTAL_TRANS_PRICE_CC", pob).getCcValue());
+                        pst.setDate(15, null);//TODO BOOKING_DATE
+                        pst.setBigDecimal(16, BigDecimal.ZERO);//TODO NEP viewSupport.getCurrencyMetric("THIRD_PARTY_COMMISSION_CTD_LC", pob).getLcValue());
+                        pst.setBigDecimal(17, viewSupport.getCurrencyMetric("THIRD_PARTY_COMMISSION_TO_RECOGNIZE_LC", pob).getLcValue());
+                        pst.setBigDecimal(18, viewSupport.getCurrencyMetric("ESTIMATED_GROSS_PROFIT_LC", pob).getLcValue());
+                        pst.setBigDecimal(19, viewSupport.getCurrencyMetric("CONTRACT_GROSS_PROFIT_LC", pob).getLcValue());
+                        pst.setBigDecimal(20, viewSupport.getDecimalMetric("ESTIMATED_GROSS_MARGIN", pob).getValue());
+                        pst.setBigDecimal(21, viewSupport.getDecimalMetric("PERCENT_COMPLETE", pob).getValue());
+                        pst.setBigDecimal(22, viewSupport.getCurrencyMetric("CONTRACT_COST_TO_COMPLETE_LC", pob).getLcValue());
+                        pst.setBigDecimal(23, viewSupport.getCurrencyMetric("CONTRACT_BILLINGS_IN_EXCESS_LC", pob).getLcValue());
+                        pst.setBigDecimal(24, viewSupport.getCurrencyMetric("CONTRACT_REVENUE_IN_EXCESS_LC", pob).getLcValue());
+                        pst.setBigDecimal(25, viewSupport.getDecimalMetric("CONTRACT_PERCENT_COMPLETE", pob).getValue());
+                        pst.setBigDecimal(26, viewSupport.getCurrencyMetric("COST_OF_GOODS_SOLD_CTD_LC", pob).getLcValue());
+                        pst.setBigDecimal(27, viewSupport.getCurrencyMetric("COST_OF_GOODS_SOLD_PERIOD_LC", pob).getLcValue());
+                        pst.setBigDecimal(28, viewSupport.getCurrencyMetric("COST_GOODS_SOLD_BACKLOG_LC", pob).getLcValue());
+                        pst.setBigDecimal(29, viewSupport.getCurrencyMetric("CHANGE_IN_EAC_LC", pob).getLcValue());
+                        pst.setBigDecimal(30, viewSupport.getCurrencyMetric("REVENUE_TO_RECOGNIZE_CTD_CC", pob).getCcValue());
+                        pst.setBigDecimal(31, viewSupport.getCurrencyMetric("CONTRACT_REVENUE_TO_RECOGNIZE_CTD_CC", pob).getCcValue());
+                        pst.setBigDecimal(32, viewSupport.getCurrencyMetric("REVENUE_TO_RECOGNIZE_PERIOD_CC", pob).getCcValue());
+                        pst.setBigDecimal(33, viewSupport.getCurrencyMetric("LIQUIDATED_DAMAGES_TO_RECOGNIZE_CTD_CC", pob).getCcValue());
+                        pst.setBigDecimal(34, viewSupport.getCurrencyMetric("LIQUIDATED_DAMAGES_TO_RECOGNIZE_PERIOD_CC", pob).getCcValue());
+                        pst.setBigDecimal(35, viewSupport.getCurrencyMetric("LIQUIDATED_DAMAGES_BACKLOG_CC", pob).getCcValue());
+                        pst.setBigDecimal(36, viewSupport.getCurrencyMetric("NET_PERIOD_SALES_CC", pob).getCcValue());
+                        pst.setBigDecimal(37, viewSupport.getCurrencyMetric("TRANSACTION_PRICE_BACKLOG_CC", pob).getCcValue());
+                        pst.setBigDecimal(38, viewSupport.getCurrencyMetric("TRANSACTION_PRICE_NET_LD_LC", pob).getLcValue());
+                        pst.setBigDecimal(39, viewSupport.getCurrencyMetric("REMAINING_ESTIMATE_COMPLETE_LC", pob).getLcValue());
+                        pst.setBigDecimal(40, viewSupport.getCurrencyMetric("PROJECT_GAIN_LOSS_LC", pob).getLcValue());
+                        pst.setBigDecimal(41, viewSupport.getCurrencyMetric("PROJECT_GAIN_LOSS_BACKLOG_LC", pob).getLcValue());
+                        pst.setBigDecimal(42, viewSupport.getCurrencyMetric("CTD_STANDARD_COSTS_COGS_LC", pob).getLcValue());
+                        pst.setBigDecimal(43, viewSupport.getCurrencyMetric("LOSS_CONTRACT_ADJUSTED_LC", pob).getLcValue());
+                        pst.setBigDecimal(44, viewSupport.getCurrencyMetric("TOTAL_COST_GOODS_SOLD_LC", pob).getLcValue());
+                        pst.setBigDecimal(45, viewSupport.getCurrencyMetric("LOSS_RESERVE_CTD_LC", pob).getLcValue());
+                        pst.setBigDecimal(46, viewSupport.getCurrencyMetric("LOSS_RESERVE_PERIOD_ADJ_LC", pob).getLcValue());
+                        pst.setBigDecimal(47, viewSupport.getCurrencyMetric("LOSS_RESERVE_ADJ_CUMULATIVE_LC", pob).getLcValue());
+                        pst.setBigDecimal(48, viewSupport.getCurrencyMetric("GROSS_PROFIT_LOSS_PERIOD_LC", pob).getLcValue());
+
+                        pst.executeUpdate();
+                    }
+                }
+            }
+
+        } catch (SQLException sqlex) {
+            sqlex.printStackTrace();
+        }
+
     }
 
 }

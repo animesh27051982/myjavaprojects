@@ -431,6 +431,7 @@ public class CurrencyService {
 
         try {
             String dbURL = "jdbc:ucanaccess://" + msAccDB;
+            Logger.getLogger(CurrencyService.class.getName()).log(Level.INFO, "dbURL1: " + dbURL);
             connection = DriverManager.getConnection(dbURL);
             statement = connection.createStatement();
             resultSet = statement.executeQuery("SELECT Period FROM `tbl_ExchangeRates` GROUP BY Period");
