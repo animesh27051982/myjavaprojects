@@ -29,6 +29,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionManagement;
@@ -64,6 +65,21 @@ public class BatchProcessingService {
     private UserTransaction ut;
     private Map<String, RevenueMethod> methodMap = new HashMap<String, RevenueMethod>();
     private static Logger logger = Logger.getLogger(BatchProcessingService.class.getName());
+    private List<String> reportingUnitsToProcess = new ArrayList<String>();
+
+    public BatchProcessingService() {
+
+    }
+
+    @PostConstruct
+    public void init() {
+        reportingUnitsToProcess.add("1100");
+        reportingUnitsToProcess.add("5050");
+        reportingUnitsToProcess.add("7866");
+        reportingUnitsToProcess.add("8405");
+        reportingUnitsToProcess.add("1205");
+        reportingUnitsToProcess.add("8225");
+    }
 
     //@Asynchronous
     public void calculateAllFinancials(List<ReportingUnit> reportingUnits, FinancialPeriod startPeriod) throws Exception {
@@ -73,33 +89,52 @@ public class BatchProcessingService {
             if (reportingUnit.isParent()) {
                 continue;
             }
+
+            if (!reportingUnitsToProcess.contains(reportingUnit.getCode())) {
+                continue;
+            }
+
+            int pobCount = 0;
             try {
                 ut.begin();
                 logger.log(Level.INFO, "Calculating RU: " + reportingUnit.getCode() + " POB Count: " + reportingUnit.getPerformanceObligations().size());
 
-                FinancialPeriod calculationPeriod;
+//                FinancialPeriod calculationPeriod;
+                calculationService.calculateAndSave(reportingUnit, startPeriod);
 
-                for (Contract contract : reportingUnit.getContracts()) {
-                    for (PerformanceObligation pob : contract.getPerformanceObligations()) {
-                        calculationPeriod = startPeriod;
-                        do {
-                            calculationService.executeBusinessRulesAndSave(pob, calculationPeriod);
-                        } while ((calculationPeriod = financialPeriodService.calculateNextPeriodUntilCurrent(calculationPeriod)) != null);
-                    }
-                    calculationPeriod = startPeriod;
-                    do {
-                        calculationService.executeBusinessRulesAndSave(contract, calculationPeriod);
-                    } while ((calculationPeriod = financialPeriodService.calculateNextPeriodUntilCurrent(calculationPeriod)) != null);
-                }
-//                do {
-//                    calculationService.executeBusinessRulesAndSave((new ArrayList<Measurable>(reportingUnit.getPerformanceObligations())), calculationPeriod);
-//                } while ((calculationPeriod = financialPeriodService.calculateNextPeriodUntilCurrent(calculationPeriod)) != null);
+//                for (Contract contract : reportingUnit.getContracts()) {
+//                    for (PerformanceObligation pob : contract.getPerformanceObligations()) {
+//                        calculationPeriod = startPeriod;
+//                        try {
+//                            do {
+//                                calculationService.executeBusinessRulesAndSave(pob, calculationPeriod);
+//                            } while ((calculationPeriod = financialPeriodService.calculateNextPeriodUntilCurrent(calculationPeriod)) != null);
+//                        } catch (Exception e) {
+//                            Logger.getLogger(BatchProcessingService.class.getName()).log(Level.SEVERE, "Error calculating POB: " + pob.getId(), e);
+//                        }
+//                        pobCount++;
+//                        if ((pobCount % 10) == 0) {
+//                            logger.info("POB Count: " + pobCount);
+//                        }
+//                    }
 //
-//                calculationPeriod = startPeriod;
-//                do {
-//                    calculationService.executeBusinessRulesAndSave((new ArrayList<Measurable>(reportingUnit.getContracts())), calculationPeriod);
-//                } while ((calculationPeriod = financialPeriodService.calculateNextPeriodUntilCurrent(calculationPeriod)) != null);
-
+//                    calculationPeriod = startPeriod;
+//                    try {
+//                        do {
+//                            calculationService.executeBusinessRulesAndSave(contract, calculationPeriod);
+//                        } while ((calculationPeriod = financialPeriodService.calculateNextPeriodUntilCurrent(calculationPeriod)) != null);
+//                    } catch (Exception exception) {
+//                        Logger.getLogger(BatchProcessingService.class.getName()).log(Level.SEVERE, "Error calulating contract: " + contract.getId(), exception);
+//                    }
+//                }
+////                do {
+////                    calculationService.executeBusinessRulesAndSave((new ArrayList<Measurable>(reportingUnit.getPerformanceObligations())), calculationPeriod);
+////                } while ((calculationPeriod = financialPeriodService.calculateNextPeriodUntilCurrent(calculationPeriod)) != null);
+////
+////                calculationPeriod = startPeriod;
+////                do {
+////                    calculationService.executeBusinessRulesAndSave((new ArrayList<Measurable>(reportingUnit.getContracts())), calculationPeriod);
+////                } while ((calculationPeriod = financialPeriodService.calculateNextPeriodUntilCurrent(calculationPeriod)) != null);
                 logger.log(Level.INFO, "Flushing and clearing EntityManager");
                 em.flush();
                 em.clear();
@@ -127,9 +162,9 @@ public class BatchProcessingService {
             logger.info("Processing POCI Core finance data");
             processPOCIData(connection, statement, fileName);
             logger.info("Processing POCI billing data");
-            //processBillingInfoFromPOCI(connection, statement, fileName);
+            processBillingInfoFromPOCI(connection, statement, fileName);
             logger.info("Processing POCI Third Party Commission data.");
-            //processPOCIThirdPartyCommissions(connection, statement, fileName);
+            processPOCIThirdPartyCommissions(connection, statement, fileName);
         } catch (Exception e) {
             logger.log(Level.INFO, "Error processing POCI/O data: ", e);
         } finally {
@@ -204,11 +239,12 @@ public class BatchProcessingService {
                         // checking valid integer using parseInt() method
                         Integer.parseInt(lastId);
                         PerformanceObligation pob = performanceObligationService.findPerformanceObligationById(new Long(lastId));
+
                         if (pob != null) {
                             ReportingUnit ru = pob.getContract().getReportingUnit();
+
                             if (ru == null) {
-                                //String msg = "No local currency found for RU: " + ru.getCode();
-                                //importMSG.add(msg);
+                                importMessages.add("RU is null for POB ID: " + lastId);
                                 logger.log(Level.INFO, "RU is null ");
                                 continue;
                             }
@@ -517,7 +553,7 @@ public class BatchProcessingService {
         long contractId = -1;
         String customerName = null;
         String salesOrderNumber = null;
-        String pobName = null;
+        String pobDesc = null;
         long pobId = -1;
         String revRecMethod = null;
 
@@ -527,60 +563,66 @@ public class BatchProcessingService {
         int count = 0;
 
         resultSet = statement.executeQuery("SELECT ID, Name, Stage, Folders, `Name of POb`, `If OT, identify the revenue recognition method`, `C-Page ID` FROM tbl_POb");
-        ut.begin();
-        while (resultSet.next()) {
 
-            PerformanceObligation pob = new PerformanceObligation();
-            pobId = resultSet.getInt(1);
+        try {
+            ut.begin();
 
-            if (performanceObligationService.findById(pobId) != null) {
-                continue;
+            while (resultSet.next()) {
+
+                PerformanceObligation pob = new PerformanceObligation();
+                pobId = resultSet.getInt(1);
+
+                if (performanceObligationService.findById(pobId) != null) {
+                    continue;
+                }
+                customerName = resultSet.getString(2);
+                revRecMethod = resultSet.getString(6);
+                contractId = resultSet.getInt(7);
+                Contract contract = contractService.findContractById(contractId);
+
+                if (contract == null) {
+                    importMessages.add("POB refers to non-existent contract.  Invalid.  POB ID: " + pobId + " contract Id: " + contractId);
+                    //Logger.getLogger(AppInitializeService.class.getName()).log(Level.WARNING, "POB refers to non-existent contract.  Invalid.  POB ID: " + pobId + " contract Id: " + contractId);
+                    continue;
+                } else {
+                    pob.setContract(contract);
+                }
+
+                pob.setId(pobId);
+                if (methodMap.get(revRecMethod) == null) {
+                    importMessages.add("POB revrec method not in our list: " + revRecMethod);
+                    logger.log(Level.INFO, "POB revrec method not in our list: " + revRecMethod + " pobId: " + pobId);
+                }
+                RevenueMethod revMethod = methodMap.get(revRecMethod);
+                pob.setRevenueMethod(revMethod);
+                pob.setName((revMethod != null ? revMethod.getShortName() : "") + "-" + pobId);
+                pob.setDescription(resultSet.getString(2));
+                //pobService.update(pob);  // update or persist?
+                performanceObligationService.persist(pob);
+                contract.getPerformanceObligations().add(pob);
+                contractService.update(contract);
+
+                count++;
+                if ((count % 1000) == 0) {
+                    Logger.getLogger(AppInitializeService.class.getName()).log(Level.INFO, "POB import count: " + count);
+                }
             }
-            customerName = resultSet.getString(2);
-            pobName = pobId + "-" + resultSet.getString(2);
-            revRecMethod = resultSet.getString(6);
-
-            contractId = resultSet.getInt(7);
-
-            Contract contract = contractService.findContractById(contractId);
-
-            if (contract == null) {
-                importMessages.add("POB refers to non-existent contract.  Invalid.  POB ID: " + pobId + " contract Id: " + contractId);
-                //Logger.getLogger(AppInitializeService.class.getName()).log(Level.WARNING, "POB refers to non-existent contract.  Invalid.  POB ID: " + pobId + " contract Id: " + contractId);
-                continue;
-            } else {
-                pob.setContract(contract);
-            }
-            pob.setName(pobName);
-            pob.setId(pobId);
-            if (methodMap.get(revRecMethod) == null) {
-                importMessages.add("POB revrec method not in our list: " + revRecMethod);
-                //logger.log(Level.SEVERE, "POB revrec method not in our list: " + revRecMethod);
-            }
-            pob.setRevenueMethod(methodMap.get(revRecMethod));
-
-            //pobService.update(pob);  // update or persist?
-            performanceObligationService.persist(pob);
-            contract.getPerformanceObligations().add(pob);
-            contractService.update(contract);
-
-            count++;
-            if ((count % 1000) == 0) {
-                Logger.getLogger(AppInitializeService.class.getName()).log(Level.INFO, "Contract import count: " + count);
-            }
+            dataImport.setFilename(fileName + " - tbl_POb");
+            dataImport.setUploadDate(LocalDateTime.now());
+            dataImport.setCompany(adminService.findCompanyById("FLS"));
+            dataImport.setDataImportMessages(importMessages);
+            dataImport.setType("Contract and Pobs");
+            adminService.persist(dataImport);
+            logger.log(Level.INFO, "Flushing and clearing EntityManager");
+            resultSet.close();
+            em.flush();
+            em.clear();
+            ut.commit();
+        } catch (Exception e) {
+            Logger.getLogger(BatchProcessingService.class.getName()).log(Level.INFO, "Error: ", e);
+            ut.rollback();
         }
 
-        dataImport.setFilename(fileName + " - tbl_POb");
-        dataImport.setUploadDate(LocalDateTime.now());
-        dataImport.setCompany(adminService.findCompanyById("FLS"));
-        dataImport.setDataImportMessages(importMessages);
-        dataImport.setType("Contract and Pobs");
-        adminService.persist(dataImport);
-        logger.log(Level.INFO, "Flushing and clearing EntityManager");
-        em.flush();
-        em.clear();
-        ut.commit();
-        resultSet.close();
         logger.log(Level.INFO, "POB imoprt complete.");
     }
 

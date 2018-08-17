@@ -213,7 +213,7 @@ public class ViewSupport implements Serializable {
             for (Contract contract : reportingUnit.getContracts()) {
                 Logger.getLogger(WebSession.class.getName()).log(Level.FINER, "Adding to tree Contract Name: " + contract.getName());
                 TreeNode contractNode = new DefaultTreeNode(contract, reportingUnitNode);
-                contractNode.setExpanded(true);
+                contractNode.setExpanded(false);
                 for (BillingEvent billEvent : contract.getBillingEvents()) {
                     Logger.getLogger(WebSession.class.getName()).log(Level.FINER, "Adding to tree POB ID: " + billEvent.getId());
                     new DefaultTreeNode(billEvent, contractNode);
@@ -406,6 +406,10 @@ public class ViewSupport implements Serializable {
 
     public String getMetricTypeDescription(String metricCode) {
         return metricService.findMetricTypeByCode(metricCode).getDescription();
+    }
+
+    public String getMetricTypeName(String metricCode) {
+        return metricService.findMetricTypeByCode(metricCode).getName();
     }
 
     public CurrencyMetric getCurrencyMetric(String metricCode, Measurable measurable) throws Exception {

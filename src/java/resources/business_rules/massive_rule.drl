@@ -37,12 +37,14 @@ end
 rule "Cost of Goods Sold CTD"
     when
         pob : PerformanceObligation()
-        localCostsCTD : CurrencyMetric(metricType.code == "LOCAL_COSTS_CTD_LC", lcValue != null)
-        thirdPartyCostsCTD : CurrencyMetric(metricType.code == "THIRD_PARTY_COSTS_CTD_LC", lcValue != null)
-        intercoCostsCTD : CurrencyMetric(metricType.code == "INTERCOMPANY_COSTS_CTD_LC", lcValue != null)
+        localCostsCTD : CurrencyMetric(metricType.code == "LOCAL_COSTS_CTD_LC")
+        thirdPartyCostsCTD : CurrencyMetric(metricType.code == "THIRD_PARTY_COSTS_CTD_LC")
+        intercoCostsCTD : CurrencyMetric(metricType.code == "INTERCOMPANY_COSTS_CTD_LC")
         costOfGoodsSoldCTD : CurrencyMetric(metricType.code == "COST_OF_GOODS_SOLD_CTD_LC")
     then
-        modify (costOfGoodsSoldCTD) { lcValue = (localCostsCTD.lcValue + thirdPartyCostsCTD.lcValue + intercoCostsCTD.lcValue)};
+        modify (costOfGoodsSoldCTD) { lcValue = ((localCostsCTD.lcValue == null ? 0B : localCostsCTD.lcValue) +
+                                                (thirdPartyCostsCTD.lcValue == null ? 0B : thirdPartyCostsCTD.lcValue) +
+                                                (intercoCostsCTD.lcValue == null ? 0B : intercoCostsCTD.lcValue))};
 end
 
 rule "Cost of Goods Sold Period"
@@ -217,15 +219,29 @@ rule "Transaction Price Net LD"
         modify (transactionPriceNetLD) { lcValue = (transactionPrice.lcValue - liquidatedDamagesCTD.lcValue)};
 end
 
-rule "Projected Gain/Loss"
+//rule "Projected Gain/Loss"
+//    when
+//        pob : PerformanceObligation()
+//        transactionPriceNetLD : CurrencyMetric(metricType.code == "TRANSACTION_PRICE_NET_LD_LC", lcValue != null)
+//        estimatedCostAtCompletion : CurrencyMetric(metricType.code == "ESTIMATED_COST_AT_COMPLETION_LC", lcValue != null)
+//        projectedGainLoss : CurrencyMetric(metricType.code == "PROJECT_GAIN_LOSS_LC")
+ //   then
+//        modify (projectedGainLoss) { lcValue = (transactionPriceNetLD.lcValue - estimatedCostAtCompletion.lcValue)};
+//end
+
+rule "Projected Gain/Loss in Backlog"
     when
         pob : PerformanceObligation()
-        transactionPriceNetLD : CurrencyMetric(metricType.code == "TRANSACTION_PRICE_NET_LD_LC", lcValue != null)
-        estimatedCostAtCompletion : CurrencyMetric(metricType.code == "ESTIMATED_COST_AT_COMPLETION_LC", lcValue != null)
-        projectedGainLoss : CurrencyMetric(metricType.code == "PROJECT_GAIN_LOSS_LC")
+        transactionPriceNetLD : CurrencyMetric(metricType.code == "TRANSACTION_PRICE_BACKLOG_CC", lcValue != null)
+        liquidatedDamagesBacklog : CurrencyMetric(metricType.code == "LIQUIDATED_DAMAGES_BACKLOG_CC", lcValue != null)
+        costOfGoodsSoldBacklog : CurrencyMetric(metricType.code == "COST_GOODS_SOLD_BACKLOG_LC", lcValue != null)
+        projectedGainLossBacklog : CurrencyMetric(metricType.code == "PROJECT_GAIN_LOSS_BACKLOG_LC")
     then
-        modify (projectedGainLoss) { lcValue = (transactionPriceNetLD.lcValue - estimatedCostAtCompletion.lcValue)};
+        modify (projectedGainLossBacklog) { lcValue = (transactionPriceNetLD.lcValue - liquidatedDamagesBacklog.lcValue - costOfGoodsSoldBacklog.lcValue)};
 end
+
+
+
 
 rule "Contract Level Estimated Gross Profit and Margin"
     when
@@ -280,21 +296,41 @@ end
 rule "Loss Reserve"
     when
         contract : Contract()
-        gainLoss : CurrencyMetric(metricType.code == "PROJECT_GAIN_LOSS_LC", value != null)
+        gainLoss : CurrencyMetric(metricType.code == "PROJECT_GAIN_LOSS_BACKLOG_LC", value != null)
         lossReserve : CurrencyMetric(metricType.code == "LOSS_RESERVE_CTD_LC")
     then
         modify (lossReserve) { value = (gainLoss.value >= 0B ? 0B : gainLoss.value) };
 end
 
-rule "Loss Reserve Adjustment"
-    when
-        contract : Contract()
-        lossReserve : CurrencyMetric(metricType.code == "LOSS_RESERVE_CTD_LC", lcValue != null)
-        priorPeriodLossReserve : CurrencyMetricPriorPeriod(metricType.code == "LOSS_RESERVE_CTD_LC")
-        lossReserveAdjustment : CurrencyMetric(metricType.code == "LOSS_RESERVE_PERIOD_ADJ_LC")
-    then
-        modify (lossReserveAdjustment) { lcValue = (priorPeriodLossReserve.lcValue == null ? lossReserve.lcValue : lossReserve.lcValue - priorPeriodLossReserve.lcValue) };
-end
+//rule "Loss Reserve Adjustment Old Spec"
+//    when
+//        contract : Contract()
+//        lossReserve : CurrencyMetric(metricType.code == "LOSS_RESERVE_CTD_LC", lcValue != null)
+//        priorPeriodLossReserve : CurrencyMetricPriorPeriod(metricType.code == "LOSS_RESERVE_CTD_LC")
+//        lossReserveAdjustment : CurrencyMetric(metricType.code == "LOSS_RESERVE_PERIOD_ADJ_LC")
+//    then
+//        modify (lossReserveAdjustment) { lcValue = (priorPeriodLossReserve.lcValue == null ? lossReserve.lcValue : lossReserve.lcValue - priorPeriodLossReserve.lcValue) };
+//end
+
+//rule "Loss Reserve Adjustment"
+//    when
+//        contract : Contract()
+//        lossReserveAdjustmentCumulativePrior : CurrencyMetricPriorPeriod(metricType.code == "LOSS_RESERVE_ADJ_CUMULATIVE_LC")
+//        projectedGainLossBacklog : CurrencyMetric(metricType.code == "PROJECT_GAIN_LOSS_BACKLOG_LC")
+//        lossReserveAdjustment : CurrencyMetric(metricType.code == "LOSS_RESERVE_PERIOD_ADJ_LC")
+//    then
+//        modify (lossReserveAdjustment) { lcValue = ((lossReserveAdjustmentCumulativePrior.lcValue == null ? 0B : lossReserveAdjustmentCumulativePrior.lcValue) + (projectedGainLossBacklog.lcValue == null ? 0B : projectedGainLossBacklog.lcValue)};
+//end
+
+//rule "Loss Reserve Adjustment Cumulative"
+//    when
+//        contract : Contract()
+//        lossReserveAdjustmentPrior : CurrencyMetricPriorPeriod(metricType.code == "LOSS_RESERVE_ADJ_CUMULATIVE_LC")
+//        lossReserveAdjustmentCumulative : CurrencyMetric(metricType.code == "LOSS_RESERVE_ADJ_CUMULATIVE_LC")
+//    then
+//        logger.info("Calculating Cumulative Loss Adjustment");
+//       modify (lossReserveAdjustmentCumulative) {lcValue = (lossReserveAdjustment.lcValue + (lossReserveAdjustmentPrior.lcValue == null ? 0B : lossReserveAdjustmentPrior.lcValue))};
+//end
 
 rule "Cost of Goods Sold Adjusted"
     when

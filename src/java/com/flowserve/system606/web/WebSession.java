@@ -75,7 +75,8 @@ public class WebSession implements Serializable {
 
     public void switchPeriod(FinancialPeriod newCurrentPeriod) {
         currentPeriod = newCurrentPeriod;
-        priorPeriod = financialPeriodService.calculatePriorPeriod(currentPeriod);
+        priorPeriod = currentPeriod.getPriorPeriod();
+        //priorPeriod = financialPeriodService.calculatePriorPeriod(currentPeriod);
     }
 
     public BusinessUnit getEditBusinessUnit() {

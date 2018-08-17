@@ -41,6 +41,8 @@ public class ReportingUnit extends TransientMeasurable<Long> implements Measurab
     private Long id;
     @Column(name = "NAME")
     private String name;
+    @Column(name = "DESCRIPTION")
+    private String description;
     @Column(name = "CODE")
     private String code;
     @ManyToOne
@@ -283,5 +285,13 @@ public class ReportingUnit extends TransientMeasurable<Long> implements Measurab
 
     public void setReviewers(List<User> reviewers) {
         this.reviewers = reviewers;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 }

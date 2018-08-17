@@ -42,6 +42,8 @@ public class Contract extends BaseEntity<Long> implements MetricStore, Measurabl
     private Long id;
     @Column(name = "NAME")
     private String name;
+    @Column(name = "DESCRIPTION")
+    private String description;
     @Column(name = "CONTRACT_TYPE_ID")
     private ContractType contractType;
     @ManyToOne
@@ -323,5 +325,13 @@ public class Contract extends BaseEntity<Long> implements MetricStore, Measurabl
 
     public void setActive(boolean active) {
         this.active = active;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 }

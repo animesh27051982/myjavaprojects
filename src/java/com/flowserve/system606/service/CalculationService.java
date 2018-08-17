@@ -28,6 +28,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.annotation.PostConstruct;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import static javax.ejb.TransactionAttributeType.NOT_SUPPORTED;
@@ -64,6 +65,12 @@ public class CalculationService {
     private MetricService metricService;
     private StatelessKieSession kSession = null;
     private static final String PACKAGE_PREFIX = "com.flowserve.system606.model.";
+    private List<MetricType> metricTypes = null;
+
+    @PostConstruct
+    public void init() {
+        metricTypes = metricService.findActiveMetricTypes();
+    }
 
     //@PostConstruct
     public void initBusinessRulesEngine() {
@@ -184,35 +191,35 @@ public class CalculationService {
         return metric != null;
     }
 
-    public void calculateAndSave(List<ReportingUnit> reportingUnits, FinancialPeriod period) throws Exception {
-
-        for (ReportingUnit reportingUnit : reportingUnits) {
-            if (reportingUnit.isParent()) {
-                continue;
-            }
-            Logger.getLogger(CalculationService.class.getName()).log(Level.INFO, "Calculating RU: " + reportingUnit.getCode() + "...");
-
-            FinancialPeriod calculationPeriod = period;
-            do {
-                Logger.getLogger(CalculationService.class.getName()).log(Level.INFO, "Recalcing POBs for period: " + calculationPeriod.getId());
-                executeBusinessRulesAndSave((new ArrayList<Measurable>(reportingUnit.getPerformanceObligations())), calculationPeriod);
-            } while ((calculationPeriod = financialPeriodService.calculateNextPeriodUntilCurrent(calculationPeriod)) != null);
-
-            calculationPeriod = period;
-            do {
-                Logger.getLogger(CalculationService.class.getName()).log(Level.INFO, "Recalcing Contracts for period: " + calculationPeriod.getId());
-                executeBusinessRulesAndSave((new ArrayList<Measurable>(reportingUnit.getContracts())), calculationPeriod);
-            } while ((calculationPeriod = financialPeriodService.calculateNextPeriodUntilCurrent(calculationPeriod)) != null);
-            Logger.getLogger(CalculationService.class.getName()).log(Level.INFO, "Completed calcs RU: " + reportingUnit.getCode());
-        }
-    }
-
     public void calculateAndSave(ReportingUnit reportingUnit, FinancialPeriod period) throws Exception {
-        List<ReportingUnit> rus = new ArrayList<ReportingUnit>();
-        rus.add(reportingUnit);
-        calculateAndSave(rus, period);
+
+        //for (ReportingUnit reportingUnit : reportingUnits) {
+        if (reportingUnit.isParent()) {
+            Logger.getLogger(CalculationService.class.getName()).log(Level.INFO, "RU is parent, skipping calcs: " + reportingUnit.getCode());
+            return;
+        }
+        Logger.getLogger(CalculationService.class.getName()).log(Level.INFO, "Calculating RU: " + reportingUnit.getCode() + "...");
+
+        FinancialPeriod calculationPeriod = period;
+        do {
+            Logger.getLogger(CalculationService.class.getName()).log(Level.INFO, "Recalcing POBs for period: " + calculationPeriod.getId());
+            executeBusinessRulesAndSave((new ArrayList<Measurable>(reportingUnit.getPerformanceObligations())), calculationPeriod);
+        } while ((calculationPeriod = financialPeriodService.calculateNextPeriodUntilCurrent(calculationPeriod)) != null);
+
+        calculationPeriod = period;
+        do {
+            Logger.getLogger(CalculationService.class.getName()).log(Level.INFO, "Recalcing Contracts for period: " + calculationPeriod.getId());
+            executeBusinessRulesAndSave((new ArrayList<Measurable>(reportingUnit.getContracts())), calculationPeriod);
+        } while ((calculationPeriod = financialPeriodService.calculateNextPeriodUntilCurrent(calculationPeriod)) != null);
+        Logger.getLogger(CalculationService.class.getName()).log(Level.INFO, "Completed calcs RU: " + reportingUnit.getCode());
+        //    }
     }
 
+//    public void calculateAndSave(ReportingUnit reportingUnit, FinancialPeriod period) throws Exception {
+//        List<ReportingUnit> rus = new ArrayList<ReportingUnit>();
+//        rus.add(reportingUnit);
+//        calculateAndSave(rus, period);
+//    }
     // KJG TODO - More validity work needed.  Just checking TP not good enough.
     private boolean isValidForCalculations(Measurable measurable, FinancialPeriod period) throws Exception {
         if (measurable instanceof PerformanceObligation) {
@@ -294,7 +301,6 @@ public class CalculationService {
 
     private Collection<Metric> getAllMetrics(Measurable measurable, FinancialPeriod period) throws Exception {
 
-        List<MetricType> metricTypes = metricService.findActiveMetricTypes();
         List<Metric> metrics = new ArrayList<Metric>();
         for (MetricType metricType : metricTypes) {
 
@@ -324,7 +330,9 @@ public class CalculationService {
     }
 
     private Collection<CurrencyMetricPriorPeriod> getAllPriorPeriodMetrics(Measurable measurable, FinancialPeriod currentPeriod) throws Exception {
-        FinancialPeriod priorPeriod = financialPeriodService.calculatePriorPeriod(currentPeriod);
+        //FinancialPeriod priorPeriod = financialPeriodService.calculatePriorPeriod(currentPeriod);
+        FinancialPeriod priorPeriod = currentPeriod.getPriorPeriod();
+
         Collection<Metric> metrics = getAllMetrics(measurable, priorPeriod);
         List<CurrencyMetricPriorPeriod> priorPeriodMetrics = new ArrayList<CurrencyMetricPriorPeriod>();
         for (Metric metric : metrics) {

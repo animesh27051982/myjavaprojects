@@ -64,6 +64,12 @@ public class FinancialPeriod extends BaseEntity<String> implements Comparable<Fi
     @OneToOne
     @JoinColumn(name = "REPORTING_CURRENCY_RATE_PERIOD")
     private FinancialPeriod reportingCurrencyRatePeriod;
+    @OneToOne
+    @JoinColumn(name = "NEXT_PERIOD_ID")
+    private FinancialPeriod nextPeriod;
+    @OneToOne
+    @JoinColumn(name = "PRIOR_PERIOD_ID")
+    private FinancialPeriod priorPeriod;
 
     public FinancialPeriod() {
     }
@@ -221,6 +227,22 @@ public class FinancialPeriod extends BaseEntity<String> implements Comparable<Fi
 
     public void setReportingCurrencyRatePeriod(FinancialPeriod reportingCurrencyRatePeriod) {
         this.reportingCurrencyRatePeriod = reportingCurrencyRatePeriod;
+    }
+
+    public FinancialPeriod getNextPeriod() {
+        return nextPeriod;
+    }
+
+    public void setNextPeriod(FinancialPeriod nextPeriod) {
+        this.nextPeriod = nextPeriod;
+    }
+
+    public FinancialPeriod getPriorPeriod() {
+        return priorPeriod;
+    }
+
+    public void setPriorPeriod(FinancialPeriod priorPeriod) {
+        this.priorPeriod = priorPeriod;
     }
 
 }

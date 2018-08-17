@@ -30,6 +30,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.annotation.PostConstruct;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
@@ -48,7 +49,6 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
  * @author shubhamv
  */
 @Stateless
-
 public class CurrencyService {
 
     private static final Logger logger = Logger.getLogger(CurrencyService.class.getName());
@@ -60,7 +60,21 @@ public class CurrencyService {
     FinancialPeriodService financialPeriodService;
     @Inject
     AdminService adminService;
-    private static Map<String, ExchangeRate> exchangeRateCache = new HashMap<String, ExchangeRate>();
+    private Map<String, ExchangeRate> exchangeRateCache = new HashMap<String, ExchangeRate>();
+
+    @PostConstruct
+    public void init() {
+        Logger.getLogger(CurrencyService.class.getName()).log(Level.INFO, "Pre-cache Fx Rates..");
+        try {
+            for (ExchangeRate rate : findAllRates()) {
+                String cacheKey = rate.getFinancialPeriod().getId() + rate.getFromCurrency().getCurrencyCode() + rate.getToCurrency().getCurrencyCode();
+                exchangeRateCache.put(cacheKey, rate);
+            }
+        } catch (Exception ex) {
+            Logger.getLogger(CurrencyService.class.getName()).log(Level.SEVERE, "Unable to pre-cache rates.", ex);
+        }
+        Logger.getLogger(CurrencyService.class.getName()).log(Level.INFO, "Pre-cache Fx Rates. Done.");
+    }
 
     public void convertCurrency(Metric metric, Measurable measurable, FinancialPeriod period) throws Exception {
         if (!(metric instanceof CurrencyMetric)) {
@@ -126,10 +140,15 @@ public class CurrencyService {
         return (List<ExchangeRate>) query.getResultList();
     }
 
+    public List<ExchangeRate> findAllRates() throws Exception {
+        Query query = em.createQuery("SELECT rate FROM ExchangeRate rate");
+        return (List<ExchangeRate>) query.getResultList();
+    }
+
     public ExchangeRate findRateByFromToPeriod(Currency fromCurrency, Currency toCurrency, FinancialPeriod period) throws Exception {
         // Using NamedQuery for performance.
         Query query = em.createNamedQuery("Currency.findRateByFromToPeriod");
-        query.setHint("eclipselink.QUERY_RESULTS_CACHE", "TRUE");
+        //query.setHint("eclipselink.QUERY_RESULTS_CACHE", "TRUE");
         query.setParameter("PERIOD", period);
         query.setParameter("FROM", fromCurrency);
         query.setParameter("TO", toCurrency);
@@ -149,7 +168,7 @@ public class CurrencyService {
 
         ExchangeRate exchangeRate = null;
         try {
-            String cacheKey = period.getName() + fromCurrency.getCurrencyCode() + toCurrency.getCurrencyCode();
+            String cacheKey = period.getId() + fromCurrency.getCurrencyCode() + toCurrency.getCurrencyCode();
             exchangeRate = exchangeRateCache.get(cacheKey);
             if (exchangeRate == null) {
                 exchangeRate = findRateByFromToPeriod(fromCurrency, toCurrency, period);
@@ -163,10 +182,8 @@ public class CurrencyService {
 
     public void initCurrencyConverter(FinancialPeriod period) throws Exception {
         logger.info("initCurrencyConverter" + period.getId());
-        exchangeRateCache.clear();
-        logger.info("Checkpoint 1");
+        //exchangeRateCache.clear();
         List<ExchangeRate> er = findRatesByPeriod(period);
-        logger.info("Checkpoint 2");
         //Logger.getLogger(CurrencyService.class.getName()).log(Level.INFO, "rate count: " + er.size());
         //Logger.getLogger(CurrencyService.class.getName()).log(Level.INFO, "period: " + period.getId());
 

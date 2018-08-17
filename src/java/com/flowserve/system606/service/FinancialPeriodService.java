@@ -10,6 +10,7 @@ import com.flowserve.system606.model.ReportingUnit;
 import com.flowserve.system606.model.WorkflowStatus;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.Month;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.TemporalAdjusters;
@@ -85,31 +86,28 @@ public class FinancialPeriodService {
                 String exPeriod = shortMonth[j - 1] + "-" + shortYear;
                 if (findById(exPeriod) == null) {
                     LocalDate date = LocalDate.of(totalYear[i], Month.of(j), 1);
-                    if (date.getYear() == 2018 && date.getMonthValue() > 6) {
-                        continue;  // KJG Tempoararily only create up to JUN-18  // KJG Changed for loading exchange rates for June.
-                    }
+//                    if (date.getYear() == 2018 && date.getMonthValue() > 6) {
+//                        continue;  // KJG Tempoararily only create up to JUN-18  // KJG Changed for loading exchange rates for June.
+//                    }
                     LocalDate lastOfMonth = date.with(TemporalAdjusters.lastDayOfMonth());
-                    FinancialPeriod fPeriod = new FinancialPeriod(exPeriod, exPeriod, LocalDate.of(totalYear[i], Month.of(j), 1), lastOfMonth, totalYear[i], j, PeriodStatus.NEVER_OPENED);
+                    FinancialPeriod thisPeriod = new FinancialPeriod(exPeriod, exPeriod, LocalDate.of(totalYear[i], Month.of(j), 1), lastOfMonth, totalYear[i], j, PeriodStatus.NEVER_OPENED);
                     //fPeriod.setLocalCurrencyRatePeriod(calculatePriorPeriod(fPeriod));
                     //fPeriod.setReportingCurrencyRatePeriod(fPeriod);
-                    logger.info("persist " + fPeriod.getId());
-                    persist(fPeriod);
-                    fPeriod.setReportingCurrencyRatePeriod(fPeriod);
+                    thisPeriod.setCreationDate(LocalDateTime.now());
+                    thisPeriod.setLastUpdateDate(LocalDateTime.now());
+                    logger.info("persist " + thisPeriod.getId());
+                    thisPeriod.setReportingCurrencyRatePeriod(thisPeriod);
                     if (priorPeriod != null) {
-                        fPeriod.setLocalCurrencyRatePeriod(priorPeriod);
+                        thisPeriod.setLocalCurrencyRatePeriod(priorPeriod);
+                        thisPeriod.setPriorPeriod(priorPeriod);
+                        priorPeriod.setNextPeriod(thisPeriod);
                     }
-                    priorPeriod = fPeriod;
+                    persist(thisPeriod);
+                    //update(priorPeriod);
+                    priorPeriod = thisPeriod;
                 }
             }
         }
-//        if (findById("APR-18") == null) {
-//            FinancialPeriod period = new FinancialPeriod("APR-18", "APR-18", LocalDate.of(2018, Month.APRIL, 1), LocalDate.of(2018, Month.APRIL, 30), 2018, 4, PeriodStatus.OPENED);
-//            persist(period);
-//        }
-//        if (findById("MAY-18") == null) {
-//            FinancialPeriod period = new FinancialPeriod("MAY-18", "MAY-18", LocalDate.of(2018, Month.MAY, 1), LocalDate.of(2018, Month.MAY, 31), 2018, 5, PeriodStatus.OPENED);
-//            persist(period);
-//        }
 
         logger.info("Finding company");
         Company fls = adminService.findCompanyById("FLS");
@@ -125,7 +123,7 @@ public class FinancialPeriodService {
     }
 
     public FinancialPeriod calculateNextPeriodUntilCurrent(FinancialPeriod period) {
-        FinancialPeriod nextPeriod = calculateNextPeriod(period);
+        FinancialPeriod nextPeriod = period.getNextPeriod();
         if (nextPeriod == null || nextPeriod.isAfter(getCurrentFinancialPeriod())) {
             return null;
         }
@@ -160,32 +158,33 @@ public class FinancialPeriodService {
         return Collections.unmodifiableList(months);
     }
 
-    public FinancialPeriod calculatePriorPeriod(FinancialPeriod currentPeriod) {
-        Logger.getLogger(FinancialPeriodService.class.getName()).log(Level.FINER, "current period: " + currentPeriod.getId());
-        LocalDate date = LocalDate.of(currentPeriod.getPeriodYear(), currentPeriod.getPeriodMonth(), 1);
-        date = date.minusMonths(1);
-
-        return findPeriodByLocalDate(date);
-    }
-
-    public FinancialPeriod calculateNextPeriod(FinancialPeriod currentPeriod) {
-        Logger.getLogger(FinancialPeriodService.class.getName()).log(Level.FINER, "current period: " + currentPeriod.getId());
-        LocalDate date = LocalDate.of(currentPeriod.getPeriodYear(), currentPeriod.getPeriodMonth(), 1);
-        date = date.plusMonths(1);
-
-        return findPeriodByLocalDate(date);
-    }
-
+//    public FinancialPeriod calculatePriorPeriod(FinancialPeriod currentPeriod) {
+//        Logger.getLogger(FinancialPeriodService.class.getName()).log(Level.FINER, "current period: " + currentPeriod.getId());
+//        LocalDate date = LocalDate.of(currentPeriod.getPeriodYear(), currentPeriod.getPeriodMonth(), 2);
+//        date = date.minusMonths(1);
+//
+//        return findPeriodByLocalDate(date);
+//    }
+//
+//    public FinancialPeriod calculateNextPeriod(FinancialPeriod currentPeriod) {
+//        Logger.getLogger(FinancialPeriodService.class.getName()).log(Level.FINER, "current period: " + currentPeriod.getId());
+//        LocalDate date = LocalDate.of(currentPeriod.getPeriodYear(), currentPeriod.getPeriodMonth(), 2);
+//        date = date.plusMonths(1);
+//
+//        return findPeriodByLocalDate(date);
+//    }
     public FinancialPeriod findPeriodByLocalDate(LocalDate date) {
+        Logger.getLogger(FinancialPeriodService.class.getName()).log(Level.FINER, "findPeriodByLocalDate: " + date);
         Query query = em.createQuery("SELECT p FROM FinancialPeriod p WHERE :DT BETWEEN p.startDate and p.endDate");
         query.setParameter("DT", date);
-        List<FinancialPeriod> resultList = query.getResultList();
-        if (resultList.size() != 1) {
-            Logger.getLogger(FinancialPeriodService.class.getName()).log(Level.FINER, "Period not found by date: " + date.toString());
-            return null;
-        }
-
-        return resultList.get(0);
+        // KJG If we do not get one and only one result, getSingleResult will throw exception, which is desired.  Should never happen.
+        return (FinancialPeriod) query.getSingleResult();
+//        if (resultList.size() != 1) {
+//            Logger.getLogger(FinancialPeriodService.class.getName()).log(Level.SEVERE, "Period not found by date: " + date.toString());
+//            throw new IllegalStateException("Period not found by date: " + date.toString());
+//        }
+//
+//        return resultList.get(0);
     }
 
 //    public static LocalDate getLastPeriod(int versionYear, int versionMonth) throws Exception {
@@ -451,15 +450,18 @@ public class FinancialPeriodService {
 
         if (period.getPeriodMonth() == 2 || period.getPeriodMonth() == 5 || period.getPeriodMonth() == 8 || period.getPeriodMonth() == 11) {
             temp = findPeriodByLocalDate(date);
-            temp2 = calculatePriorPeriod(temp);
+            //temp2 = calculatePriorPeriod(temp);
+            temp2 = temp.getPriorPeriod();
             Collections.addAll(finacialPeriod, temp2, temp);
             return finacialPeriod;
         }
 
         if (period.getPeriodMonth() == 3 || period.getPeriodMonth() == 6 || period.getPeriodMonth() == 9 || period.getPeriodMonth() == 12) {
             temp = findPeriodByLocalDate(date);
-            temp2 = calculatePriorPeriod(temp);
-            temp3 = calculatePriorPeriod(temp2);
+//            temp2 = calculatePriorPeriod(temp);
+//            temp3 = calculatePriorPeriod(temp2);
+            temp2 = temp.getPriorPeriod();
+            temp3 = temp2.getPriorPeriod();
             Collections.addAll(finacialPeriod, temp3, temp2, temp);
             return finacialPeriod;
         }

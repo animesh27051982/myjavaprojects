@@ -154,6 +154,16 @@ public class PobCalculationReview implements Serializable {
         }
     }
 
+    public void calculateAndSaveSinceNov17() {
+        try {
+            calculationService.calculateAndSave(reportingUnit, financialPeriodService.findById("NOV-17"));
+        } catch (Exception e) {
+            Logger.getLogger(PobCalculationReview.class.getName()).log(Level.INFO, "Error recalculating: ", e);
+            FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error recalculating: ", e.getMessage());
+            FacesContext.getCurrentInstance().addMessage(null, msg);
+        }
+    }
+
     public void printInputs(PerformanceObligation pob) {
 //        Map<String, Input> inputs = pob.getInputs();
 //        for (String inputTypeId : inputs.keySet()) {

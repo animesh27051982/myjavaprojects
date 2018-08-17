@@ -41,6 +41,8 @@ public class PerformanceObligation extends BaseEntity<Long> implements MetricSto
     private Long id;
     @Column(name = "NAME")
     private String name;
+    @Column(name = "DESCRIPTION")
+    private String description;
     @Column(name = "REVENUE_METHOD")
     private RevenueMethod revenueMethod;
     @ManyToOne
@@ -247,4 +249,11 @@ public class PerformanceObligation extends BaseEntity<Long> implements MetricSto
 //    public void setTransientLastUpdateBy(User transientLastUpdateBy) {
 //        this.transientLastUpdateBy = transientLastUpdateBy;
 //    }
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
 }

@@ -110,21 +110,21 @@
                                                 <p:column style="background-color: #0071bc; color: #ffffff; white-space:pre-line;" colspan="4" headerText="Local Currency" />
                                             </p:row>
                                             <p:row>
-                                                <p:column colspan="1" style="white-space:pre-line;" headerText="RU / Contract / POB" />
-                                                <p:column colspan="1" style="white-space:pre-line;" headerText="Rev Rec Method" />
+                                                <p:column colspan="1" style="white-space:pre-line;" headerText="Contract / POB" />
+                                                <p:column colspan="1" style="white-space:pre-line;" headerText="Revenue Recognition Method"/>
                                                 <p:column colspan="1" style="white-space:pre-line;" headerText="Currency" />
-                                                <p:column colspan="1" style="white-space:pre-line;" headerText="#{viewSupport.getMetricTypeDescription('TRANSACTION_PRICE_CC')}" />
-                                                <p:column colspan="1" style="white-space:pre-line;" headerText="#{viewSupport.getMetricTypeDescription('LIQUIDATED_DAMAGES_CTD_CC')}" />
+                                                <p:column colspan="1" style="white-space:pre-line;" headerText="#{viewSupport.getMetricTypeName('TRANSACTION_PRICE_CC')}" />
+                                                <p:column colspan="1" style="white-space:pre-line;" headerText="#{viewSupport.getMetricTypeName('LIQUIDATED_DAMAGES_CTD_CC')}" />
                                                 <p:column colspan="1" style="white-space:pre-line;" headerText="Fx Rate" />
                                                 <p:column colspan="1" style="white-space:pre-line;" headerText="Currency" />
-                                                <p:column colspan="1" style="white-space:pre-line;" headerText="#{viewSupport.getMetricTypeDescription('ESTIMATED_COST_AT_COMPLETION_LC')}" />
-                                                <p:column colspan="1" style="white-space:pre-line;" headerText="#{viewSupport.getMetricTypeDescription('ESTIMATED_COST_AT_COMPLETION_LC')} Prior Period" />
-                                                <p:column colspan="1" style="white-space:pre-line;" headerText="#{viewSupport.getMetricTypeDescription('CHANGE_IN_EAC_LC')}" />
+                                                <p:column colspan="1" style="white-space:pre-line;" headerText="#{viewSupport.getMetricTypeName('ESTIMATED_COST_AT_COMPLETION_LC')}" />
+                                                <p:column colspan="1" style="white-space:pre-line;" headerText="#{viewSupport.getMetricTypeName('ESTIMATED_COST_AT_COMPLETION_LC')} Prior Period" />
+                                                <p:column colspan="1" style="white-space:pre-line;" headerText="#{viewSupport.getMetricTypeName('CHANGE_IN_EAC_LC')}" />
                                             </p:row>
                                         </p:columnGroup>
 
                                         <p:column sortBy="#{pob.name}">
-                                            <h:outputText value="#{pob.name}" />
+                                            <h:outputText value="#{pob.name}" title="#{pob.description}"/>
                                         </p:column>
 
                                         <p:column style="white-space:pre-line;">
@@ -218,18 +218,18 @@
                                             <p:row>
                                                 <p:column colspan="1" style="white-space:pre-line;" headerText="RU / Contract / POB" />
                                                 <p:column colspan="1" style="white-space:pre-line;" headerText="Currency" />
-                                                <p:column colspan="1" style="white-space:pre-line;" headerText="#{viewSupport.getMetricTypeDescription('LOCAL_COSTS_CTD_LC')}" />
-                                                <p:column colspan="1" style="white-space:pre-line;" headerText="#{viewSupport.getMetricTypeDescription('THIRD_PARTY_COSTS_CTD_LC')}" />
-                                                <p:column colspan="1" style="white-space:pre-line;" headerText="#{viewSupport.getMetricTypeDescription('INTERCOMPANY_COSTS_CTD_LC')}" />
-                                                <p:column colspan="1" style="white-space:pre-line;" headerText="#{viewSupport.getMetricTypeDescription('COST_OF_GOODS_SOLD_CTD_LC')}" />
-                                                <p:column colspan="1" style="white-space:pre-line;" headerText="#{viewSupport.getMetricTypeDescription('DELIVERY_DATE')}" />
-                                                <p:column colspan="1" style="white-space:pre-line;" headerText="#{viewSupport.getMetricTypeDescription('PARTIAL_SHIPMENT_COSTS_LC')}" />
+                                                <p:column colspan="1" style="white-space:pre-line;" headerText="#{viewSupport.getMetricTypeName('LOCAL_COSTS_CTD_LC')}" />
+                                                <p:column colspan="1" style="white-space:pre-line;" headerText="#{viewSupport.getMetricTypeName('THIRD_PARTY_COSTS_CTD_LC')}" />
+                                                <p:column colspan="1" style="white-space:pre-line;" headerText="#{viewSupport.getMetricTypeName('INTERCOMPANY_COSTS_CTD_LC')}" />
+                                                <p:column colspan="1" style="white-space:pre-line;" headerText="#{viewSupport.getMetricTypeName('COST_OF_GOODS_SOLD_CTD_LC')}" />
+                                                <p:column colspan="1" style="white-space:pre-line;" headerText="#{viewSupport.getMetricTypeName('DELIVERY_DATE')}" />
+                                                <p:column colspan="1" style="white-space:pre-line;" headerText="#{viewSupport.getMetricTypeName('PARTIAL_SHIPMENT_COSTS_LC')}" />
                                             </p:row>
                                         </p:columnGroup>
                                         <p:ajax event="cellEdit" listener="#{inputOnlineEntry.onCellEdit}" />
 
                                         <p:column sortBy="#{pob.name}">
-                                            <h:outputText value="#{pob.name}" />
+                                            <h:outputText value="#{pob.name}" title="#{pob.description}"/>
                                         </p:column>
 
                                         <p:column style="white-space:pre-line;">
@@ -331,17 +331,17 @@
                                             <p:row>
                                                 <p:column colspan="1" style="white-space:pre-line;" headerText="RU / Contract / POB" />
                                                 <p:column colspan="1" style="white-space:pre-line;" headerText="Currency" />
-                                                <p:column colspan="1" style="white-space:pre-line;" headerText="#{viewSupport.getMetricTypeDescription('PERCENT_COMPLETE')}" />
-                                                <p:column colspan="1" style="white-space:pre-line;" headerText="#{viewSupport.getMetricTypeDescription('THIRD_PARTY_COMMISSION_CTD_LC')}" />
-                                                <p:column colspan="1" style="white-space:pre-line;" headerText="#{viewSupport.getMetricTypeDescription('THIRD_PARTY_COMMISSION_TO_RECOGNIZE_LC')}" />
-                                                <p:column colspan="1" style="white-space:pre-line;" headerText="#{viewSupport.getMetricTypeDescription('THIRD_PARTY_COMMISSION_CTD_LC')} Prior Period" />
-                                                <p:column colspan="1" style="white-space:pre-line;" headerText="#{viewSupport.getMetricTypeDescription('THIRD_PARTY_COMMISSION_TO_RECOGNIZE_LC')} Prior Period" />
+                                                <p:column colspan="1" style="white-space:pre-line;" headerText="#{viewSupport.getMetricTypeName('PERCENT_COMPLETE')}" />
+                                                <p:column colspan="1" style="white-space:pre-line;" headerText="#{viewSupport.getMetricTypeName('THIRD_PARTY_COMMISSION_CTD_LC')}" />
+                                                <p:column colspan="1" style="white-space:pre-line;" headerText="#{viewSupport.getMetricTypeName('THIRD_PARTY_COMMISSION_TO_RECOGNIZE_LC')}" />
+                                                <p:column colspan="1" style="white-space:pre-line;" headerText="#{viewSupport.getMetricTypeName('THIRD_PARTY_COMMISSION_CTD_LC')} Prior Period" />
+                                                <p:column colspan="1" style="white-space:pre-line;" headerText="#{viewSupport.getMetricTypeName('THIRD_PARTY_COMMISSION_TO_RECOGNIZE_LC')} Prior Period" />
                                             </p:row>
                                         </p:columnGroup>
                                         <p:ajax event="cellEdit" listener="#{inputOnlineEntry.onCellEdit}" />
 
                                         <p:column sortBy="#{pob.name}">
-                                            <h:outputText value="#{pob.name}" />
+                                            <h:outputText value="#{pob.name}" title="#{pob.description}"/>
                                         </p:column>
 
                                         <p:column style="white-space:pre-line;">
@@ -419,7 +419,7 @@
                                         <p:ajax event="cellEdit" listener="#{inputOnlineEntry.onCellEdit}" />
 
                                         <p:column style="min-width: 350px; text-overflow: ellipsis;" sortBy="#{pob.name}">
-                                            <h:outputText value="#{pob.name}" />
+                                            <h:outputText value="#{pob.name}" title="#{pob.description}"/>
                                         </p:column>
 
                                         <p:column style="white-space:pre-line;">
@@ -595,8 +595,8 @@
 
                                         <p:ajax event="cellEdit" listener="#{inputOnlineEntry.onCellEdit}" />
 
-                                        <p:column style="min-width: 350px; text-overflow: ellipsis;" headerText="Reporting Unit - Contract - POB" >
-                                            <h:outputText value="#{billEvent.name}" />
+                                        <p:column headerText="Reporting Unit - Contract - POB" >
+                                            <h:outputText value="#{billEvent.name}" title="#{billEvent.description}"/>
                                         </p:column>
 
                                         <p:column style="white-space:pre-line;" headerText="Invoice Number">
@@ -672,7 +672,7 @@
                                         </f:facet>
 
                                         <p:column style="min-width: 500px; text-overflow: ellipsis;" headerText="Reporting Unit - Contract - POB" sortBy="#{pob.name}">
-                                            <h:outputText value="#{pob.name}" />
+                                            <h:outputText value="#{pob.name}" title="#{pob.description}"/>
                                         </p:column>
 
                                         <p:column style="white-space:pre-line;">
@@ -703,7 +703,7 @@
 
                         <p:toolbar>
                             <f:facet name="left">
-                                <p:commandButton value="Recalc All" icon="ui-icon-check" update=":form:topLevelTabView" actionListener="#{pobCalculationReview.calculateAndSave}"/>
+                                <p:commandButton value="Recalc All From NOV-17" icon="ui-icon-check" update=":form:topLevelTabView" ajax="false" actionListener="#{pobCalculationReview.calculateAndSaveSinceNov17}"/>
                                 <p:commandButton value="Alt Entry View" icon="ui-icon-arrowthick-1-s" ajax="false" action="inputOnlineEntryAlt"/>
                             </f:facet>
                             <f:facet name="right">
