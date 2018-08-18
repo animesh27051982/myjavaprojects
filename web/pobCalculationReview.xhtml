@@ -8,7 +8,13 @@
 
     <ui:define name="head">
         <style type="text/css">
-
+            body .ui-inputfield {
+                padding: 0px 2px;
+                width: 95%;
+            }
+            body .ui-treetable .ui-treetable-data tr td {
+                padding: 4px 4px;
+            }
         </style>
     </ui:define>
 
@@ -24,30 +30,33 @@
                 <div class="ui-g-12">
                     <div class="card card-w-title">
 
-                        <p:panelGrid columns="4" columnClasses="ui-grid-col-6,ui-grid-col-4,ui-grid-col-6,ui-grid-col-4" layout="grid" styleClass="ui-panelgrid-blank form-group" style="float: right; border:0px none; background-color:transparent;">
-                            <h:outputLabel style="margin-left: 250px; vertical-align: sub; white-space: nowrap;" value="Switch RU: "/>
+                        <p:panelGrid columns="4" columnClasses="ui-grid-col-6,ui-grid-col-6,ui-grid-col-6,ui-grid-col-6" layout="grid" styleClass="ui-panelgrid-blank form-group" style="float: right; border:0px none; background-color:transparent;">
+                            <h:outputLabel style="margin-left: 250px; vertical-align: middle; white-space: nowrap;" value="Switch RU: "/>
                             <p:autoComplete
                                 id="ru"
                                 var="ru"
                                 maxResults="10"
+                                placeholder="start typing..."
                                 required="#{false}"
                                 forceSelection="#{true}"
+                                onclick="this.value = ''"
                                 value="#{webSession.currentReportingUnit}"
                                 completeMethod="#{viewSupport.completeReportingUnit}"
                                 itemLabel="#{ru.name}"
                                 itemValue="#{ru}"
                                 converter="reportingUnitConverter"
-                                style="width: 300px;"
+                                style="width: 300px; vertical-align: middle; "
                                 >
                                 <p:ajax event="itemSelect" listener="#{pobCalculationReview.onReportingUnitSelect}" update=":form" />
                             </p:autoComplete>
-                            <h:outputLabel style="vertical-align: sub; white-space: nowrap;" value="Switch Period: "/>
-                            <p:selectOneMenu style="margin-top: 0px;" id="period" value="#{webSession.currentPeriod}" converter="periodConverter">
+                            <h:outputLabel style="vertical-align: middle; white-space: nowrap;" value="Switch Period: "/>
+                            <p:selectOneMenu style="margin-top: 0px; vertical-align: middle; " id="period" value="#{webSession.currentPeriod}" converter="periodConverter">
                                 <p:ajax event="change" update=":form" process="@this" listener="#{pobCalculationReview.switchPeriod(webSession.currentPeriod)}"/>
                                 <f:selectItems var="period" value="#{viewSupport.allPeriods}" itemLabel="#{period.id}"/>
                             </p:selectOneMenu>
                         </p:panelGrid>
-                        <h1><strong>#{webSession.currentPeriod.id} Calculation Review</strong></h1>
+
+                        <h4 style="margin: 1px;"><strong>#{webSession.currentPeriod.id} Calculation Review - #{pobCalculationReview.reportingUnit.name} - #{pobCalculationReview.reportingUnit.getWorkflowStatus(webSession.currentPeriod).description}</strong></h4>
 
                         <p:outputPanel style="margin-top: 20px;">
                             <h:outputText value="Search within list:" />

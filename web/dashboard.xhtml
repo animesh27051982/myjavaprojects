@@ -94,14 +94,18 @@
                     <div class="ui-g-12">
                         <div class="card card-w-title">
                             <p:messages id="messages" showDetail="true" />
-                            <p:panelGrid columns="4" columnClasses="ui-grid-col-6,ui-grid-col-4,ui-grid-col-6,ui-grid-col-4" layout="grid" styleClass="ui-panelgrid-blank form-group" style="float: right; border:0px none; background-color:transparent;">
-                                <h:outputLabel style="margin-left: 75px; vertical-align: sub; white-space: nowrap;" value="Switch RU: "/>
+                            <p:panelGrid columns="4" columnClasses="ui-grid-col-2,ui-grid-col-4,ui-grid-col-2,ui-grid-col-4" layout="grid" styleClass="ui-panelgrid-blank form-group" style="float: right; border:0px none; background-color:transparent;">
+                                <h:outputLabel style="vertical-align: sub; white-space: nowrap;" value="Switch RU: "/>
                                 <p:autoComplete
                                     id="ru"
                                     var="ru"
+                                    style="width: 100%;"
                                     maxResults="10"
+                                    size="50"
                                     required="#{false}"
                                     forceSelection="#{true}"
+                                    onclick="this.value = ''"
+                                    placeholder="start typing.."
                                     value="#{webSession.currentReportingUnit}"
                                     completeMethod="#{viewSupport.completeReportingUnit}"
                                     itemLabel="#{ru.name}"
@@ -110,20 +114,19 @@
                                     >
                                     <p:ajax event="itemSelect" listener="#{dashboard.onReportingUnitSelect}" update=":form" />
                                 </p:autoComplete>
-                                <h:outputLabel style="vertical-align: sub; white-space: nowrap;" value="Switch Period: "/>
-                                <p:selectOneMenu style="margin-top: 0px;" id="period" value="#{webSession.currentPeriod}" converter="periodConverter">
+                                <h:outputLabel style="margin-left: 20px; vertical-align: sub; white-space: nowrap;" value="Switch Period: "/>
+                                <p:selectOneMenu style="margin-left: 30px; margin-top: 0px;" id="period" value="#{webSession.currentPeriod}" converter="periodConverter">
                                     <p:ajax event="change" update=":form" process="@this" listener="#{webSession.switchPeriod(webSession.currentPeriod)}"/>
                                     <f:selectItems var="period" value="#{viewSupport.allPeriods}" itemLabel="#{period.id}"/>
                                 </p:selectOneMenu>
                             </p:panelGrid>
                             <h1>#{webSession.currentPeriod.id} Reporting Units</h1>
-                            <h4>Please note that this is a preview environment for general user feedback on page flow, etc.  Full user testing has not yet begun.</h4>
 
                             <p:dataTable value="#{dashboard.reportingUnits}" var="ru" >
                                 <f:facet name="header">
                                     Reporting Units
                                 </f:facet>
-                                <p:column headerText="Reporting Unit" sortBy="#{ru.name}">
+                                <p:column style="width: 350px;" headerText="Reporting Unit" sortBy="#{ru.name}">
                                     <h:outputText value="#{ru.name}" />
                                 </p:column>
                                 <p:column headerText="Status">
@@ -150,17 +153,12 @@
                                 </p:column>
 
                                 <p:column headerText="Actions">
-                                    <span>
+                                    <span style="white-space: nowrap;">
                                         <p:commandButton value="Online Entry" style="font-size: 80%;" icon="ui-icon-arrowthick-1-e" ajax="false" actionListener="#{webSession.setCurrentReportingUnit(ru)}" action="#{inputController.proceedToOnlineEntry()}"/>
                                         <p:commandButton value="Excel Entry" style="font-size: 80%; margin-left: 5px;" icon="ui-icon-arrowthick-1-e" ajax="false" actionListener="#{webSession.setCurrentReportingUnit(ru)}" action="#{inputController.proceedToInputDownload()}"/>
                                     </span>
                                 </p:column>
                             </p:dataTable>
-
-                            <p:toolbar>
-                                <f:facet name="right">
-                                </f:facet>
-                            </p:toolbar>
 
                         </div>
                         <div class=" ui-g-12 ui-md-5 card ">

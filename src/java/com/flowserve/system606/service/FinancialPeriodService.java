@@ -362,7 +362,7 @@ public class FinancialPeriodService {
         return false;
     }
 
-    public LocalDate CalcInputFreezeWorkday(LocalDate date, List<Holiday> holidays, int workday) throws Exception {
+    public LocalDate calcInputFreezeWorkday(LocalDate date, List<Holiday> holidays, int workday) throws Exception {
         LocalDate temp = null;
         int count = 0;
         LocalDate freezeDay = LocalDate.of(date.getYear(), date.getMonthValue(), 1);

@@ -47,6 +47,20 @@ rule "Cost of Goods Sold CTD"
                                                 (intercoCostsCTD.lcValue == null ? 0B : intercoCostsCTD.lcValue))};
 end
 
+
+rule "Costs Incurred CTD"
+    when
+        pob : PerformanceObligation()
+        localCostsCTD : CurrencyMetric(metricType.code == "LOCAL_COSTS_CTD_LC")
+        thirdPartyCostsCTD : CurrencyMetric(metricType.code == "THIRD_PARTY_COSTS_CTD_LC")
+        intercoCostsCTD : CurrencyMetric(metricType.code == "INTERCOMPANY_COSTS_CTD_LC")
+        costsIncurredCTD : CurrencyMetric(metricType.code == "COSTS_INCURRED_CTD_LC")
+    then
+        modify (costsIncurredCTD) { lcValue = ( (localCostsCTD.lcValue == null ? 0B : localCostsCTD.lcValue) +
+                                                (thirdPartyCostsCTD.lcValue == null ? 0B : thirdPartyCostsCTD.lcValue) +
+                                                (intercoCostsCTD.lcValue == null ? 0B : intercoCostsCTD.lcValue) )};
+end
+
 rule "Cost of Goods Sold Period"
     when
         pob : PerformanceObligation()

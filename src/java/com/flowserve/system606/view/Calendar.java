@@ -46,8 +46,8 @@ public class Calendar implements Serializable {
         try {
             List<Holiday> holidays = adminService.findHolidayList();
             Company company = adminService.findCompanyById("FLS");
-            LocalDate freeze = financialPeriodService.CalcInputFreezeWorkday(LocalDate.now(), holidays, company.getInputFreezeWorkday());
-            LocalDate poci = financialPeriodService.CalcInputFreezeWorkday(LocalDate.now(), holidays, company.getPociDueWorkday());          
+            LocalDate freeze = financialPeriodService.calcInputFreezeWorkday(LocalDate.now(), holidays, company.getInputFreezeWorkday());
+            LocalDate poci = financialPeriodService.calcInputFreezeWorkday(LocalDate.now(), holidays, company.getPociDueWorkday());          
             eventModel = new DefaultScheduleModel();
             for (Holiday holiday : holidays) {
                 Date date = Date.from(holiday.getHolidayDate().atStartOfDay(ZoneOffset.UTC).toInstant());

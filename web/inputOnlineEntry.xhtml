@@ -43,39 +43,32 @@
                     <div class="card card-w-title">
                         <p:growl id="messages" showDetail="true" life="10000" />
 
-                        <p:panelGrid columns="4" columnClasses="ui-grid-col-6,ui-grid-col-4,ui-grid-col-6,ui-grid-col-4" layout="grid" styleClass="ui-panelgrid-blank form-group" style="float: right; border:0px none; background-color:transparent;">
-                            <h:outputLabel style="margin-left: 250px; vertical-align: sub; white-space: nowrap;" value="Switch RU: "/>
+                        <p:panelGrid columns="4" columnClasses="ui-grid-col-6,ui-grid-col-6,ui-grid-col-6,ui-grid-col-6" layout="grid" styleClass="ui-panelgrid-blank form-group" style="float: right; border:0px none; background-color:transparent; white-space: nowrap;">
+                            <h:outputLabel style="text-align: right; vertical-align: middle; white-space: nowrap;" value="Switch RU: "/>
                             <p:autoComplete
                                 id="ru"
                                 var="ru"
                                 maxResults="10"
                                 minQueryLength="2"
-                                placeholder="2 char minimum"
+                                placeholder="start typing..."
                                 required="#{false}"
                                 forceSelection="#{true}"
+                                onclick="this.value = ''"
+                                style="width: 300px; text-align: right; vertical-align: middle;"
                                 value="#{webSession.currentReportingUnit}"
                                 completeMethod="#{viewSupport.completeReportingUnit}"
                                 itemLabel="#{ru.name}"
                                 itemValue="#{ru.id}"
-                                converter="reportingUnitConverter"
-                                style="width: 300px;"
-                                >
+                                converter="reportingUnitConverter">
                                 <p:ajax event="itemSelect" listener="#{inputOnlineEntry.onReportingUnitSelect}" update=":form" />
                             </p:autoComplete>
-                            <h:outputLabel style="vertical-align: sub; white-space: nowrap;" value="Switch Period: "/>
-                            <p:selectOneMenu style="margin-top: 0px;" id="period" value="#{webSession.currentPeriod}" converter="periodConverter">
+                            <h:outputLabel style="text-align: right; vertical-align: middle; white-space: nowrap;" value="Switch Period: "/>
+                            <p:selectOneMenu style="text-align: right; vertical-align: middle; white-space: nowrap;" id="period" value="#{webSession.currentPeriod}" converter="periodConverter">
                                 <p:ajax event="change" update=":form" process="@this" listener="#{inputOnlineEntry.switchPeriod(webSession.currentPeriod)}"/>
                                 <f:selectItems var="period" value="#{viewSupport.allPeriods}" itemLabel="#{period.id}"/>
                             </p:selectOneMenu>
                         </p:panelGrid>
 
-                        <!--<p:panelGrid columns="2" columnClasses="ui-grid-col-6,ui-grid-col-4" layout="grid" styleClass="ui-panelgrid-blank form-group" style="float: right; border:0px none; background-color:transparent;">
-                            <h:outputLabel style="vertical-align: middle; white-space: nowrap;" value="Switch Period: "/>
-                            <p:selectOneMenu id="period" value="#{webSession.currentPeriod}" converter="periodConverter">
-                                <p:ajax event="change" update=":form" process="@this" listener="#{webSession.switchPeriod(webSession.currentPeriod)}"/>
-                                <f:selectItems var="period" value="#{viewSupport.allPeriods}" itemLabel="#{period.id}"/>
-                            </p:selectOneMenu>
-                        </p:panelGrid>-->
                         <h4 style="margin: 1px;"><strong>#{webSession.currentPeriod.id} Performance Obligation Inputs - #{inputOnlineEntry.reportingUnit.name} - #{inputOnlineEntry.reportingUnit.getWorkflowStatus(webSession.currentPeriod).description}</strong></h4>
 
                         <p:outputPanel style="margin-top: 20px;">
@@ -89,7 +82,6 @@
                                 <f:selectItems var="contract" value="#{inputOnlineEntry.contracts}" itemLabel="#{contract.name}"/>
                             </p:selectCheckboxMenu>
                             <p:commandButton id="globalFilterClear2" style="font-size: 80%; margin-left: 20px;" value="Clear All Filters" actionListener="#{inputOnlineEntry.clearFilterByContractText()}" update=":form:topLevelTabView, :form:globalFilterText, :form:contracts"/>
-                            <h:outputText value="Which filter to keep?" style="margin-left: 35px;"/>
                         </p:outputPanel>
 
                         <div style="max-height: 75vh; overflow-y: auto">
@@ -110,7 +102,7 @@
                                                 <p:column style="background-color: #0071bc; color: #ffffff; white-space:pre-line;" colspan="4" headerText="Local Currency" />
                                             </p:row>
                                             <p:row>
-                                                <p:column colspan="1" style="white-space:pre-line;" headerText="Contract / POB" />
+                                                <p:column colspan="1" style="white-space:pre-line;" headerText="RU / Contract / POB" />
                                                 <p:column colspan="1" style="white-space:pre-line;" headerText="Revenue Recognition Method"/>
                                                 <p:column colspan="1" style="white-space:pre-line;" headerText="Currency" />
                                                 <p:column colspan="1" style="white-space:pre-line;" headerText="#{viewSupport.getMetricTypeName('TRANSACTION_PRICE_CC')}" />
@@ -385,221 +377,32 @@
                                         </p:column>
                                     </p:treeTable>
                                 </p:tab>
-                                <p:tab title="Inter-Company Costing Inputs" rendered="false">
-                                    <p:treeTable tableStyle="width:auto" value="#{inputOnlineEntry.rootTreeNode}" editable="true" editMode="cell" var="pob">
-                                        <p:columnGroup type="header">
-                                            <p:row>
-                                                <p:column style="width: 350px; text-overflow: ellipsis;" colspan="1" headerText="" />
-                                                <p:column colspan="4" headerText="" />
-                                                <p:column colspan="7" style="background-color: #0071bc; color: #ffffff; white-space:pre-line;" headerText="Contract Currency" />
-                                                <p:column colspan="1" headerText="" />
-                                                <p:column colspan="2" style="background-color: #0071bc; color: #ffffff; white-space:pre-line;" headerText="Local Currency" />
-                                            </p:row>
-                                            <p:row>
-                                                <p:column colspan="1" style="white-space:pre-line;" headerText="RU / Contract / POB" />
-                                                <p:column colspan="1" style="white-space:pre-line;" headerText="Interco Supplier Reporting Unit" />
-                                                <p:column colspan="1" style="white-space:pre-line;" headerText="Interco Customer Name" />
-                                                <p:column colspan="1" style="white-space:pre-line;" headerText="BPC Trading Partner" />
-                                                <p:column colspan="1" style="white-space:pre-line;" headerText="Customer PO #" />
-
-                                                <p:column colspan="1" style="white-space:pre-line;" headerText="CC Code" />
-                                                <p:column colspan="1" style="white-space:pre-line;" headerText="Customer PO Amount" />
-                                                <p:column colspan="1" style="white-space:pre-line;" headerText="Component Total PO Price" />
-                                                <p:column colspan="1" style="white-space:pre-line;" headerText="Total Prior Period Progress Billings-CTD" />
-                                                <p:column colspan="1" style="white-space:pre-line;" headerText="Component Standard Costs Incurred on Prior Period Billing" />
-                                                <p:column colspan="1" style="white-space:pre-line;" headerText="Percent Complete" />
-                                                <p:column colspan="1" style="white-space:pre-line;" headerText="Total Interco Revenue Less Prior Billings" />
-
-                                                <p:column colspan="1" style="white-space:pre-line;" headerText="LC Code" />
-
-                                                <p:column colspan="1" style="white-space:pre-line;" headerText="Component Cost Estimate at Completion" />
-                                                <p:column colspan="1" style="white-space:pre-line;" headerText="Component Standard Costs*-CTD" />
-                                            </p:row>
-                                        </p:columnGroup>
-                                        <p:ajax event="cellEdit" listener="#{inputOnlineEntry.onCellEdit}" />
-
-                                        <p:column style="min-width: 350px; text-overflow: ellipsis;" sortBy="#{pob.name}">
-                                            <h:outputText value="#{pob.name}" title="#{pob.description}"/>
-                                        </p:column>
-
-                                        <p:column style="white-space:pre-line;">
-                                            <p:cellEditor rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}">
-                                                <f:facet name="output">
-                                                    <p:inputText value="0"  readonly="true">
-                                                        <f:validateDoubleRange/>
-                                                        <o:converter converterId="javax.faces.Number" currencySymbol="" type="currency" />
-                                                    </p:inputText>
-                                                </f:facet>
-                                                <f:facet name="input">
-                                                    <p:inputText value="0"/>
-                                                </f:facet>
-                                            </p:cellEditor>
-                                        </p:column>
-                                        <p:column style="white-space:pre-line;">
-                                            <p:cellEditor rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}">
-                                                <f:facet name="output">
-                                                    <p:inputText value="0"  readonly="true">
-                                                        <f:validateDoubleRange/>
-                                                        <o:converter converterId="javax.faces.Number" currencySymbol="" type="currency" />
-                                                    </p:inputText>
-                                                </f:facet>
-                                                <f:facet name="input">
-                                                    <p:inputText value="0"/>
-                                                </f:facet>
-                                            </p:cellEditor>
-                                        </p:column>
-                                        <p:column style="white-space:pre-line;">
-                                            <p:cellEditor rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}">
-                                                <f:facet name="output">
-                                                    <p:inputText value="0"  readonly="true">
-                                                        <f:validateDoubleRange/>
-                                                        <o:converter converterId="javax.faces.Number" currencySymbol="" type="currency" />
-                                                    </p:inputText>
-                                                </f:facet>
-                                                <f:facet name="input">
-                                                    <p:inputText value="0"/>
-                                                </f:facet>
-                                            </p:cellEditor>
-                                        </p:column>
-                                        <p:column style="white-space:pre-line;">
-                                            <p:cellEditor rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}">
-                                                <f:facet name="output">
-                                                    <p:inputText value="0"  readonly="true">
-                                                        <f:validateDoubleRange/>
-                                                        <o:converter converterId="javax.faces.Number" currencySymbol="" type="currency" />
-                                                    </p:inputText>
-                                                </f:facet>
-                                                <f:facet name="input">
-                                                    <p:inputText value="0"/>
-                                                </f:facet>
-                                            </p:cellEditor>
-                                        </p:column>
-                                        <p:column style="width: 50px; white-space:pre-line;">
-                                            <h:outputText value="#{pob.contractCurrency.currencyCode}" rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}"/>
-                                        </p:column>
-                                        <p:column style="white-space:pre-line;">
-                                            <p:cellEditor rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}">
-                                                <f:facet name="output">
-                                                    <p:inputText value="0"  readonly="true">
-                                                        <f:validateDoubleRange/>
-                                                        <o:converter converterId="javax.faces.Number" currencySymbol="" type="currency" />
-                                                    </p:inputText>
-                                                </f:facet>
-                                                <f:facet name="input">
-                                                    <p:inputText value="0"/>
-                                                </f:facet>
-                                            </p:cellEditor>
-                                        </p:column>
-                                        <p:column style="white-space:pre-line;">
-                                            <p:cellEditor rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}">
-                                                <f:facet name="output">
-                                                    <p:inputText value="0"  readonly="true">
-                                                        <f:validateDoubleRange/>
-                                                        <o:converter converterId="javax.faces.Number" currencySymbol="" type="currency" />
-                                                    </p:inputText>
-                                                </f:facet>
-                                                <f:facet name="input">
-                                                    <p:inputText value="0"/>
-                                                </f:facet>
-                                            </p:cellEditor>
-                                        </p:column>
-                                        <p:column style="white-space:pre-line;">
-                                            <p:cellEditor rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}">
-                                                <f:facet name="output">
-                                                    <p:inputText value="0"  readonly="true">
-                                                        <f:validateDoubleRange/>
-                                                        <o:converter converterId="javax.faces.Number" currencySymbol="" type="currency" />
-                                                    </p:inputText>
-                                                </f:facet>
-                                                <f:facet name="input">
-                                                    <p:inputText value="0"/>
-                                                </f:facet>
-                                            </p:cellEditor>
-                                        </p:column>
-                                        <p:column style="white-space:pre-line;">
-                                            <p:cellEditor rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}">
-                                                <f:facet name="output">
-                                                    <p:inputText value="0"  readonly="true">
-                                                        <f:validateDoubleRange/>
-                                                        <o:converter converterId="javax.faces.Number" currencySymbol="" type="currency" />
-                                                    </p:inputText>
-                                                </f:facet>
-                                                <f:facet name="input">
-                                                    <p:inputText value="0"/>
-                                                </f:facet>
-                                            </p:cellEditor>
-                                        </p:column>
-                                        <p:column style="white-space:pre-line;">
-                                            <p:cellEditor rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}">
-                                                <f:facet name="output">
-                                                    <p:inputText value="0"  readonly="true">
-                                                        <f:validateDoubleRange/>
-                                                        <o:converter converterId="javax.faces.Number" currencySymbol="" type="currency" />
-                                                    </p:inputText>
-                                                </f:facet>
-                                                <f:facet name="input">
-                                                    <p:inputText value="0"/>
-                                                </f:facet>
-                                            </p:cellEditor>
-                                        </p:column>
-                                        <p:column style="white-space:pre-line;">
-                                            <p:cellEditor rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}">
-                                                <f:facet name="output">
-                                                    <p:inputText value="0"  readonly="true">
-                                                        <f:validateDoubleRange/>
-                                                        <o:converter converterId="javax.faces.Number" currencySymbol="" type="currency" />
-                                                    </p:inputText>
-                                                </f:facet>
-                                                <f:facet name="input">
-                                                    <p:inputText value="0"/>
-                                                </f:facet>
-                                            </p:cellEditor>
-                                        </p:column>
-                                        <p:column style="width: 50px; white-space:pre-line;">
-                                            <h:outputText value="#{pob.localCurrency.currencyCode}" rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}"/>
-                                        </p:column>
-                                        <p:column style="white-space:pre-line;">
-                                            <p:cellEditor rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}">
-                                                <f:facet name="output">
-                                                    <p:inputText value="0"  readonly="true">
-                                                        <f:validateDoubleRange/>
-                                                        <o:converter converterId="javax.faces.Number" currencySymbol="" type="currency" />
-                                                    </p:inputText>
-                                                </f:facet>
-                                                <f:facet name="input">
-                                                    <p:inputText value="0"/>
-                                                </f:facet>
-                                            </p:cellEditor>
-                                        </p:column>
-                                        <p:column style="white-space:pre-line;">
-                                            <p:cellEditor rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}">
-                                                <f:facet name="output">
-                                                    <p:inputText value="0"  readonly="true">
-                                                        <f:validateDoubleRange/>
-                                                        <o:converter converterId="javax.faces.Number" currencySymbol="" type="currency" />
-                                                    </p:inputText>
-                                                </f:facet>
-                                                <f:facet name="input">
-                                                    <p:inputText value="0"/>
-                                                </f:facet>
-                                            </p:cellEditor>
-                                        </p:column>
-                                    </p:treeTable>
-                                </p:tab>
 
                                 <p:tab title="Billing Inputs">
                                     <p:treeTable tableStyle="width:auto" value="#{inputOnlineEntry.billingTreeNode}" editable="true" id="treeTableId" editMode="cell" var="billEvent">
-                                        <f:facet name="header">
-                                            Performance Obligations
-                                        </f:facet>
 
                                         <p:ajax event="cellEdit" listener="#{inputOnlineEntry.onCellEdit}" />
+
+                                        <p:columnGroup type="header">
+                                            <p:row>
+                                                <p:column colspan="1" headerText="" />
+                                                <p:column colspan="5" style="background-color: #0071bc; color: #ffffff; white-space:pre-line;"  headerText="Billing Data" />
+                                            </p:row>
+                                            <p:row>
+                                                <p:column colspan="1" style="white-space:pre-line;" headerText="RU / Contract / POB" />
+                                                <p:column colspan="1" style="white-space:pre-line;" headerText="Invoice Number" />
+                                                <p:column colspan="1" style="white-space:pre-line;" headerText="Invoice Date" />
+                                                <p:column colspan="1" style="white-space:pre-line;" headerText="Billing Contract Cur" />
+                                                <p:column colspan="1" style="white-space:pre-line;" headerText="Billing Local Cur" />
+                                                <p:column colspan="1" style="white-space:pre-line;" headerText="Options" />
+                                            </p:row>
+                                        </p:columnGroup>
 
                                         <p:column headerText="Reporting Unit - Contract - POB" >
                                             <h:outputText value="#{billEvent.name}" title="#{billEvent.description}"/>
                                         </p:column>
 
-                                        <p:column style="white-space:pre-line;" headerText="Invoice Number">
+                                        <p:column style="white-space:pre-line;">
                                             <p:cellEditor rendered="#{of:isInstance('com.flowserve.system606.model.BillingEvent', billEvent)}">
                                                 <f:facet name="output">
                                                     <p:inputText value="#{billEvent.invoiceNumber}" styleClass="#{empty billEvent.invoiceNumber ? 'ui-state-error' : ''}" readonly="true"/>
@@ -609,7 +412,7 @@
                                                 </f:facet>
                                             </p:cellEditor>
                                         </p:column>
-                                        <p:column style="white-space:pre-line;" headerText="Delivery Date">
+                                        <p:column style="white-space:pre-line;">
                                             <p:cellEditor rendered="#{of:isInstance('com.flowserve.system606.model.BillingEvent', billEvent)}">
                                                 <f:facet name="output">
                                                     <p:inputText value="#{billEvent.billingDate}" styleClass="#{empty billEvent.billingDate ? 'ui-state-error' : ''}" readonly="true">
@@ -621,7 +424,7 @@
                                                 </f:facet>
                                             </p:cellEditor>
                                         </p:column>
-                                        <p:column style="white-space:pre-line;" headerText="Billing Contract Cur">
+                                        <p:column style="white-space:pre-line;">
                                             <h:outputText value="#{billEvent.totalBillingsContractCurrency}" rendered="#{of:isInstance('com.flowserve.system606.model.Contract', billEvent) and billEvent.totalBillingsContractCurrency != 0}" >
                                                 <o:converter converterId="javax.faces.Number" currencySymbol="" type="currency" />
                                             </h:outputText>
@@ -639,7 +442,7 @@
                                                 </f:facet>
                                             </p:cellEditor>
                                         </p:column>
-                                        <p:column style="white-space:pre-line;" headerText="Billing Local Cur">
+                                        <p:column style="white-space:pre-line;">
                                             <h:outputText value="#{billEvent.totalBillingsLocalCurrency}" rendered="#{of:isInstance('com.flowserve.system606.model.Contract', billEvent) and billEvent.totalBillingsLocalCurrency != 0}" >
                                                 <f:convertNumber type="currency" />
                                             </h:outputText>
@@ -658,7 +461,7 @@
                                             </p:cellEditor>
                                         </p:column>
 
-                                        <p:column style="width: 80px; white-space:pre-line;" headerText="Option" >
+                                        <p:column>
                                             <p:commandLink value="Add Billing" process="@this" update="treeTableId" actionListener="#{inputOnlineEntry.addBillingEvent(billEvent)}" rendered="#{of:isInstance('com.flowserve.system606.model.Contract', billEvent) and viewSupport.periodClosed}" ></p:commandLink>
                                             <p:commandLink value="Remove Billing" process="@this" update="treeTableId" actionListener="#{inputOnlineEntry.removeBillingEvent(billEvent)}" rendered="#{of:isInstance('com.flowserve.system606.model.BillingEvent', billEvent) and viewSupport.periodClosed}"></p:commandLink>
                                         </p:column>
@@ -667,34 +470,35 @@
 
                                 <p:tab title="Status">
                                     <p:treeTable tableStyle="width:auto" value="#{inputOnlineEntry.rootTreeNode}" var="pob">
-                                        <f:facet name="header">
-                                            Performance Obligations
-                                        </f:facet>
 
-                                        <p:column style="min-width: 500px; text-overflow: ellipsis;" headerText="Reporting Unit - Contract - POB" sortBy="#{pob.name}">
+                                        <p:columnGroup type="header">
+                                            <p:row>
+                                                <p:column colspan="1" headerText="" />
+                                                <p:column colspan="3" style="background-color: #0071bc; color: #ffffff; white-space:pre-line;"  headerText="Status Data" />
+                                            </p:row>
+                                            <p:row>
+                                                <p:column colspan="1" style="white-space:pre-line;" headerText="RU / Contract / POB" />
+                                                <p:column colspan="1" style="white-space:pre-line;" headerText="Last Updated By" />
+                                                <p:column colspan="1" style="white-space:pre-line;" headerText="Last Updated Date" />
+                                                <p:column colspan="1" style="white-space:pre-line;" headerText="Status" />
+                                            </p:row>
+                                        </p:columnGroup>
+
+                                        <p:column>
                                             <h:outputText value="#{pob.name}" title="#{pob.description}"/>
                                         </p:column>
 
                                         <p:column style="white-space:pre-line;">
-                                            <f:facet name="header">
-                                                <h:outputText value="Last Updated By" />
-                                            </f:facet>
                                             <h:outputText value="#{pob.lastUpdatedBy.name}" rendered="#{of:isInstance('com.flowserve.system606.model.MetricStore', pob)}" />
                                         </p:column>
 
                                         <p:column style="white-space:pre-line;">
-                                            <f:facet name="header">
-                                                <h:outputText value="Last Update Date" />
-                                            </f:facet>
                                             <h:outputText value="#{pob.lastUpdateDate}" rendered="#{of:isInstance('com.flowserve.system606.model.MetricStore', pob)}" >
                                                 <f:convertDateTime pattern="dd-MMM-yyyy hh:mm a" type="localDateTime" />
                                             </h:outputText>
                                         </p:column>
 
                                         <p:column style="white-space:pre-line;">
-                                            <f:facet name="header">
-                                                <h:outputText value="Status" />
-                                            </f:facet>
                                             <h:outputText value="#{viewSupport.getPeriodWorkflowStatus(pob).description}"  rendered="#{of:isInstance('com.flowserve.system606.model.Contract', pob)}" />
                                         </p:column>
                                     </p:treeTable>

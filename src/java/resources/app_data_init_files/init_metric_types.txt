@@ -20,7 +20,8 @@ OUTPUT|CONTRACT_COST_TO_COMPLETE_LC|Contract||CurrencyMetric|LC|Cost to Complete
 OUTPUT|CONTRACT_BILLINGS_IN_EXCESS_LC|Contract||CurrencyMetric|LC|Billings in Excess|Billings in Excess|POC POB Outputs|H|Group1|1
 OUTPUT|CONTRACT_REVENUE_IN_EXCESS_LC|Contract||CurrencyMetric|LC|Revenue in Excess|Revenue in Excess|POC POB Outputs|H|Group1|1
 OUTPUT|CONTRACT_PERCENT_COMPLETE|Contract||DecimalMetric|LC|Percent Complete|Percent Complete|POC POB Outputs|H|Group1|1
-OUTPUT|COST_OF_GOODS_SOLD_CTD_LC|POB||CurrencyMetric|LC|Costs POC - IN|Standard Costs-CTD|POC POB Outputs|O|Group1|2
+OUTPUT|COST_OF_GOODS_SOLD_CTD_LC|POB||CurrencyMetric|LC|COS POC - IN||POC POB Outputs|O|Group1|2
+OUTPUT|COSTS_INCURRED_CTD_LC|POB||CurrencyMetric|LC|COS POC - IN||POC POB Outputs|O|Group1|2
 OUTPUT|COST_OF_GOODS_SOLD_PERIOD_LC|POB||CurrencyMetric|LC|COS POC Current Period|COS POC Current Period|POC POB Outputs|O|Group1|2
 OUTPUT|COST_GOODS_SOLD_BACKLOG_LC|POB||CurrencyMetric|LC|COS POC - IN Backlog||POC POB Outputs|O|Group1|2
 OUTPUT|CHANGE_IN_EAC_LC|POB||CurrencyMetric|LC|Change in EAC|Change in EAC|POC POB Outputs|O|Group1|2
@@ -36,7 +37,6 @@ OUTPUT|TRANSACTION_PRICE_NET_LD_LC|POB||CurrencyMetric|LC|Total Transaction Pric
 OUTPUT|REMAINING_ESTIMATE_COMPLETE_LC|POB||CurrencyMetric|LC|Remaining Estimate to Complete |Remaining Estimate to Complete |POC POB Outputs|O|Group1|2
 OUTPUT|PROJECT_GAIN_LOSS_LC|POB||CurrencyMetric|LC|Projected Gain(Loss) |Projected Gain(Loss) |POC POB Outputs|O|Group1|2
 OUTPUT|PROJECT_GAIN_LOSS_BACKLOG_LC|POB||CurrencyMetric|LC|Projected Gain(Loss) in Backlog||POC POB Outputs|O|Group1|2
-OUTPUT|CTD_STANDARD_COSTS_COGS_LC|POB||CurrencyMetric|LC|CTD Standard Costs|CTD Standard Costs|POC POB Outputs|O|Group1|2
 OUTPUT|LOSS_CONTRACT_ADJUSTED_LC|POB||CurrencyMetric|LC|Loss Contract Adjusted|Loss Contract Adjusted|POC POB Outputs|O|Group1|2
 OUTPUT|TOTAL_COST_GOODS_SOLD_LC|Contract||CurrencyMetric|LC|Total Cost of Goods Sold|Total Cost of Goods Sold|POC POB Outputs|O|Group1|2
 OUTPUT|LOSS_RESERVE_CTD_LC|Contract||CurrencyMetric|LC|Loss Recognized in Prior Periods||POC POB Outputs|O|Group1|2

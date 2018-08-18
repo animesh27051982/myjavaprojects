@@ -58,13 +58,14 @@ public class Dashboard implements Serializable {
 
     @PostConstruct
     public void init() {
+        reportingUnits.clear();
         reportingUnits.addAll(webSession.getPreparableReportingUnits());
 
         try {
             List<Holiday> holidays = adminService.findHolidayList();
             Company company = adminService.findCompanyById("FLS");
-            LocalDate freeze = financialPeriodService.CalcInputFreezeWorkday(LocalDate.now(), holidays, company.getInputFreezeWorkday());
-            LocalDate poci = financialPeriodService.CalcInputFreezeWorkday(LocalDate.now(), holidays, company.getPociDueWorkday());
+            LocalDate freeze = financialPeriodService.calcInputFreezeWorkday(LocalDate.now(), holidays, company.getInputFreezeWorkday());
+            LocalDate poci = financialPeriodService.calcInputFreezeWorkday(LocalDate.now(), holidays, company.getPociDueWorkday());
             eventModel = new DefaultScheduleModel();
             for (Holiday holiday : holidays) {
                 Date date = Date.from(holiday.getHolidayDate().atStartOfDay(ZoneOffset.UTC).toInstant());
@@ -92,6 +93,12 @@ public class Dashboard implements Serializable {
     public void onReportingUnitSelect(SelectEvent event) {
         webSession.setFilterText(null);
         //webSession.setAdminReportingUnit((ReportingUnit) event.getObject());
+        init();
+    }
+
+    public void clearReportingUnit(SelectEvent event) {
+        webSession.setFilterText(null);
+        webSession.setCurrentReportingUnit(null);
         init();
     }
 
