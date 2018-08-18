@@ -15,7 +15,13 @@ import com.flowserve.system606.service.CalculationService;
 import com.flowserve.system606.service.ContractService;
 import com.flowserve.system606.service.PerformanceObligationService;
 import com.flowserve.system606.service.ReportingUnitService;
+import com.flowserve.system606.service.TemplateService;
 import com.flowserve.system606.web.WebSession;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -30,8 +36,11 @@ import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import org.primefaces.event.CellEditEvent;
+import org.primefaces.event.FileUploadEvent;
 import org.primefaces.event.SelectEvent;
 import org.primefaces.event.TabChangeEvent;
+import org.primefaces.model.DefaultStreamedContent;
+import org.primefaces.model.StreamedContent;
 import org.primefaces.model.TreeNode;
 
 /**
@@ -44,6 +53,11 @@ public class InputOnlineEntry implements Serializable {
 
     private static final Logger logger = Logger.getLogger(InputOnlineEntry.class.getName());
 
+    private StreamedContent file;
+    private InputStream inputStream;
+    private FileOutputStream outputStream;
+    @Inject
+    TemplateService templateService;
     private TreeNode rootTreeNode;
     private TreeNode billingTreeNode;
     @Inject
@@ -263,5 +277,38 @@ public class InputOnlineEntry implements Serializable {
         pob.setLastUpdateDate(LocalDateTime.now());
         pob.getContract().setLastUpdatedBy(webSession.getUser());
         pob.getContract().setLastUpdateDate(LocalDateTime.now());
+    }
+
+    public StreamedContent getFile() throws Exception {
+        try {
+            //reportingUnits = createReportingUnitTree();
+            inputStream = PobInput.class.getResourceAsStream("/resources/excel_input_templates/POCI_Template_New.xlsx");
+            outputStream = new FileOutputStream(new File("POCI_Template_New.xlsx"));
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        templateService.processTemplateDownload(inputStream, outputStream, reportingUnit);
+
+        InputStream inputStreamFromOutputStream = new FileInputStream(new File("POCI_Template_New.xlsx"));
+        file = new DefaultStreamedContent(inputStreamFromOutputStream, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "POCI_Template_New.xlsx");
+        return file;
+    }
+
+    public void handleTemplateUpload(FileUploadEvent event) {
+
+        try {
+            templateService.processTemplateUpload((InputStream) event.getFile().getInputstream(), event.getFile().getFileName());
+
+            FacesMessage msg = new FacesMessage("Succesful", event.getFile().getFileName() + " is uploaded.");
+            FacesContext.getCurrentInstance().addMessage(null, msg);
+            FacesContext.getCurrentInstance().getExternalContext().redirect("inputOnlineEntry.xhtml");
+            FacesContext.getCurrentInstance().getExternalContext().getFlash().setKeepMessages(true);
+        } catch (Exception e) {
+            FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", "Error handleTemplateUpload: " + e.getMessage());
+            FacesContext.getCurrentInstance().addMessage(null, msg);
+            logger.log(Level.SEVERE, "Error handleTemplateUpload.", e);
+        }
     }
 }

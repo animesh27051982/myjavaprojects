@@ -510,6 +510,12 @@
                         <p:toolbar>
                             <f:facet name="left">
                                 <p:commandButton value="Recalc All From NOV-17" icon="ui-icon-check" update=":form:topLevelTabView" ajax="false" actionListener="#{pobCalculationReview.calculateAndSaveSinceNov17}"/>
+                                <p:commandButton value="Download Template" ajax="false" style="width:auto;" icon="ui-icon-arrowthick-1-s">
+                                    <p:fileDownload value="#{inputOnlineEntry.file}" />
+                                </p:commandButton>
+                                <p:fileUpload  fileUploadListener="#{inputOnlineEntry.handleTemplateUpload}" auto="true" label="Upload Template"
+                                               multiple="false" update="messages" sizeLimit="10000000" allowTypes="/(\.|\/)(xlsx)$/" style="width:70%;margin-top: 15px;" rendered="#{viewSupport.periodClosed}"/>
+
                             </f:facet>
                             <f:facet name="right">
                                 <p:commandButton value="Return to Dashboard" icon="ui-icon-arrowthick-1-w" ajax="false" action="#{inputController.inputDashboard()}"/>
@@ -518,6 +524,7 @@
                                 <p:commandButton value="Calculation Review" icon="ui-icon-arrowthick-1-e" ajax="false" actionListener="#{inputOnlineEntry.saveInputs()}" action="#{calcReviewController.reviewCalculations()}"/>
                             </f:facet>
                         </p:toolbar>
+
 
                     </div>
                 </div>

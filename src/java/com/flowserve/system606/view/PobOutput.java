@@ -6,12 +6,19 @@
 package com.flowserve.system606.view;
 
 import com.flowserve.system606.service.ReportsService;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.Serializable;
-import javax.faces.application.FacesMessage;
-import javax.faces.context.FacesContext;
+import java.util.logging.Logger;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
+import org.apache.poi.util.IOUtils;
+import org.primefaces.model.DefaultStreamedContent;
+import org.primefaces.model.StreamedContent;
 
 /**
  *
@@ -23,20 +30,34 @@ public class PobOutput implements Serializable {
 
     @Inject
     ReportsService reportsService;
+    private static Logger logger = Logger.getLogger("com.flowserve.system606");
+    public static final String PREFIX = "msaccess";
+    public static final String SUFFIX = ".accdb";
 
-    public void downloadFile() throws Exception {
+    private StreamedContent file;
+    private InputStream inputStream;
 
-        try {
+    public StreamedContent getFile() throws Exception {
 
-            reportsService.generatePobOutput();
-            FacesMessage msg = new FacesMessage("Succesful", "File write completed.");
+        inputStream = PobOutput.class.getResourceAsStream("/resources/excel_input_templates/POB_Output.accdb");
 
-            FacesContext.getCurrentInstance().addMessage(null, msg);
-        } catch (Exception e) {
-            FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", "POCI Data Upload: " + e.getMessage());
-            FacesContext.getCurrentInstance().addMessage(null, msg);
+        File accessFile = stream2file(inputStream);
+        String fileName = accessFile.getAbsolutePath();
 
+        reportsService.generatePobOutput(fileName);
+
+        InputStream inputStreamFromOutputStream = new FileInputStream(accessFile);
+        file = new DefaultStreamedContent(inputStreamFromOutputStream, "accdb", "POB_Output.accdb");
+        return file;
+    }
+
+    public File stream2file(InputStream in) throws IOException {
+        final File tempFile = File.createTempFile(PREFIX, SUFFIX);
+        tempFile.deleteOnExit();
+        try (FileOutputStream out = new FileOutputStream(tempFile)) {
+            IOUtils.copy(in, out);
         }
+        return tempFile;
     }
 
 }
