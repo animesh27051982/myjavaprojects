@@ -353,7 +353,7 @@
                                                 <p:column colspan="1" style="white-space:pre-line;" headerText="#{viewSupport.getMetricTypeName('THIRD_PARTY_COMMISSION_CTD_LC')}" />
                                                 <p:column colspan="1" style="white-space:pre-line;" headerText="#{viewSupport.getMetricTypeName('THIRD_PARTY_COMMISSION_TO_RECOGNIZE_LC')}" />
                                                 <p:column colspan="1" style="white-space:pre-line;" headerText="#{viewSupport.getMetricTypeName('THIRD_PARTY_COMMISSION_CTD_LC')} Prior Period" />
-                                                <p:column colspan="1" style="white-space:pre-line;" headerText="#{viewSupport.getMetricTypeName('THIRD_PARTY_COMMISSION_TO_RECOGNIZE_LC')} Prior Period" />
+                                                <p:column colspan="1" style="white-space:pre-line;" headerText="#{viewSupport.getMetricTypeName('THIRD_PARTY_COMMISSION_TO_RECOGNIZE_LC')}" />
                                             </p:row>
                                         </p:columnGroup>
                                         <p:ajax event="cellEdit" listener="#{inputOnlineEntry.onCellEdit}" />
@@ -397,7 +397,7 @@
                                             </h:outputText>
                                         </p:column>
                                         <p:column style="white-space:pre-line;">
-                                            <h:outputText value="#{viewSupport.getCurrencyMetricPriorPeriod('THIRD_PARTY_COMMISSION_TO_RECOGNIZE_LC', pob).lcValue}" rendered="#{of:isInstance('com.flowserve.system606.model.Contract', pob)}" >
+                                            <h:outputText value="#{viewSupport.getCurrencyMetric('THIRD_PARTY_COMMISSION_TO_RECOGNIZE_LC', pob).lcValue}" rendered="#{of:isInstance('com.flowserve.system606.model.Contract', pob)}" >
                                                 <f:convertNumber type="currency" currencySymbol=""/>
                                             </h:outputText>
                                         </p:column>

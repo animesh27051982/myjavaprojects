@@ -258,8 +258,6 @@ public class CalculationService {
 
     @TransactionAttribute(NOT_SUPPORTED)
     public void executeBusinessRules(Measurable measurable, FinancialPeriod period) throws Exception {
-        //Logger.getLogger(CalculationService.class.getName()).log(Level.FINER, "Firing all business rules: " + period.getId() + " ts: " + measurable.toString());
-
         if (kSession == null) {
             initBusinessRulesEngine();
         }

@@ -120,9 +120,19 @@ rule "Percent Complete Contract"
         contract : Contract()
         costOfGoodsSoldCTD : CurrencyMetric(metricType.code == "COST_OF_GOODS_SOLD_CTD_LC", lcValue != null)
         estimatedCostAtCompletion : CurrencyMetric(metricType.code == "ESTIMATED_COST_AT_COMPLETION_LC", lcValue != null)
-        percentComplete : Metric(metricType.code == "PERCENT_COMPLETE")
+        contractPercentComplete : Metric(metricType.code == "CONTRACT_PERCENT_COMPLETE")
     then
-        modify (percentComplete) { value = (costOfGoodsSoldCTD.lcValue == 0B || estimatedCostAtCompletion.lcValue == 0B ? 0B : costOfGoodsSoldCTD.lcValue / estimatedCostAtCompletion.lcValue)};
+        modify (contractPercentComplete) { value = (costOfGoodsSoldCTD.lcValue == 0B || estimatedCostAtCompletion.lcValue == 0B ? 0B : costOfGoodsSoldCTD.lcValue / estimatedCostAtCompletion.lcValue)};
+end
+
+rule "Contract Third Party Commissions to Recognize"
+    when
+        contract : Contract()
+        percentComplete : Metric(metricType.code == "CONTRACT_PERCENT_COMPLETE", value != null)
+        thirdPartyCommCTD : CurrencyMetric(metricType.code == "THIRD_PARTY_COMMISSION_CTD_LC", lcValue != null)
+        thirdPartyCommToRecognize : CurrencyMetric(metricType.code == "THIRD_PARTY_COMMISSION_TO_RECOGNIZE_LC")
+    then
+        modify (thirdPartyCommToRecognize) { lcValue = (percentComplete.value * thirdPartyCommCTD.lcValue)};
 end
 
 rule "Contract Revenue Earned to Date"
