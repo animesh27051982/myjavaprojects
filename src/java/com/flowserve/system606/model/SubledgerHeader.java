@@ -44,7 +44,7 @@ public class SubledgerHeader implements Serializable {
     @JoinColumn(name = "SL_BATCH_ID")
     private SubledgerBatch subledgerBatch;
     @OneToOne
-    @JoinColumn(name = "FINANCIAL_PERIOD_ID")
+    @JoinColumn(name = "PERIOD_ID")
     private FinancialPeriod financialPeriod;
     @Column(name = "CREATION_DATE")
     private LocalDateTime creationDate;

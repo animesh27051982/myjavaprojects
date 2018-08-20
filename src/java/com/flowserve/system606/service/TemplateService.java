@@ -104,7 +104,7 @@ public class TemplateService {
                 cell = row.getCell(2, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
                 cell.setCellValue(pob.getId());
                 cell = row.getCell(3, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
-                cell.setCellValue(pob.getRevenueMethod().getShortName());
+                cell.setCellValue(pob.getRevenueMethod().getShortName() == null ? "" : pob.getRevenueMethod().getShortName());
                 cell = row.getCell(4, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
                 cell.setCellValue(contract.getContractCurrency().getCurrencyCode());
 

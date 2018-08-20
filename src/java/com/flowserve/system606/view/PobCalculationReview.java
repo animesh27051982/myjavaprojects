@@ -52,6 +52,7 @@ public class PobCalculationReview implements Serializable {
     private FinancialPeriodService financialPeriodService;
     private List<Contract> contracts;
     ReportingUnit reportingUnit;
+    private TreeNode selectedNode;
 
     @PostConstruct
     public void init() {
@@ -228,6 +229,14 @@ public class PobCalculationReview implements Serializable {
 
     public ReportingUnit getReportingUnit() {
         return reportingUnit;
+    }
+
+    public TreeNode getSelectedNode() {
+        return selectedNode;
+    }
+
+    public void setSelectedNode(TreeNode selectedNode) {
+        this.selectedNode = selectedNode;
     }
 
 }

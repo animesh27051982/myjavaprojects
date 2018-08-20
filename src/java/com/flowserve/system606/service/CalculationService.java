@@ -193,7 +193,8 @@ public class CalculationService {
 
     public void calculateAndSave(ReportingUnit reportingUnit, FinancialPeriod period) throws Exception {
 
-        //for (ReportingUnit reportingUnit : reportingUnits) {
+        Logger.getLogger(CalculationService.class.getName()).log(Level.INFO, "Period passed to CalculationService.calculateAndSave: " + period.getId());
+
         if (reportingUnit.isParent()) {
             Logger.getLogger(CalculationService.class.getName()).log(Level.INFO, "RU is parent, skipping calcs: " + reportingUnit.getCode());
             return;
@@ -202,7 +203,7 @@ public class CalculationService {
 
         FinancialPeriod calculationPeriod = period;
         do {
-            Logger.getLogger(CalculationService.class.getName()).log(Level.INFO, "Recalcing POBs for period: " + calculationPeriod.getId());
+            Logger.getLogger(CalculationService.class.getName()).log(Level.INFO, "Recalcing POBs for period: " + calculationPeriod.getId() + " RU: " + reportingUnit.getCode());
             executeBusinessRulesAndSave((new ArrayList<Measurable>(reportingUnit.getPerformanceObligations())), calculationPeriod);
         } while ((calculationPeriod = financialPeriodService.calculateNextPeriodUntilCurrent(calculationPeriod)) != null);
 
@@ -212,14 +213,8 @@ public class CalculationService {
             executeBusinessRulesAndSave((new ArrayList<Measurable>(reportingUnit.getContracts())), calculationPeriod);
         } while ((calculationPeriod = financialPeriodService.calculateNextPeriodUntilCurrent(calculationPeriod)) != null);
         Logger.getLogger(CalculationService.class.getName()).log(Level.INFO, "Completed calcs RU: " + reportingUnit.getCode());
-        //    }
     }
 
-//    public void calculateAndSave(ReportingUnit reportingUnit, FinancialPeriod period) throws Exception {
-//        List<ReportingUnit> rus = new ArrayList<ReportingUnit>();
-//        rus.add(reportingUnit);
-//        calculateAndSave(rus, period);
-//    }
     // KJG TODO - More validity work needed.  Just checking TP not good enough.
     private boolean isValidForCalculations(Measurable measurable, FinancialPeriod period) throws Exception {
         if (measurable instanceof PerformanceObligation) {
@@ -274,6 +269,8 @@ public class CalculationService {
         Collection<Metric> periodMetrics = getAllCurrentPeriodMetrics(measurable, period);
         convertCurrencies(periodMetrics, measurable, period);
         facts.addAll(periodMetrics);
+        facts.add(period);
+        facts.add(currencyService);
         facts.addAll(getAllPriorPeriodMetrics(measurable, period));
         kSession.execute(facts);
         convertCurrencies(periodMetrics, measurable, period);
@@ -368,6 +365,7 @@ public class CalculationService {
         Logger.getLogger(CalculationService.class.getName()).log(Level.FINER, "getAccumulatedCurrencyMetric() " + metricCode + " measurable: " + measurable.getClass().getName());
         BigDecimal sum = new BigDecimal("0.0");
         CurrencyMetric metric = new CurrencyMetric();
+        metric.setFinancialPeriod(period);
         metric.setMetricType(metricService.findMetricTypeByCode(metricCode));
         metric.setValue(sum);
         if (isEmptyTransientMesaurable(measurable)) {

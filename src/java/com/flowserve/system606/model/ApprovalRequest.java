@@ -48,11 +48,11 @@ public class ApprovalRequest implements Serializable {
     private ApprovalGroup approvalGroup;
 
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.REMOVE)
-    @JoinTable(name = "APPROVAL_REQUEST_WORKHISTORY", joinColumns = @JoinColumn(name = "APPROVAL_REQUEST_ID"), inverseJoinColumns = @JoinColumn(name = "WORKFLOW_ACTION_ID"))
+    @JoinTable(name = "APPROVAL_WORKHISTORY", joinColumns = @JoinColumn(name = "APPROVAL_REQUEST_ID"), inverseJoinColumns = @JoinColumn(name = "WORKFLOW_ACTION_ID"))
     @OrderBy("actionDate ASC")
     private List<WorkflowAction> workflowHistory = new ArrayList<WorkflowAction>();
 
-    @JoinColumn(name = "FINANCIAL_PERIOD_ID")
+    @JoinColumn(name = "PERIOD_ID")
     private FinancialPeriod financialPeriod;
 
     public ApprovalRequest() {

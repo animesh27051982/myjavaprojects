@@ -51,7 +51,7 @@ public class ReportingUnitConverter implements Converter {
     }
 
     public String getAsString(FacesContext fc, UIComponent uic, Object value) {
-        if (value instanceof String) {
+        if (!(value instanceof ReportingUnit)) {
             return null;
         }
 

@@ -8,6 +8,7 @@ package com.flowserve.system606.view;
 import com.flowserve.system606.model.BillingEvent;
 import com.flowserve.system606.model.Contract;
 import com.flowserve.system606.model.FinancialPeriod;
+import com.flowserve.system606.model.Measurable;
 import com.flowserve.system606.model.PerformanceObligation;
 import com.flowserve.system606.model.ReportingUnit;
 import com.flowserve.system606.service.AdminService;
@@ -93,6 +94,14 @@ public class InputOnlineEntry implements Serializable {
         if (webSession.getSelectedContracts() != null && webSession.getSelectedContracts().length > 0) {
             filterByContracts();
         }
+    }
+
+    public String getTextStyle(Measurable measurable) {
+        if (measurable instanceof ReportingUnit || measurable instanceof Contract) {
+            return "color: grey; font-style: italic;";
+        }
+
+        return "";
     }
 
     public void switchPeriod(FinancialPeriod period) {
@@ -215,7 +224,7 @@ public class InputOnlineEntry implements Serializable {
     }
 
     public void saveInputs() throws Exception {
-        if (viewSupport.isPeriodClosed()) {
+        if (viewSupport.isPeriodOpen()) {
             Logger.getLogger(InputOnlineEntry.class.getName()).log(Level.FINE, "Saving inputs.");
             adminService.update(reportingUnit);
             for (Contract contract : reportingUnit.getContracts()) {

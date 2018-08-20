@@ -293,6 +293,14 @@ public class ViewSupport implements Serializable {
         }
     }
 
+    public String getTextStyle(Measurable measurable) {
+        if (measurable instanceof ReportingUnit || measurable instanceof Contract) {
+            return "color: grey; font-style: italic;";
+        }
+
+        return "";
+    }
+
     public void filterBillingNodeTree(TreeNode root, String contractFilterText) {
 
         //List<TreeNode> contractsToRemove = new ArrayList<TreeNode>();
@@ -451,7 +459,7 @@ public class ViewSupport implements Serializable {
         return searchString;
     }
 
-    public boolean isPeriodClosed() {
+    public boolean isPeriodOpen() {
         FinancialPeriod period = webSession.getCurrentPeriod();
         ReportingUnit ru = webSession.getCurrentReportingUnit();
         User user = webSession.getUser();

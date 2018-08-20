@@ -51,9 +51,6 @@ public class FinancialPeriodService {
         company = adminService.findCompanyById("FLS");
     }
 
-//    public String getPeriodIdByDate(LocalDate date) {
-//        return periodNameFormatter.format(date);
-//    }
     public FinancialPeriod findById(String id) {
         return em.find(FinancialPeriod.class, id);
     }

@@ -23,6 +23,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToOne;
+import javax.persistence.MapKeyJoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.OrderBy;
@@ -85,11 +86,13 @@ public class Contract extends BaseEntity<Long> implements MetricStore, Measurabl
     private List<PerformanceObligation> performanceObligations = new ArrayList<PerformanceObligation>();
     @OneToMany(fetch = FetchType.LAZY, cascade = {CascadeType.ALL}, orphanRemoval = true)
     @JoinTable(name = "CONTRACT_METRIC_SET", joinColumns = @JoinColumn(name = "CONTRACT_ID"), inverseJoinColumns = @JoinColumn(name = "METRIC_SET_ID"))
+    @MapKeyJoinColumn(name = "PERIOD_ID")
     private Map<FinancialPeriod, MetricSet> periodMetricSetMap = new HashMap<FinancialPeriod, MetricSet>();
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "contract", orphanRemoval = true)
     private List<BillingEvent> billingEvents = new ArrayList<BillingEvent>();
     @OneToMany(fetch = FetchType.LAZY, cascade = {CascadeType.ALL}, orphanRemoval = true)
     @JoinTable(name = "CONTRACT_APPROVAL_REQUEST", joinColumns = @JoinColumn(name = "CONTRACT_ID"), inverseJoinColumns = @JoinColumn(name = "APPROVAL_REQUEST_ID"))
+    @MapKeyJoinColumn(name = "PERIOD_ID")
     private Map<FinancialPeriod, ApprovalRequest> periodApprovalRequestMap = new HashMap<FinancialPeriod, ApprovalRequest>();
 
     public Contract() {
@@ -165,6 +168,9 @@ public class Contract extends BaseEntity<Long> implements MetricStore, Measurabl
                 Class<?> clazz = Class.forName(MetricType.PACKAGE_PREFIX + metricType.getMetricClass());
                 metric = (Metric) clazz.newInstance();
                 metric.setMetricType(metricType);
+                metric.setCreationDate(LocalDateTime.now());
+                metric.setValid(true);
+                metric.setFinancialPeriod(period);
                 metric.setMetricSet(periodMetricSetMap.get(period));
                 periodMetricSetMap.get(period).getTypeMetricMap().put(metricType, metric);
             }

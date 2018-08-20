@@ -85,56 +85,16 @@ public class BatchProcessingService {
     public void calculateAllFinancials(List<ReportingUnit> reportingUnits, FinancialPeriod startPeriod) throws Exception {
 
         for (ReportingUnit reportingUnit : reportingUnits) {
-
             if (reportingUnit.isParent()) {
                 continue;
             }
-
             if (!reportingUnitsToProcess.contains(reportingUnit.getCode())) {
                 continue;
             }
-
-            int pobCount = 0;
             try {
                 ut.begin();
                 logger.log(Level.INFO, "Calculating RU: " + reportingUnit.getCode() + " POB Count: " + reportingUnit.getPerformanceObligations().size());
-
-//                FinancialPeriod calculationPeriod;
                 calculationService.calculateAndSave(reportingUnit, startPeriod);
-
-//                for (Contract contract : reportingUnit.getContracts()) {
-//                    for (PerformanceObligation pob : contract.getPerformanceObligations()) {
-//                        calculationPeriod = startPeriod;
-//                        try {
-//                            do {
-//                                calculationService.executeBusinessRulesAndSave(pob, calculationPeriod);
-//                            } while ((calculationPeriod = financialPeriodService.calculateNextPeriodUntilCurrent(calculationPeriod)) != null);
-//                        } catch (Exception e) {
-//                            Logger.getLogger(BatchProcessingService.class.getName()).log(Level.SEVERE, "Error calculating POB: " + pob.getId(), e);
-//                        }
-//                        pobCount++;
-//                        if ((pobCount % 10) == 0) {
-//                            logger.info("POB Count: " + pobCount);
-//                        }
-//                    }
-//
-//                    calculationPeriod = startPeriod;
-//                    try {
-//                        do {
-//                            calculationService.executeBusinessRulesAndSave(contract, calculationPeriod);
-//                        } while ((calculationPeriod = financialPeriodService.calculateNextPeriodUntilCurrent(calculationPeriod)) != null);
-//                    } catch (Exception exception) {
-//                        Logger.getLogger(BatchProcessingService.class.getName()).log(Level.SEVERE, "Error calulating contract: " + contract.getId(), exception);
-//                    }
-//                }
-////                do {
-////                    calculationService.executeBusinessRulesAndSave((new ArrayList<Measurable>(reportingUnit.getPerformanceObligations())), calculationPeriod);
-////                } while ((calculationPeriod = financialPeriodService.calculateNextPeriodUntilCurrent(calculationPeriod)) != null);
-////
-////                calculationPeriod = startPeriod;
-////                do {
-////                    calculationService.executeBusinessRulesAndSave((new ArrayList<Measurable>(reportingUnit.getContracts())), calculationPeriod);
-////                } while ((calculationPeriod = financialPeriodService.calculateNextPeriodUntilCurrent(calculationPeriod)) != null);
                 logger.log(Level.INFO, "Flushing and clearing EntityManager");
                 em.flush();
                 em.clear();
@@ -290,7 +250,7 @@ public class BatchProcessingService {
             }
 
             if ((count % 100) == 0) {
-                logger.log(Level.INFO, "Processed " + count + " POCI import records");
+                logger.log(Level.INFO, "Processed " + count + " POB Input Sets.");
                 timeInterval = System.currentTimeMillis();
             }
             if ((count % 1000) == 0) {
@@ -659,6 +619,10 @@ public class BatchProcessingService {
             Contract contract = new Contract();
             contract.setActive(true);
             contract.setId(contractId);
+            if (contractName.startsWith("WAIVER")) {
+                importMessages.add("Skipping WAIVER contract.  ID: " + contractId);
+                continue;
+            }
             contract.setName(contractName);
             contract.setSalesOrderNumber(salesOrderNumber);
             if (contractCurrencyCode != null && !contractCurrencyCode.isEmpty()) {

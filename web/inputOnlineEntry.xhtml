@@ -16,6 +16,13 @@
                     $(this).closest("tr").find(".ui-row-editor .ui-icon-check").click();
                 }
             });
+            function showStatus() {
+                PF('statusDialog').show();
+            }
+
+            function hideStatus() {
+                PF('statusDialog').hide();
+            }
         </script>
 
         <style type="text/css">
@@ -25,6 +32,12 @@
             }
             body .ui-treetable .ui-treetable-data tr td {
                 padding: 4px 4px;
+            }
+            input[type="text"]:disabled {
+                border: none;
+                color: black;
+                font-style: italic;
+                font-weight: bold;
             }
         </style>
 
@@ -50,6 +63,7 @@
                                 var="ru"
                                 maxResults="10"
                                 minQueryLength="2"
+                                size="50"
                                 placeholder="start typing..."
                                 required="#{false}"
                                 forceSelection="#{true}"
@@ -124,32 +138,36 @@
                                         </p:column>
 
                                         <p:column style="white-space:pre-line;">
-                                            <h:outputText value="#{pob.contractCurrency.currencyCode}" rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}"/>
+                                            <h:outputText value="#{pob.contractCurrency.currencyCode}" rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob) or of:isInstance('com.flowserve.system606.model.Contract', pob)}"
+                                                          style="#{viewSupport.getTextStyle(pob)}"/>
                                         </p:column>
 
                                         <p:column style="white-space:pre-line;">
-                                            <p:cellEditor rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}">
+                                            <p:cellEditor >
                                                 <f:facet name="output">
-                                                    <p:inputText pt:data-tooltip="#{viewSupport.getErrorMessage('TRANSACTION_PRICE_CC', pob)}" value="#{viewSupport.getCurrencyMetric('TRANSACTION_PRICE_CC', pob).ccValue}" styleClass="#{empty viewSupport.getCurrencyMetric('TRANSACTION_PRICE_CC', pob).ccValue ? 'ui-state-error' : ''}" readonly="true">
-                                                        <o:converter converterId="javax.faces.Number" type="currency" currencySymbol=""/>
+                                                    <p:inputText pt:data-tooltip="#{viewSupport.getErrorMessage('TRANSACTION_PRICE_CC', pob)}" value="#{viewSupport.getCurrencyMetric('TRANSACTION_PRICE_CC', pob).ccValue}"
+                                                                 styleClass="#{empty viewSupport.getCurrencyMetric('TRANSACTION_PRICE_CC', pob).ccValue ? 'ui-state-error' : ''}" readonly="true"
+                                                                 disabled="#{not of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}">
+                                                        <f:convertNumber type="currency" currencySymbol=""/>
                                                     </p:inputText>
                                                 </f:facet>
                                                 <f:facet name="input">
-                                                    <p:inputText value="#{viewSupport.getCurrencyMetric('TRANSACTION_PRICE_CC', pob).ccValue}">
+                                                    <p:inputText value="#{viewSupport.getCurrencyMetric('TRANSACTION_PRICE_CC', pob).ccValue}" disabled="#{of:isInstance('com.flowserve.system606.model.Contract', pob)}">
                                                         <f:validateDoubleRange/>
                                                         <p:ajax event="change" update=":form:messages" process="@this" listener="#{inputOnlineEntry.calculateOutputs(pob)}"/>
                                                     </p:inputText>
                                                 </f:facet>
                                             </p:cellEditor>
-
                                         </p:column>
 
                                         <p:column style="white-space:pre-line;">
-                                            <p:cellEditor rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}">
+                                            <p:cellEditor>
                                                 <f:facet name="output">
-                                                    <p:inputText pt:data-tooltip="#{viewSupport.getErrorMessage('LIQUIDATED_DAMAGES_CTD_CC', pob)}" value="#{viewSupport.getCurrencyMetric('LIQUIDATED_DAMAGES_CTD_CC', pob).ccValue}" styleClass="#{empty viewSupport.getCurrencyMetric('LIQUIDATED_DAMAGES_CTD_CC', pob).ccValue ? 'ui-state-error' : ''}" readonly="true">
+                                                    <p:inputText pt:data-tooltip="#{viewSupport.getErrorMessage('LIQUIDATED_DAMAGES_CTD_CC', pob)}" value="#{viewSupport.getCurrencyMetric('LIQUIDATED_DAMAGES_CTD_CC', pob).ccValue}"
+                                                                 styleClass="#{empty viewSupport.getCurrencyMetric('LIQUIDATED_DAMAGES_CTD_CC', pob).ccValue ? 'ui-state-error' : ''}" readonly="true"
+                                                                 disabled="#{not of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}">
                                                         <f:validateDoubleRange/>
-                                                        <o:converter converterId="javax.faces.Number" currencySymbol="" type="currency" />
+                                                        <f:convertNumber type="currency" currencySymbol=""/>
                                                     </p:inputText>
                                                 </f:facet>
                                                 <f:facet name="input">
@@ -167,15 +185,18 @@
                                         </p:column>
 
                                         <p:column style="width: 50px; white-space:pre-line;">
-                                            <h:outputText value="#{pob.localCurrency.currencyCode}" rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}"/>
+                                            <h:outputText value="#{pob.localCurrency.currencyCode}" rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob) or of:isInstance('com.flowserve.system606.model.Contract', pob)}"
+                                                          style="#{viewSupport.getTextStyle(pob)}"/>
                                         </p:column>
 
                                         <p:column style="white-space:pre-line;">
-                                            <p:cellEditor rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}">
+                                            <p:cellEditor>
                                                 <f:facet name="output">
-                                                    <p:inputText pt:data-tooltip="#{viewSupport.getErrorMessage('ESTIMATED_COST_AT_COMPLETION_LC', pob)}" value="#{viewSupport.getCurrencyMetric('ESTIMATED_COST_AT_COMPLETION_LC', pob).lcValue}" styleClass="#{empty viewSupport.getCurrencyMetric('ESTIMATED_COST_AT_COMPLETION_LC', pob).lcValue ? 'ui-state-error' : ''}" style="#{viewSupport.getValidation('ESTIMATED_COST_AT_COMPLETION_LC', pob) ? 'color:red' : ''}" readonly="true">
+                                                    <p:inputText pt:data-tooltip="#{viewSupport.getErrorMessage('ESTIMATED_COST_AT_COMPLETION_LC', pob)}" value="#{viewSupport.getCurrencyMetric('ESTIMATED_COST_AT_COMPLETION_LC', pob).lcValue}"
+                                                                 styleClass="#{empty viewSupport.getCurrencyMetric('ESTIMATED_COST_AT_COMPLETION_LC', pob).lcValue ? 'ui-state-error' : ''}" style="#{viewSupport.getValidation('ESTIMATED_COST_AT_COMPLETION_LC', pob) ? 'color:red' : ''}" readonly="true"
+                                                                 disabled="#{not of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}">
                                                         <f:validateDoubleRange/>
-                                                        <o:converter converterId="javax.faces.Number" type="currency" currencySymbol=""/>
+                                                        <f:convertNumber type="currency" currencySymbol=""/>
                                                     </p:inputText>
                                                 </f:facet>
                                                 <f:facet name="input">
@@ -187,14 +208,14 @@
                                         </p:column>
 
                                         <p:column style="white-space:pre-line;">
-                                            <h:outputText id="eacPrior" value="#{viewSupport.getCurrencyMetricPriorPeriod('ESTIMATED_COST_AT_COMPLETION_LC', pob).lcValue}" rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}">
-                                                <o:converter converterId="javax.faces.Number" type="currency" currencySymbol=""/>
+                                            <h:outputText id="eacPrior" value="#{viewSupport.getCurrencyMetricPriorPeriod('ESTIMATED_COST_AT_COMPLETION_LC', pob).lcValue}" style="#{viewSupport.getTextStyle(pob)}">
+                                                <f:convertNumber type="currency" currencySymbol=""/>
                                             </h:outputText>
                                         </p:column>
 
                                         <p:column style="white-space:pre-line;">
                                             <h:outputText id="eacChange" value="#{viewSupport.getCurrencyMetric('CHANGE_IN_EAC_LC', pob).lcValue}" rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}" >
-                                                <o:converter converterId="javax.faces.Number" type="currency" currencySymbol=""/>
+                                                <f:convertNumber type="currency" currencySymbol=""/>
                                             </h:outputText>
                                         </p:column>
                                     </p:treeTable>
@@ -213,7 +234,7 @@
                                                 <p:column colspan="1" style="white-space:pre-line;" headerText="#{viewSupport.getMetricTypeName('LOCAL_COSTS_CTD_LC')}" />
                                                 <p:column colspan="1" style="white-space:pre-line;" headerText="#{viewSupport.getMetricTypeName('THIRD_PARTY_COSTS_CTD_LC')}" />
                                                 <p:column colspan="1" style="white-space:pre-line;" headerText="#{viewSupport.getMetricTypeName('INTERCOMPANY_COSTS_CTD_LC')}" />
-                                                <p:column colspan="1" style="white-space:pre-line;" headerText="#{viewSupport.getMetricTypeName('COST_OF_GOODS_SOLD_CTD_LC')}" />
+                                                <p:column colspan="1" style="white-space:pre-line;" headerText="#{viewSupport.getMetricTypeName('COSTS_INCURRED_CTD_LC')}" />
                                                 <p:column colspan="1" style="white-space:pre-line;" headerText="#{viewSupport.getMetricTypeName('DELIVERY_DATE')}" />
                                                 <p:column colspan="1" style="white-space:pre-line;" headerText="#{viewSupport.getMetricTypeName('PARTIAL_SHIPMENT_COSTS_LC')}" />
                                             </p:row>
@@ -229,11 +250,13 @@
                                         </p:column>
 
                                         <p:column style="white-space:pre-line;">
-                                            <p:cellEditor rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}">
+                                            <p:cellEditor>
                                                 <f:facet name="output">
-                                                    <p:inputText pt:data-tooltip="#{viewSupport.getErrorMessage('LOCAL_COSTS_CTD_LC', pob)}" value="#{viewSupport.getCurrencyMetric('LOCAL_COSTS_CTD_LC', pob).lcValue}" styleClass="#{empty viewSupport.getCurrencyMetric('LOCAL_COSTS_CTD_LC', pob).lcValue ? 'ui-state-error' : ''}" readonly="true">
+                                                    <p:inputText pt:data-tooltip="#{viewSupport.getErrorMessage('LOCAL_COSTS_CTD_LC', pob)}" value="#{viewSupport.getCurrencyMetric('LOCAL_COSTS_CTD_LC', pob).lcValue}"
+                                                                 styleClass="#{empty viewSupport.getCurrencyMetric('LOCAL_COSTS_CTD_LC', pob).lcValue ? 'ui-state-error' : ''}" readonly="true"
+                                                                 disabled="#{not of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}">
                                                         <f:validateDoubleRange/>
-                                                        <o:converter converterId="javax.faces.Number" currencySymbol="" type="currency" />
+                                                        <f:convertNumber type="currency" currencySymbol=""/>
                                                     </p:inputText>
                                                 </f:facet>
                                                 <f:facet name="input">
@@ -245,11 +268,13 @@
                                         </p:column>
 
                                         <p:column style="white-space:pre-line;">
-                                            <p:cellEditor rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}">
+                                            <p:cellEditor>
                                                 <f:facet name="output">
-                                                    <p:inputText pt:data-tooltip="#{viewSupport.getErrorMessage('THIRD_PARTY_COSTS_CTD_LC', pob)}" value="#{viewSupport.getCurrencyMetric('THIRD_PARTY_COSTS_CTD_LC', pob).lcValue}" styleClass="#{empty viewSupport.getCurrencyMetric('THIRD_PARTY_COSTS_CTD_LC', pob).lcValue ? 'ui-state-error' : ''}" readonly="true">
+                                                    <p:inputText pt:data-tooltip="#{viewSupport.getErrorMessage('THIRD_PARTY_COSTS_CTD_LC', pob)}" value="#{viewSupport.getCurrencyMetric('THIRD_PARTY_COSTS_CTD_LC', pob).lcValue}"
+                                                                 styleClass="#{empty viewSupport.getCurrencyMetric('THIRD_PARTY_COSTS_CTD_LC', pob).lcValue ? 'ui-state-error' : ''}" readonly="true"
+                                                                 disabled="#{not of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}">
                                                         <f:validateDoubleRange/>
-                                                        <o:converter converterId="javax.faces.Number" currencySymbol="" type="currency" />
+                                                        <f:convertNumber type="currency" currencySymbol=""/>
                                                     </p:inputText>
                                                 </f:facet>
                                                 <f:facet name="input">
@@ -261,11 +286,13 @@
                                         </p:column>
 
                                         <p:column style="white-space:pre-line;">
-                                            <p:cellEditor rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}">
+                                            <p:cellEditor>
                                                 <f:facet name="output">
-                                                    <p:inputText value="#{viewSupport.getCurrencyMetric('INTERCOMPANY_COSTS_CTD_LC', pob).lcValue}" styleClass="#{empty viewSupport.getCurrencyMetric('INTERCOMPANY_COSTS_CTD_LC', pob).lcValue ? 'ui-state-error' : ''}" readonly="true">
+                                                    <p:inputText value="#{viewSupport.getCurrencyMetric('INTERCOMPANY_COSTS_CTD_LC', pob).lcValue}"
+                                                                 styleClass="#{empty viewSupport.getCurrencyMetric('INTERCOMPANY_COSTS_CTD_LC', pob).lcValue ? 'ui-state-error' : ''}" readonly="true"
+                                                                 disabled="#{not of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}">
                                                         <f:validateDoubleRange/>
-                                                        <o:converter converterId="javax.faces.Number" currencySymbol="" type="currency" />
+                                                        <f:convertNumber type="currency" currencySymbol=""/>
                                                     </p:inputText>
                                                 </f:facet>
                                                 <f:facet name="input">
@@ -277,8 +304,8 @@
                                         </p:column>
 
                                         <p:column style="white-space:pre-line;">
-                                            <h:outputText id="totalCTD" value="#{viewSupport.getCurrencyMetric('COST_OF_GOODS_SOLD_CTD_LC', pob).lcValue}" rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}">
-                                                <o:converter converterId="javax.faces.Number" currencySymbol="" type="currency" />
+                                            <h:outputText id="totalCTD" value="#{viewSupport.getCurrencyMetric('COSTS_INCURRED_CTD_LC', pob).lcValue}">
+                                                <f:convertNumber type="currency" currencySymbol=""/>
                                             </h:outputText>
                                         </p:column>
 
@@ -299,8 +326,7 @@
                                             <p:cellEditor rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}">
                                                 <f:facet name="output">
                                                     <p:inputText value="#{viewSupport.getCurrencyMetric('PARTIAL_SHIPMENT_COSTS_LC', pob).lcValue}" readonly="true">
-
-                                                        <o:converter converterId="javax.faces.Number" currencySymbol="" type="currency" />
+                                                        <f:convertNumber type="currency" currencySymbol=""/>
                                                     </p:inputText>
                                                 </f:facet>
                                                 <f:facet name="input">
@@ -350,7 +376,7 @@
                                             <p:cellEditor rendered="#{of:isInstance('com.flowserve.system606.model.Contract', pob)}">
                                                 <f:facet name="output">
                                                     <p:inputText value="#{viewSupport.getCurrencyMetric('THIRD_PARTY_COMMISSION_CTD_LC', pob).lcValue}" readonly="true">
-                                                        <o:converter converterId="javax.faces.Number" currencySymbol="" type="currency" />
+                                                        <f:convertNumber type="currency" currencySymbol=""/>
                                                     </p:inputText>
                                                 </f:facet>
                                                 <f:facet name="input">
@@ -362,17 +388,17 @@
                                         </p:column>
                                         <p:column style="white-space:pre-line;">
                                             <h:outputText value="#{viewSupport.getCurrencyMetric('THIRD_PARTY_COMMISSION_TO_RECOGNIZE_LC', pob).lcValue}" rendered="#{of:isInstance('com.flowserve.system606.model.Contract', pob)}" >
-                                                <o:converter converterId="javax.faces.Number" type="currency" currencySymbol=""/>
+                                                <f:convertNumber type="currency" currencySymbol=""/>
                                             </h:outputText>
                                         </p:column>
                                         <p:column style="white-space:pre-line;">
                                             <h:outputText value="#{viewSupport.getCurrencyMetricPriorPeriod('THIRD_PARTY_COMMISSION_CTD_LC', pob).lcValue}" rendered="#{of:isInstance('com.flowserve.system606.model.Contract', pob)}" >
-                                                <o:converter converterId="javax.faces.Number" type="currency" currencySymbol=""/>
+                                                <f:convertNumber type="currency" currencySymbol=""/>
                                             </h:outputText>
                                         </p:column>
                                         <p:column style="white-space:pre-line;">
                                             <h:outputText value="#{viewSupport.getCurrencyMetricPriorPeriod('THIRD_PARTY_COMMISSION_TO_RECOGNIZE_LC', pob).lcValue}" rendered="#{of:isInstance('com.flowserve.system606.model.Contract', pob)}" >
-                                                <o:converter converterId="javax.faces.Number" type="currency" currencySymbol=""/>
+                                                <f:convertNumber type="currency" currencySymbol=""/>
                                             </h:outputText>
                                         </p:column>
                                     </p:treeTable>
@@ -426,13 +452,13 @@
                                         </p:column>
                                         <p:column style="white-space:pre-line;">
                                             <h:outputText value="#{billEvent.totalBillingsContractCurrency}" rendered="#{of:isInstance('com.flowserve.system606.model.Contract', billEvent) and billEvent.totalBillingsContractCurrency != 0}" >
-                                                <o:converter converterId="javax.faces.Number" currencySymbol="" type="currency" />
+                                                <f:convertNumber type="currency" currencySymbol=""/>
                                             </h:outputText>
                                             <p:cellEditor rendered="#{of:isInstance('com.flowserve.system606.model.BillingEvent', billEvent)}">
                                                 <f:facet name="output">
                                                     <p:inputText value="#{billEvent.amountContractCurrency}" styleClass="#{empty billEvent.amountContractCurrency ? 'ui-state-error' : ''}" readonly="true">
                                                         <f:validateDoubleRange/>
-                                                        <o:converter converterId="javax.faces.Number" currencySymbol="" type="currency" />
+                                                        <f:convertNumber type="currency" currencySymbol=""/>
                                                     </p:inputText>
                                                 </f:facet>
                                                 <f:facet name="input">
@@ -444,13 +470,13 @@
                                         </p:column>
                                         <p:column style="white-space:pre-line;">
                                             <h:outputText value="#{billEvent.totalBillingsLocalCurrency}" rendered="#{of:isInstance('com.flowserve.system606.model.Contract', billEvent) and billEvent.totalBillingsLocalCurrency != 0}" >
-                                                <f:convertNumber type="currency" />
+                                                <f:convertNumber type="currency" currencySymbol=""/>
                                             </h:outputText>
                                             <p:cellEditor rendered="#{of:isInstance('com.flowserve.system606.model.BillingEvent', billEvent)}">
                                                 <f:facet name="output">
                                                     <p:inputText value="#{billEvent.amountLocalCurrency}" styleClass="#{empty billEvent.amountLocalCurrency ? 'ui-state-error' : ''}" readonly="true">
                                                         <f:validateDoubleRange/>
-                                                        <o:converter converterId="javax.faces.Number" currencySymbol="" type="currency" />
+                                                        <f:convertNumber type="currency" currencySymbol=""/>
                                                     </p:inputText>
                                                 </f:facet>
                                                 <f:facet name="input">
@@ -462,8 +488,8 @@
                                         </p:column>
 
                                         <p:column>
-                                            <p:commandLink value="Add Billing" process="@this" update="treeTableId" actionListener="#{inputOnlineEntry.addBillingEvent(billEvent)}" rendered="#{of:isInstance('com.flowserve.system606.model.Contract', billEvent) and viewSupport.periodClosed}" ></p:commandLink>
-                                            <p:commandLink value="Remove Billing" process="@this" update="treeTableId" actionListener="#{inputOnlineEntry.removeBillingEvent(billEvent)}" rendered="#{of:isInstance('com.flowserve.system606.model.BillingEvent', billEvent) and viewSupport.periodClosed}"></p:commandLink>
+                                            <p:commandLink value="Add Billing" process="@this" update="treeTableId" actionListener="#{inputOnlineEntry.addBillingEvent(billEvent)}" rendered="#{of:isInstance('com.flowserve.system606.model.Contract', billEvent) and viewSupport.periodOpen}" ></p:commandLink>
+                                            <p:commandLink value="Remove Billing" process="@this" update="treeTableId" actionListener="#{inputOnlineEntry.removeBillingEvent(billEvent)}" rendered="#{of:isInstance('com.flowserve.system606.model.BillingEvent', billEvent) and viewSupport.periodOpen}"></p:commandLink>
                                         </p:column>
                                     </p:treeTable>
                                 </p:tab>
@@ -503,29 +529,28 @@
                                         </p:column>
                                     </p:treeTable>
                                 </p:tab>
-
                             </p:tabView>
                         </div>
 
                         <p:toolbar>
                             <f:facet name="left">
-                                <p:commandButton value="Recalc All From NOV-17" icon="ui-icon-check" update=":form:topLevelTabView" ajax="false" actionListener="#{pobCalculationReview.calculateAndSaveSinceNov17}"/>
-                                <p:commandButton value="Download Template" ajax="false" style="width:auto;" icon="ui-icon-arrowthick-1-s">
+                                <p:commandButton value="Recalc All From NOV-17" icon="ui-icon-check" update=":form:topLevelTabView" ajax="false" actionListener="#{pobCalculationReview.calculateAndSaveSinceNov17}" action="#{inputController.returnToOnlineEntry()}"/>
+                                <p:dialog modal="true" widgetVar="statusDialog" header="Preparing Download..." draggable="false" closable="false">
+                                    <p:graphicImage value="/images/pbar-ani.gif" style="height: 30px; width: 300px;"/>
+                                </p:dialog>
+                                <p:commandButton value="Download Template" ajax="false" style="width:auto;" icon="ui-icon-arrowthick-1-s" onclick="PrimeFaces.monitorDownload(showStatus, hideStatus)">
                                     <p:fileDownload value="#{inputOnlineEntry.file}" />
                                 </p:commandButton>
                                 <p:fileUpload  fileUploadListener="#{inputOnlineEntry.handleTemplateUpload}" auto="true" label="Upload Template"
-                                               multiple="false" update="messages" sizeLimit="10000000" allowTypes="/(\.|\/)(xlsx)$/" style="width:70%;margin-top: 15px;" rendered="#{viewSupport.periodClosed}"/>
-
+                                               multiple="false" update="messages" sizeLimit="10000000" allowTypes="/(\.|\/)(xlsx)$/" style="width:70%;margin-top: 15px;" rendered="#{viewSupport.periodOpen}"/>
                             </f:facet>
                             <f:facet name="right">
                                 <p:commandButton value="Return to Dashboard" icon="ui-icon-arrowthick-1-w" ajax="false" action="#{inputController.inputDashboard()}"/>
-                                <p:commandButton value="Cancel Current Edits" icon="ui-icon-cancel" ajax="false" action="#{inputOnlineEntry.cancelEdits()}" rendered="#{viewSupport.periodClosed}"/>
-                                <p:commandButton value="Save Inputs" icon="ui-icon-disk" ajax="true" update="form" actionListener="#{inputOnlineEntry.saveInputs()}" rendered="#{viewSupport.periodClosed}"/>
+                                <p:commandButton value="Cancel Current Edits" icon="ui-icon-cancel" ajax="false" action="#{inputOnlineEntry.cancelEdits()}" rendered="#{viewSupport.periodOpen}"/>
+                                <p:commandButton value="Save Inputs" icon="ui-icon-disk" ajax="true" update="form" actionListener="#{inputOnlineEntry.saveInputs()}" rendered="#{viewSupport.periodOpen}"/>
                                 <p:commandButton value="Calculation Review" icon="ui-icon-arrowthick-1-e" ajax="false" actionListener="#{inputOnlineEntry.saveInputs()}" action="#{calcReviewController.reviewCalculations()}"/>
                             </f:facet>
                         </p:toolbar>
-
-
                     </div>
                 </div>
             </div>

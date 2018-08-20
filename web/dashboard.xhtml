@@ -101,6 +101,7 @@
                                     var="ru"
                                     style="width: 100%;"
                                     maxResults="10"
+                                    minQueryLength="2"
                                     size="50"
                                     required="#{false}"
                                     forceSelection="#{true}"
@@ -154,7 +155,8 @@
 
                                 <p:column headerText="Actions">
                                     <span style="white-space: nowrap;">
-                                        <p:commandButton value="Online Entry" style="font-size: 80%;" icon="ui-icon-arrowthick-1-e" ajax="false" actionListener="#{webSession.setCurrentReportingUnit(ru)}" action="#{inputController.proceedToOnlineEntry()}"/>
+                                        <p:commandButton value="Inputs" icon="ui-icon-arrowthick-1-e" ajax="false" actionListener="#{webSession.setCurrentReportingUnit(ru)}" action="#{inputController.proceedToOnlineEntry()}"/>
+                                        <p:commandButton value="Calculations" style="margin-left: 10px;" icon="ui-icon-arrowthick-1-e" ajax="false" actionListener="#{webSession.setCurrentReportingUnit(ru)}" action="#{calcReviewController.reviewCalculations()}"/>
                                     </span>
                                 </p:column>
                             </p:dataTable>

@@ -12,12 +12,10 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.SequenceGenerator;
@@ -35,7 +33,7 @@ public class SubledgerBatch implements Serializable {
     @Column(name = "BATCH_DATE")
     private LocalDate batchDate;
     @OneToOne
-    @JoinColumn(name = "FINANCIAL_PERIOD_ID")
+    @JoinColumn(name = "PERIOD_ID")
     private FinancialPeriod financialPeriod;
     @Column(name = "CREATION_DATE")
     private LocalDateTime creationDate;

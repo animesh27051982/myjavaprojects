@@ -982,7 +982,7 @@ public class ReportsService {
             connection.close();
 
         } catch (SQLException sqlex) {
-            sqlex.printStackTrace();
+            Logger.getLogger(ReportsService.class.getName()).log(Level.INFO, "Error exporting Access DB: ", sqlex);
         }
 
         Logger.getLogger(ReportsService.class.getName()).log(Level.INFO, "Complete.");

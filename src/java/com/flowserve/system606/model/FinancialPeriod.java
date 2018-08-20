@@ -28,10 +28,10 @@ public class FinancialPeriod extends BaseEntity<String> implements Comparable<Fi
     private static final long serialVersionUID = 8354236373683763082L;
     private static final Logger LOG = Logger.getLogger(FinancialPeriod.class.getName());
     @Id
-    @Column(name = "FINANCIAL_PERIOD_ID")
+    @Column(name = "PERIOD_ID")
     private String id;
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "FINANCIAL_PERIOD_SEQ")
-    @SequenceGenerator(name = "FINANCIAL_PERIOD_SEQ", sequenceName = "FINANCIAL_PERIOD_SEQ", allocationSize = 50)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "PERIOD_SEQ")
+    @SequenceGenerator(name = "PERIOD_SEQ", sequenceName = "PERIOD_SEQ", allocationSize = 50)
     @Column(name = "PERIOD_SEQ")
     private Long sequence;
     @Column(name = "NAME")

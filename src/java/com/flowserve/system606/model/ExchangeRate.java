@@ -51,7 +51,7 @@ public class ExchangeRate implements Serializable, Comparable<ExchangeRate> {
     private Currency fromCurrency;
     @Column(name = "TO_CURRENCY")
     private Currency toCurrency;
-    @JoinColumn(name = "FINANCIAL_PERIOD_ID")
+    @JoinColumn(name = "PERIOD_ID")
     private FinancialPeriod financialPeriod;
     @Column(name = "PERIOD_END_RATE", precision = 38, scale = 14)
     private BigDecimal periodEndRate;

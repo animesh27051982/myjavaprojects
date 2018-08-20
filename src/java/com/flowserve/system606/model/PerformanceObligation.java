@@ -23,6 +23,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToOne;
+import javax.persistence.MapKeyJoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
@@ -64,27 +65,12 @@ public class PerformanceObligation extends BaseEntity<Long> implements MetricSto
     private LocalDateTime lastUpdateDate;
     @OneToMany(fetch = FetchType.LAZY, cascade = {CascadeType.ALL}, orphanRemoval = true)
     @JoinTable(name = "POB_METRIC_SET", joinColumns = @JoinColumn(name = "POB_ID"), inverseJoinColumns = @JoinColumn(name = "METRIC_SET_ID"))
+    @MapKeyJoinColumn(name = "PERIOD_ID")
     private Map<FinancialPeriod, MetricSet> periodMetricSetMap = new HashMap<FinancialPeriod, MetricSet>();
 
     public PerformanceObligation() {
     }
 
-//    @PrePersist
-//    public void onPrePersist() {
-//        creationDate = LocalDateTime.now();
-//        if (transientLastUpdateBy != null) {
-//            createdBy = transientLastUpdateBy;
-//        }
-//    }
-//
-//    @PreUpdate
-//    public void onPreUpdate() {
-//        Logger.getLogger(PerformanceObligation.class.getName()).log(Level.INFO, "onPreUpate POD: " + this.id);
-//        lastUpdateDate = LocalDateTime.now();
-//        if (transientLastUpdateBy != null) {
-//            lastUpdatedBy = transientLastUpdateBy;
-//        }
-//    }
     @Override
     public int compareTo(PerformanceObligation obj) {
         return this.id.compareTo(obj.getId());
@@ -185,6 +171,9 @@ public class PerformanceObligation extends BaseEntity<Long> implements MetricSto
                 Class<?> clazz = Class.forName(MetricType.PACKAGE_PREFIX + metricType.getMetricClass());
                 metric = (Metric) clazz.newInstance();
                 metric.setMetricType(metricType);
+                metric.setValid(true);
+                metric.setCreationDate(LocalDateTime.now());
+                metric.setFinancialPeriod(period);
                 metric.setMetricSet(periodMetricSetMap.get(period));
                 periodMetricSetMap.get(period).getTypeMetricMap().put(metricType, metric);
 

@@ -6,6 +6,7 @@
 package com.flowserve.system606.model;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
@@ -37,6 +38,9 @@ public abstract class TransientMeasurable<T extends Serializable> extends BaseEn
             Class<?> clazz = Class.forName(MetricType.PACKAGE_PREFIX + metricType.getMetricClass());
             metric = (Metric) clazz.newInstance();
             metric.setMetricType(metricType);
+            metric.setValid(true);
+            metric.setCreationDate(LocalDateTime.now());
+            metric.setFinancialPeriod(period);
             metric.setMetricSet(periodMetricSetMap.get(period));
             periodMetricSetMap.get(period).getTypeMetricMap().put(metricType, metric);
         } catch (Exception e) {

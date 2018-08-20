@@ -6,7 +6,6 @@
 package com.flowserve.system606.view;
 
 import com.flowserve.system606.model.Company;
-import com.flowserve.system606.model.Contract;
 import com.flowserve.system606.model.Holiday;
 import com.flowserve.system606.model.ReportingUnit;
 import com.flowserve.system606.service.AdminService;
@@ -55,10 +54,14 @@ public class Dashboard implements Serializable {
 
     private List<ReportingUnit> reportingUnits = new ArrayList<ReportingUnit>();
     private ScheduleModel eventModel;
+    private int contractCount = 0;
+    private int pobRequiredCount = 0;
+    private int pobCount = 0;
 
     @PostConstruct
     public void init() {
         reportingUnits.clear();
+        // TODO - These could be stale if redeploy.  Reload every time instead of session.
         reportingUnits.addAll(webSession.getPreparableReportingUnits());
 
         try {
@@ -76,6 +79,20 @@ public class Dashboard implements Serializable {
 
             Date Pociworkday = Date.from(poci.atStartOfDay(ZoneOffset.UTC).toInstant());
             eventModel.addEvent(new DefaultScheduleEvent("POCI Due Workday", Pociworkday, Pociworkday, true));
+
+            if (reportingUnits.size() > 0) {
+                for (ReportingUnit reportingUnit : reportingUnits) {
+                    contractCount += reportingUnit.getContracts().size();
+                }
+            }
+
+            for (ReportingUnit reportingUnit : reportingUnits) {
+                pobRequiredCount += reportingUnit.getPobInputRequiredCount();
+            }
+
+            for (ReportingUnit reportingUnit : reportingUnits) {
+                pobCount += reportingUnit.getPobCount();
+            }
 
         } catch (Exception ex) {
             Logger.getLogger(Calendar.class.getName()).log(Level.SEVERE, null, ex);
@@ -107,31 +124,15 @@ public class Dashboard implements Serializable {
     }
 
     public int getContractCount() {
-        List<Contract> contracts = new ArrayList<Contract>();
-        if (reportingUnits.size() > 0) {
-            for (ReportingUnit reportingUnit : reportingUnits) {
-                contracts.addAll(reportingUnit.getContracts());
-            }
-        }
-        return contracts.size();
+        return contractCount;
     }
 
     public long getPobCount() {
-        long pobCount = 0;
-        for (ReportingUnit reportingUnit : reportingUnits) {
-            pobCount += reportingUnit.getPobCount();
-        }
-
         return pobCount;
     }
 
     public long getPobInputRequiredCount() {
-        long pobCount = 0;
-        for (ReportingUnit reportingUnit : reportingUnits) {
-            pobCount += reportingUnit.getPobInputRequiredCount();
-        }
-
-        return pobCount;
+        return pobRequiredCount;
 
     }
 }
