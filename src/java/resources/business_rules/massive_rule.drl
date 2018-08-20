@@ -385,72 +385,50 @@ rule "Gross Profit Loss Period"
         modify (grossProfitLossPeriod) { lcValue = (netPeriodSales.lcValue - costOfGoodsSoldPeriod.lcValue - lossReserveAdjustment.lcValue)};
 end
 
-//rule "Transaction Price Validation rule"
-//    when
-//        // Pull input values needed for this calculation.
-//        pob : PerformanceObligation()  // If a pob exists
-//        transactionPrice : CurrencyMetric(metricType.code == "TRANSACTION_PRICE_CC", ccValue != null)  // if this metric exists and is not null, initialize variable.
-//        transactionPricePriorPeriod : CurrencyMetricPriorPeriod(metricType.code == "TRANSACTION_PRICE_CC", ccValue != null && ccValue != 0)
-//        eval(((transactionPricePriorPeriod.ccValue * 10.0)/100.0) <  (transactionPrice.ccValue - transactionPricePriorPeriod.ccValue))
-//        transactionPriceResult : Metric(metricType.code == "TRANSACTION_PRICE_CC")
-//    then
-//        modify (transactionPriceResult) { message = "Please verify that contract revision was entered/reviewed/approved. Please verify the accuracy of the Transaction Price."};
-//end
+rule "Transaction Price Validation rule"
+    when
+        // Pull input values needed for this calculation.
+        pob : PerformanceObligation()  // If a pob exists
+        transactionPrice : CurrencyMetric(metricType.code == "TRANSACTION_PRICE_CC", ccValue != null)  // if this metric exists and is not null, initialize variable.
+        transactionPricePriorPeriod : CurrencyMetricPriorPeriod(metricType.code == "TRANSACTION_PRICE_CC", ccValue != null && ccValue != 0)
+        eval(((transactionPricePriorPeriod.ccValue * 10.0)/100.0) <  (transactionPrice.ccValue - transactionPricePriorPeriod.ccValue))
+        transactionPriceResult : Metric(metricType.code == "TRANSACTION_PRICE_CC")
+    then
+        modify (transactionPriceResult) { message = "Please verify that contract revision was entered/reviewed/approved. Please verify the accuracy of the Transaction Price."};
+end
 
-//rule "Liquidated Damages Penalty Validation rule"
-//   when
-//        // Pull input values needed for this calculation.
-//        pob : PerformanceObligation()  // If a pob exists
-//        liquidatedDamage : CurrencyMetric(metricType.code == "LIQUIDATED_DAMAGES_CTD_CC", ccValue != null)  // if this metric exists and is not null, initialize variable.
-//       liquidatedDamagePricePriorPeriod : CurrencyMetricPriorPeriod(metricType.code == "LIQUIDATED_DAMAGES_CTD_CC", ccValue != null && ccValue != 0)
-//        eval(((liquidatedDamagePricePriorPeriod.ccValue * 10.0)/100.0) <  (liquidatedDamage.ccValue - liquidatedDamagePricePriorPeriod.ccValue))
-//        liquidatedDamageResult : Metric(metricType.code == "LIQUIDATED_DAMAGES_CTD_CC")
-//    then
-//        modify (liquidatedDamageResult) { message = "Please verify the amount and that the change is documented in the Contract  Review Module."};
-//end
+rule "Liquidated Damages Penalty Validation rule"
+   when
+        // Pull input values needed for this calculation.
+        pob : PerformanceObligation()  // If a pob exists
+        liquidatedDamage : CurrencyMetric(metricType.code == "LIQUIDATED_DAMAGES_CTD_CC", ccValue != null)  // if this metric exists and is not null, initialize variable.
+       liquidatedDamagePricePriorPeriod : CurrencyMetricPriorPeriod(metricType.code == "LIQUIDATED_DAMAGES_CTD_CC", ccValue != null && ccValue != 0)
+        eval(((liquidatedDamagePricePriorPeriod.ccValue * 10.0)/100.0) <  (liquidatedDamage.ccValue - liquidatedDamagePricePriorPeriod.ccValue))
+        liquidatedDamageResult : Metric(metricType.code == "LIQUIDATED_DAMAGES_CTD_CC")
+    then
+        modify (liquidatedDamageResult) { message = "Please verify the amount and that the change is documented in the Contract  Review Module."};
+end
 
-//rule "EAC Validation rule"
-//    when
-//        // Pull input values needed for this calculation.
-//        pob : PerformanceObligation()  // If a pob exists
-//        transactionPriceLC : CurrencyMetric(metricType.code == "TRANSACTION_PRICE_CC", lcValue != null)
-//        EAC : CurrencyMetric(metricType.code == "ESTIMATED_COST_AT_COMPLETION_LC", lcValue != null && lcValue > transactionPriceLC.lcValue)
-//        EACResult : Metric(metricType.code == "ESTIMATED_COST_AT_COMPLETION_LC")
-//    then
-//        modify (EACResult) { message = "Ensure accuracy of EAC and/or Transaction Price, then evaluate contract for a loss provision."};
-//end
+rule "EAC Validation rule"
+    when
+        // Pull input values needed for this calculation.
+        pob : PerformanceObligation()  // If a pob exists
+        transactionPriceLC : CurrencyMetric(metricType.code == "TRANSACTION_PRICE_CC", lcValue != null)
+        EAC : CurrencyMetric(metricType.code == "ESTIMATED_COST_AT_COMPLETION_LC", lcValue != null && lcValue > transactionPriceLC.lcValue)
+        EACResult : Metric(metricType.code == "ESTIMATED_COST_AT_COMPLETION_LC")
+    then
+        modify (EACResult) { message = "Ensure accuracy of EAC and/or Transaction Price, then evaluate contract for a loss provision."};
+end
 
-//rule "Incurred Cost Validation rule"
-//    when
-//        // Pull input values needed for this calculation.
-//        pob : PerformanceObligation()  // If a pob exists
-//        incurredCost : CurrencyMetric(metricType.code == "LOCAL_COSTS_CTD_LC", lcValue != null)
-//        incurredCostPriorPeriod : CurrencyMetricPriorPeriod(metricType.code == "LOCAL_COSTS_CTD_LC", lcValue != null && lcValue > incurredCost.lcValue)
-//        incurredCostResult : Metric(metricType.code == "LOCAL_COSTS_CTD_LC")
-//   then
-//        modify (incurredCostResult) { message = "Incurred Costs are lower than prior period incurred costs should require an explanation."};
-//end
-
-//rule "Incurred Cost Validation rule"
-//    when
-//        // Pull input values needed for this calculation.
-//        pob : PerformanceObligation()  // If a pob exists
-//        incurredCost : CurrencyMetric(metricType.code == "LOCAL_COSTS_CTD_LC", lcValue != null)
-//        incurredCostPriorPeriod : CurrencyMetricPriorPeriod(metricType.code == "LOCAL_COSTS_CTD_LC", lcValue != null && lcValue > incurredCost.lcValue)
-//        incurredCostResult : Metric(metricType.code == "LOCAL_COSTS_CTD_LC")
-//    then
-//        modify (incurredCostResult) { message = "Incurred Costs are lower than prior period incurred costs should require an explanation."};
-//end
-
-//rule "Validation rule"
-//    when
-//        // Pull input values needed for this calculation.
-//        pob : PerformanceObligation()  // If a pob exists
-//        transactionPrice : CurrencyMetric(metricType.code == "TRANSACTION_PRICE_CC", ccValue != null)  // if this metric exists and is not null, initialize variable.
-//        transactionPricePriorPeriod : CurrencyMetricPriorPeriod(metricType.code == "TRANSACTION_PRICE_CC", ccValue < transactionPrice.ccValue)
-//        transactionPriceResult : Metric(metricType.code == "TRANSACTION_PRICE_CC")
- //   then
-//        //logger.info("Contract transactionPrice ");
-//        modify (transactionPriceResult) { valid = true};
-//        modify (transactionPriceResult) { message = "Please verify that contract revision was entered/reviewed/approved. Please verify the accuracy of the Transaction Price."};
-//end
+rule "Incurred Cost Validation rule"
+    when
+        // Pull input values needed for this calculation.
+        pob : PerformanceObligation()  // If a pob exists
+        incurredCost : CurrencyMetric(metricType.code == "LOCAL_COSTS_CTD_LC", lcValue != null)
+        incurredCostPriorPeriod : CurrencyMetricPriorPeriod(metricType.code == "LOCAL_COSTS_CTD_LC", lcValue != null && lcValue > incurredCost.lcValue)
+        incurredCostResult : Metric(metricType.code == "LOCAL_COSTS_CTD_LC")
+   then
+        logger.info("Contract incurredCostPriorPeriod "+incurredCostPriorPeriod.lcValue);
+        logger.info("Contract incurredCost "+incurredCost.lcValue);
+        modify (incurredCostResult) { message = "Incurred Costs are lower than prior period incurred costs should require an explanation."};
+end
