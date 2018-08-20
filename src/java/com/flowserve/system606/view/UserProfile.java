@@ -10,8 +10,10 @@ import com.flowserve.system606.model.User;
 import com.flowserve.system606.service.AdminService;
 import com.flowserve.system606.web.WebSession;
 import java.io.Serializable;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
@@ -23,32 +25,40 @@ import javax.inject.Named;
  *
  * @author shubhamc
  */
-
 @Named
 @ViewScoped
 public class UserProfile implements Serializable {
-    
-//User currentuser= new User();
-User sessionUser=new User();
-List<Country> allCountries=new ArrayList<Country>();
 
-   @Inject
-   AdminService adminService;
-   @Inject
-   private WebSession webSession;
-   
-   @PostConstruct
+//User currentuser= new User();
+    User sessionUser = new User();
+    List<Country> allCountries = new ArrayList<Country>();
+    Locale locale[];
+
+    @Inject
+    AdminService adminService;
+    @Inject
+    private WebSession webSession;
+
+    @PostConstruct
     public void init() {
         try {
-            
-           webSession.setEditUser(adminService.findUserByFlsIdType("bga_admin"));
-           sessionUser=webSession.getEditUser();
-        
+
+            webSession.setEditUser(adminService.findUserByFlsIdType("rcs_admin"));
+            sessionUser = webSession.getEditUser();
+            locale = SimpleDateFormat.getAvailableLocales();
             allCountries = adminService.AllCountry();
         } catch (Exception ex) {
             Logger.getLogger(ReportingUnitEdit.class.getName()).log(Level.SEVERE, null, ex);
         }
 
+    }
+
+    public Locale[] getLocale() {
+        return locale;
+    }
+
+    public void setLocale(Locale[] locale) {
+        this.locale = locale;
     }
 
     public User getSessionUser() {
@@ -66,6 +76,5 @@ List<Country> allCountries=new ArrayList<Country>();
     public void setAllCountries(List<Country> allCountries) {
         this.allCountries = allCountries;
     }
-   
 
 }

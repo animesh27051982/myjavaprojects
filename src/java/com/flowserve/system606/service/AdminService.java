@@ -429,6 +429,7 @@ public class AdminService {
             Logger.getLogger(AdminService.class.getName()).log(Level.INFO, "Creating admin user");
             ad = new User("rcs_admin", "RCS Admin", "RCS Admin", "rcs_admin@flowserve.com");
             ad.setAdmin(true);
+            ad.setLocale("en_US");
             ad.setTitle("Full Admin Access");
             persist(ad);
         } else {
@@ -453,7 +454,7 @@ public class AdminService {
                     String title = stripTitle(values[5]);
                     int orgLevel = Integer.parseInt(values[6]);
                     User user = new User(flsId, displayName, commonNameLDAP, emailAddress, officeName, title, orgLevel);
-
+                    user.setLocale("en_US");
                     persist(user);
                 }
             }

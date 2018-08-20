@@ -30,7 +30,7 @@
                             <p:panelGrid columns="2" columnClasses="ui-grid-col-6,ui-grid-col-6" layout="grid" styleClass="ui-panelgrid-blank form-group" style="border:0px none; background-color:transparent;">
                                
                                 <p:outputLabel for="name" value="Name"/>
-                                <p:inputText id="name" value="#{userProfile.sessionUser.name}"/>
+                                <p:inputText id="name" value="#{userProfile.sessionUser.name}" style="width:180px;"/>
                                 
                                    <p:outputLabel for="Email" value="Email"/>
                                    <p:inputText id="Email" value="#{userProfile.sessionUser.emailAddress}"  style="width:180px;"/>
@@ -46,8 +46,16 @@
                                         </p:column>
                                     </p:selectOneMenu>
                                  
-                                 <br>
-                                 </br>
+                                
+                                 <p:outputLabel for="Locale" value="Locale"/>
+                                 <p:selectOneMenu id="Locale" value="#{userProfile.sessionUser.locale}" 
+                                                     effect="fade" var="t"   style="width:160px;">
+                                     <f:selectItems value="#{userProfile.locale}" var="loc" itemLabel="#{loc}" itemValue="#{loc}" />
+                                        <p:column>
+                                            <h:outputText value="#{t}" />
+                                        </p:column>
+                                    </p:selectOneMenu>
+                                 <br></br>
                                   <f:facet name="footer">
                                         <p:toolbar>
                                             <f:facet name="right">

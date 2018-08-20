@@ -56,6 +56,8 @@ public class User implements Principal, Comparable<User>, Serializable {
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "COUNTRY_ID")
     private Country country;
+    @Column(name = "Locale")
+    private String locale;
     @Column(name = "IS_ADMIN")
     private boolean admin;
 
@@ -219,6 +221,14 @@ public class User implements Principal, Comparable<User>, Serializable {
 
     public void setAdmin(boolean admin) {
         this.admin = admin;
+    }
+
+    public String getLocale() {
+        return locale;
+    }
+
+    public void setLocale(String locale) {
+        this.locale = locale;
     }
 
 }
