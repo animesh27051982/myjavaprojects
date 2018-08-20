@@ -455,19 +455,88 @@ public class ReportsService {
             workbook.removeSheetAt(workbook.getSheetIndex("Journal Entry-1"));
             XSSFSheet worksheet = workbook.getSheet("Journal Entry-2");
 
-            XSSFRow row;
-            Cell cell = null;
-            int rowid = HEADER_ROW_COUNT;
-            XSSFRow contract_name = worksheet.getRow(2);
-            cell = contract_name.getCell(0, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
-            cell.setCellValue(contract.getName());
-
+            worksheet = writeJournalEntryReport(worksheet, contract);
             ((XSSFSheet) worksheet).getCTWorksheet().getSheetViews().getSheetViewArray(0).setTopLeftCell("A1");
             ((XSSFSheet) worksheet).setActiveCell(new CellAddress("A2"));
             workbook.write(outputStream);
         }
         inputStream.close();
         outputStream.close();
+
+    }
+
+    public XSSFSheet writeJournalEntryReport(XSSFSheet worksheet, Contract contract) throws Exception {
+        XSSFRow row;
+        Cell cell = null;
+        XSSFRow contract_name = worksheet.getRow(2);
+        cell = contract_name.getCell(0, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
+        cell.setCellValue(contract.getName());
+        FinancialPeriod period = webSession.getCurrentPeriod();
+
+        BigDecimal revenueToRecognizePeriod = getRevenueRecognizePeriodLC(contract, period);
+        BigDecimal liquidatedDamageRecognizePeriodLC = getLiquidatedDamagesRecognizePeriodLC(contract, period);
+        BigDecimal costGoodsSoldPeriodLC = getCostGoodsSoldPeriodLC(contract, period);
+        BigDecimal lossReservePeriodADJLC = getLossReservePeriodADJLC(contract, period);
+        BigDecimal revenueInExcess = getContractRevenueInExcess(contract, period);
+        BigDecimal billingsInExcess = getContractBillingsInExcess(contract, period);
+        row = worksheet.getRow(14);
+        setCellValue(row, 2, revenueToRecognizePeriod);
+        setCellValue(row, 3, liquidatedDamageRecognizePeriodLC);
+        setCellValue(row, 4, costGoodsSoldPeriodLC);
+        setCellValue(row, 5, lossReservePeriodADJLC);
+        setCellValue(row, 6, BigDecimal.ZERO);//TODO THIRD_PARTY_COMMISSION_TO_RECOGNIZE_PERIOD_LC
+        setCellValue(row, 7, BigDecimal.ZERO);//TODO FX_GAIN_LOSS
+        setCellValue(row, 8, zeroIfNull(contract.getTotalBillingsLocalCurrency()));//TODO BILLINGS_PERIOD_CC
+        setCellValue(row, 9, costGoodsSoldPeriodLC);
+        setCellValue(row, 10, lossReservePeriodADJLC);
+        setCellValue(row, 11, revenueInExcess);
+        setCellValue(row, 12, billingsInExcess);
+        setCellValue(row, 13, lossReservePeriodADJLC);
+        setCellValue(row, 14, BigDecimal.ZERO);//TODO THIRD_PARTY_COMMISSION_TO_RECOGNIZE_PERIOD_LC
+
+        //For Contract Billings row
+        row = worksheet.getRow(13);
+        setCellValue(row, 8, zeroIfNull(contract.getTotalBillingsLocalCurrency()));//TODO BILLINGS_PERIOD_CC
+
+        // Split the contract into groups.  We need totals per type of POB, so create 3 groups.  The PerformanceObligationGroup is just a shell Measurable non-entity class used for grouping.
+        PerformanceObligationGroup pocPobs = new PerformanceObligationGroup("pocPobs", contract, contract.getPobsByRevenueMethod(RevenueMethod.PERC_OF_COMP));
+        calculationService.executeBusinessRules(pocPobs, period);
+        PerformanceObligationGroup pitPobs = new PerformanceObligationGroup("pitPobs", contract, contract.getPobsByRevenueMethod(RevenueMethod.POINT_IN_TIME));
+        calculationService.executeBusinessRules(pitPobs, period);
+        PerformanceObligationGroup slPobs = new PerformanceObligationGroup("slPobs", contract, contract.getPobsByRevenueMethod(RevenueMethod.STRAIGHT_LINE));
+        calculationService.executeBusinessRules(slPobs, period);
+
+        printJournalEntryPobsGroups(9, worksheet, pocPobs, period);
+        printJournalEntryPobsGroups(10, worksheet, pitPobs, period);
+        printJournalEntryPobsGroups(11, worksheet, slPobs, period);
+        return worksheet;
+    }
+
+    public void printJournalEntryPobsGroups(int single, XSSFSheet worksheet, PerformanceObligationGroup pGroup, FinancialPeriod period) throws Exception {
+
+        XSSFRow row;
+        BigDecimal revenueToRecognizePeriod = getRevenueRecognizePeriodLC(pGroup, period);
+        BigDecimal liquidatedDamageRecognizePeriodLC = getLiquidatedDamagesRecognizePeriodLC(pGroup, period);
+        BigDecimal costGoodsSoldPeriodLC = getCostGoodsSoldPeriodLC(pGroup, period);
+        BigDecimal lossReservePeriodADJLC = getLossReservePeriodADJLC(pGroup, period);
+        BigDecimal revenueInExcess = getContractRevenueInExcess(pGroup, period);
+        BigDecimal billingsInExcess = getContractBillingsInExcess(pGroup, period);
+
+        // Percentage of completion Pobs.  Set total row for POC POBs
+        row = worksheet.getRow(single);
+        setCellValue(row, 2, revenueToRecognizePeriod);
+        setCellValue(row, 3, liquidatedDamageRecognizePeriodLC);
+        setCellValue(row, 4, costGoodsSoldPeriodLC);
+        setCellValue(row, 5, lossReservePeriodADJLC);
+        setCellValue(row, 6, BigDecimal.ZERO);//TODO THIRD_PARTY_COMMISSION_TO_RECOGNIZE_PERIOD_LC
+        setCellValue(row, 7, BigDecimal.ZERO);//TODO FX_GAIN_LOSS
+        setCellValue(row, 8, BigDecimal.ZERO);//TODO BILLINGS_PERIOD_CC
+        setCellValue(row, 9, costGoodsSoldPeriodLC);
+        setCellValue(row, 10, lossReservePeriodADJLC);
+        setCellValue(row, 11, revenueInExcess);
+        setCellValue(row, 12, billingsInExcess);
+        setCellValue(row, 13, lossReservePeriodADJLC);
+        setCellValue(row, 14, BigDecimal.ZERO);//TODO THIRD_PARTY_COMMISSION_TO_RECOGNIZE_PERIOD_LC
 
     }
 
@@ -816,6 +885,22 @@ public class ReportsService {
 
     private BigDecimal getCumulativeCostGoodsSoldLC(Measurable measureable, FinancialPeriod period) throws Exception {
         return calculationService.getCurrencyMetric("CUMULATIVE_COST_OF_GOODS_SOLD_LC", measureable, period).getValue();
+    }
+
+    private BigDecimal getRevenueRecognizePeriodLC(Measurable measureable, FinancialPeriod period) throws Exception {
+        return calculationService.getCurrencyMetric("REVENUE_TO_RECOGNIZE_PERIOD_CC", measureable, period).getValue();
+    }
+
+    private BigDecimal getLiquidatedDamagesRecognizePeriodLC(Measurable measureable, FinancialPeriod period) throws Exception {
+        return calculationService.getCurrencyMetric("LIQUIDATED_DAMAGES_TO_RECOGNIZE_PERIOD_CC", measureable, period).getValue();
+    }
+
+    private BigDecimal getCostGoodsSoldPeriodLC(Measurable measureable, FinancialPeriod period) throws Exception {
+        return calculationService.getCurrencyMetric("COST_OF_GOODS_SOLD_PERIOD_LC", measureable, period).getValue();
+    }
+
+    private BigDecimal getLossReservePeriodADJLC(Measurable measureable, FinancialPeriod period) throws Exception {
+        return calculationService.getCurrencyMetric("LOSS_RESERVE_PERIOD_ADJ_LC", measureable, period).getValue();
     }
 
     private BigDecimal getAccuRevenueToRecognizeLC(Measurable measureable, List<FinancialPeriod> qtdPeriods) throws Exception {
