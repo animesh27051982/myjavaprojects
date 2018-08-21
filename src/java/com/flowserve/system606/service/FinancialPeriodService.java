@@ -332,31 +332,17 @@ public class FinancialPeriodService {
     }
 
     public boolean isWorkday(LocalDate date, List<Holiday> holidays) throws Exception {
-        LocalDate holidaydate = null;
-        if (holidays.isEmpty()) {
-            if (date.getDayOfWeek() != DayOfWeek.SATURDAY && date.getDayOfWeek() != DayOfWeek.SUNDAY) {
-                return true;
-            } else {
+        if (date.getDayOfWeek() == DayOfWeek.SATURDAY || date.getDayOfWeek() == DayOfWeek.SUNDAY) {
+            return false;
+        }
+
+        for (Holiday holiday : holidays) {
+            if (holiday.getHolidayDate().equals(date)) {
                 return false;
             }
         }
-        int count = holidays.size();
-        int rev = holidays.size();
 
-        if (date.getDayOfWeek() != DayOfWeek.SATURDAY && date.getDayOfWeek() != DayOfWeek.SUNDAY) {
-            for (int i = 0; i < count; i++) {
-                holidaydate = holidays.get(i).getHolidayDate();
-                if (!holidaydate.isEqual(date)) {
-                    rev--;
-                    if (rev == 0) {
-                        return true;
-                    }
-                }
-            }
-
-        }
-
-        return false;
+        return true;
     }
 
     public LocalDate calcInputFreezeWorkday(LocalDate date, List<Holiday> holidays, int workday) throws Exception {

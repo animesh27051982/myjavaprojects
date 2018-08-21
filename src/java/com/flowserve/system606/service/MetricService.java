@@ -5,15 +5,11 @@
  */
 package com.flowserve.system606.service;
 
-import com.flowserve.system606.model.Contract;
 import com.flowserve.system606.model.CurrencyType;
-import com.flowserve.system606.model.Metric;
 import com.flowserve.system606.model.MetricDirection;
-import com.flowserve.system606.model.MetricSet;
 import com.flowserve.system606.model.MetricType;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
-import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
@@ -26,12 +22,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import javax.persistence.TypedQuery;
-import javax.transaction.Transactional;
 
-/**
- *
- * @author span
- */
 @Stateless
 public class MetricService {
 
@@ -41,8 +32,6 @@ public class MetricService {
     private static Map<String, MetricType> metricCodeMap = new HashMap<String, MetricType>();
 
     @EJB
-    private PerformanceObligationService pobService;
-    @EJB
     private AdminService adminService;
 
     private static Logger logger = Logger.getLogger("com.flowserve.system606");
@@ -51,9 +40,6 @@ public class MetricService {
         return findActiveMetricTypesByOwnerEntityTypeDirection("POB", MetricDirection.INPUT);
     }
 
-//    public List<MetricType> findActiveMetricTypesContract() {
-//        return findActiveMetricTypesByOwnerEntityType("Contract");
-//    }
     public List<MetricType> findActiveMetricTypes() {
         Query query = em.createQuery("SELECT it FROM MetricType it WHERE it.active = TRUE");
         return (List<MetricType>) query.getResultList();
@@ -77,15 +63,6 @@ public class MetricService {
         return (List<MetricType>) query.getResultList();
     }
 
-    public void persist(Metric metric) throws Exception {
-        em.persist(metric);
-    }
-
-    @Transactional
-    public void persist(MetricSet metricSet) throws Exception {
-        em.persist(metricSet);
-    }
-
     public MetricType findMetricTypeById(Long id) {
         return em.find(MetricType.class, id);
     }
@@ -100,31 +77,13 @@ public class MetricService {
         if (metricCodeMap.get(metricCode) != null) {
             return metricCodeMap.get(metricCode);
         }
+
         Query query = em.createQuery("SELECT it FROM MetricType it WHERE it.code = :IN");
         query.setParameter("IN", metricCode);
         MetricType metricType = (MetricType) query.getSingleResult();
         metricCodeMap.put(metricCode, metricType);
 
         return metricType;
-    }
-
-    private Contract createContract(String reportingUnit, long contractId, String customerName, String salesOrderNum, BigDecimal totalTransactionPrice) {
-        Contract contract = new Contract();
-        contract.setId(contractId);
-        contract.setName(customerName + "-" + contractId);
-        // contract.setReportingUnit(reportingUnit);
-        contract.setSalesOrderNumber(salesOrderNum);
-        contract.setTotalTransactionPrice(totalTransactionPrice);
-        return contract;
-    }
-
-    public void persist(Contract contract) throws Exception {
-        em.persist(contract);
-    }
-
-    public Contract update(Contract contract) throws Exception {
-        // contract.setLastUpdateDate(LocalDateTime.now());
-        return em.merge(contract);
     }
 
     public void initMetricTypes() throws Exception {
@@ -176,21 +135,13 @@ public class MetricService {
                 metricType.setDebitAccount(adminService.findSubledgerAccountByCode(values[count++]));
 
             }
-
             adminService.persist(metricType);
-
         }
 
         reader.close();
-
         logger.info("Finished initializing MetricTypes.");
-
     }
 
-//    public void initMetricTypeMap() {
-//        List<MetricType> metricTypes = findAllMetricTypes();
-//        metricTypes.forEach(metricType -> MetricTypeKey.putMetricType(metricType.getName(), metricType));
-//    }
     public List<MetricType> findMetricType() throws Exception {  // Need an application exception type defined.
 
         TypedQuery<MetricType> query = em.createQuery("SELECT b FROM MetricType b", MetricType.class);

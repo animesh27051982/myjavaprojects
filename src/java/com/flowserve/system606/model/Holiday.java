@@ -7,6 +7,8 @@ package com.flowserve.system606.model;
 
 import java.io.Serializable;
 import java.time.LocalDate;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -19,7 +21,7 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name = "HOLIDAYS")
-public class Holiday implements Serializable, Comparable<Company> {
+public class Holiday implements Serializable, Comparable<Holiday> {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "HOLIDAY_SEQ")
@@ -60,8 +62,17 @@ public class Holiday implements Serializable, Comparable<Company> {
     }
 
     @Override
-    public int compareTo(Company o) {
-        return this.name.compareTo(o.getName());
+    public int compareTo(Holiday o) {
+        return this.holidayDate.compareTo(o.getHolidayDate());
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof Holiday) {
+            Logger.getLogger(Holiday.class.getName()).log(Level.INFO, "comparing localdate holiday equals");
+            return this.holidayDate.equals(((Holiday) obj).getHolidayDate());
+        }
+        return false;
     }
 
     public Company getCompany() {

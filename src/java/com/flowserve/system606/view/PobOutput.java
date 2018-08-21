@@ -44,6 +44,7 @@ public class PobOutput implements Serializable {
         File accessFile = stream2file(inputStream);
         String fileName = accessFile.getAbsolutePath();
 
+        reportsService.generateContractPobStructural(fileName);
         reportsService.generatePobOutput(fileName);
 
         InputStream inputStreamFromOutputStream = new FileInputStream(accessFile);
