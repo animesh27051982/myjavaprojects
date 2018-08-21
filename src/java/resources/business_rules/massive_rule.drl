@@ -448,42 +448,29 @@ rule "Clear Message: EAC vs TP Validation Rule"
         modify (EAC) { message = null };
 end
 
-rule "EAC vs Local Costs Validation Rule"
+rule "EAC vs Incurred Costs Validation Rule"
     when
         pob : PerformanceObligation()
         localCostsCTD : CurrencyMetric(metricType.code == "LOCAL_COSTS_CTD_LC", lcValue != null)
         EAC : CurrencyMetric(metricType.code == "ESTIMATED_COST_AT_COMPLETION_LC", lcValue != null && lcValue < localCostsCTD.lcValue)
     then
-        modify (EAC) { message = "Local Costs are greater than Estimates at Completion. Please review contract estimates and revise to include costs necessary to complete work on contract"};
-        modify (localCostsCTD) { message = "Local Costs are greater than Estimates at Completion. Please review contract estimates and revise to include costs necessary to complete work on contract"};
+        modify (EAC) { message = "Incurred Costs are greater than Estimates at Completion. Please review contract estimates and revise to include costs necessary to complete work on contract"};
+        modify (localCostsCTD) { message = "Incurred Costs are greater than Estimates at Completion. Please review contract estimates and revise to include costs necessary to complete work on contract"};
 end
 
-rule "Clear Message: EAC vs Local Costs Validation Rule"
+rule "Clear Message: EAC vs Incurred Costs Validation Rule"
     when
         pob : PerformanceObligation()
         localCostsCTD : CurrencyMetric(metricType.code == "LOCAL_COSTS_CTD_LC", lcValue != null)
         EAC : CurrencyMetric(metricType.code == "ESTIMATED_COST_AT_COMPLETION_LC", lcValue != null && lcValue > localCostsCTD.lcValue)
-        eval(EAC.message != null && EAC.message.contains("Local Costs are"))  // We have two validation rules for this metric.  Only delete message if relevant.
+        eval(EAC.message != null && EAC.message.contains("Incurred Costs are"))  // We have two validation rules for this metric.  Only delete message if relevant.
     then
         modify (EAC) { message = null };
         modify (localCostsCTD) { message = null };
 end
 
-rule "Incurred Cost Validation Rule"
-    when
-        pob : PerformanceObligation()
-        incurredCost : CurrencyMetric(metricType.code == "LOCAL_COSTS_CTD_LC", lcValue != null)
-        incurredCostPriorPeriod : CurrencyMetricPriorPeriod(metricType.code == "LOCAL_COSTS_CTD_LC", lcValue != null && lcValue > incurredCost.lcValue)
-   then
-        modify (incurredCost) { message = "Incurred Costs are greater than Estimates at Completion. Please review contract estimates and revise to include costs necessary to complete work on contract."};
-end
 
-rule "Clear Message: Incurred Cost Validation Rule"
-    when
-        pob : PerformanceObligation()
-        incurredCost : CurrencyMetric(metricType.code == "LOCAL_COSTS_CTD_LC", lcValue != null)
-        eval(incurredCost.message != null)
-        incurredCostPriorPeriod : CurrencyMetricPriorPeriod(metricType.code == "LOCAL_COSTS_CTD_LC", lcValue != null && lcValue <= incurredCost.lcValue)
-   then
-        modify (incurredCost) { message = null };
-end
+
+
+
+
