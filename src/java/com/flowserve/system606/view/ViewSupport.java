@@ -404,12 +404,19 @@ public class ViewSupport implements Serializable {
         return webSession.getCurrentPeriod();
     }
 
-    public String getErrorMessage(String metricCode, Measurable measurable) throws Exception {
+    public String getMessage(String metricCode, Measurable measurable) throws Exception {
         return calculationService.getCurrencyMetric(metricCode, measurable, webSession.getCurrentPeriod()).getMessage();
     }
 
     public boolean getValidation(String metricCode, Measurable measurable) throws Exception {
         return calculationService.getCurrencyMetric(metricCode, measurable, webSession.getCurrentPeriod()).isValid();
+    }
+
+    public String getStyle(String metricCode, Measurable measurable) throws Exception {
+        if (calculationService.getCurrencyMetric(metricCode, measurable, webSession.getCurrentPeriod()).getMessage() != null) {
+            return "color: red;";
+        }
+        return "";
     }
 
     public String getMetricTypeDescription(String metricCode) {

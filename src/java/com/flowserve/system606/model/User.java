@@ -56,7 +56,7 @@ public class User implements Principal, Comparable<User>, Serializable {
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "COUNTRY_ID")
     private Country country;
-    @Column(name = "Locale")
+    @Column(name = "LOCALE")
     private String locale;
     @Column(name = "IS_ADMIN")
     private boolean admin;

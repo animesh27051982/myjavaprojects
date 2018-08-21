@@ -193,8 +193,6 @@ public class CalculationService {
 
     public void calculateAndSave(ReportingUnit reportingUnit, FinancialPeriod period) throws Exception {
 
-        Logger.getLogger(CalculationService.class.getName()).log(Level.INFO, "Period passed to CalculationService.calculateAndSave: " + period.getId());
-
         if (reportingUnit.isParent()) {
             Logger.getLogger(CalculationService.class.getName()).log(Level.INFO, "RU is parent, skipping calcs: " + reportingUnit.getCode());
             return;
