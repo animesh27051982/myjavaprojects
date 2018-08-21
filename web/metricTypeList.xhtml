@@ -80,7 +80,10 @@
                                 <p:column headerText="Debit Account" sortBy="#{inputType.debitAccount.name}">
                                     <h:outputText value="#{inputType.debitAccount.name}" />
                                 </p:column>
-
+                                
+                                <p:column headerText="Option" >
+                                    <p:commandLink value="Edit" action="#{adminController.editMetricType(inputType)}"/>
+                                </p:column>
                             </p:dataTable>
                         </div>
                     </div>

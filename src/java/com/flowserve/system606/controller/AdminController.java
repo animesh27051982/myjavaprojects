@@ -11,6 +11,7 @@ import com.flowserve.system606.model.Contract;
 import com.flowserve.system606.model.DataImportFile;
 import com.flowserve.system606.model.FinancialPeriod;
 import com.flowserve.system606.model.Holiday;
+import com.flowserve.system606.model.MetricType;
 import com.flowserve.system606.model.ReportingUnit;
 import com.flowserve.system606.model.User;
 import com.flowserve.system606.service.AdminService;
@@ -280,7 +281,7 @@ public class AdminController implements Serializable {
             return null;
         }
 
-        context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "businessUnit saved", ""));
+        context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Company saved", ""));
 
         return "companyList";
     }
@@ -293,5 +294,25 @@ public class AdminController implements Serializable {
     public String generateReportCompany(Company c) throws Exception {
         webSession.setEditCompany(c);
         return "companyReports";
+    }
+
+    public String editMetricType(MetricType m) {
+        webSession.setMetricType(m);
+        return "metricTypeEdit";
+    }
+
+    public String updateMetricType(MetricType m) {
+        FacesContext context = FacesContext.getCurrentInstance();
+        try {
+            adminService.update(m);
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, e.getMessage(), e);
+            context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Error saving", e.getMessage()));
+            return null;
+        }
+
+        context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "MetricType saved", ""));
+
+        return "metricTypeList";
     }
 }

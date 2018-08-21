@@ -114,6 +114,10 @@ public class AdminService {
         return em.merge(be);
     }
 
+    public MetricType update(MetricType m) throws Exception {
+        return em.merge(m);
+    }
+
     public void persist(Object object) {
         em.persist(object);
     }

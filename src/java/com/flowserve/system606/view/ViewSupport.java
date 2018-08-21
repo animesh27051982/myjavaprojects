@@ -408,12 +408,23 @@ public class ViewSupport implements Serializable {
         return calculationService.getCurrencyMetric(metricCode, measurable, webSession.getCurrentPeriod()).getMessage();
     }
 
+    public String getMessageDate(String metricCode, Measurable measurable) throws Exception {
+        return calculationService.getDateMetric(metricCode, measurable, webSession.getCurrentPeriod()).getMessage();
+    }
+
     public boolean getValidation(String metricCode, Measurable measurable) throws Exception {
         return calculationService.getCurrencyMetric(metricCode, measurable, webSession.getCurrentPeriod()).isValid();
     }
 
     public String getStyle(String metricCode, Measurable measurable) throws Exception {
         if (calculationService.getCurrencyMetric(metricCode, measurable, webSession.getCurrentPeriod()).getMessage() != null) {
+            return "color: red;";
+        }
+        return "";
+    }
+
+    public String getStyleDate(String metricCode, Measurable measurable) throws Exception {
+        if (calculationService.getDateMetric(metricCode, measurable, webSession.getCurrentPeriod()).getMessage() != null) {
             return "color: red;";
         }
         return "";

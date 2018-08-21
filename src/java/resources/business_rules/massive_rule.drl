@@ -7,9 +7,11 @@ import com.flowserve.system606.model.Contract;
 import com.flowserve.system606.model.Metric;
 import com.flowserve.system606.model.FinancialPeriod;
 import com.flowserve.system606.model.DecimalMetric;
+import com.flowserve.system606.model.DateMetric;
 import com.flowserve.system606.model.CurrencyMetric;
 import com.flowserve.system606.model.CurrencyMetricPriorPeriod;
 import com.flowserve.system606.service.CurrencyService;
+import java.time.LocalDate;
 import java.util.logging.Logger;
 global Logger logger;
 
@@ -469,8 +471,39 @@ rule "Clear Message: EAC vs Incurred Costs Validation Rule"
         modify (localCostsCTD) { message = null };
 end
 
+rule "Delivery Date Validation Rule"
+   when
+        pob : PerformanceObligation()  // If a pob exists
+        deliveryDate : DateMetric(metricType.code == "DELIVERY_DATE", value != null &&  value.compareTo(LocalDate.now())<0)
+    then
+        modify (deliveryDate) { message = "Shipment/Delivery Date is less than current date.Actual Shipment/Delivery Date is input for closed Pob."};
+end
 
+rule "Clear Message: Delivery Date Validation Rule"
+   when
+        pob : PerformanceObligation()  // If a pob exists
+        deliveryDate : DateMetric(metricType.code == "DELIVERY_DATE", value != null &&  value.compareTo(LocalDate.now())>0)
+        eval(deliveryDate.message != null && deliveryDate.message.contains("Shipment/Delivery Date is less"))
+    then
+        modify (deliveryDate) { message = null};
+end
 
+rule "Incurred Costs vs Period period Incurred Costs Validation Rule"
+    when
+        pob : PerformanceObligation()
+        localCostsCTD : CurrencyMetric(metricType.code == "LOCAL_COSTS_CTD_LC", lcValue != null)
+        localCostsPriorPeriod : CurrencyMetricPriorPeriod(metricType.code == "LOCAL_COSTS_CTD_LC", lcValue != null && lcValue > localCostsCTD.lcValue)
+    then
+        modify (localCostsCTD) { message = "Incurred Costs are lower than prior period incurred costs should require an explanation."};
+end
 
-
+rule "Clear Message: Incurred Costs vs Period period Incurred Costs Validation Rule"
+     when
+        pob : PerformanceObligation()
+        localCostsCTD : CurrencyMetric(metricType.code == "LOCAL_COSTS_CTD_LC", lcValue != null)
+        localCostsPriorPeriod : CurrencyMetricPriorPeriod(metricType.code == "LOCAL_COSTS_CTD_LC", lcValue != null && lcValue <= localCostsCTD.lcValue)
+        eval(localCostsCTD.message != null && localCostsCTD.message.contains("Incurred Costs are lower"))
+    then
+        modify (localCostsCTD) { message = null };
+end
 

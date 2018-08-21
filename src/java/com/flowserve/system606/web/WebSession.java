@@ -7,6 +7,7 @@ import com.flowserve.system606.model.Country;
 import com.flowserve.system606.model.DataImportFile;
 import com.flowserve.system606.model.FinancialPeriod;
 import com.flowserve.system606.model.Holiday;
+import com.flowserve.system606.model.MetricType;
 import com.flowserve.system606.model.ReportingUnit;
 import com.flowserve.system606.model.User;
 import com.flowserve.system606.service.AdminService;
@@ -55,6 +56,7 @@ public class WebSession implements Serializable {
     private Contract[] selectedContracts;
     //private ReportingUnit adminReportingUnit;
     private ReportingUnit currentReportingUnit;
+    private MetricType metricType;
 
     // The currently logged in user.
     private User user;
@@ -250,6 +252,14 @@ public class WebSession implements Serializable {
 
     public void setCurrentReportingUnit(ReportingUnit currentReportingUnit) {
         this.currentReportingUnit = currentReportingUnit;
+    }
+
+    public MetricType getMetricType() {
+        return metricType;
+    }
+
+    public void setMetricType(MetricType metricType) {
+        this.metricType = metricType;
     }
 
 }
