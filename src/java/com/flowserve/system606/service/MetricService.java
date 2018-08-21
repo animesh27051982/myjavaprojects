@@ -29,7 +29,7 @@ public class MetricService {
     @PersistenceContext(unitName = "FlowServePU")
     private EntityManager em;
 
-    private static Map<String, MetricType> metricCodeMap = new HashMap<String, MetricType>();
+    private static Map<String, MetricType> metricCodeCache = new HashMap<String, MetricType>();
 
     @EJB
     private AdminService adminService;
@@ -74,14 +74,14 @@ public class MetricService {
     }
 
     public MetricType findMetricTypeByCode(String metricCode) {
-        if (metricCodeMap.get(metricCode) != null) {
-            return metricCodeMap.get(metricCode);
+        if (metricCodeCache.get(metricCode) != null) {
+            return metricCodeCache.get(metricCode);
         }
 
         Query query = em.createQuery("SELECT it FROM MetricType it WHERE it.code = :IN");
         query.setParameter("IN", metricCode);
         MetricType metricType = (MetricType) query.getSingleResult();
-        metricCodeMap.put(metricCode, metricType);
+        metricCodeCache.put(metricCode, metricType);
 
         return metricType;
     }
@@ -124,7 +124,6 @@ public class MetricService {
             metricType.setGroupName(values[count++]);
             metricType.setGroupPosition(Integer.parseInt(values[count++]));
             metricType.setEffectiveFrom(LocalDate.now());
-            //metricType.setEffectiveTo(LocalDate.now());
             metricType.setActive(true);
 
             logger.info("Creating MetricType: " + metricType.getName());
@@ -146,5 +145,11 @@ public class MetricService {
 
         TypedQuery<MetricType> query = em.createQuery("SELECT b FROM MetricType b", MetricType.class);
         return (List<MetricType>) query.getResultList();
+    }
+
+    public MetricType update(MetricType m) throws Exception {
+        metricCodeCache.clear();
+
+        return em.merge(m);
     }
 }

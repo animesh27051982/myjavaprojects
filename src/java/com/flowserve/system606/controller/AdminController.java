@@ -16,6 +16,7 @@ import com.flowserve.system606.model.ReportingUnit;
 import com.flowserve.system606.model.User;
 import com.flowserve.system606.service.AdminService;
 import com.flowserve.system606.service.FinancialPeriodService;
+import com.flowserve.system606.service.MetricService;
 import com.flowserve.system606.web.WebSession;
 import java.io.Serializable;
 import java.util.Currency;
@@ -39,6 +40,8 @@ public class AdminController implements Serializable {
     private static Logger logger = Logger.getLogger("com.flowserve.system606");
     @Inject
     private AdminService adminService;
+    @Inject
+    private MetricService metricService;
     @Inject
     private FinancialPeriodService financialPeriodService;
     @Inject
@@ -286,33 +289,34 @@ public class AdminController implements Serializable {
         return "companyList";
     }
 
-    public String generateReport(Contract c) throws Exception {
-        webSession.setEditContract(c);
-        return "reportContractEstimate";
-    }
-
-    public String generateReportCompany(Company c) throws Exception {
-        webSession.setEditCompany(c);
-        return "companyReports";
-    }
-
-    public String editMetricType(MetricType m) {
-        webSession.setMetricType(m);
-        return "metricTypeEdit";
-    }
-
     public String updateMetricType(MetricType m) {
         FacesContext context = FacesContext.getCurrentInstance();
         try {
-            adminService.update(m);
+            metricService.update(m);
         } catch (Exception e) {
             logger.log(Level.SEVERE, e.getMessage(), e);
             context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Error saving", e.getMessage()));
             return null;
         }
-
         context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "MetricType saved", ""));
-
         return "metricTypeList";
+    }
+
+    public String editMetricType(MetricType m) {
+        webSession.setMetricType(m);
+
+        return "metricTypeEdit";
+    }
+
+    public String generateReport(Contract c) throws Exception {
+        webSession.setEditContract(c);
+
+        return "reportContractEstimate";
+    }
+
+    public String generateReportCompany(Company c) throws Exception {
+        webSession.setEditCompany(c);
+
+        return "companyReports";
     }
 }
