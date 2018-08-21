@@ -1,7 +1,7 @@
-INPUT|REVENUE_RECOGNITION_METHOD|POB||StringMetric||Revenue Recognition Method||POC POB Metrics|H|Group1|1
-INPUT|TRANSACTION_PRICE_CC|POB|REQUIRED|CurrencyMetric|CC|Transaction Price excl LD||POC POB Metrics|O|Group1|2
-INPUT|LIQUIDATED_DAMAGES_CTD_CC|POB|REQUIRED|CurrencyMetric|CC|Estimated Liquidated Damages Penalty||POC POB Metrics|P|Group1|2
-INPUT|ESTIMATED_COST_AT_COMPLETION_LC|POB|REQUIRED|CurrencyMetric|LC|Estimated Costs at Completion||POC POB Metrics|Q|Group1|3|DummyCR|DummyDR
+INPUT|REVENUE_RECOGNITION_METHOD|POB||StringMetric||Revenue Recognition Method|Revenue Recognition Method|POC POB Metrics|H|Group1|1
+INPUT|TRANSACTION_PRICE_CC|POB|REQUIRED|CurrencyMetric|CC|Transaction Price excl LD|Transaction Price excl LD|POC POB Metrics|O|Group1|2
+INPUT|LIQUIDATED_DAMAGES_CTD_CC|POB|REQUIRED|CurrencyMetric|CC|Estimated Liquidated Damages Penalty|Estimated Liquidated Damages Penalty|POC POB Metrics|P|Group1|2
+INPUT|ESTIMATED_COST_AT_COMPLETION_LC|POB|REQUIRED|CurrencyMetric|LC|Estimated Costs at Completion|Estimated Costs at Completion|POC POB Metrics|Q|Group1|3|DummyCR|DummyDR
 INPUT|LOCAL_COSTS_CTD_LC|POB||CurrencyMetric|LC|Standard Costs Incurred Locally / Received from Suppliers||POC POB Metrics|S|Group1|4
 INPUT|THIRD_PARTY_COSTS_CTD_LC|POB||CurrencyMetric|LC|Third Party Progress Not Received||POC POB Metrics|U|Group1|6
 INPUT|INTERCOMPANY_COSTS_CTD_LC|POB||CurrencyMetric|LC|Intercompany Progress Not Received||POC POB Metrics|T|Group1|5

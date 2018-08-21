@@ -116,16 +116,68 @@
                                                 <p:column style="background-color: #0071bc; color: #ffffff; white-space:pre-line;" colspan="4" headerText="Local Currency" />
                                             </p:row>
                                             <p:row>
-                                                <p:column colspan="1" style="white-space:pre-line;" headerText="RU / Contract / POB" />
-                                                <p:column colspan="1" style="white-space:pre-line;" headerText="Revenue Recognition Method"/>
-                                                <p:column colspan="1" style="white-space:pre-line;" headerText="Currency" />
-                                                <p:column colspan="1" style="white-space:pre-line;" headerText="#{viewSupport.getMetricTypeName('TRANSACTION_PRICE_CC')}" />
-                                                <p:column colspan="1" style="white-space:pre-line;" headerText="#{viewSupport.getMetricTypeName('LIQUIDATED_DAMAGES_CTD_CC')}" />
-                                                <p:column colspan="1" style="white-space:pre-line;" headerText="Fx Rate" />
-                                                <p:column colspan="1" style="white-space:pre-line;" headerText="Currency" />
-                                                <p:column colspan="1" style="white-space:pre-line;" headerText="#{viewSupport.getMetricTypeName('ESTIMATED_COST_AT_COMPLETION_LC')}" />
-                                                <p:column colspan="1" style="white-space:pre-line;" headerText="#{viewSupport.getMetricTypeName('ESTIMATED_COST_AT_COMPLETION_LC')} Prior Period" />
-                                                <p:column colspan="1" style="white-space:pre-line;" headerText="#{viewSupport.getMetricTypeName('CHANGE_IN_EAC_LC')}" />
+                                                <p:column  colspan="1" id="con" style="white-space:pre-line;">
+                                                    <f:facet name="header">
+                                                        <h:outputText  value="RU / Contract / POB" />
+                                                        <p:tooltip  for="con" value="RU / Contract / POB" trackMouse="true"/>
+                                                    </f:facet>
+                                                </p:column>
+                                                
+                                                <p:column colspan="1" style="white-space:pre-line;" id="rmethod">
+                                                  <f:facet name="header">
+                                                        <h:outputText  value="Revenue Recognition Method" />
+                                                        <p:tooltip  for="rmethod" value="#{viewSupport.getMetricTypeDescription('REVENUE_RECOGNITION_METHOD')}"  showEffect="explode" hideEffect="explode" position="top"/>
+                                                    </f:facet>  
+                                                </p:column>
+                                                
+                                                <p:column colspan="1" style="white-space:pre-line;" headerText="Currency" id="cur" >
+                                                    <f:facet name="header">
+                                                        <h:outputText  value="Currency" />
+                                                        <p:tooltip  for="cur" value="Currency"  showEffect="clip" hideEffect="clip" position="top"/>
+                                                    </f:facet>  
+                                                </p:column>
+                                                <p:column colspan="1" style="white-space:pre-line;"  id="tpc">
+                                                <f:facet name="header">
+                                                        <h:outputText  value="#{viewSupport.getMetricTypeName('TRANSACTION_PRICE_CC')}" />
+                                                        <p:tooltip  for="tpc" value="#{viewSupport.getMetricTypeDescription('TRANSACTION_PRICE_CC')}"  showEffect="shake" hideEffect="explode" position="top"/>
+                                                    </f:facet>
+                                                </p:column>
+                                                <p:column colspan="1" style="white-space:pre-line;" id="ldcc">
+                                                <f:facet name="header">
+                                                        <h:outputText  value="#{viewSupport.getMetricTypeName('LIQUIDATED_DAMAGES_CTD_CC')}" />
+                                                        <p:tooltip  for="ldcc" value="#{viewSupport.getMetricTypeDescription('LIQUIDATED_DAMAGES_CTD_CC')}"  showEffect="blind" hideEffect="drop" position="top"/>
+                                                    </f:facet>
+                                                </p:column>
+                                                <p:column colspan="1" style="white-space:pre-line;" id="fx">
+                                                 <f:facet name="header">
+                                                        <h:outputText  value="Fx Rate" />
+                                                        <p:tooltip  for="fx" value="Fx Rate"  showEffect="blind" hideEffect="clip" position="top"/>
+                                                    </f:facet>   
+                                                </p:column>
+                                                <p:column colspan="1" style="white-space:pre-line;" id="curr" >
+                                                  <f:facet name="header">
+                                                    <h:outputText  value="Currency" />
+                                                        <p:tooltip  for="curr" value="Currency"  showEffect="blind" hideEffect="explode" position="top"/>
+                                                    </f:facet>    
+                                                </p:column>
+                                                <p:column colspan="1" style="white-space:pre-line;" id="eaclc" >
+                                                <f:facet name="header">
+                                                    <h:outputText  value="#{viewSupport.getMetricTypeName('ESTIMATED_COST_AT_COMPLETION_LC')}" />
+                                                    <p:tooltip  for="eaclc" value="#{viewSupport.getMetricTypeDescription('ESTIMATED_COST_AT_COMPLETION_LC')}"  showEffect="explode" hideEffect="puff" position="top"/>
+                                                    </f:facet>
+                                                </p:column>
+                                                <p:column colspan="1" style="white-space:pre-line;" id="eacpp">
+                                                <f:facet name="header">
+                                                    <h:outputText  value="#{viewSupport.getMetricTypeName('ESTIMATED_COST_AT_COMPLETION_LC')} Prior Period" />
+                                                    <p:tooltip  for="eacpp" value="ESTIMATED_COST_AT_COMPLETION_LC Prior Period"  showEffect="slide" hideEffect="explode" position="top"/>
+                                                    </f:facet>
+                                                </p:column>
+                                                <p:column colspan="1" style="white-space:pre-line;" id="chnEAC" >
+                                                <f:facet name="header">
+                                                    <h:outputText  value="#{viewSupport.getMetricTypeName('CHANGE_IN_EAC_LC')}" />
+                                                    <p:tooltip  for="chnEAC"  rendererType="auto" value="#{viewSupport.getMetricTypeDescription('CHANGE_IN_EAC_LC')}"  showEffect="explode" hideEffect="blind" position="top"/>
+                                                    </f:facet>
+                                                </p:column>
                                             </p:row>
                                         </p:columnGroup>
 
