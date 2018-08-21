@@ -122,60 +122,60 @@
                                                         <p:tooltip  for="con" value="RU / Contract / POB" trackMouse="true"/>
                                                     </f:facet>
                                                 </p:column>
-                                                
+
                                                 <p:column colspan="1" style="white-space:pre-line;" id="rmethod">
-                                                  <f:facet name="header">
+                                                    <f:facet name="header">
                                                         <h:outputText  value="Revenue Recognition Method" />
                                                         <p:tooltip  for="rmethod" value="#{viewSupport.getMetricTypeDescription('REVENUE_RECOGNITION_METHOD')}"  showEffect="explode" hideEffect="explode" position="top"/>
-                                                    </f:facet>  
+                                                    </f:facet>
                                                 </p:column>
-                                                
+
                                                 <p:column colspan="1" style="white-space:pre-line;" headerText="Currency" id="cur" >
                                                     <f:facet name="header">
                                                         <h:outputText  value="Currency" />
                                                         <p:tooltip  for="cur" value="Currency"  showEffect="clip" hideEffect="clip" position="top"/>
-                                                    </f:facet>  
+                                                    </f:facet>
                                                 </p:column>
                                                 <p:column colspan="1" style="white-space:pre-line;"  id="tpc">
-                                                <f:facet name="header">
+                                                    <f:facet name="header">
                                                         <h:outputText  value="#{viewSupport.getMetricTypeName('TRANSACTION_PRICE_CC')}" />
                                                         <p:tooltip  for="tpc" value="#{viewSupport.getMetricTypeDescription('TRANSACTION_PRICE_CC')}"  showEffect="shake" hideEffect="explode" position="top"/>
                                                     </f:facet>
                                                 </p:column>
                                                 <p:column colspan="1" style="white-space:pre-line;" id="ldcc">
-                                                <f:facet name="header">
+                                                    <f:facet name="header">
                                                         <h:outputText  value="#{viewSupport.getMetricTypeName('LIQUIDATED_DAMAGES_CTD_CC')}" />
                                                         <p:tooltip  for="ldcc" value="#{viewSupport.getMetricTypeDescription('LIQUIDATED_DAMAGES_CTD_CC')}"  showEffect="blind" hideEffect="drop" position="top"/>
                                                     </f:facet>
                                                 </p:column>
                                                 <p:column colspan="1" style="white-space:pre-line;" id="fx">
-                                                 <f:facet name="header">
+                                                    <f:facet name="header">
                                                         <h:outputText  value="Fx Rate" />
                                                         <p:tooltip  for="fx" value="Fx Rate"  showEffect="blind" hideEffect="clip" position="top"/>
-                                                    </f:facet>   
+                                                    </f:facet>
                                                 </p:column>
                                                 <p:column colspan="1" style="white-space:pre-line;" id="curr" >
-                                                  <f:facet name="header">
-                                                    <h:outputText  value="Currency" />
+                                                    <f:facet name="header">
+                                                        <h:outputText  value="Currency" />
                                                         <p:tooltip  for="curr" value="Currency"  showEffect="blind" hideEffect="explode" position="top"/>
-                                                    </f:facet>    
+                                                    </f:facet>
                                                 </p:column>
                                                 <p:column colspan="1" style="white-space:pre-line;" id="eaclc" >
-                                                <f:facet name="header">
-                                                    <h:outputText  value="#{viewSupport.getMetricTypeName('ESTIMATED_COST_AT_COMPLETION_LC')}" />
-                                                    <p:tooltip  for="eaclc" value="#{viewSupport.getMetricTypeDescription('ESTIMATED_COST_AT_COMPLETION_LC')}"  showEffect="explode" hideEffect="puff" position="top"/>
+                                                    <f:facet name="header">
+                                                        <h:outputText  value="#{viewSupport.getMetricTypeName('ESTIMATED_COST_AT_COMPLETION_LC')}" />
+                                                        <p:tooltip  for="eaclc" value="#{viewSupport.getMetricTypeDescription('ESTIMATED_COST_AT_COMPLETION_LC')}"  showEffect="explode" hideEffect="puff" position="top"/>
                                                     </f:facet>
                                                 </p:column>
                                                 <p:column colspan="1" style="white-space:pre-line;" id="eacpp">
-                                                <f:facet name="header">
-                                                    <h:outputText  value="#{viewSupport.getMetricTypeName('ESTIMATED_COST_AT_COMPLETION_LC')} Prior Period" />
-                                                    <p:tooltip  for="eacpp" value="ESTIMATED_COST_AT_COMPLETION_LC Prior Period"  showEffect="slide" hideEffect="explode" position="top"/>
+                                                    <f:facet name="header">
+                                                        <h:outputText  value="#{viewSupport.getMetricTypeName('ESTIMATED_COST_AT_COMPLETION_LC')} Prior Period" />
+                                                        <p:tooltip  for="eacpp" value="ESTIMATED_COST_AT_COMPLETION_LC Prior Period"  showEffect="slide" hideEffect="explode" position="top"/>
                                                     </f:facet>
                                                 </p:column>
                                                 <p:column colspan="1" style="white-space:pre-line;" id="chnEAC" >
-                                                <f:facet name="header">
-                                                    <h:outputText  value="#{viewSupport.getMetricTypeName('CHANGE_IN_EAC_LC')}" />
-                                                    <p:tooltip  for="chnEAC"  rendererType="auto" value="#{viewSupport.getMetricTypeDescription('CHANGE_IN_EAC_LC')}"  showEffect="explode" hideEffect="blind" position="top"/>
+                                                    <f:facet name="header">
+                                                        <h:outputText  value="#{viewSupport.getMetricTypeName('CHANGE_IN_EAC_LC')}" />
+                                                        <p:tooltip  for="chnEAC"  rendererType="auto" value="#{viewSupport.getMetricTypeDescription('CHANGE_IN_EAC_LC')}"  showEffect="explode" hideEffect="blind" position="top"/>
                                                     </f:facet>
                                                 </p:column>
                                             </p:row>
@@ -319,8 +319,12 @@
                                         <p:column style="white-space:pre-line;">
                                             <p:cellEditor>
                                                 <f:facet name="output">
-                                                    <p:inputText pt:data-tooltip="#{viewSupport.getMessage('LOCAL_COSTS_CTD_LC', pob)}" value="#{viewSupport.getCurrencyMetric('LOCAL_COSTS_CTD_LC', pob).lcValue}"
-                                                                 styleClass="#{empty viewSupport.getCurrencyMetric('LOCAL_COSTS_CTD_LC', pob).lcValue ? 'ui-state-error' : ''}" readonly="true"
+                                                    <p:inputText id="costCurrent"
+                                                                 pt:data-tooltip="#{viewSupport.getMessage('LOCAL_COSTS_CTD_LC', pob)}"
+                                                                 value="#{viewSupport.getCurrencyMetric('LOCAL_COSTS_CTD_LC', pob).lcValue}"
+                                                                 styleClass="#{empty viewSupport.getCurrencyMetric('LOCAL_COSTS_CTD_LC', pob).lcValue ? 'ui-state-error' : ''}"
+                                                                 readonly="true"
+                                                                 style="#{viewSupport.getStyle('LOCAL_COSTS_CTD_LC', pob)}"
                                                                  disabled="#{not of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}">
                                                         <f:validateDoubleRange/>
                                                         <f:convertNumber type="currency" currencySymbol=""/>
@@ -328,7 +332,7 @@
                                                 </f:facet>
                                                 <f:facet name="input">
                                                     <p:inputText value="#{viewSupport.getCurrencyMetric('LOCAL_COSTS_CTD_LC', pob).lcValue}">
-                                                        <p:ajax event="change" update="totalCTD" process="@this" listener="#{inputOnlineEntry.calculateOutputs(pob)}"/>
+                                                        <p:ajax event="change" update="costCurrent, totalCTD" process="@this" listener="#{inputOnlineEntry.calculateOutputs(pob)}"/>
                                                     </p:inputText>
                                                 </f:facet>
                                             </p:cellEditor>
@@ -379,12 +383,21 @@
                                         <p:column style="white-space:pre-line;">
                                             <p:cellEditor rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}">
                                                 <f:facet name="output">
-                                                    <p:inputText value="#{viewSupport.getDateMetric('DELIVERY_DATE', pob).value}" rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}">
+                                                    <p:inputText  id="deliveryCurrent"
+                                                                  pt:data-tooltip="#{viewSupport.getMessageDate('DELIVERY_DATE', pob)}"
+                                                                  value="#{viewSupport.getDateMetric('DELIVERY_DATE', pob).value}"
+                                                                  rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}"
+                                                                  styleClass="#{empty viewSupport.getDateMetric('DELIVERY_DATE', pob).value ? 'ui-state-error' : ''}"
+                                                                  style="#{viewSupport.getStyleDate('DELIVERY_DATE', pob)}"
+                                                                  readonly="true"
+                                                                  >
                                                         <f:convertDateTime pattern="dd-MMM-yyyy" type="localDate" />
                                                     </p:inputText>
                                                 </f:facet>
                                                 <f:facet name="input">
-                                                    <p:calendar value="#{viewSupport.getDateMetric('DELIVERY_DATE', pob).value}" converter="localDateConverter" pattern="MM/dd/yyyy" navigator="true" mode="popup"/>
+                                                    <p:calendar value="#{viewSupport.getDateMetric('DELIVERY_DATE', pob).value}" converter="localDateConverter" pattern="MM/dd/yyyy" navigator="true" mode="popup">
+                                                        <p:ajax event="dateSelect" update="deliveryCurrent, :form:messages" process="@this" listener="#{inputOnlineEntry.calculateOutputs(pob)}"/>
+                                                    </p:calendar>
                                                 </f:facet>
                                             </p:cellEditor>
                                         </p:column>
