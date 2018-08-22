@@ -36,10 +36,6 @@ import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
-import org.kie.api.KieServices;
-import org.kie.api.builder.KieBuilder;
-import org.kie.api.builder.KieFileSystem;
-import org.kie.api.builder.Message;
 import org.kie.api.runtime.StatelessKieSession;
 
 /**
@@ -63,6 +59,8 @@ public class CalculationService {
     private AdminService adminService;
     @Inject
     private MetricService metricService;
+    @Inject
+    private DroolsInitService droolsInitService;
     private StatelessKieSession kSession = null;
     private static final String PACKAGE_PREFIX = "com.flowserve.system606.model.";
     private List<MetricType> metricTypes = null;
@@ -72,35 +70,10 @@ public class CalculationService {
         metricTypes = metricService.findActiveMetricTypes();
     }
 
-    //@PostConstruct
-    public void initBusinessRulesEngine() {
-        Logger.getLogger(CalculationService.class.getName()).log(Level.INFO, "initBusinessRulesEngine");
-
-        try {
-            KieServices ks = KieServices.Factory.get();
-            //KieRepository kr = ks.getRepository();
-            KieFileSystem kfs = ks.newKieFileSystem();
-
-            //kfs.write("src/main/resources/DroolsTest.drl", "");
-            for (BusinessRule rule : findAllBusinessRules()) {
-                String drl = rule.getContent();
-                kfs.write("src/main/resources/" + rule.getRuleKey() + ".drl", drl);
-            }
-
-            KieBuilder kb = ks.newKieBuilder(kfs).buildAll();
-
-            if (kb.getResults().hasMessages(Message.Level.ERROR)) {
-                throw new RuntimeException("Business Rule Build Errors:\n" + kb.getResults().toString());
-            }
-
-            kSession = ks.newKieContainer(ks.getRepository().getDefaultReleaseId()).newStatelessKieSession();
-            kSession.setGlobal("logger", Logger.getLogger(CalculationService.class.getName()));
-
-        } catch (Exception exception) {
-            throw new IllegalStateException(exception);
-        }
-
-        Logger.getLogger(CalculationService.class.getName()).log(Level.INFO, "Finished initBusinessRulesEngine");
+    public void initBusinessRulesSession() {
+        Logger.getLogger(CalculationService.class.getName()).log(Level.INFO, "getKieSession");
+        kSession = droolsInitService.getKieSession();
+        Logger.getLogger(CalculationService.class.getName()).log(Level.INFO, "Finished getKieSession");
     }
 
     private void convertCurrencies(Collection<Metric> metrics, Measurable measurable, FinancialPeriod period) throws Exception {
@@ -123,7 +96,7 @@ public class CalculationService {
 
     private Metric getMetric(String metricCode, Measurable measurable, FinancialPeriod period) {
         //FinancialPeriod period = financialPeriodService.getCurrentFinancialPeriod();
-        return intelliGetMetric(metricService.findMetricTypeByCode(metricCode), measurable, period);
+        return intelliGetMetric(metricService.getMetricTypeByCode(metricCode), measurable, period);
     }
 
     public StringMetric getStringMetric(String metricTypeId, PerformanceObligation pob, FinancialPeriod period) {
@@ -141,7 +114,7 @@ public class CalculationService {
     public CurrencyMetric getAccumulatedCurrencyMetricAcrossPeriods(String metricCode, Measurable measurable, List<FinancialPeriod> periods) throws Exception {
         Logger.getLogger(CalculationService.class.getName()).log(Level.INFO, "getAccumulatedCurrencyMetricAcrossPeriods() " + metricCode + " measurable: " + measurable.getClass().getName());
         CurrencyMetric metric = new CurrencyMetric();
-        metric.setMetricType(metricService.findMetricTypeByCode(metricCode));
+        metric.setMetricType(metricService.getMetricTypeByCode(metricCode));
         metric.setValue(new BigDecimal("0.0"));
 
         if (isEmptyTransientMesaurable(measurable)) {
@@ -257,7 +230,7 @@ public class CalculationService {
     @TransactionAttribute(NOT_SUPPORTED)
     public void executeBusinessRules(Measurable measurable, FinancialPeriod period) throws Exception {
         if (kSession == null) {
-            initBusinessRulesEngine();
+            initBusinessRulesSession();
         }
 
         List<Object> facts = new ArrayList<Object>();
@@ -351,18 +324,12 @@ public class CalculationService {
         return em.merge(bu);
     }
 
-    public List<BusinessRule> findAllBusinessRules() throws Exception {
-        Query query = em.createQuery("SELECT bu FROM BusinessRule bu", BusinessRule.class);
-
-        return (List<BusinessRule>) query.getResultList();
-    }
-
     private CurrencyMetric getAccumulatedCurrencyMetric(String metricCode, Measurable measurable, FinancialPeriod period) throws Exception {
         Logger.getLogger(CalculationService.class.getName()).log(Level.FINER, "getAccumulatedCurrencyMetric() " + metricCode + " measurable: " + measurable.getClass().getName());
         BigDecimal sum = new BigDecimal("0.0");
         CurrencyMetric metric = new CurrencyMetric();
         metric.setFinancialPeriod(period);
-        metric.setMetricType(metricService.findMetricTypeByCode(metricCode));
+        metric.setMetricType(metricService.getMetricTypeByCode(metricCode));
         metric.setValue(sum);
         if (isEmptyTransientMesaurable(measurable)) {
             return metric;
@@ -409,7 +376,7 @@ public class CalculationService {
         Logger.getLogger(CalculationService.class.getName()).log(Level.INFO, "initBusinessRules");
         String content = new String(Files.readAllBytes(Paths.get(getClass().getResource("/resources/business_rules/massive_rule.drl").toURI())));
 
-        if (findAllBusinessRules().isEmpty()) {
+        if (adminService.findAllBusinessRules().isEmpty()) {
             BusinessRule businessRule = new BusinessRule();
             businessRule.setRuleKey("massive.rule");
             businessRule.setVersionNumber(1L);

@@ -73,11 +73,15 @@ public class MetricService {
         return (MetricType) query.getSingleResult();  // we want an exception if not one and only one.
     }
 
-    public MetricType findMetricTypeByCode(String metricCode) {
+    public MetricType getMetricTypeByCode(String metricCode) {
         if (metricCodeCache.get(metricCode) != null) {
             return metricCodeCache.get(metricCode);
         }
 
+        return findMetricTypeByCode(metricCode);
+    }
+
+    private MetricType findMetricTypeByCode(String metricCode) {
         Query query = em.createQuery("SELECT it FROM MetricType it WHERE it.code = :IN");
         query.setParameter("IN", metricCode);
         MetricType metricType = (MetricType) query.getSingleResult();
@@ -99,13 +103,13 @@ public class MetricService {
             }
 
             count = 0;
-            String[] values = line.split("\\|");
+            String[] values = line.split("\\|", 16);
 
             MetricType metricType = new MetricType();
             metricType.setDirection(MetricDirection.valueOf(values[count++]));
             metricType.setCode(values[count++]);
             try {
-                if (findMetricTypeByCode(metricType.getCode()) != null) {
+                if (getMetricTypeByCode(metricType.getCode()) != null) {
                     continue;
                 }
             } catch (Exception e) {
@@ -125,15 +129,9 @@ public class MetricService {
             metricType.setGroupPosition(Integer.parseInt(values[count++]));
             metricType.setEffectiveFrom(LocalDate.now());
             metricType.setActive(true);
-
+            metricType.setCreditAccount(adminService.findSubledgerAccountById(values[count++]));
+            metricType.setDebitAccount(adminService.findSubledgerAccountById(values[count++]));
             logger.info("Creating MetricType: " + metricType.getName());
-
-            if (metricType.getCode().equals("ESTIMATED_COST_AT_COMPLETION_LC")) {
-
-                metricType.setCreditAccount(adminService.findSubledgerAccountByCode(values[count++]));
-                metricType.setDebitAccount(adminService.findSubledgerAccountByCode(values[count++]));
-
-            }
             adminService.persist(metricType);
         }
 

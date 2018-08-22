@@ -7,6 +7,7 @@ package com.flowserve.system606.service;
 
 import com.flowserve.system606.model.ApprovalRequest;
 import com.flowserve.system606.model.BillingEvent;
+import com.flowserve.system606.model.BusinessRule;
 import com.flowserve.system606.model.BusinessUnit;
 import com.flowserve.system606.model.Company;
 import com.flowserve.system606.model.Contract;
@@ -190,14 +191,17 @@ public class AdminService {
         return null;
     }
 
-    public SubledgerAccount findSubledgerAccountByCode(String code) {
-        Query query = em.createQuery("SELECT s FROM SubledgerAccount s WHERE (s.code)=:code ");
-        query.setParameter("code", code);
-        List<SubledgerAccount> list = query.getResultList();
-        if (list.size() > 0) {
-            return list.get(0);
-        }
-        return null;
+//    public SubledgerAccount findSubledgerAccountByCode(String code) {
+//        Query query = em.createQuery("SELECT s FROM SubledgerAccount s WHERE (s.code)=:code ");
+//        query.setParameter("code", code);
+//        List<SubledgerAccount> list = query.getResultList();
+//        if (list.size() > 0) {
+//            return list.get(0);
+//        }
+//        return null;
+//    }
+    public SubledgerAccount findSubledgerAccountById(String id) {
+        return em.find(SubledgerAccount.class, id);
     }
 
     public List<BillingEvent> findBillingEvents() {
@@ -690,29 +694,30 @@ public class AdminService {
 //     initSubledgerAccountFromTxt();
 //    }
     public void initSubledgerAccount() throws Exception {
-        logger.info("Initializing SubLedgerAccounts By Reading Text FIle");
+        logger.info("Initializing SubLedgerAccounts");
         BufferedReader reader = new BufferedReader(new InputStreamReader(AppInitializeService.class.getResourceAsStream("/resources/app_data_init_files/init_sl_accounts.txt"), "UTF-8"));
 
         int count = 0;
         String line = null;
-        if (findSubledgerAccountByCode("DummyDR") == null) {
-            while ((line = reader.readLine()) != null) {
-                if (line.trim().length() == 0) {
-                    continue;
-                }
 
-                count = 0;
-                String[] values = line.split("\\|");
+        while ((line = reader.readLine()) != null) {
+            if (line.trim().length() == 0) {
+                continue;
+            }
+
+            count = 0;
+            String[] values = line.split("\\|");
+            if (findSubledgerAccountById(values[count]) == null) {
                 SubledgerAccount ledger = new SubledgerAccount();
+                ledger.setId(values[count++]);
                 ledger.setAccountType(values[count++]);
-                ledger.setCode(values[count++]);
                 ledger.setDescription(values[count++]);
                 ledger.setName(values[count++]);
-                ledger.setCompany(findCompanyById("FLS"));
-
+                ledger.setCompany(findCompanyById(values[count++]));
                 persist(ledger);
             }
         }
+        logger.info("Finished initializing SubLedgerAccounts");
     }
 
 //    public void initMetricTypeAccounts() throws Exception
@@ -917,5 +922,11 @@ public class AdminService {
         TypedQuery<Contract> query = em.createQuery("SELECT c FROM Contract c WHERE UPPER(c.name) LIKE :NAME ORDER BY UPPER(c.name)", Contract.class);
         query.setParameter("NAME", "%" + searchString.toUpperCase() + "%");
         return (List<Contract>) query.getResultList();
+    }
+
+    public List<BusinessRule> findAllBusinessRules() throws Exception {
+        Query query = em.createQuery("SELECT bu FROM BusinessRule bu", BusinessRule.class);
+
+        return (List<BusinessRule>) query.getResultList();
     }
 }

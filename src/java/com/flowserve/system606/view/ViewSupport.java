@@ -431,11 +431,11 @@ public class ViewSupport implements Serializable {
     }
 
     public String getMetricTypeDescription(String metricCode) {
-        return metricService.findMetricTypeByCode(metricCode).getDescription();
+        return metricService.getMetricTypeByCode(metricCode).getDescription();
     }
 
     public String getMetricTypeName(String metricCode) {
-        return metricService.findMetricTypeByCode(metricCode).getName();
+        return metricService.getMetricTypeByCode(metricCode).getName();
     }
 
     public CurrencyMetric getCurrencyMetric(String metricCode, Measurable measurable) throws Exception {

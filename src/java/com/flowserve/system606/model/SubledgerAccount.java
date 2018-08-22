@@ -8,12 +8,9 @@ package com.flowserve.system606.model;
 import java.io.Serializable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
-import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
 @Entity
@@ -21,28 +18,22 @@ import javax.persistence.Table;
 public class SubledgerAccount implements Serializable {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "SL_ACCT_SEQ")
-    @SequenceGenerator(name = "SL_ACCT_SEQ", sequenceName = "SL_ACCT_SEQ", allocationSize = 1)
-    @Column(name = "SL_ACCT_ID")
-    private Long id;
+    private String id;
     @Column(name = "ACCT_NAME")
     private String name;
     @Column(name = "ACCT_DESC")
     private String description;
-    @Column(name = "ACCT_CODE")
-    private String code;
     @Column(name = "ACCT_TYPE")
     private String accountType;
     @OneToOne
     @JoinColumn(name = "COMPANY_ID")
     private Company company;
-  
 
-    public Long getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(String id) {
         this.id = id;
     }
 
@@ -62,14 +53,6 @@ public class SubledgerAccount implements Serializable {
         this.description = description;
     }
 
-    public String getCode() {
-        return code;
-    }
-
-    public void setCode(String code) {
-        this.code = code;
-    }
-
     public String getAccountType() {
         return accountType;
     }
@@ -85,5 +68,5 @@ public class SubledgerAccount implements Serializable {
     public void setCompany(Company company) {
         this.company = company;
     }
-    
+
 }

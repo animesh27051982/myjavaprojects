@@ -1,6 +1,4 @@
-Payable|DummyDR|DummyDR|DummyDR|FLS
-Receivable|DummyCR|DummyCR|DummyCR|FLS
-Payable|Emp|Emp|Emp|FLS
-Payable|RUnit|RUnit|RUnit|FLS
-Receivable|BUnit|BUnit|BUnit|FLS
-Receivable|CUnit|CUnit|CUnit|FLS
+DummyDR|Payable|DummyDR|DummyDR|FLS
+DummyCR|Receivable|DummyCR|DummyCR|FLS
+SALESPOC.IN|Credit|Sales_POC - In|SALESPOC.IN|FLS
+STCONTLIAB|Debit|Current Contract Liability|STCONTLIAB|FLS
