@@ -121,6 +121,7 @@ public class MetricService {
             metricType.setMetricClass(values[count++]);
             metricCurrencyType = values[count++];
             metricType.setMetricCurrencyType(metricCurrencyType == null || "".equals(metricCurrencyType) ? null : CurrencyType.fromShortName(metricCurrencyType));
+            metricType.setConvertable("Convertable".equals(values[count++]));
             metricType.setName(values[count++]);
             metricType.setDescription(values[count++]);
             metricType.setExcelSheet(values[count++]);

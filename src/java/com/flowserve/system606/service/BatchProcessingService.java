@@ -121,10 +121,10 @@ public class BatchProcessingService {
             statement = connection.createStatement();
             logger.info("Processing POCI Core finance data");
             processPOCIData(connection, statement, fileName);
-            logger.info("Processing POCI billing data");
-            processBillingInfoFromPOCI(connection, statement, fileName);
-            logger.info("Processing POCI Third Party Commission data.");
-            processPOCIThirdPartyCommissions(connection, statement, fileName);
+            //logger.info("Processing POCI billing data");
+            //processBillingInfoFromPOCI(connection, statement, fileName);
+            //logger.info("Processing POCI Third Party Commission data.");
+            //processPOCIThirdPartyCommissions(connection, statement, fileName);
         } catch (Exception e) {
             logger.log(Level.INFO, "Error processing POCI/O data: ", e);
         } finally {
@@ -388,7 +388,7 @@ public class BatchProcessingService {
         DataImportFile dataImport = null;
         List<String> importMessages = new ArrayList<String>();
 
-        resultSet = statement.executeQuery("SELECT Period,`C Page Number`,`Contract Billings`,`Local Billings`  FROM `tbl_POCI-Billings` ORDER BY Period");
+        resultSet = statement.executeQuery("SELECT Period,`C Page Number`,`Contract Billings`,`Local Billings`, `Third Party Commissions (\"TPC\")` FROM `tbl_POCI-Billings` ORDER BY Period");
         String[] monthName = {"JAN", "FEB",
             "MAR", "APR", "MAY", "JUN", "JUL",
             "AUG", "SEP", "OCT", "NOV",

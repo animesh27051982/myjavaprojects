@@ -163,7 +163,7 @@ rule "Contract Revenue In Excess. This is named Costs in Excess on XLS not sure 
         modify (contractRevenueInExcess) { lcValue = (contract.getTotalBillingsLocalCurrency() >= contractRevenueToRecognizeCTD.lcValue ? 0B : contractRevenueToRecognizeCTD.lcValue - contract.getTotalBillingsLocalCurrency())};
 end
 
-rule "Revenue to Recognize CTD"
+rule "Revenue to Recognize CTD CC"
     when
         pob : PerformanceObligation()
         percentComplete : Metric(metricType.code == "PERCENT_COMPLETE", value != null)
@@ -172,6 +172,22 @@ rule "Revenue to Recognize CTD"
     then
         modify (revenueToRecognizeCTD) { ccValue = (percentComplete.value * transactionPrice.ccValue)};
 end
+
+
+rule "Revenue to Recognize CTD LC"  // REVENUE_TO_RECOGNIZE_CTD_CC is a non-currency-convertable metric.
+    when
+        pob : PerformanceObligation()
+        period : FinancialPeriod()
+        currencyService : CurrencyService()  // Necessary due to mid rule-execution need for conversion.
+        revenueToRecognizeCurrentPeriod : CurrencyMetric(metricType.code == "REVENUE_TO_RECOGNIZE_PERIOD_CC", ccValue != null)
+        revenueToRecognizeCTDPriorPeriod : CurrencyMetricPriorPeriod(metricType.code == "REVENUE_TO_RECOGNIZE_CTD_CC")
+        revenueToRecognizeCTD : CurrencyMetric(metricType.code == "REVENUE_TO_RECOGNIZE_CTD_CC")
+    then
+        currencyService.convertCurrency(revenueToRecognizeCurrentPeriod, pob, period);  // Necessary due to mid rule-execution need for conversion.
+        modify (revenueToRecognizeCTD) { lcValue = (revenueToRecognizeCurrentPeriod.lcValue + (revenueToRecognizeCTDPriorPeriod.lcValue == null ? 0B : revenueToRecognizeCTDPriorPeriod.lcValue))};
+        modify (revenueToRecognizeCTD) { rcValue = (revenueToRecognizeCurrentPeriod.rcValue + (revenueToRecognizeCTDPriorPeriod.lcValue == null ? 0B : revenueToRecognizeCTDPriorPeriod.rcValue))};
+end
+
 
 rule "Revenue to Recognize Current Period"
     when
