@@ -523,4 +523,17 @@ public class ViewSupport implements Serializable {
             logger.log(Level.SEVERE, "Error submit for revew:", e);
         }
     }
+
+    public boolean isBillingUpdateable() {
+        FinancialPeriod period = webSession.getCurrentPeriod();
+        ReportingUnit ru = webSession.getCurrentReportingUnit();
+        User user = webSession.getUser();
+        if (period.isOpen() && ru.isDraft(period)) {
+            return true;
+        } else if (period.isUserFreeze() && user.isAdmin()) {
+            return true;
+        }
+
+        return false;
+    }
 }

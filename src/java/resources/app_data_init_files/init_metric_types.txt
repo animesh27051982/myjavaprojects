@@ -12,6 +12,10 @@ INPUT|TOTAL_TRANS_PRICE_CC|Contract||CurrencyMetric|CC|Convertable|Total Trans P
 INPUT|BOOKING_DATE|Contract||DateMetric||NonConvertable|Booking Date (LoA)|Booking Date (LoA)|POC POB Metrics|L|Group1|19||
 INPUT|THIRD_PARTY_COMMISSION_CTD_LC|Contract||CurrencyMetric|LC|Convertable|Total Estimated Third Party Commissions||POC Contract Metrics|AE|Group1|10||
 INPUT|THIRD_PARTY_COMMISSION_TO_RECOGNIZE_LC|Contract||CurrencyMetric|LC|Convertable|Third Party Commissions To Recognize|Third Party Commissio To Recognize|POC Contract Metrics|AE|Group1|10||
+INPUT|SALES_DESTINATION|POB||StringMetric||NonConvertable|Sales Destination|Sales Destination|POC POB Metrics||Group1|1||
+INPUT|OEAM_DISAGG|POB||StringMetric||NonConvertable|OE/AM Disaggregation|OE/AM Disaggregation|POC POB Metrics||Group1|1||
+INPUT|SL_START_DATE|POB||DateMetric||NonConvertable|Straight-Line POb Revenue Start Date|Straight-Line POb Revenue Start Date|POC POB Metrics||Group1|1||
+INPUT|SL_END_DATE|POB||DateMetric||NonConvertable|Straight-Line POb Revenue End Date|Straight-Line POb Revenue End Date|POC POB Metrics||Group1|1||
 OUTPUT|ESTIMATED_GROSS_PROFIT_LC|POB||CurrencyMetric|LC|Convertable|Estimated Gross Profit|Estimated Gross Profit|POC POB Outputs|H|Group1|1||
 OUTPUT|CONTRACT_GROSS_PROFIT_LC|Contract||CurrencyMetric|LC|Convertable|Gross Profit|Gross Profit|POC POB Outputs|H|Group1|1||
 OUTPUT|ESTIMATED_GROSS_MARGIN|ALL||DecimalMetric||NonConvertable|Estimated Gross Margin|Estimated Gross Margin|POC POB Outputs|H|Group1|1||

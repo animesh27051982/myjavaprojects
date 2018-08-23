@@ -514,7 +514,7 @@
                                                     <p:inputText value="#{billEvent.invoiceNumber}" styleClass="#{empty billEvent.invoiceNumber ? 'ui-state-error' : ''}" readonly="true"/>
                                                 </f:facet>
                                                 <f:facet name="input">
-                                                    <p:inputText value="#{billEvent.invoiceNumber}"/>
+                                                    <p:inputText value="#{billEvent.invoiceNumber}" disabled="#{!viewSupport.billingUpdateable}"/>
                                                 </f:facet>
                                             </p:cellEditor>
                                         </p:column>
@@ -526,7 +526,7 @@
                                                     </p:inputText>
                                                 </f:facet>
                                                 <f:facet name="input">
-                                                    <p:calendar value="#{billEvent.billingDate}" converter="localDateConverter" pattern="MM/dd/yyyy" navigator="true" mode="popup"/>
+                                                    <p:calendar value="#{billEvent.billingDate}" converter="localDateConverter" pattern="MM/dd/yyyy" navigator="true" mode="popup" disabled="#{!viewSupport.billingUpdateable}"/>
                                                 </f:facet>
                                             </p:cellEditor>
                                         </p:column>
@@ -542,7 +542,7 @@
                                                     </p:inputText>
                                                 </f:facet>
                                                 <f:facet name="input">
-                                                    <p:inputText value="#{billEvent.amountContractCurrency}">
+                                                    <p:inputText value="#{billEvent.amountContractCurrency}" disabled="#{!viewSupport.billingUpdateable}">
                                                         <p:ajax event="change" process="@this" update="treeTableId" listener="#{inputOnlineEntry.updateCumulativeCurrencies}"/>
                                                     </p:inputText>
                                                 </f:facet>
@@ -560,7 +560,7 @@
                                                     </p:inputText>
                                                 </f:facet>
                                                 <f:facet name="input">
-                                                    <p:inputText value="#{billEvent.amountLocalCurrency}">
+                                                    <p:inputText value="#{billEvent.amountLocalCurrency}" disabled="#{!viewSupport.billingUpdateable}">
                                                         <p:ajax event="change" process="@this" update="treeTableId" listener="#{inputOnlineEntry.updateCumulativeCurrencies}"/>
                                                     </p:inputText>
                                                 </f:facet>
@@ -568,8 +568,8 @@
                                         </p:column>
 
                                         <p:column>
-                                            <p:commandLink value="Add Billing" process="@this" update="treeTableId" actionListener="#{inputOnlineEntry.addBillingEvent(billEvent)}" rendered="#{of:isInstance('com.flowserve.system606.model.Contract', billEvent) and viewSupport.periodOpen}" ></p:commandLink>
-                                            <p:commandLink value="Remove Billing" process="@this" update="treeTableId" actionListener="#{inputOnlineEntry.removeBillingEvent(billEvent)}" rendered="#{of:isInstance('com.flowserve.system606.model.BillingEvent', billEvent) and viewSupport.periodOpen}"></p:commandLink>
+                                            <p:commandLink value="Add Billing" process="@this" update="treeTableId" actionListener="#{inputOnlineEntry.addBillingEvent(billEvent)}" rendered="#{of:isInstance('com.flowserve.system606.model.Contract', billEvent) and viewSupport.billingUpdateable}" ></p:commandLink>
+                                            <p:commandLink value="Remove Billing" process="@this" update="treeTableId" actionListener="#{inputOnlineEntry.removeBillingEvent(billEvent)}" rendered="#{of:isInstance('com.flowserve.system606.model.BillingEvent', billEvent) and viewSupport.billingUpdateable}"></p:commandLink>
                                         </p:column>
                                     </p:treeTable>
                                 </p:tab>

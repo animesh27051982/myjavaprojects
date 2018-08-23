@@ -12,6 +12,7 @@ import com.flowserve.system606.service.AdminService;
 import com.flowserve.system606.web.WebSession;
 import java.io.Serializable;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
@@ -31,6 +32,7 @@ import javax.inject.Named;
 @ViewScoped
 public class HolidaysEdit implements Serializable {
 
+    List<Company> company = new ArrayList<Company>();
     private Holiday days = new Holiday();
     @Inject
     private WebSession webSession;
@@ -50,7 +52,11 @@ public class HolidaysEdit implements Serializable {
     @PostConstruct
     public void init() {
         days = webSession.getEditHolidays();
-
+        try {
+            company = adminService.findAllCompany();
+        } catch (Exception ex) {
+            Logger.getLogger(HolidaysEdit.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     public Holiday getDays() {
@@ -95,6 +101,14 @@ public class HolidaysEdit implements Serializable {
 
     public void setDt(Date dt) {
         this.dt = dt;
+    }
+
+    public List<Company> getCompany() {
+        return company;
+    }
+
+    public void setCompany(List<Company> company) {
+        this.company = company;
     }
 
 }
