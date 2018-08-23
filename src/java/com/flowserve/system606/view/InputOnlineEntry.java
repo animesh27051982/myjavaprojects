@@ -81,6 +81,12 @@ public class InputOnlineEntry implements Serializable {
     private String activeTabIndex;
     private ReportingUnit reportingUnit;
 
+    List<String> salesDestination = Arrays.asList("ASIA", "CHINA", "INDIA", "JAPAN",
+            "EUROPE", "RUSCIS", "LA", "CANADA", "US",
+            "ANTARCTICA", "OTHER", "N AFRICA", "OTHER AFRICA",
+            "S AFRICA", "IRAQ", "MIDEAST");
+    List<String> oeamDisagg = Arrays.asList("OE", "AM");
+
     @PostConstruct
     public void init() {
         reportingUnit = adminService.findReportingUnitById(webSession.getCurrentReportingUnit().getId());
@@ -319,5 +325,13 @@ public class InputOnlineEntry implements Serializable {
             FacesContext.getCurrentInstance().addMessage(null, msg);
             logger.log(Level.SEVERE, "Error handleTemplateUpload.", e);
         }
+    }
+
+    public List<String> getSalesDestination() {
+        return salesDestination;
+    }
+
+    public List<String> getOeamDisagg() {
+        return oeamDisagg;
     }
 }

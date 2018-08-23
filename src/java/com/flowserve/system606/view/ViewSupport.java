@@ -16,6 +16,7 @@ import com.flowserve.system606.model.FinancialPeriod;
 import com.flowserve.system606.model.Measurable;
 import com.flowserve.system606.model.PerformanceObligation;
 import com.flowserve.system606.model.ReportingUnit;
+import com.flowserve.system606.model.StringMetric;
 import com.flowserve.system606.model.User;
 import com.flowserve.system606.model.WorkflowStatus;
 import com.flowserve.system606.service.AdminService;
@@ -448,6 +449,10 @@ public class ViewSupport implements Serializable {
 
     public DecimalMetric getDecimalMetric(String metricCode, Measurable measurable) throws Exception {
         return calculationService.getDecimalMetric(metricCode, measurable, webSession.getCurrentPeriod());
+    }
+
+    public StringMetric getStringMetric(String metricCode, PerformanceObligation pob) throws Exception {
+        return calculationService.getStringMetric(metricCode, pob, webSession.getCurrentPeriod());
     }
 
     public CurrencyMetric getCurrencyMetricPriorPeriod(String metricCode, Measurable measurable) throws Exception {
