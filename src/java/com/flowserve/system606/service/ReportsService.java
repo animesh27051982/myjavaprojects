@@ -101,7 +101,7 @@ public class ReportsService {
         BigDecimal EAC = getEAC(contract, period);
         BigDecimal estimatedGrossProfit = getEstimatedGrossProfit(contract, period);
         BigDecimal estimatedGrossMargin = getEstimatedGrossMargin(contract, period);
-
+        BigDecimal thirdPartyCommission = getThirdPartyCommission(contract, period);
         BigDecimal liquidatedDamage = getLiquidatedDamages(contract, period);
         BigDecimal localCostCTDLC = getCostOfGoodsSold(contract, period);
         BigDecimal percentComplete = getPercentComplete(contract, period);
@@ -113,12 +113,6 @@ public class ReportsService {
         BigDecimal billingsInExcess = getContractBillingsInExcess(contract, period);
         BigDecimal revenueInExcess = getContractRevenueInExcess(contract, period);
         BigDecimal billToDate = contract.getTotalBillingsLocalCurrency();
-        BigDecimal thirdPartyCommCTD = getCThirdPartyCommissionCTDLC(contract, period);
-        BigDecimal thirdPartyRecogLC = getCThirdPartyCommRegLC(contract, period);
-
-        row = worksheet.getRow(14);
-        setCellValue(row, 6, thirdPartyCommCTD);
-        setCellValue(row, 14, thirdPartyRecogLC);
 
         row = worksheet.getRow(15);
 
@@ -128,7 +122,7 @@ public class ReportsService {
         setCellValue(row, 3, EAC);
         setCellValue(row, 4, estimatedGrossProfit);
         setCellValue(row, 5, estimatedGrossMargin);
-
+        setCellValue(row, 6, thirdPartyCommission);
         setCellValue(row, 7, percentComplete);
         setCellValue(row, 8, revenueCTD);
         setCellValue(row, 9, liquidatedDamage);
@@ -171,7 +165,7 @@ public class ReportsService {
 
         BigDecimal liquidatedDamage = getLiquidatedDamages(pGroup, period);
         BigDecimal localCostCTDLC = getCostOfGoodsSold(pGroup, period);
-        //BigDecimal percentComplete = getPercentComplete(pGroup, period);
+        BigDecimal percentComplete = getPercentComplete(pGroup, period);
         BigDecimal revenueCTD = getRevenueRecognizeCTD(pGroup, period);
         BigDecimal lossReserveCTD = getLossReserveCTD(pGroup, period);
         BigDecimal grossProfitCTD = getEstimatedGrossProfit(pGroup, period);
@@ -237,7 +231,7 @@ public class ReportsService {
 
                 BigDecimal liquidatedDamage = getLiquidatedDamages(pob, period);
                 BigDecimal localCostCTDLC = getCostOfGoodsSold(pob, period);
-                //BigDecimal percentComplete = getPercentComplete(pob, period);
+                BigDecimal percentComplete = getPercentComplete(pob, period);
                 BigDecimal revenueCTD = getRevenueRecognizeCTD(pob, period);
                 //BigDecimal lossReserveCTD = getLossReserveCTD(pob, period);
                 BigDecimal grossProfitCTD = getEstimatedGrossProfit(pob, period);
@@ -866,7 +860,7 @@ public class ReportsService {
     }
 
     private BigDecimal getPercentComplete(Measurable measureable, FinancialPeriod period) {
-        return calculationService.getDecimalMetric("CONTRACT_PERCENT_COMPLETE", measureable, period).getValue();
+        return calculationService.getDecimalMetric("PERCENT_COMPLETE", measureable, period).getValue();
     }
 
     private BigDecimal getRevenueRecognizeCTD(Measurable measureable, FinancialPeriod period) throws Exception {
@@ -889,12 +883,8 @@ public class ReportsService {
         return calculationService.getCurrencyMetric("CONTRACT_REVENUE_IN_EXCESS_LC", measureable, period).getValue();
     }
 
-    private BigDecimal getCThirdPartyCommissionCTDLC(Measurable measureable, FinancialPeriod period) throws Exception {
+    private BigDecimal getThirdPartyCommission(Measurable measureable, FinancialPeriod period) throws Exception {
         return calculationService.getCurrencyMetric("THIRD_PARTY_COMMISSION_CTD_LC", measureable, period).getValue();
-    }
-
-    private BigDecimal getCThirdPartyCommRegLC(Measurable measureable, FinancialPeriod period) throws Exception {
-        return calculationService.getCurrencyMetric("THIRD_PARTY_COMMISSION_TO_RECOGNIZE_LC", measureable, period).getValue();
     }
 
     private BigDecimal getCumulativeCostGoodsSoldLC(Measurable measureable, FinancialPeriod period) throws Exception {
