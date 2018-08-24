@@ -56,7 +56,21 @@
                     <div class="card card-w-title">
                         <p:growl id="messages" showDetail="true" life="10000" />
 
-                        <p:panelGrid columns="4" columnClasses="ui-grid-col-6,ui-grid-col-6,ui-grid-col-6,ui-grid-col-6" layout="grid" styleClass="ui-panelgrid-blank form-group" style="float: right; border:0px none; background-color:transparent; white-space: nowrap;">
+                        <!--<p:panelGrid columns="4" columnClasses="ui-grid-col-6,ui-grid-col-6,ui-grid-col-6,ui-grid-col-6" layout="grid" styleClass="ui-panelgrid-blank form-group" style="float: right; border:0px none; background-color:transparent; white-space: nowrap;">-->
+                        <p:outputPanel style="width:600px;float: right;">
+                            <p:fileUpload  fileUploadListener="#{inputOnlineEntry.handleTemplateUpload}" auto="true" label="Upload Template"
+                                           multiple="false" update="messages" sizeLimit="10000000" allowTypes="/(\.|\/)(xlsx)$/" style="width:70%;float: left" rendered="#{viewSupport.periodOpen}"/>
+                            <p:dialog modal="true" widgetVar="statusDialog" header="Preparing Download..." draggable="false" closable="false">
+                                <p:graphicImage value="/images/pbar-ani.gif" style="height: 30px; width: 300px;"/>
+                            </p:dialog>
+                            <p:commandButton value="Download Template" ajax="false" style="width:auto;float: right" icon="ui-icon-arrowthick-1-s" onclick="PrimeFaces.monitorDownload(showStatus, hideStatus)">
+                                <p:fileDownload value="#{inputOnlineEntry.file}" />
+                            </p:commandButton>
+
+                        </p:outputPanel>
+                        <!--</p:panelGrid>-->
+                        <h4 style="margin: 1px;"><strong>#{webSession.currentPeriod.id} Performance Obligation Inputs - #{inputOnlineEntry.reportingUnit.name} - #{inputOnlineEntry.reportingUnit.getWorkflowStatus(webSession.currentPeriod).description}</strong></h4>
+                        <p:outputPanel style="margin-top: 19px;">
                             <h:outputLabel style="text-align: right; vertical-align: middle; white-space: nowrap;" value="Switch RU: "/>
                             <p:autoComplete
                                 id="ru"
@@ -68,7 +82,7 @@
                                 required="#{false}"
                                 forceSelection="#{true}"
                                 onclick="this.value = ''"
-                                style="width: 300px; text-align: right; vertical-align: middle;"
+                                style="width: 300px; text-align: right; vertical-align: middle;margin-right: 20px;"
                                 value="#{webSession.currentReportingUnit}"
                                 completeMethod="#{viewSupport.completeReportingUnit}"
                                 itemLabel="#{ru.name}"
@@ -81,11 +95,9 @@
                                 <p:ajax event="change" update=":form" process="@this" listener="#{inputOnlineEntry.switchPeriod(webSession.currentPeriod)}"/>
                                 <f:selectItems var="period" value="#{viewSupport.allPeriods}" itemLabel="#{period.id}"/>
                             </p:selectOneMenu>
-                        </p:panelGrid>
+                        </p:outputPanel>
 
-                        <h4 style="margin: 1px;"><strong>#{webSession.currentPeriod.id} Performance Obligation Inputs - #{inputOnlineEntry.reportingUnit.name} - #{inputOnlineEntry.reportingUnit.getWorkflowStatus(webSession.currentPeriod).description}</strong></h4>
-
-                        <p:outputPanel style="margin-top: 20px;">
+                        <p:outputPanel style="margin-top: 30px;">
                             <h:outputText value="Search within list:" />
                             <p:inputText id="globalFilterText" value="#{webSession.filterText}" style="width:150px; margin-left: 10px;">
                             </p:inputText>
@@ -96,13 +108,17 @@
                                 <f:selectItems var="contract" value="#{inputOnlineEntry.contracts}" itemLabel="#{contract.name}"/>
                             </p:selectCheckboxMenu>
                             <p:commandButton id="globalFilterClear2" style="font-size: 80%; margin-left: 20px;" value="Clear All Filters" actionListener="#{inputOnlineEntry.clearFilterByContractText()}" update=":form:topLevelTabView, :form:globalFilterText, :form:contracts"/>
+                            <p:commandButton value="Save Inputs" icon="ui-icon-disk" ajax="true" update="form"
+                                             actionListener="#{inputOnlineEntry.saveInputs()}" rendered="#{viewSupport.periodOpen}"
+                                             style="float: right;width: 160px;"/>
+
                         </p:outputPanel>
 
-                        <div style="max-height: 75vh; overflow-y: auto">
+                        <div style="max-height: 75vh; overflow-y: auto;margin-top: 20px;">
 
                             <p:tabView id="topLevelTabView" dynamic="true" style="margin-top: 15px;">
 
-                                <p:tab title="EAC Inputs">
+                                <p:tab title="Trans Price &amp; EAC Inputs">
 
                                     <p:treeTable tableStyle="width:auto" id="eactbl" value="#{inputOnlineEntry.rootTreeNode}" editable="true" editMode="cell" var="pob" >
 
@@ -111,9 +127,9 @@
                                         <p:columnGroup type="header">
                                             <p:row>
                                                 <p:column colspan="1" headerText="" />
-                                                <p:column style="background-color: #0071bc; color: #ffffff; white-space:pre-line;" colspan="4" headerText="Contract Currency" />
+                                                <p:column style="background-color: #43C86F; color: #ffffff; white-space:pre-line;" colspan="4" headerText="Contract Currency" />
                                                 <p:column colspan="1" headerText="" />
-                                                <p:column style="background-color: #0071bc; color: #ffffff; white-space:pre-line;" colspan="4" headerText="Local Currency" />
+                                                <p:column style="background-color: #5aa3d4; color: #ffffff; white-space:pre-line;" colspan="4" headerText="Local Currency" />
                                             </p:row>
                                             <p:row>
                                                 <p:column  colspan="1" id="con" style="white-space:pre-line;">
@@ -208,7 +224,8 @@
                                                     </p:inputText>
                                                 </f:facet>
                                                 <f:facet name="input">
-                                                    <p:inputText value="#{viewSupport.getCurrencyMetric('TRANSACTION_PRICE_CC', pob).ccValue}" disabled="#{of:isInstance('com.flowserve.system606.model.Contract', pob) and (not viewSupport.periodOpen)}">
+                                                    <p:inputText value="#{viewSupport.getCurrencyMetric('TRANSACTION_PRICE_CC', pob).ccValue}"
+                                                                 disabled="#{of:isInstance('com.flowserve.system606.model.Contract', pob) or not viewSupport.periodOpen}">
                                                         <f:validateDoubleRange/>
                                                         <p:ajax event="change" update="tpCurrent, :form:messages" process="@this" listener="#{inputOnlineEntry.calculateOutputs(pob)}"/>
                                                     </p:inputText>
@@ -231,7 +248,8 @@
                                                     </p:inputText>
                                                 </f:facet>
                                                 <f:facet name="input">
-                                                    <p:inputText value="#{viewSupport.getCurrencyMetric('LIQUIDATED_DAMAGES_CTD_CC', pob).ccValue}" disabled="#{not viewSupport.periodOpen}" >
+                                                    <p:inputText value="#{viewSupport.getCurrencyMetric('LIQUIDATED_DAMAGES_CTD_CC', pob).ccValue}"
+                                                                 disabled="#{of:isInstance('com.flowserve.system606.model.Contract', pob) or not viewSupport.periodOpen}" >
                                                         <p:ajax event="change" update="ldCurrent, :form:messages" process="@this" listener="#{inputOnlineEntry.calculateOutputs(pob)}"/>
                                                     </p:inputText>
                                                 </f:facet>
@@ -260,13 +278,14 @@
                                                                  styleClass="#{empty viewSupport.getCurrencyMetric('ESTIMATED_COST_AT_COMPLETION_LC', pob).lcValue ? 'ui-state-error' : ''}"
                                                                  style="#{viewSupport.getStyle('ESTIMATED_COST_AT_COMPLETION_LC', pob)}"
                                                                  readonly="true"
-                                                                 disabled="#{not of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob) and (not viewSupport.periodOpen)}">
+                                                                 disabled="#{not of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}">
                                                         <f:validateDoubleRange/>
                                                         <f:convertNumber type="currency" currencySymbol=""/>
                                                     </p:inputText>
                                                 </f:facet>
                                                 <f:facet name="input">
-                                                    <p:inputText value="#{viewSupport.getCurrencyMetric('ESTIMATED_COST_AT_COMPLETION_LC', pob).lcValue}" disabled="#{not viewSupport.periodOpen}">
+                                                    <p:inputText value="#{viewSupport.getCurrencyMetric('ESTIMATED_COST_AT_COMPLETION_LC', pob).lcValue}"
+                                                                 disabled="#{of:isInstance('com.flowserve.system606.model.Contract', pob) or not viewSupport.periodOpen}">
                                                         <p:ajax event="change" update="eacCurrent, eacPrior, eacChange, :form:messages" process="@this" listener="#{inputOnlineEntry.calculateOutputs(pob)}"/>
                                                     </p:inputText>
                                                 </f:facet>
@@ -288,31 +307,31 @@
                                     </p:treeTable>
                                 </p:tab>
 
-                                <p:tab title="Costing Inputs">
+                                <p:tab title="Cost &amp; Shipment Inputs">
                                     <p:treeTable tableStyle="width:auto" value="#{inputOnlineEntry.rootTreeNode}" editable="true" editMode="cell" var="pob">
                                         <p:columnGroup type="header">
                                             <p:row>
                                                 <p:column colspan="1" headerText="" />
-                                                <p:column colspan="7" style="background-color: #0071bc; color: #ffffff; white-space:pre-line;"  headerText="Local Currency" />
+                                                <p:column colspan="7" style="background-color: #5aa3d4; color: #ffffff; white-space:pre-line;"  headerText="Local Currency" />
                                             </p:row>
                                             <p:row>
                                                 <p:column colspan="1" style="white-space:pre-line;" id="billcon"  >
                                                     <f:facet name="header">
                                                         <h:outputText  value="RU / Contract / POB" />
                                                         <p:tooltip  for="billcon" value="RU / Contract / POB"  showEffect="slide" hideEffect="explode" position="top"/>
-                                                    </f:facet>  
+                                                    </f:facet>
                                                 </p:column>
                                                 <p:column colspan="1" style="white-space:pre-line;" id="curn" >
                                                     <f:facet name="header">
                                                         <h:outputText  value="Currency" />
                                                         <p:tooltip  for="curn" value="Currency"  showEffect="slide" hideEffect="explode" position="top"/>
-                                                    </f:facet>   
+                                                    </f:facet>
                                                 </p:column>
                                                 <p:column colspan="1" style="white-space:pre-line;"  id="cost_lc" >
                                                     <f:facet name="header">
                                                         <h:outputText  value="#{viewSupport.getMetricTypeName('LOCAL_COSTS_CTD_LC')}" />
                                                         <p:tooltip  for="cost_lc" value="#{viewSupport.getMetricTypeDescription('LOCAL_COSTS_CTD_LC')}"  showEffect="slide" hideEffect="explode" position="top"/>
-                                                    </f:facet> 
+                                                    </f:facet>
                                                 </p:column>
                                                 <p:column colspan="1" style="white-space:pre-line;" id="tp_cost" >
                                                     <f:facet name="header">
@@ -365,13 +384,14 @@
                                                                  styleClass="#{empty viewSupport.getCurrencyMetric('LOCAL_COSTS_CTD_LC', pob).lcValue ? 'ui-state-error' : ''}"
                                                                  readonly="true"
                                                                  style="#{viewSupport.getStyle('LOCAL_COSTS_CTD_LC', pob)}"
-                                                                 disabled="#{not of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob) and(not viewSupport.periodOpen)}">
+                                                                 disabled="#{not of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}">
                                                         <f:validateDoubleRange/>
                                                         <f:convertNumber type="currency" currencySymbol=""/>
                                                     </p:inputText>
                                                 </f:facet>
                                                 <f:facet name="input">
-                                                    <p:inputText value="#{viewSupport.getCurrencyMetric('LOCAL_COSTS_CTD_LC', pob).lcValue}">
+                                                    <p:inputText value="#{viewSupport.getCurrencyMetric('LOCAL_COSTS_CTD_LC', pob).lcValue}"
+                                                                 disabled="#{of:isInstance('com.flowserve.system606.model.Contract', pob) or not viewSupport.periodOpen}">
                                                         <p:ajax event="change" update="costCurrent, totalCTD" process="@this" listener="#{inputOnlineEntry.calculateOutputs(pob)}"/>
                                                     </p:inputText>
                                                 </f:facet>
@@ -389,7 +409,8 @@
                                                     </p:inputText>
                                                 </f:facet>
                                                 <f:facet name="input">
-                                                    <p:inputText value="#{viewSupport.getCurrencyMetric('THIRD_PARTY_COSTS_CTD_LC', pob).lcValue}">
+                                                    <p:inputText value="#{viewSupport.getCurrencyMetric('THIRD_PARTY_COSTS_CTD_LC', pob).lcValue}"
+                                                                 disabled="#{of:isInstance('com.flowserve.system606.model.Contract', pob) or not viewSupport.periodOpen}">
                                                         <p:ajax event="change" update="totalCTD" process="@this" listener="#{inputOnlineEntry.calculateOutputs(pob)}"/>
                                                     </p:inputText>
                                                 </f:facet>
@@ -407,7 +428,8 @@
                                                     </p:inputText>
                                                 </f:facet>
                                                 <f:facet name="input">
-                                                    <p:inputText value="#{viewSupport.getCurrencyMetric('INTERCOMPANY_COSTS_CTD_LC', pob).lcValue}">
+                                                    <p:inputText value="#{viewSupport.getCurrencyMetric('INTERCOMPANY_COSTS_CTD_LC', pob).lcValue}"
+                                                                 disabled="#{of:isInstance('com.flowserve.system606.model.Contract', pob) or not viewSupport.periodOpen}">
                                                         <p:ajax event="change" update="totalCTD" process="@this" listener="#{inputOnlineEntry.calculateOutputs(pob)}"/>
                                                     </p:inputText>
                                                 </f:facet>
@@ -435,7 +457,8 @@
                                                     </p:inputText>
                                                 </f:facet>
                                                 <f:facet name="input">
-                                                    <p:calendar value="#{viewSupport.getDateMetric('DELIVERY_DATE', pob).value}" converter="localDateConverter" pattern="MM/dd/yyyy" navigator="true" mode="popup">
+                                                    <p:calendar value="#{viewSupport.getDateMetric('DELIVERY_DATE', pob).value}" converter="localDateConverter" pattern="MM/dd/yyyy"
+                                                                navigator="true" mode="popup" disabled="#{not viewSupport.periodOpen}">
                                                         <p:ajax event="dateSelect" update="deliveryCurrent, :form:messages" process="@this" listener="#{inputOnlineEntry.calculateOutputs(pob)}"/>
                                                     </p:calendar>
                                                 </f:facet>
@@ -450,111 +473,11 @@
                                                     </p:inputText>
                                                 </f:facet>
                                                 <f:facet name="input">
-                                                    <p:inputText value="#{viewSupport.getCurrencyMetric('PARTIAL_SHIPMENT_COSTS_LC', pob).lcValue}">
+                                                    <p:inputText value="#{viewSupport.getCurrencyMetric('PARTIAL_SHIPMENT_COSTS_LC', pob).lcValue}" disabled="#{not viewSupport.periodOpen}">
                                                         <f:validateDoubleRange/>
                                                     </p:inputText>
                                                 </f:facet>
                                             </p:cellEditor>
-                                        </p:column>
-                                    </p:treeTable>
-                                </p:tab>
-
-                                <p:tab title="Third Party Inputs">
-                                    <p:treeTable tableStyle="width:auto" value="#{inputOnlineEntry.rootTreeNode}" editable="true" editMode="cell" var="pob">
-                                        <p:columnGroup type="header">
-                                            <p:row>
-                                                <p:column colspan="1" headerText="" />
-                                                <p:column colspan="6" style="background-color: #0071bc; color: #ffffff; white-space:pre-line;" headerText="Local Currency" />
-                                            </p:row>
-                                            <p:row>
-                                                <p:column colspan="1" style="white-space:pre-line;"  id="tpi_con">
-                                                    <f:facet name="header">
-                                                        <h:outputText  value="RU / Contract / POB" />
-                                                        <p:tooltip  for="tpi_con" value="RU / Contract / POB"  showEffect="slide" hideEffect="explode" position="top"/>
-                                                    </f:facet>   
-                                                </p:column>
-                                                <p:column colspan="1" style="white-space:pre-line;" id="tpi_cur" >
-                                                    <f:facet name="header">
-                                                        <h:outputText  value="Currency" />
-                                                        <p:tooltip  for="tpi_cur" value="Currency"  showEffect="slide" hideEffect="explode" position="top"/>
-                                                    </f:facet>  
-                                                </p:column>
-                                                <p:column colspan="1" style="white-space:pre-line;"  id="tpi_percent_complete">
-                                                    <f:facet name="header">
-                                                        <h:outputText  value="#{viewSupport.getMetricTypeName('PERCENT_COMPLETE')}" />
-                                                        <p:tooltip  for="tpi_percent_complete" value="#{viewSupport.getMetricTypeDescription('PERCENT_COMPLETE')}"  showEffect="slide" hideEffect="explode" position="top"/>
-                                                    </f:facet>
-                                                </p:column>
-                                                <p:column colspan="1" style="white-space:pre-line;" id="tpi_tp_commission" >
-                                                    <f:facet name="header">
-                                                        <h:outputText  value="#{viewSupport.getMetricTypeName('THIRD_PARTY_COMMISSION_CTD_LC')}" />
-                                                        <p:tooltip  for="tpi_tp_commission" value="#{viewSupport.getMetricTypeDescription('THIRD_PARTY_COMMISSION_CTD_LC')}"  showEffect="slide" hideEffect="explode" position="top"/>
-                                                    </f:facet>
-                                                </p:column>
-                                                <p:column colspan="1" style="white-space:pre-line;" id="tpc_to_recognize">
-                                                    <f:facet name="header">
-                                                        <h:outputText  value="#{viewSupport.getMetricTypeName('THIRD_PARTY_COMMISSION_TO_RECOGNIZE_LC')}" />
-                                                        <p:tooltip  for="tpc_to_recognize" value="#{viewSupport.getMetricTypeDescription('THIRD_PARTY_COMMISSION_TO_RECOGNIZE_LC')}"  showEffect="slide" hideEffect="explode" position="top"/>
-                                                    </f:facet>
-                                                </p:column>
-                                                <p:column colspan="1" style="white-space:pre-line;" id="tpc_to_recognizelc" >
-                                                    <f:facet name="header">
-                                                        <h:outputText  value="#{viewSupport.getMetricTypeName('THIRD_PARTY_COMMISSION_TO_RECOGNIZE_LC')} Prior Period" />
-                                                        <p:tooltip  for="tpc_to_recognizelc" value="#{viewSupport.getMetricTypeDescription('THIRD_PARTY_COMMISSION_TO_RECOGNIZE_LC')} Prior Period"  showEffect="slide" hideEffect="explode" position="top"/>
-                                                    </f:facet>
-                                                </p:column>
-                                                <p:column colspan="1" style="white-space:pre-line;" id="tpc_to_recognize_lc" >
-                                                    <f:facet name="header">
-                                                        <h:outputText  value="#{viewSupport.getMetricTypeName('THIRD_PARTY_COMMISSION_TO_RECOGNIZE_LC')}" />
-                                                        <p:tooltip  for="tpc_to_recognize_lc" value="#{viewSupport.getMetricTypeDescription('THIRD_PARTY_COMMISSION_TO_RECOGNIZE_LC')}"  showEffect="slide" hideEffect="explode" position="top"/>
-                                                    </f:facet>
-                                                </p:column>
-                                            </p:row>
-                                        </p:columnGroup>
-                                        <p:ajax event="cellEdit" listener="#{inputOnlineEntry.onCellEdit}" />
-
-                                        <p:column sortBy="#{pob.name}">
-                                            <h:outputText value="#{pob.name}" title="#{pob.description}"/>
-                                        </p:column>
-
-                                        <p:column style="white-space:pre-line;">
-                                            <h:outputText value="#{pob.localCurrency.currencyCode}" rendered="#{of:isInstance('com.flowserve.system606.model.Contract', pob)}"/>
-                                        </p:column>
-
-                                        <p:column style="white-space:pre-line;">
-                                            <h:outputText id="eacPrior" value="#{viewSupport.getDecimalMetric('PERCENT_COMPLETE', pob).value}" rendered="#{of:isInstance('com.flowserve.system606.model.Contract', pob)}">
-                                                <f:convertNumber minFractionDigits="1" />
-                                            </h:outputText>
-                                        </p:column>
-
-                                        <p:column style="white-space:pre-line;">
-                                            <p:cellEditor rendered="#{of:isInstance('com.flowserve.system606.model.Contract', pob)}">
-                                                <f:facet name="output">
-                                                    <p:inputText value="#{viewSupport.getCurrencyMetric('THIRD_PARTY_COMMISSION_CTD_LC', pob).lcValue}" readonly="true">
-                                                        <f:convertNumber type="currency" currencySymbol=""/>
-                                                    </p:inputText>
-                                                </f:facet>
-                                                <f:facet name="input">
-                                                    <p:inputText value="#{viewSupport.getCurrencyMetric('THIRD_PARTY_COMMISSION_CTD_LC', pob).lcValue}">
-                                                        <f:validateDoubleRange/>
-                                                    </p:inputText>
-                                                </f:facet>
-                                            </p:cellEditor>
-                                        </p:column>
-                                        <p:column style="white-space:pre-line;">
-                                            <h:outputText value="#{viewSupport.getCurrencyMetric('THIRD_PARTY_COMMISSION_TO_RECOGNIZE_LC', pob).lcValue}" rendered="#{of:isInstance('com.flowserve.system606.model.Contract', pob)}" >
-                                                <f:convertNumber type="currency" currencySymbol=""/>
-                                            </h:outputText>
-                                        </p:column>
-                                        <p:column style="white-space:pre-line;">
-                                            <h:outputText value="#{viewSupport.getCurrencyMetricPriorPeriod('THIRD_PARTY_COMMISSION_CTD_LC', pob).lcValue}" rendered="#{of:isInstance('com.flowserve.system606.model.Contract', pob)}" >
-                                                <f:convertNumber type="currency" currencySymbol=""/>
-                                            </h:outputText>
-                                        </p:column>
-                                        <p:column style="white-space:pre-line;">
-                                            <h:outputText value="#{viewSupport.getCurrencyMetric('THIRD_PARTY_COMMISSION_TO_RECOGNIZE_LC', pob).lcValue}" rendered="#{of:isInstance('com.flowserve.system606.model.Contract', pob)}" >
-                                                <f:convertNumber type="currency" currencySymbol=""/>
-                                            </h:outputText>
                                         </p:column>
                                     </p:treeTable>
                                 </p:tab>
@@ -571,40 +494,40 @@
                                             </p:row>
                                             <p:row>
                                                 <p:column colspan="1" style="white-space:pre-line;" id="bill_con" >
-                                                   <f:facet name="header">
+                                                    <f:facet name="header">
                                                         <h:outputText  value="RU / Contract / POB" />
                                                         <p:tooltip  for="bill_con" value="RU / Contract / POB"  showEffect="slide" hideEffect="explode" position="top"/>
-                                                    </f:facet>  
+                                                    </f:facet>
                                                 </p:column>
                                                 <p:column colspan="1" style="white-space:pre-line;" id="invoice" >
-                                                  <f:facet name="header">
+                                                    <f:facet name="header">
                                                         <h:outputText  value="Invoice Number" />
                                                         <p:tooltip  for="invoice" value="Invoice Number"  showEffect="slide" hideEffect="explode" position="top"/>
-                                                    </f:facet>   
+                                                    </f:facet>
                                                 </p:column>
                                                 <p:column colspan="1" style="white-space:pre-line;" id="invoice_date">
-                                                   <f:facet name="header">
+                                                    <f:facet name="header">
                                                         <h:outputText  value="Invoice Date" />
                                                         <p:tooltip  for="invoice_date" value="Invoice Date"  showEffect="slide" hideEffect="explode" position="top"/>
-                                                    </f:facet>  
+                                                    </f:facet>
                                                 </p:column>
                                                 <p:column colspan="1" style="white-space:pre-line;" id="bill_cur" >
-                                                   <f:facet name="header">
+                                                    <f:facet name="header">
                                                         <h:outputText  value="Billing Contract Cur" />
                                                         <p:tooltip  for="bill_cur" value="Billing Contract Cur"  showEffect="slide" hideEffect="explode" position="top"/>
-                                                    </f:facet>  
+                                                    </f:facet>
                                                 </p:column>
                                                 <p:column colspan="1" style="white-space:pre-line;" id="bill_loc_cur" >
-                                                  <f:facet name="header">
+                                                    <f:facet name="header">
                                                         <h:outputText  value="Billing Local Cur" />
                                                         <p:tooltip  for="bill_loc_cur" value="Billing Local Cur"  showEffect="slide" hideEffect="explode" position="top"/>
-                                                    </f:facet>  
+                                                    </f:facet>
                                                 </p:column>
                                                 <p:column colspan="1" style="white-space:pre-line;" id="opt" >
-                                                   <f:facet name="header">
+                                                    <f:facet name="header">
                                                         <h:outputText  value="Options" />
                                                         <p:tooltip  for="opt" value="Options"  showEffect="slide" hideEffect="explode" position="top"/>
-                                                    </f:facet>   
+                                                    </f:facet>
                                                 </p:column>
                                             </p:row>
                                         </p:columnGroup>
@@ -619,7 +542,7 @@
                                                     <p:inputText value="#{billEvent.invoiceNumber}" styleClass="#{empty billEvent.invoiceNumber ? 'ui-state-error' : ''}" readonly="true"/>
                                                 </f:facet>
                                                 <f:facet name="input">
-                                                    <p:inputText value="#{billEvent.invoiceNumber}" disabled="#{!viewSupport.billingUpdateable}"/>
+                                                    <p:inputText value="#{billEvent.invoiceNumber}" disabled="#{not viewSupport.periodOpen}"/>
                                                 </f:facet>
                                             </p:cellEditor>
                                         </p:column>
@@ -631,7 +554,8 @@
                                                     </p:inputText>
                                                 </f:facet>
                                                 <f:facet name="input">
-                                                    <p:calendar value="#{billEvent.billingDate}" converter="localDateConverter" pattern="MM/dd/yyyy" navigator="true" mode="popup" disabled="#{!viewSupport.billingUpdateable}"/>
+                                                    <p:calendar value="#{billEvent.billingDate}" converter="localDateConverter" pattern="MM/dd/yyyy" navigator="true" mode="popup"
+                                                                disabled="#{not viewSupport.periodOpen}"/>
                                                 </f:facet>
                                             </p:cellEditor>
                                         </p:column>
@@ -647,7 +571,7 @@
                                                     </p:inputText>
                                                 </f:facet>
                                                 <f:facet name="input">
-                                                    <p:inputText value="#{billEvent.amountContractCurrency}" disabled="#{!viewSupport.billingUpdateable}">
+                                                    <p:inputText value="#{billEvent.amountContractCurrency}" disabled="#{not viewSupport.periodOpen}">
                                                         <p:ajax event="change" process="@this" update="treeTableId" listener="#{inputOnlineEntry.updateCumulativeCurrencies}"/>
                                                     </p:inputText>
                                                 </f:facet>
@@ -665,7 +589,7 @@
                                                     </p:inputText>
                                                 </f:facet>
                                                 <f:facet name="input">
-                                                    <p:inputText value="#{billEvent.amountLocalCurrency}" disabled="#{not viewSupport.billingUpdateable}">
+                                                    <p:inputText value="#{billEvent.amountLocalCurrency}" disabled="#{not viewSupport.periodOpen}">
                                                         <p:ajax event="change" process="@this" update="treeTableId" listener="#{inputOnlineEntry.updateCumulativeCurrencies}"/>
                                                     </p:inputText>
                                                 </f:facet>
@@ -673,8 +597,135 @@
                                         </p:column>
 
                                         <p:column>
-                                            <p:commandLink value="Add Billing" process="@this" update="treeTableId" actionListener="#{inputOnlineEntry.addBillingEvent(billEvent)}" rendered="#{of:isInstance('com.flowserve.system606.model.Contract', billEvent) and  viewSupport.billingUpdateable}" ></p:commandLink>
-                                            <p:commandLink value="Remove Billing" process="@this" update="treeTableId" actionListener="#{inputOnlineEntry.removeBillingEvent(billEvent)}" rendered="#{of:isInstance('com.flowserve.system606.model.BillingEvent', billEvent) and  viewSupport.billingUpdateable}"></p:commandLink>
+                                            <p:commandLink value="Add Billing" process="@this" update="treeTableId" actionListener="#{inputOnlineEntry.addBillingEvent(billEvent)}" rendered="#{of:isInstance('com.flowserve.system606.model.Contract', billEvent) and  viewSupport.periodOpen}" ></p:commandLink>
+                                            <p:commandLink value="Remove Billing" process="@this" update="treeTableId" actionListener="#{inputOnlineEntry.removeBillingEvent(billEvent)}" rendered="#{of:isInstance('com.flowserve.system606.model.BillingEvent', billEvent) and  viewSupport.periodOpen}"></p:commandLink>
+                                        </p:column>
+                                    </p:treeTable>
+                                </p:tab>
+
+                                <p:tab title="TPC &amp; Other Inputs">
+                                    <p:treeTable tableStyle="width:auto" value="#{inputOnlineEntry.rootTreeNode}" editable="true" editMode="cell" var="pob">
+                                        <p:columnGroup type="header">
+                                            <p:row>
+                                                <p:column colspan="1" headerText="" />
+                                                <p:column colspan="6" style="background-color: #5aa3d4; color: #ffffff; white-space:pre-line;" headerText="Local Currency" />
+                                            </p:row>
+                                            <p:row>
+                                                <p:column colspan="1" style="white-space:pre-line;"  id="tpi_con">
+                                                    <f:facet name="header">
+                                                        <h:outputText  value="RU / Contract / POB" />
+                                                        <p:tooltip  for="tpi_con" value="RU / Contract / POB"  showEffect="slide" hideEffect="explode" position="top"/>
+                                                    </f:facet>
+                                                </p:column>
+                                                <p:column colspan="1" style="white-space:pre-line;"  id="thirdPartyCTD">
+                                                    <f:facet name="header">
+                                                        <h:outputText  value="#{viewSupport.getMetricTypeName('THIRD_PARTY_COMMISSION_CTD_LC')}" />
+                                                        <p:tooltip  for="thirdPartyCTD" value="#{viewSupport.getMetricTypeDescription('THIRD_PARTY_COMMISSION_CTD_LC')}"  showEffect="slide" hideEffect="explode" position="top"/>
+                                                    </f:facet>
+                                                </p:column>
+                                                <p:column colspan="1" style="white-space:pre-line;" id="saleDesTool" >
+                                                    <f:facet name="header">
+                                                        <h:outputText  value="#{viewSupport.getMetricTypeName('SALES_DESTINATION')}" />
+                                                        <p:tooltip  for="saleDesTool" value="#{viewSupport.getMetricTypeDescription('SALES_DESTINATION')}"  showEffect="slide" hideEffect="explode" position="top"/>
+                                                    </f:facet>
+                                                </p:column>
+                                                <p:column colspan="1" style="white-space:pre-line;" id="oeamTool">
+                                                    <f:facet name="header">
+                                                        <h:outputText  value="#{viewSupport.getMetricTypeName('OEAM_DISAGG')}" />
+                                                        <p:tooltip  for="oeamTool" value="#{viewSupport.getMetricTypeDescription('OEAM_DISAGG')}"  showEffect="slide" hideEffect="explode" position="top"/>
+                                                    </f:facet>
+                                                </p:column>
+                                                <p:column colspan="1" style="white-space:pre-line;" id="startDateTool" >
+                                                    <f:facet name="header">
+                                                        <h:outputText  value="#{viewSupport.getMetricTypeName('SL_START_DATE')}" />
+                                                        <p:tooltip  for="startDateTool" value="#{viewSupport.getMetricTypeDescription('SL_START_DATE')}"  showEffect="slide" hideEffect="explode" position="top"/>
+                                                    </f:facet>
+                                                </p:column>
+                                                <p:column colspan="1" style="white-space:pre-line;" id="endDateTool" >
+                                                    <f:facet name="header">
+                                                        <h:outputText  value="#{viewSupport.getMetricTypeName('SL_END_DATE')}" />
+                                                        <p:tooltip  for="endDateTool" value="#{viewSupport.getMetricTypeDescription('SL_END_DATE')}"  showEffect="slide" hideEffect="explode" position="top"/>
+                                                    </f:facet>
+                                                </p:column>
+                                            </p:row>
+                                        </p:columnGroup>
+                                        <p:ajax event="cellEdit" listener="#{inputOnlineEntry.onCellEdit}" />
+
+                                        <p:column sortBy="#{pob.name}">
+                                            <h:outputText value="#{pob.name}" title="#{pob.description}"/>
+                                        </p:column>
+
+                                        <p:column style="white-space:pre-line;">
+                                            <p:cellEditor rendered="#{of:isInstance('com.flowserve.system606.model.Contract', pob)}">
+                                                <f:facet name="output">
+                                                    <p:inputText value="#{viewSupport.getCurrencyMetric('THIRD_PARTY_COMMISSION_CTD_LC', pob).lcValue}"
+                                                                 styleClass="#{empty viewSupport.getCurrencyMetric('THIRD_PARTY_COMMISSION_CTD_LC', pob).lcValue ? 'ui-state-error' : ''}"
+                                                                 readonly="true">
+                                                        <f:convertNumber type="currency" currencySymbol=""/>
+                                                    </p:inputText>
+                                                </f:facet>
+                                                <f:facet name="input">
+                                                    <p:inputText value="#{viewSupport.getCurrencyMetric('THIRD_PARTY_COMMISSION_CTD_LC', pob).lcValue}" disabled="#{not viewSupport.periodOpen}">
+                                                        <f:validateDoubleRange/>
+                                                    </p:inputText>
+                                                </f:facet>
+                                            </p:cellEditor>
+                                        </p:column>
+                                        <p:column style="white-space:pre-line;">
+                                            <p:selectOneMenu rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}"
+                                                             value="#{viewSupport.getStringMetric('SALES_DESTINATION', pob).value}"
+                                                             style="width:100px" disabled="#{not viewSupport.periodOpen}">
+                                                <p:ajax event="change"  />
+                                                <f:selectItem itemLabel="Sales Destination List" itemValue="" />
+                                                <f:selectItems value="#{inputOnlineEntry.salesDestination}" var="sale" itemLabel="#{sale}" itemValue="#{sale}" />
+                                            </p:selectOneMenu>
+                                        </p:column>
+                                        <p:column style="white-space:pre-line;">
+                                            <p:selectOneMenu rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}"
+                                                             value="#{viewSupport.getStringMetric('OEAM_DISAGG', pob).value}"
+                                                             style="width:100px" disabled="#{not viewSupport.periodOpen}">
+                                                <p:ajax event="change"  />
+                                                <f:selectItem itemLabel="OE/AM Disaggregation" itemValue="" />
+                                                <f:selectItems value="#{inputOnlineEntry.oeamDisagg}" var="sale" itemLabel="#{oeam}" itemValue="#{oeam}" />
+                                            </p:selectOneMenu>
+                                        </p:column>
+                                        <p:column style="white-space:pre-line;">
+                                            <p:cellEditor rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}">
+                                                <f:facet name="output">
+                                                    <p:inputText  value="#{viewSupport.getDateMetric('SL_START_DATE', pob).value}"
+                                                                  rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}"
+                                                                  styleClass="#{empty viewSupport.getDateMetric('SL_START_DATE', pob).value ? 'ui-state-error' : ''}"
+                                                                  readonly="true"
+                                                                  >
+                                                        <f:convertDateTime pattern="dd-MMM-yyyy" type="localDate" />
+                                                    </p:inputText>
+                                                </f:facet>
+                                                <f:facet name="input">
+                                                    <p:calendar value="#{viewSupport.getDateMetric('SL_START_DATE', pob).value}" converter="localDateConverter" pattern="MM/dd/yyyy"
+                                                                navigator="true" mode="popup" disabled="#{not viewSupport.periodOpen}">
+                                                        <p:ajax event="dateSelect" />
+                                                    </p:calendar>
+                                                </f:facet>
+                                            </p:cellEditor>
+                                        </p:column>
+                                        <p:column style="white-space:pre-line;">
+                                            <p:cellEditor rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}">
+                                                <f:facet name="output">
+                                                    <p:inputText  value="#{viewSupport.getDateMetric('SL_END_DATE', pob).value}"
+                                                                  rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}"
+                                                                  styleClass="#{empty viewSupport.getDateMetric('SL_END_DATE', pob).value ? 'ui-state-error' : ''}"
+                                                                  readonly="true"
+                                                                  >
+                                                        <f:convertDateTime pattern="dd-MMM-yyyy" type="localDate" />
+                                                    </p:inputText>
+                                                </f:facet>
+                                                <f:facet name="input">
+                                                    <p:calendar value="#{viewSupport.getDateMetric('SL_END_DATE', pob).value}" converter="localDateConverter" pattern="MM/dd/yyyy"
+                                                                navigator="true" mode="popup" disabled="#{not viewSupport.periodOpen}">
+                                                        <p:ajax event="dateSelect" />
+                                                    </p:calendar>
+                                                </f:facet>
+                                            </p:cellEditor>
                                         </p:column>
                                     </p:treeTable>
                                 </p:tab>
@@ -689,28 +740,28 @@
                                             </p:row>
                                             <p:row>
                                                 <p:column colspan="1" style="white-space:pre-line;" id="st_con" >
-                                                 <f:facet name="header">
+                                                    <f:facet name="header">
                                                         <h:outputText  value="RU / Contract / POB" />
                                                         <p:tooltip  for="st_con" value="RU / Contract / POB"  showEffect="slide" hideEffect="explode" position="top"/>
-                                                    </f:facet>   
+                                                    </f:facet>
                                                 </p:column>
                                                 <p:column colspan="1" style="white-space:pre-line;" id="st_updated_by" >
-                                                  <f:facet name="header">
+                                                    <f:facet name="header">
                                                         <h:outputText  value="Last Updated By" />
                                                         <p:tooltip  for="st_updated_by" value="Last Updated By"  showEffect="slide" hideEffect="explode" position="top"/>
-                                                    </f:facet>  
+                                                    </f:facet>
                                                 </p:column>
                                                 <p:column colspan="1" style="white-space:pre-line;" id="st_updated_date">
-                                                     <f:facet name="header">
+                                                    <f:facet name="header">
                                                         <h:outputText  value="Last Updated Date" />
                                                         <p:tooltip  for="st_updated_date" value="Last Updated Date"  showEffect="slide" hideEffect="explode" position="top"/>
                                                     </f:facet>
                                                 </p:column>
                                                 <p:column colspan="1" style="white-space:pre-line;" id="st_status">
-                                                  <f:facet name="header">
+                                                    <f:facet name="header">
                                                         <h:outputText  value="Status" />
                                                         <p:tooltip  for="st_status" value="Status"  showEffect="slide" hideEffect="explode" position="top"/>
-                                                    </f:facet>   
+                                                    </f:facet>
                                                 </p:column>
                                             </p:row>
                                         </p:columnGroup>
@@ -740,19 +791,10 @@
                         <p:toolbar>
                             <f:facet name="left">
                                 <p:commandButton value="Recalc All From NOV-17" icon="ui-icon-check" update=":form:topLevelTabView" ajax="false" actionListener="#{pobCalculationReview.calculateAndSaveSinceNov17}" action="#{inputController.returnToOnlineEntry()}"/>
-                                <p:dialog modal="true" widgetVar="statusDialog" header="Preparing Download..." draggable="false" closable="false">
-                                    <p:graphicImage value="/images/pbar-ani.gif" style="height: 30px; width: 300px;"/>
-                                </p:dialog>
-                                <p:commandButton value="Download Template" ajax="false" style="width:auto;" icon="ui-icon-arrowthick-1-s" onclick="PrimeFaces.monitorDownload(showStatus, hideStatus)">
-                                    <p:fileDownload value="#{inputOnlineEntry.file}" />
-                                </p:commandButton>
-                                <p:fileUpload  fileUploadListener="#{inputOnlineEntry.handleTemplateUpload}" auto="true" label="Upload Template"
-                                               multiple="false" update="messages" sizeLimit="10000000" allowTypes="/(\.|\/)(xlsx)$/" style="width:70%;margin-top: 15px;" rendered="#{viewSupport.periodOpen}"/>
                             </f:facet>
                             <f:facet name="right">
                                 <p:commandButton value="Return to Dashboard" icon="ui-icon-arrowthick-1-w" ajax="false" action="#{inputController.inputDashboard()}"/>
-                                <p:commandButton value="Cancel Current Edits" icon="ui-icon-cancel" ajax="false" action="#{inputOnlineEntry.cancelEdits()}" rendered="#{viewSupport.periodOpen}"/>
-                                <p:commandButton value="Save Inputs" icon="ui-icon-disk" ajax="true" update="form" actionListener="#{inputOnlineEntry.saveInputs()}" rendered="#{viewSupport.periodOpen}"/>
+                                <p:commandButton value="Undo Edits" icon="ui-icon-cancel" ajax="false" action="#{inputOnlineEntry.cancelEdits()}" rendered="#{viewSupport.periodOpen}"/>
                                 <p:commandButton value="Calculation Review" icon="ui-icon-arrowthick-1-e" ajax="false" actionListener="#{inputOnlineEntry.saveInputs()}" action="#{calcReviewController.reviewCalculations()}"/>
                             </f:facet>
                         </p:toolbar>

@@ -9,7 +9,10 @@ import com.flowserve.system606.model.FinancialPeriod;
 import com.flowserve.system606.model.DecimalMetric;
 import com.flowserve.system606.model.DateMetric;
 import com.flowserve.system606.model.CurrencyMetric;
+import com.flowserve.system606.model.StringMetric;
 import com.flowserve.system606.model.CurrencyMetricPriorPeriod;
+import com.flowserve.system606.model.StringMetricPriorPeriod;
+import com.flowserve.system606.model.DateMetricPriorPeriod;
 import com.flowserve.system606.service.CurrencyService;
 import java.time.LocalDate;
 import java.util.logging.Logger;
@@ -414,7 +417,7 @@ rule "Contract Projected Gain (Loss) in Backlog incl TPC"
         contract : Contract()
         projectGainLossINCLTPCBacklogLC : CurrencyMetric(metricType.code == "PROJECT_GAIN_LOSS_INCL_TPC_BACKLOG_LC", lcValue != null)
         projectGainLossBacklogLC : CurrencyMetric(metricType.code == "PROJECT_GAIN_LOSS_BACKLOG_LC", lcValue != null)
-        lossReserveCTDLC : CurrencyMetric(metricType.code == "LOSS_RESERVE_CTD_L", lcValue != null)
+        lossReserveCTDLC : CurrencyMetric(metricType.code == "LOSS_RESERVE_CTD_LC", lcValue != null)
         thirdPartyCommissionCTDLC : CurrencyMetric(metricType.code == "THIRD_PARTY_COMMISSION_CTD_LC", lcValue != null)
         thirdPartyCommissonToRegLC : CurrencyMetric(metricType.code == "THIRD_PARTY_COMMISSION_TO_RECOGNIZE_LC", lcValue != null)
     then
@@ -422,6 +425,32 @@ rule "Contract Projected Gain (Loss) in Backlog incl TPC"
 
 end
 
+rule "Contract TPC & Other Inputs Rolling Next Month"
+    when
+        contract : Contract()
+
+        thirdPartyComCTDLC : CurrencyMetric(metricType.code == "THIRD_PARTY_COMMISSION_CTD_LC", lcValue == null)
+        thirdPartyComCTDLCPriorPeriod : CurrencyMetricPriorPeriod(metricType.code == "THIRD_PARTY_COMMISSION_CTD_LC", lcValue != null)
+
+        pob : PerformanceObligation()
+        salesDestination : StringMetric(metricType.code == "SALES_DESTINATION")
+        oeamDisagg : StringMetric(metricType.code == "OEAM_DISAGG")
+        slStartDate : DateMetric(metricType.code == "SL_START_DATE")
+        slEndDate : DateMetric(metricType.code == "SL_END_DATE")
+
+        salesDestinationPriorPeriod : StringMetricPriorPeriod(metricType.code == "SALES_DESTINATION")
+        oeamDisaggPriorPeriod : StringMetricPriorPeriod(metricType.code == "OEAM_DISAGG")
+        slStartDatePriorPeriod : DateMetricPriorPeriod(metricType.code == "SL_START_DATE")
+        slEndDatePriorPeriod : DateMetricPriorPeriod(metricType.code == "SL_END_DATE")
+    then
+        logger.info("fired" +thirdPartyComCTDLCPriorPeriod.lcValue);
+        modify (thirdPartyComCTDLC) { lcValue = (thirdPartyComCTDLCPriorPeriod.lcValue)};
+        modify (salesDestination) { value = (salesDestinationPriorPeriod.value)};
+        modify (oeamDisagg) { value = (oeamDisaggPriorPeriod.value)};
+        modify (slStartDate) { value = (slStartDatePriorPeriod.value)};
+        modify (slEndDate) { value = (slEndDatePriorPeriod.value)};
+
+end
 //
 // Begin Validation Rules Section
 //
