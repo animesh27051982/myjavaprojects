@@ -66,8 +66,8 @@ public class MetricType extends BaseEntity<Long> implements Comparable<MetricTyp
     private boolean active;   // maybe redundant
     @Column(name = "IS_REQUIRED")
     private boolean required;   // maybe redundant
-    @Column(name = "IS_CONVERTABLE")
-    private boolean convertable;   // maybe redundant
+    @Column(name = "IS_CONVERTIBLE")
+    private boolean convertible;   // maybe redundant
 
     @OneToOne
     @JoinColumn(name = "SL_ACCT_CR_ID")
@@ -254,12 +254,12 @@ public class MetricType extends BaseEntity<Long> implements Comparable<MetricTyp
         this.debitAccount = debitAccount;
     }
 
-    public boolean isConvertable() {
-        return convertable;
+    public boolean isConvertible() {
+        return convertible;
     }
 
-    public void setConvertable(boolean convertable) {
-        this.convertable = convertable;
+    public void setConvertible(boolean convertible) {
+        this.convertible = convertible;
     }
 
 }

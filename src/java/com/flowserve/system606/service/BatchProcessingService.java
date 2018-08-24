@@ -68,7 +68,6 @@ public class BatchProcessingService {
     private List<String> reportingUnitsToProcess = new ArrayList<String>();
 
     public BatchProcessingService() {
-
     }
 
     @PostConstruct
@@ -121,10 +120,10 @@ public class BatchProcessingService {
             statement = connection.createStatement();
             logger.info("Processing POCI Core finance data");
             processPOCIData(connection, statement, fileName);
-            //logger.info("Processing POCI billing data");
-            //processBillingInfoFromPOCI(connection, statement, fileName);
-            //logger.info("Processing POCI Third Party Commission data.");
-            //processPOCIThirdPartyCommissions(connection, statement, fileName);
+            logger.info("Processing POCI billing data");
+            processBillingInfoFromPOCI(connection, statement, fileName);
+            logger.info("Processing POCI Third Party Commission data.");
+            processPOCIThirdPartyCommissions(connection, statement, fileName);
         } catch (Exception e) {
             logger.log(Level.INFO, "Error processing POCI/O data: ", e);
         } finally {
@@ -145,9 +144,8 @@ public class BatchProcessingService {
 
         ResultSet resultSet = null;
         String exPeriod = null;
-        DataImportFile dataImport = null;
+        DataImportFile dataImport = new DataImportFile();
         List<String> importMessages = new ArrayList<String>();
-
         Set<ReportingUnit> rusToSave = new HashSet<ReportingUnit>();
 
         resultSet = statement.executeQuery(
@@ -160,105 +158,78 @@ public class BatchProcessingService {
         int count = 0;
         long timeInterval = System.currentTimeMillis();
 
-        String[] monthName = {"JAN", "FEB",
-            "MAR", "APR", "MAY", "JUN", "JUL",
-            "AUG", "SEP", "OCT", "NOV",
-            "DEC"};
-
-        dataImport = new DataImportFile();
-
         ut.begin();
 
-        while (resultSet.next()) {
+        try {
+            while (resultSet.next()) {
+                FinancialPeriod period = financialPeriodService.findByNumericString(resultSet.getString(1));
 
-            FinancialPeriod period = null;//financialPeriodService.getCurrentFinancialPeriod();
-            String periodDate = resultSet.getString(1);
-            String[] pd = periodDate.split("-");
-            try {
-                // checking valid integer using parseInt() method
-                int year = Integer.parseInt(pd[0]);
-                int month = Integer.parseInt(pd[1]);
-                String yrStr = Integer.toString(year);
-                String finalYear = yrStr.substring(yrStr.length() - 2);
-                exPeriod = monthName[month - 1] + "-" + finalYear;
-                period = financialPeriodService.findById(exPeriod);
-            } catch (NumberFormatException e) {
-                logger.log(Level.INFO, "Error " + e);
-            }
+                if (period != null) {
+                    String id = resultSet.getString(2);
+                    if (id != null) {
+                        String[] sp = id.split("-");
+                        String lastId = sp[sp.length - 1].trim();
+                        try {
+                            BigDecimal tp = resultSet.getBigDecimal(3);
+                            BigDecimal eac = resultSet.getBigDecimal(4);
+                            BigDecimal costs = resultSet.getBigDecimal(5);
+                            BigDecimal ld = resultSet.getBigDecimal(6);
+                            // checking valid integer using parseInt() method
+                            Integer.parseInt(lastId);
+                            PerformanceObligation pob = performanceObligationService.findPerformanceObligationById(new Long(lastId));
 
-            if (period != null) {
-                String id = resultSet.getString(2);
-                if (id != null) {
-                    String[] sp = id.split("-");
-                    String lastId = sp[sp.length - 1].trim();
-                    try {
-                        BigDecimal tp = resultSet.getBigDecimal(3);
-                        BigDecimal eac = resultSet.getBigDecimal(4);
-                        BigDecimal costs = resultSet.getBigDecimal(5);
-                        BigDecimal ld = resultSet.getBigDecimal(6);
-                        // checking valid integer using parseInt() method
-                        Integer.parseInt(lastId);
-                        PerformanceObligation pob = performanceObligationService.findPerformanceObligationById(new Long(lastId));
+                            if (pob != null) {
+                                ReportingUnit ru = pob.getContract().getReportingUnit();
+                                if (ru == null) {
+                                    importMessages.add("RU is null for POB ID: " + lastId);
+                                    logger.log(Level.INFO, "RU is null ");
+                                    continue;
+                                }
+                                if (ru.getLocalCurrency() == null) {
+                                    String msg = "No local currency found for RU: " + ru.getCode();
+                                    importMessages.add(msg);
+                                    logger.log(Level.INFO, "RU local currency is null for RU: " + ru.getCode());
+                                    continue;
+                                }
+                                //logger.log(Level.INFO, "Populating POB metrics: " + pob.getId());
 
-                        if (pob != null) {
-                            ReportingUnit ru = pob.getContract().getReportingUnit();
-
-                            if (ru == null) {
-                                importMessages.add("RU is null for POB ID: " + lastId);
-                                logger.log(Level.INFO, "RU is null ");
-                                continue;
-                            }
-                            if (ru.getLocalCurrency() == null) {
-                                String msg = "No local currency found for RU: " + ru.getCode();
-                                importMessages.add(msg);
-                                logger.log(Level.INFO, "RU local currency is null for RU: " + ru.getCode());
-                                continue;
-                            }
-                            if (true) {
-                                logger.log(Level.FINER, "Populating POB metrics: " + pob.getId());
                                 calculationService.getCurrencyMetric("TRANSACTION_PRICE_CC", pob, period).setValue(tp);
                                 calculationService.getCurrencyMetric("ESTIMATED_COST_AT_COMPLETION_LC", pob, period).setValue(eac);
                                 calculationService.getCurrencyMetric("LOCAL_COSTS_CTD_LC", pob, period).setValue(costs);
-                                if (isGreaterThanZero(costs)) {
-                                    calculationService.getCurrencyMetric("THIRD_PARTY_COSTS_CTD_LC", pob, period).setValue(BigDecimal.ZERO);
-                                    calculationService.getCurrencyMetric("INTERCOMPANY_COSTS_CTD_LC", pob, period).setValue(BigDecimal.ZERO);
-                                }
-                                if (isGreaterThanZero(tp) && ld == null) {
-                                    calculationService.getCurrencyMetric("LIQUIDATED_DAMAGES_CTD_CC", pob, period).setValue(BigDecimal.ZERO);
-                                } else {
-                                    calculationService.getCurrencyMetric("LIQUIDATED_DAMAGES_CTD_CC", pob, period).setValue(ld);
-                                }
-                                //calculationService.executeBusinessRules(pob, period);
-                                //calculationService.executeBusinessRules(pob.getContract(), period);
+                                //calculationService.getCurrencyMetric("THIRD_PARTY_COSTS_CTD_LC", pob, period).setValue(BigDecimal.ZERO);
+                                //calculationService.getCurrencyMetric("INTERCOMPANY_COSTS_CTD_LC", pob, period).setValue(BigDecimal.ZERO);
+                                calculationService.getCurrencyMetric("LIQUIDATED_DAMAGES_CTD_CC", pob, period).setValue(ld);
                                 rusToSave.add(pob.getContract().getReportingUnit());
+                            } else {
+                                importMessages.add("These POBs not found : " + id);
+                                //logger.log(Level.FINER, "These POBs not found : " + id);
                             }
-                        } else {
-                            importMessages.add("These POBs not found : " + id);
-                            //logger.log(Level.FINER, "These POBs not found : " + id);
+                        } catch (NumberFormatException e) {
+                            importMessages.add("This is not a Valid POB ID : " + lastId);
+                            //logger.log(Level.INFO, "Error " + e);
                         }
-                    } catch (NumberFormatException e) {
-                        importMessages.add("This is not a Valid POB ID : " + lastId);
-                        //logger.log(Level.INFO, "Error " + e);
                     }
+
+                } else {
+                    ut.rollback();
+                    importMessages.add("Financial Period not available : " + exPeriod);
+                    throw new IllegalStateException("Financial Period not available :" + exPeriod);
                 }
 
-            } else {
-                ut.rollback();
-                importMessages.add("Financial Period not available : " + exPeriod);
-                throw new IllegalStateException("Financial Period not available :" + exPeriod);
-
+                if ((count % 100) == 0) {
+                    logger.log(Level.INFO, "Processed " + count + " POB Input Sets.");
+                    timeInterval = System.currentTimeMillis();
+                }
+                if ((count % 1000) == 0) {
+                    logger.log(Level.INFO, "Flushing data to database...");
+                    em.flush();
+                    em.clear();
+                }
+                count++;
             }
-
-            if ((count % 100) == 0) {
-                logger.log(Level.INFO, "Processed " + count + " POB Input Sets.");
-                timeInterval = System.currentTimeMillis();
-            }
-            if ((count % 1000) == 0) {
-                logger.log(Level.INFO, "Flushing data to database...");
-                em.flush();
-                em.clear();
-            }
-            count++;
+        } catch (Exception exception) {
+            Logger.getLogger(BatchProcessingService.class.getName()).log(Level.INFO, "Error POCI Data Import: ", exception);
+            ut.rollback();
         }
 
         dataImport.setFilename(fileName + " - tbl_POCI_1_POb Changes");
@@ -277,96 +248,68 @@ public class BatchProcessingService {
     void processPOCIThirdPartyCommissions(Connection connection, Statement statement, String fileName) throws SQLException, Exception {
 
         ResultSet resultSet = null;
-        String exPeriod = null;
         DataImportFile dataImport = null;
         List<String> importMessages = new ArrayList<String>();
-
         Set<ReportingUnit> rusToSave = new HashSet<ReportingUnit>();
-
-        resultSet = statement.executeQuery(
-                "SELECT Period,`POb NAME (TAB NAME)`,`Third Party Commissions (\"TPC\")` FROM `tbl_POCI` ORDER BY Period");
-
+        resultSet = statement.executeQuery("SELECT Period, `C Page Number`,`Third Party Commisssions-CC` FROM `tbl_POCI-TPC` ORDER BY Period");
         int count = 0;
         long timeInterval = System.currentTimeMillis();
-
-        String[] monthName = {"JAN", "FEB",
-            "MAR", "APR", "MAY", "JUN", "JUL",
-            "AUG", "SEP", "OCT", "NOV",
-            "DEC"};
-
         dataImport = new DataImportFile();
-
         ut.begin();
 
-        while (resultSet.next()) {
+        try {
+            while (resultSet.next()) {
+                FinancialPeriod period = null;//financialPeriodService.getCurrentFinancialPeriod();
+                String periodDate = resultSet.getString(1);
+                period = financialPeriodService.findByNumericString(periodDate);
 
-            FinancialPeriod period = null;//financialPeriodService.getCurrentFinancialPeriod();
-            String periodDate = resultSet.getString(1);
-            String[] pd = periodDate.split("-");
-            try {
-                // checking valid integer using parseInt() method
-                int year = Integer.parseInt(pd[0]);
-                int month = Integer.parseInt(pd[1]);
-                String yrStr = Integer.toString(year);
-                String finalYear = yrStr.substring(yrStr.length() - 2);
-                exPeriod = monthName[month - 1] + "-" + finalYear;
-                period = financialPeriodService.findById(exPeriod);
-            } catch (NumberFormatException e) {
-                logger.log(Level.INFO, "Error " + e);
-            }
+                if (period != null) {
+                    String contractId = resultSet.getString(2);
+                    if (contractId != null) {
+                        try {
+                            BigDecimal thirdParyComm = resultSet.getBigDecimal(3);
+                            Contract contract = contractService.findContractById(new Long(contractId));
 
-            if (period != null) {
-                String id = resultSet.getString(2);
-                if (id != null) {
-                    String[] sp = id.split("-");
-                    String lastId = sp[sp.length - 1].trim();
-                    try {
-                        BigDecimal thirdParyComm = resultSet.getBigDecimal(3);
-                        // checking valid integer using parseInt() method
-                        Integer.parseInt(lastId);
-                        PerformanceObligation pob = performanceObligationService.findPerformanceObligationById(new Long(lastId));
+                            if (contract != null) {
+                                ReportingUnit reportingUnit = contract.getReportingUnit();
+                                if (reportingUnit == null) {
+                                    //String msg = "No local currency found for RU: " + ru.getCode();
+                                    //importMSG.add(msg);
+                                    logger.log(Level.SEVERE, "RU is null ");
+                                    continue;
+                                }
+                                if (reportingUnit.getLocalCurrency() == null) {
+                                    String msg = "No local currency found for RU: " + reportingUnit.getCode();
+                                    importMessages.add(msg);
+                                    logger.log(Level.INFO, "RU local currency is null for RU: " + reportingUnit.getCode());
+                                    continue;
+                                }
+                                logger.log(Level.FINER, "Populating Contract TPC: " + contract.getId());
+                                calculationService.getCurrencyMetric("THIRD_PARTY_COMMISSION_CTD_LC", contract, period).setValue(thirdParyComm);
+                                rusToSave.add(contract.getReportingUnit());
 
-                        if (pob != null) {
-                            ReportingUnit ru = pob.getContract().getReportingUnit();
-                            if (ru == null) {
-                                //String msg = "No local currency found for RU: " + ru.getCode();
-                                //importMSG.add(msg);
-                                logger.log(Level.INFO, "RU is null ");
-                                continue;
+                            } else {
+                                importMessages.add("Contract not found when processing TPC.  Contract id: " + contractId);
                             }
-                            if (ru.getLocalCurrency() == null) {
-                                String msg = "No local currency found for RU: " + ru.getCode();
-                                importMessages.add(msg);
-                                logger.log(Level.INFO, "RU local currency is null for RU: " + ru.getCode());
-                                continue;
-                            }
-                            if (true) {
-                                logger.log(Level.FINER, "Populating Contract TPC: " + pob.getId());
-                                calculationService.getCurrencyMetric("THIRD_PARTY_COMMISSION_CTD_LC", pob.getContract(), period).setValue(thirdParyComm);
-                                rusToSave.add(pob.getContract().getReportingUnit());
-                            }
-                        } else {
-                            importMessages.add("These POBs not found : " + id);
+                        } catch (NumberFormatException e) {
+                            importMessages.add("This is not a Valid Contract ID : " + contractId);
                         }
-                    } catch (NumberFormatException e) {
-                        importMessages.add("This is not a Valid POB ID : " + lastId);
                     }
+                } else {
+                    ut.rollback();
+                    importMessages.add("Financial Period not available : " + periodDate);
+                    throw new IllegalStateException("Financial Period not available :" + periodDate);
                 }
 
-            } else {
-                ut.rollback();
-                importMessages.add("Financial Period not available : " + exPeriod);
-                throw new IllegalStateException("Financial Period not available :" + exPeriod);
-
+                if ((count % 1000) == 0) {
+                    logger.log(Level.INFO, "Processed " + count + " POCI TPC records");
+                    timeInterval = System.currentTimeMillis();
+                }
+                count++;
             }
-
-            if ((count % 1000) == 0) {
-                logger.log(Level.INFO, "Processed " + count + " POCI TPC records");
-                timeInterval = System.currentTimeMillis();
-
-            }
-            count++;
-
+        } catch (Exception exception) {
+            Logger.getLogger(BatchProcessingService.class.getName()).log(Level.SEVERE, "Error TPC Import: ", exception);
+            ut.rollback();
         }
 
         dataImport.setFilename(fileName + " - tbl_POCI (TPC Data run)");
@@ -387,65 +330,44 @@ public class BatchProcessingService {
         String exPeriod = null;
         DataImportFile dataImport = null;
         List<String> importMessages = new ArrayList<String>();
-
-        resultSet = statement.executeQuery("SELECT Period,`C Page Number`,`Contract Billings`,`Local Billings`, `Third Party Commissions (\"TPC\")` FROM `tbl_POCI-Billings` ORDER BY Period");
-        String[] monthName = {"JAN", "FEB",
-            "MAR", "APR", "MAY", "JUN", "JUL",
-            "AUG", "SEP", "OCT", "NOV",
-            "DEC"};
-
+        resultSet = statement.executeQuery("SELECT Period, `C Page Number`, `Contract Billings`, `Local Billings` FROM `tbl_POCI-Billings` ORDER BY Period");
         dataImport = new DataImportFile();
 
         ut.begin();
 
-        while (resultSet.next()) {
+        try {
+            while (resultSet.next()) {
+                FinancialPeriod period = financialPeriodService.findByNumericString(resultSet.getString(1));
 
-            FinancialPeriod period = null;//financialPeriodService.getCurrentFinancialPeriod();
-            int year = 0;
-            int month = 0;
-            String periodDate = resultSet.getString(1);
-            String[] pd = periodDate.split("-");
-            try {
-                // checking valid integer using parseInt() method
-                year = Integer.parseInt(pd[0]);
-                month = Integer.parseInt(pd[1]);
-                String yrStr = Integer.toString(year);
-                String finalYear = yrStr.substring(yrStr.length() - 2);
-                exPeriod = monthName[month - 1] + "-" + finalYear;
-                period = financialPeriodService.findById(exPeriod);
-            } catch (NumberFormatException e) {
-                logger.log(Level.INFO, "Error " + e);
-            }
-
-            if (period != null) {
-                int id = resultSet.getInt(2);
-                if (id != 0) {
-                    BigDecimal cc = resultSet.getBigDecimal(3);
-                    BigDecimal lc = resultSet.getBigDecimal(4);
-                    Contract contract = contractService.findContractById(new Long(id));
-                    if (contract != null) {
-                        BillingEvent bEvent = new BillingEvent();
-                        bEvent.setAmountContractCurrency(cc);
-                        bEvent.setAmountLocalCurrency(lc);
-                        bEvent.setInvoiceNumber("Migrated");
-                        bEvent.setContract(contract);
-                        bEvent.setBillingDate(LocalDate.of(year, month, 1));
-                        contract.getBillingEvents().add(bEvent);
-                        contractService.update(contract);
-                    } else {
-                        importMessages.add("Contract not found when processing billing: " + id);
-                        logger.log(Level.FINER, "These POBs not found : " + id);
+                if (period != null) {
+                    int id = resultSet.getInt(2);
+                    if (id != 0) {
+                        BigDecimal cc = resultSet.getBigDecimal(3);
+                        BigDecimal lc = resultSet.getBigDecimal(4);
+                        Contract contract = contractService.findContractById(new Long(id));
+                        if (contract != null) {
+                            BillingEvent bEvent = new BillingEvent();
+                            bEvent.setAmountContractCurrency(cc);
+                            bEvent.setAmountLocalCurrency(lc);
+                            bEvent.setInvoiceNumber("Migrated");
+                            bEvent.setContract(contract);
+                            bEvent.setBillingDate(LocalDate.of(period.getPeriodYear(), period.getPeriodMonth(), 1));
+                            contract.getBillingEvents().add(bEvent);
+                            contractService.update(contract);
+                        } else {
+                            importMessages.add("Contract not found when processing billing: " + id);
+                            logger.log(Level.FINER, "These POBs not found : " + id);
+                        }
                     }
-
+                } else {
+                    ut.rollback();
+                    importMessages.add("Financial Period not available : " + exPeriod);
+                    throw new IllegalStateException("Financial Period not available :" + exPeriod);
                 }
-
-            } else {
-                ut.rollback();
-                importMessages.add("Financial Period not available : " + exPeriod);
-                throw new IllegalStateException("Financial Period not available :" + exPeriod);
-
             }
-
+        } catch (Exception exception) {
+            Logger.getLogger(BatchProcessingService.class.getName()).log(Level.SEVERE, "Error billing: ", exception);
+            ut.rollback();
         }
 
         dataImport.setFilename(fileName + " - tbl_POCI-Billings");

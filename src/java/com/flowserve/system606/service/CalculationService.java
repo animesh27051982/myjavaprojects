@@ -136,7 +136,7 @@ public class CalculationService {
 
             for (Measurable childMeasurable : measurable.getChildMeasurables()) {
                 BigDecimal childMetricValue = getAccumulatedCurrencyMetric(metricCode, childMeasurable, period).getValue();
-                Logger.getLogger(CalculationService.class.getName()).log(Level.INFO, "Adding: " + childMetricValue.toPlainString());
+                //Logger.getLogger(CalculationService.class.getName()).log(Level.INFO, "Adding: " + childMetricValue.toPlainString());
                 metric.setValue(metric.getValue().add(childMetricValue));
             }
 
@@ -155,7 +155,6 @@ public class CalculationService {
                 return currencyMetric;
             }
         }
-        Logger.getLogger(CalculationService.class.getName()).log(Level.FINER, "Metric not directly available at level. " + measurable.getClass() + " Returnig accumulated version: " + metricCode);
 
         return getAccumulatedCurrencyMetric(metricCode, measurable, period);
     }
@@ -324,33 +323,111 @@ public class CalculationService {
         return em.merge(bu);
     }
 
+    /**
+     * For metrics eligible for automatic system currency conversion, we can just convert the base 'value' and convert to the other currencies. If not then we
+     * have to accumulate each currency type separately. Splitting this into two methods as the non-convertible is 4x slower.
+     *
+     * @param metricCode
+     * @param measurable
+     * @param period
+     * @return
+     * @throws Exception
+     */
     private CurrencyMetric getAccumulatedCurrencyMetric(String metricCode, Measurable measurable, FinancialPeriod period) throws Exception {
-        Logger.getLogger(CalculationService.class.getName()).log(Level.FINER, "getAccumulatedCurrencyMetric() " + metricCode + " measurable: " + measurable.getClass().getName());
-        BigDecimal sum = new BigDecimal("0.0");
+        MetricType metricType = metricService.getMetricTypeByCode(metricCode);
+        if (metricType.isConvertible()) {
+            return getAccumulatedConvertibleCurrencyMetric(metricType, measurable, period);
+        } else {
+            return getAccumulatedNonConvertibleCurrencyMetric(metricType, measurable, period);
+        }
+    }
+
+    private CurrencyMetric getAccumulatedNonConvertibleCurrencyMetric(MetricType metricType, Measurable measurable, FinancialPeriod period) throws Exception {
+        BigDecimal valueSum = BigDecimal.ZERO;
+        BigDecimal ccValueSum = BigDecimal.ZERO;
+        BigDecimal lcValueSum = BigDecimal.ZERO;
+        BigDecimal rcValueSum = BigDecimal.ZERO;
         CurrencyMetric metric = new CurrencyMetric();
         metric.setFinancialPeriod(period);
-        metric.setMetricType(metricService.getMetricTypeByCode(metricCode));
-        metric.setValue(sum);
+        metric.setMetricType(metricType);
+        metric.setValue(valueSum);
+        metric.setCcValue(ccValueSum);
+        metric.setLcValue(lcValueSum);
+        metric.setRcValue(rcValueSum);
         if (isEmptyTransientMesaurable(measurable)) {
             return metric;
         }
         if (isRootMeasurable(measurable)) {
-            CurrencyMetric rootCurrencyMetric = getCurrencyMetric(metricCode, measurable, period);
+            CurrencyMetric rootCurrencyMetric = getCurrencyMetric(metricType.getCode(), measurable, period);
             if (rootCurrencyMetric != null) {
                 BigDecimal value = rootCurrencyMetric.getValue();
                 if (value != null) {
-                    sum = sum.add(value);
+                    valueSum = valueSum.add(value);
+                }
+                BigDecimal ccValue = rootCurrencyMetric.getCcValue();
+                if (ccValue != null) {
+                    ccValueSum = ccValueSum.add(ccValue);
+                }
+                BigDecimal lcValue = rootCurrencyMetric.getLcValue();
+                if (lcValue != null) {
+                    lcValueSum = lcValueSum.add(lcValue);
+                }
+                BigDecimal rcValue = rootCurrencyMetric.getRcValue();
+                if (rcValue != null) {
+                    rcValueSum = rcValueSum.add(rcValue);
                 }
             }
-            metric.setValue(sum);
+            metric.setValue(valueSum);
+            metric.setCcValue(ccValueSum);
+            metric.setLcValue(lcValueSum);
+            metric.setRcValue(rcValueSum);
+
             return metric;
         }
 
         for (Measurable childMeasurable : measurable.getChildMeasurables()) {
-            sum = sum.add(getAccumulatedCurrencyMetric(metricCode, childMeasurable, period).getValue());
+            valueSum = valueSum.add(getAccumulatedNonConvertibleCurrencyMetric(metricType, childMeasurable, period).getValue());
+            ccValueSum = ccValueSum.add(getAccumulatedNonConvertibleCurrencyMetric(metricType, childMeasurable, period).getCcValue());
+            lcValueSum = lcValueSum.add(getAccumulatedNonConvertibleCurrencyMetric(metricType, childMeasurable, period).getLcValue());
+            rcValueSum = rcValueSum.add(getAccumulatedNonConvertibleCurrencyMetric(metricType, childMeasurable, period).getRcValue());
         }
 
-        metric.setValue(sum);
+        metric.setValue(valueSum);
+        metric.setCcValue(ccValueSum);
+        metric.setLcValue(lcValueSum);
+        metric.setRcValue(rcValueSum);
+        //currencyService.convertCurrency(metric, measurable, period);
+
+        return metric;
+    }
+
+    private CurrencyMetric getAccumulatedConvertibleCurrencyMetric(MetricType metricType, Measurable measurable, FinancialPeriod period) throws Exception {
+        BigDecimal valueSum = BigDecimal.ZERO;
+        CurrencyMetric metric = new CurrencyMetric();
+        metric.setFinancialPeriod(period);
+        metric.setMetricType(metricType);
+        metric.setValue(valueSum);
+        if (isEmptyTransientMesaurable(measurable)) {
+            return metric;
+        }
+        if (isRootMeasurable(measurable)) {
+            CurrencyMetric rootCurrencyMetric = getCurrencyMetric(metricType.getCode(), measurable, period);
+            if (rootCurrencyMetric != null) {
+                BigDecimal value = rootCurrencyMetric.getValue();
+                if (value != null) {
+                    valueSum = valueSum.add(value);
+                }
+            }
+            metric.setValue(valueSum);
+
+            return metric;
+        }
+
+        for (Measurable childMeasurable : measurable.getChildMeasurables()) {
+            valueSum = valueSum.add(getAccumulatedConvertibleCurrencyMetric(metricType, childMeasurable, period).getValue());
+        }
+
+        metric.setValue(valueSum);
         currencyService.convertCurrency(metric, measurable, period);
 
         return metric;

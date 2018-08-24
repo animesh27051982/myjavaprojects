@@ -80,7 +80,7 @@ public class CurrencyService {
         if (!(metric instanceof CurrencyMetric)) {
             return;
         }
-        if (!metric.getMetricType().isConvertable()) {
+        if (!metric.getMetricType().isConvertible()) {
             return;
         }
 

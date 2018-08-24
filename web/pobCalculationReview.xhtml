@@ -162,7 +162,10 @@
                                         </p:column>
 
                                         <p:column style="white-space:pre-line;">
-                                            <h:outputText value="#{viewSupport.getExchangeRate(pob.contract)}" rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}" style="#{viewSupport.getTextStyle(pob)}">
+                                            <h:outputText value="#{viewSupport.getExchangeRate(pob.contract)}" title="#{viewSupport.getExchangeRate(pob.contract)}"
+                                                          rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}"
+                                                          style="#{viewSupport.getTextStyle(pob)}">
+                                                <f:convertNumber maxFractionDigits="4" />
                                             </h:outputText>
                                         </p:column>
 

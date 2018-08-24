@@ -45,6 +45,7 @@ public class FinancialPeriodService {
     @PersistenceContext(unitName = "FlowServePU")
     private EntityManager em;
     private DateTimeFormatter periodNameFormatter = DateTimeFormatter.ofPattern("MMM-yy");
+    private String[] monthNames = {"JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"};
 
     @PostConstruct
     public void init() {
@@ -66,6 +67,16 @@ public class FinancialPeriodService {
     public List<FinancialPeriod> findAllPeriods() {
         Query query = em.createQuery("SELECT p FROM FinancialPeriod p ORDER BY p.sequence DESC");
         return (List<FinancialPeriod>) query.getResultList();
+    }
+
+    public FinancialPeriod findByNumericString(String numericString) {
+        String[] tokens = numericString.split("-");
+        String year = tokens[0];
+        int month = Integer.parseInt(tokens[1]);
+        String finalYear = year.substring(year.length() - 2);
+        String alphaNumbericPeriod = monthNames[month - 1] + "-" + finalYear;
+
+        return findById(alphaNumbericPeriod);
     }
 
     public void initFinancialPeriods() throws Exception {
