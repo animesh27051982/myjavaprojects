@@ -46,7 +46,7 @@ public class AppInitializeService {
             financialPeriodService.initFinancialPeriods();
             // TODO - KJG - The legacy file does not contain Oct 17 data but prior period lookups try to find it, so just use dummy rates for now.
             currencyService.initCurrencyConverter(financialPeriodService.findById("SEP-17"));
-            currencyService.initCurrencyConverter(financialPeriodService.findById("OCT-17"));
+            //currencyService.initCurrencyConverter(financialPeriodService.findById("OCT-17"));
             //currencyService.initCurrencyConverter(financialPeriodService.findById("MAY-18"));
             adminService.initSubledgerAccount();
             adminService.initBilings();
