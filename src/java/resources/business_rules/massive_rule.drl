@@ -432,19 +432,25 @@ rule "Contract TPC & Other Inputs Rolling Next Month"
         thirdPartyComCTDLC : CurrencyMetric(metricType.code == "THIRD_PARTY_COMMISSION_CTD_LC", lcValue == null)
         thirdPartyComCTDLCPriorPeriod : CurrencyMetricPriorPeriod(metricType.code == "THIRD_PARTY_COMMISSION_CTD_LC", lcValue != null)
 
-        pob : PerformanceObligation()
-        salesDestination : StringMetric(metricType.code == "SALES_DESTINATION")
-        oeamDisagg : StringMetric(metricType.code == "OEAM_DISAGG")
-        slStartDate : DateMetric(metricType.code == "SL_START_DATE")
-        slEndDate : DateMetric(metricType.code == "SL_END_DATE")
-
-        salesDestinationPriorPeriod : StringMetricPriorPeriod(metricType.code == "SALES_DESTINATION")
-        oeamDisaggPriorPeriod : StringMetricPriorPeriod(metricType.code == "OEAM_DISAGG")
-        slStartDatePriorPeriod : DateMetricPriorPeriod(metricType.code == "SL_START_DATE")
-        slEndDatePriorPeriod : DateMetricPriorPeriod(metricType.code == "SL_END_DATE")
     then
         logger.info("fired" +thirdPartyComCTDLCPriorPeriod.lcValue);
         modify (thirdPartyComCTDLC) { lcValue = (thirdPartyComCTDLCPriorPeriod.lcValue)};
+
+end
+
+rule "POB TPC & Other Inputs Rolling Next Month"
+    when
+        pob : PerformanceObligation()
+        salesDestination : StringMetric(metricType.code == "SALES_DESTINATION", value == null)
+        oeamDisagg : StringMetric(metricType.code == "OEAM_DISAGG", value == null)
+        slStartDate : DateMetric(metricType.code == "SL_START_DATE", value == null)
+        slEndDate : DateMetric(metricType.code == "SL_END_DATE", value == null)
+        salesDestinationPriorPeriod : StringMetricPriorPeriod(metricType.code == "SALES_DESTINATION" , value != null)
+        oeamDisaggPriorPeriod : StringMetricPriorPeriod(metricType.code == "OEAM_DISAGG", value != null)
+        slStartDatePriorPeriod : DateMetricPriorPeriod(metricType.code == "SL_START_DATE", value != null)
+        slEndDatePriorPeriod : DateMetricPriorPeriod(metricType.code == "SL_END_DATE", value != null)
+    then
+        logger.info("fired" +salesDestinationPriorPeriod.value);
         modify (salesDestination) { value = (salesDestinationPriorPeriod.value)};
         modify (oeamDisagg) { value = (oeamDisaggPriorPeriod.value)};
         modify (slStartDate) { value = (slStartDatePriorPeriod.value)};
