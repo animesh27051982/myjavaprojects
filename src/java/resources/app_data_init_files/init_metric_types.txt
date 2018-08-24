@@ -16,6 +16,9 @@ INPUT|SALES_DESTINATION|POB||StringMetric||NonConvertable|Sales Destination|Sale
 INPUT|OEAM_DISAGG|POB||StringMetric||NonConvertable|OE/AM Disaggregation|OE/AM Disaggregation|POC POB Metrics||Group1|1||
 INPUT|SL_START_DATE|POB||DateMetric||NonConvertable|Straight-Line POb Revenue Start Date|Straight-Line POb Revenue Start Date|POC POB Metrics||Group1|1||
 INPUT|SL_END_DATE|POB||DateMetric||NonConvertable|Straight-Line POb Revenue End Date|Straight-Line POb Revenue End Date|POC POB Metrics||Group1|1||
+INPUT|THIRD_PARTY_COMMISSION_TO_RECOGNIZE_PERIOD_LC|Contract||CurrencyMetric|LC|Convertable|Third Party Commissions To Recognize Current Period||POC Contract Metrics||Group1|1||
+INPUT|PROJECT_GAIN_LOSS_INCL_TPC_BACKLOG_LC|Contract||CurrencyMetric|LC|Convertable|Projected Gain (Loss) in Backlog incl TPC||POC Contract Metrics||Group1|1||
+INPUT|THIRD_PARTY_COMMISSION_TO_ACCEL_PERIOD_LC|Contract||CurrencyMetric|LC|Convertable|Accelerated Third Party Commissions||POC Contract Metrics||Group1|1||
 OUTPUT|ESTIMATED_GROSS_PROFIT_LC|POB||CurrencyMetric|LC|Convertable|Estimated Gross Profit|Estimated Gross Profit|POC POB Outputs|H|Group1|1||
 OUTPUT|CONTRACT_GROSS_PROFIT_LC|Contract||CurrencyMetric|LC|Convertable|Gross Profit|Gross Profit|POC POB Outputs|H|Group1|1||
 OUTPUT|ESTIMATED_GROSS_MARGIN|ALL||DecimalMetric||NonConvertable|Estimated Gross Margin|Estimated Gross Margin|POC POB Outputs|H|Group1|1||
