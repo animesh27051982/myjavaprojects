@@ -320,6 +320,10 @@ public class AdminService {
         em.persist(importFile);
     }
 
+    public void jpaEvictAllCache() {
+        em.getEntityManagerFactory().getCache().evictAll();
+    }
+
     public void persist(ReportingUnit ru) throws Exception {
         em.persist(ru);
     }

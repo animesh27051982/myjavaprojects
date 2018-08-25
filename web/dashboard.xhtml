@@ -111,8 +111,7 @@
                                     completeMethod="#{viewSupport.completeReportingUnit}"
                                     itemLabel="#{ru.name}"
                                     itemValue="#{ru}"
-                                    converter="reportingUnitConverter"
-                                    >
+                                    converter="reportingUnitConverter">
                                     <p:ajax event="itemSelect" listener="#{dashboard.onReportingUnitSelect}" update=":form" />
                                 </p:autoComplete>
                                 <h:outputLabel style="margin-left: 20px; vertical-align: sub; white-space: nowrap;" value="Switch Period: "/>
@@ -130,19 +129,12 @@
                                 <p:column style="width: 350px;" headerText="Reporting Unit" sortBy="#{ru.name}">
                                     <h:outputText value="#{ru.name}" />
                                 </p:column>
-                                <p:column headerText="Status">
-                                   <!-- <h:outputText value="#{ru.getWorkflowStatus(webSession.currentPeriod).description}" />-->
-                                </p:column>
                                 <p:column headerText="Business Unit">
                                     <h:outputText value="#{ru.businessUnit.name}" />
                                 </p:column>
-                                <!--
-                                <p:column style="white-space:pre-line;" headerText="Estimate at Completion">
-                                    <h:outputText id="eac" value="#{viewSupport.getCurrencyMetric('ESTIMATED_COST_AT_COMPLETION_LC', ru).getValue()}">
-                                        <f:convertNumber type="currency" />
-                                    </h:outputText>
+                                <p:column headerText="Contracts">
+                                    <h:outputText value="#{dashboard.contractCount}" />
                                 </p:column>
-                                -->
                                 <p:column headerText="Total POB Count">
                                     <h:outputText value="#{ru.pobCount}" />
                                 </p:column>

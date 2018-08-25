@@ -124,6 +124,7 @@ public class BatchProcessingService {
             processBillingInfoFromPOCI(connection, statement, fileName);
             logger.info("Processing POCI Third Party Commission data.");
             processPOCIThirdPartyCommissions(connection, statement, fileName);
+            adminService.jpaEvictAllCache();
         } catch (Exception e) {
             logger.log(Level.INFO, "Error processing POCI/O data: ", e);
         } finally {
@@ -505,6 +506,8 @@ public class BatchProcessingService {
             ut.rollback();
         }
 
+        adminService.jpaEvictAllCache();
+
         logger.log(Level.INFO, "POB imoprt complete.");
     }
 
@@ -513,8 +516,6 @@ public class BatchProcessingService {
 
         String ru = null;
         long contractId = 0;
-        String contractName = null;
-        String salesOrderNumber = null;
         String contractCurrencyCode = null;
         DataImportFile dataImport = null;
         List<String> importMessages = new ArrayList<String>();
@@ -522,7 +523,7 @@ public class BatchProcessingService {
         int count = 0;
         String line = null;
 
-        resultSet = statement.executeQuery("SELECT ID, Name, `BPC Reporting Unit`, `Sales Order #`, `Contract Currency`, `Contract Description` FROM tbl_Contracts");
+        resultSet = statement.executeQuery("SELECT ID, Name, `BPC Reporting Unit`, `Sales Order #`, `Contract Currency`, `Customer Name`, `Contract Description` FROM tbl_Contracts");
         ut.begin();
         while (resultSet.next()) {
 
@@ -530,23 +531,22 @@ public class BatchProcessingService {
             if (contractService.findContractById(contractId) != null) {
                 continue;  // we've already processed this contract.  dont' process the repeated lines.
             }
-            contractName = resultSet.getString(2);
-            String ruStr = StringUtils.substringBefore(resultSet.getString(3).trim(), "-");
-            ru = ruStr.replace("RU", "").trim();
             //Logger.getLogger(AppInitializeService.class.getName()).log(Level.INFO, "RU:\t" + ru);
-            salesOrderNumber = resultSet.getString(4);
-            contractCurrencyCode = resultSet.getString(5);
 
             //same code logic when intialContractUpload
             Contract contract = new Contract();
             contract.setActive(true);
             contract.setId(contractId);
-            if (contractName.startsWith("WAIVER")) {
+            contract.setSalesOrderNumber(resultSet.getString(4));
+            contractCurrencyCode = resultSet.getString(5);
+            if (resultSet.getString(2).startsWith("WAIVER")) {
                 importMessages.add("Skipping WAIVER contract.  ID: " + contractId);
                 continue;
             }
-            contract.setName(contractName);
-            contract.setSalesOrderNumber(salesOrderNumber);
+            contract.setName("C-" + resultSet.getString(1) + " " + (resultSet.getString(6) == null ? "" : resultSet.getString(6)));
+            contract.setDescription(resultSet.getString(2));
+            String ruStr = StringUtils.substringBefore(resultSet.getString(3).trim(), "-");
+            ru = ruStr.replace("RU", "").trim();
             if (contractCurrencyCode != null && !contractCurrencyCode.isEmpty()) {
                 contract.setContractCurrency(Currency.getInstance(contractCurrencyCode));
             } else {
@@ -577,7 +577,7 @@ public class BatchProcessingService {
 
             if ((count % 1000) == 0) {
                 Logger.getLogger(AppInitializeService.class.getName()).log(Level.INFO, "Contract import count: " + count);
-                Logger.getLogger(BatchProcessingService.class.getName()).log(Level.INFO, "Contract description: " + resultSet.getString(6));
+                Logger.getLogger(BatchProcessingService.class.getName()).log(Level.INFO, "Contract description: " + resultSet.getString(7));
             }
         }
         dataImport.setFilename(fileName + " - tbl_Contracts");
@@ -587,9 +587,9 @@ public class BatchProcessingService {
         dataImport.setType("Contract and Pobs");
         adminService.persist(dataImport);
         ut.commit();
-
         resultSet.close();
+
+        adminService.jpaEvictAllCache();
         logger.log(Level.INFO, "Contract import complete.");
     }
-
 }

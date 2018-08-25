@@ -108,8 +108,8 @@ public class Dashboard implements Serializable {
     }
 
     public void onReportingUnitSelect(SelectEvent event) {
+        Logger.getLogger(Dashboard.class.getName()).log(Level.INFO, "RU Select Dashboard");
         webSession.setFilterText(null);
-        //webSession.setAdminReportingUnit((ReportingUnit) event.getObject());
         init();
     }
 

@@ -72,35 +72,44 @@
 
                         </p:outputPanel>
                         <!--</p:panelGrid>-->
+
                         <h4 style="margin: 1px;"><strong>#{webSession.currentPeriod.id} Performance Obligation Inputs - #{inputOnlineEntry.reportingUnit.name} - #{inputOnlineEntry.reportingUnit.getWorkflowStatus(webSession.currentPeriod).description}</strong></h4>
-                        <p:outputPanel style="margin-top: 19px;">
-                            <h:outputLabel style="text-align: right; vertical-align: middle; white-space: nowrap;" value="Switch RU: "/>
+
+                        <p:outputPanel style="margin-top: 15px; width: 50%;">
+                            <h:outputLabel style="text-align: left; vertical-align: middle; white-space: nowrap; margin-right: 5px;" value="Switch RU: "/>
                             <p:autoComplete
                                 id="ru"
                                 var="ru"
                                 maxResults="10"
                                 minQueryLength="2"
                                 size="50"
-                                placeholder="start typing..."
                                 required="#{false}"
                                 forceSelection="#{true}"
                                 onclick="this.value = ''"
-                                style="width: 300px; text-align: right; vertical-align: middle;margin-right: 20px;"
+                                placeholder="start typing.."
                                 value="#{webSession.currentReportingUnit}"
                                 completeMethod="#{viewSupport.completeReportingUnit}"
                                 itemLabel="#{ru.name}"
-                                itemValue="#{ru.id}"
+                                itemValue="#{ru}"
                                 converter="reportingUnitConverter">
                                 <p:ajax event="itemSelect" listener="#{inputOnlineEntry.onReportingUnitSelect}" update=":form" />
                             </p:autoComplete>
-                            <h:outputLabel style="text-align: right; vertical-align: middle; white-space: nowrap;" value="Switch Period: "/>
+                            <h:outputLabel style="margin-left: 5px; text-align: right; vertical-align: middle; white-space: nowrap;" value="Switch Period: "/>
                             <p:selectOneMenu style="text-align: right; vertical-align: middle; white-space: nowrap;" id="period" value="#{webSession.currentPeriod}" converter="periodConverter">
                                 <p:ajax event="change" update=":form" process="@this" listener="#{inputOnlineEntry.switchPeriod(webSession.currentPeriod)}"/>
                                 <f:selectItems var="period" value="#{viewSupport.allPeriods}" itemLabel="#{period.id}"/>
                             </p:selectOneMenu>
+                            <p:ajaxStatus style="display: inline-block;">
+                                <f:facet name="start">
+                                    <h:graphicImage value="images/loader.gif" style="width: 20px; vertical-align: middle;"/>
+                                </f:facet>
+                                <f:facet name="complete">
+                                    <h:outputText value=""/>
+                                </f:facet>
+                            </p:ajaxStatus>
                         </p:outputPanel>
 
-                        <p:outputPanel style="margin-top: 30px;">
+                        <p:outputPanel style="margin-top: 15px;">
                             <h:outputText value="Search within list:" />
                             <p:inputText id="globalFilterText" value="#{webSession.filterText}" style="width:150px; margin-left: 10px;">
                             </p:inputText>

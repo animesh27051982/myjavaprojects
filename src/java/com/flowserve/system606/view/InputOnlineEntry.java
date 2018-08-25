@@ -121,15 +121,11 @@ public class InputOnlineEntry implements Serializable {
     }
 
     public void onReportingUnitSelect(SelectEvent event) {
+        Logger.getLogger(InputOnlineEntry.class.getName()).log(Level.INFO, "RU Selected");
         webSession.setFilterText(null);
-        //webSession.setAdminReportingUnit(((ReportingUnit) event.getObject()));
         init();
     }
 
-//    public void initContracts(List<ReportingUnit> reportingUnits) {
-//        contracts = new ArrayList<Contract>();
-//        reportingUnits.forEach(reportingUnit -> contracts.addAll(reportingUnit.getContracts()));
-//    }
     public void initContracts(ReportingUnit reportingUnit) {
         contracts = reportingUnit.getContracts();
     }

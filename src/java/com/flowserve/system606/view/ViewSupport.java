@@ -119,7 +119,7 @@ public class ViewSupport implements Serializable {
         } catch (Exception e) {
             FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", " RU search error  " + e.getMessage());
             FacesContext.getCurrentInstance().addMessage(null, msg);
-            //logger.log(Level.SEVERE, "Error ru search.", e);
+            logger.log(Level.SEVERE, "Error ru search.", e);
         }
         return rUnit;
     }
