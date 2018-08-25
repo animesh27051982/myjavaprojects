@@ -1,0 +1,317 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                template="/WEB-INF/template.xhtml">
+
+    <ui:define name="head">
+        <style type="text/css">
+
+            body .ui-widget .ui-widget
+            {
+                width: 180px;
+                min-width: 180px;
+            }
+
+        </style>
+    </ui:define>
+
+    <ui:define name="title">Contract Edit</ui:define>
+
+    <ui:define name="viewname">Contract Edit</ui:define>
+
+    <ui:define name="content">
+        <div style="min-height: calc(100vh - 235px);">
+            <h:form>
+                <div class="ui-fluid">
+                    <div class="ui-g">
+                        <div class="ui-g-12">
+                            <div class="card card-w-title">
+
+                                <p:graphicImage url="../images/Flowserve.svg.png" height="80" width="200" stream="false" style="margin-left:50px"/>
+                                <h4 style="float:right;margin-right: 160px">New Contract Entry</h4>
+                                <p:panelGrid columns="4" columnClasses="ui-grid-col-2,ui-grid-col-4,ui-grid-col-2,ui-grid-col-4" layout="grid" styleClass="ui-panelgrid-blank form-group" style="border:0px none; background-color:transparent;margin-left: 50px">
+                                    <p:outputLabel  value="General Information" style="font-weight:bold"/>
+                                    <p:outputLabel  value=""/>
+                                    <p:outputLabel  value=""/>
+                                    <p:outputLabel  value=""/>
+
+                                    <p:outputLabel  value="Prepared By:"/>
+                                    <p:selectOneMenu id="p1" value="" style="width:180px">
+                                        <f:selectItem itemLabel="Select Prepared By" itemValue="" noSelectionOption="true" />
+                                        <f:selectItems value="" />
+                                    </p:selectOneMenu>
+
+                                    <p:outputLabel  value="Reporting Unit:"/>
+                                    <p:selectOneMenu id="p2" value="" style="width:180px;">
+                                        <f:selectItem itemLabel="Select Reporting Unit" itemValue="" noSelectionOption="true" />
+                                        <f:selectItems value="" />
+                                    </p:selectOneMenu>
+
+
+                                    <p:outputLabel  value="Entry Date:"/>
+                                    <p:calendar id="popup" value=""  />
+                                    <p:outputLabel  value="Platform:"/>
+                                    <p:selectOneMenu id="p3" value="" style="width:180px;">
+                                        <f:selectItem itemLabel="Select Platform" itemValue="" noSelectionOption="true" />
+                                        <f:selectItems value="" />
+                                    </p:selectOneMenu>
+
+                                    <p:outputLabel  value="Contract Information" style="font-weight:bold"/>
+                                    <p:outputLabel  value=""/>
+                                    <p:outputLabel  value=""/>
+                                    <p:outputLabel  value=""/>
+
+                                    <p:outputLabel  value="Customer Name:"/>
+                                    <p:selectOneMenu  value="" style="width:180px">
+                                        <f:selectItem itemLabel="Select Customer Name" itemValue="" noSelectionOption="true" />
+                                        <f:selectItems value="" />
+                                    </p:selectOneMenu>
+                                    <p:outputLabel  value="Customer PO#"/>
+                                    <p:inputText  style="width: 180px"/>
+
+                                    <p:outputLabel  value="Booking Date:"/>
+                                    <p:calendar  value=""  />
+                                    <p:outputLabel  value="FLS Sales Order#"/>
+                                    <p:inputText  style="width: 180px"/>
+
+                                    <p:outputLabel  value="Contract Currency:"/>
+                                    <p:selectOneMenu  value="" style="width:180px">
+                                        <f:selectItem itemLabel="Select Contract Currency" itemValue="" noSelectionOption="true" />
+                                        <f:selectItems value="" />
+                                    </p:selectOneMenu>
+                                    <p:outputLabel  value="Contract Exchange Rate:"/>
+                                    <p:selectOneMenu  value="" style="width:180px">
+                                        <f:selectItem itemLabel="Select Exchange Rate " itemValue="" noSelectionOption="true" />
+                                        <f:selectItems value="" />
+                                    </p:selectOneMenu>
+
+                                    <p:outputLabel  value="Stated Contract Price:"/>
+                                    <p:inputNumber style="width: 180px" />
+                                    <p:outputLabel  value="Stated Contract Price(USD):"/>
+                                    <p:inputNumber style="width: 180px" />
+
+
+
+                                </p:panelGrid>
+                                <p:panelGrid columns="2"  layout="grid" styleClass="ui-panelgrid-blank form-group" style="border:0px none; background-color:transparent;margin-left: 50px">
+                                    <p:outputLabel  value="Terms&amp;Conditions Governing Contract:" />
+                                    <p:inputText   style="width:350px"/>
+
+
+                                    <p:outputLabel  value="Identify the Contract" style="font-weight:bold"/>
+                                    <p:outputLabel  value=""/>
+
+
+
+                                    <p:outputLabel  value="is the contract approved and commited to by both parties?"  style="width:50%"/>
+                                    <p:selectOneMenu  value="" style="width:350px">
+                                        <f:selectItem itemLabel="No" itemValue="" noSelectionOption="true" />
+                                        <f:selectItems value="" />
+                                    </p:selectOneMenu>
+
+                                    <p:outputLabel  value="Date FLS sent Acceptance" />
+                                    <p:calendar  value=""   inputStyle="width:350px" />
+
+
+
+                                    <p:outputLabel  value="Form of Contract" />
+                                    <p:selectOneMenu  value="" style="width:350px">
+                                        <f:selectItem itemLabel="PAAF Letters of Intent" itemValue="" noSelectionOption="true" />
+                                        <f:selectItems value="" />
+                                    </p:selectOneMenu>
+                                </p:panelGrid>
+                                <p:panelGrid columns="1"  layout="grid" styleClass="ui-panelgrid-blank form-group" style="border:0px none; background-color:transparent;margin-left: 50px">
+                                    <p:outputLabel  value="Descrption"/>
+                                    <p:inputTextarea style="width: 87%" />
+                                </p:panelGrid>
+                                <hr></hr>
+
+                                <p:panelGrid columns="4"  layout="grid" styleClass="ui-panelgrid-blank form-group" style="border:0px none; background-color:transparent;margin-left: 50px">
+                                    <p:outputLabel  value="Are the products and services identified in the contract? "/>
+                                    <p:selectOneMenu  value="" >
+                                        <f:selectItem itemLabel="No" itemValue="" noSelectionOption="true" />
+                                        <f:selectItems value="" />
+                                    </p:selectOneMenu>
+                                    <p:outputLabel  value="Yes Response should open frm_POb"/>
+                                    <p:commandButton value="POb"></p:commandButton>
+                                </p:panelGrid>
+                                <hr></hr>
+                                <p:panelGrid columns="4"  layout="grid" styleClass="ui-panelgrid-blank form-group" style="border:0px none; background-color:transparent;margin-left: 50px">
+
+                                    <p:outputLabel  value="Agent Review" />
+                                    <p:outputLabel  value="" />
+                                    <p:outputLabel  value="" />
+                                    <p:outputLabel  value="" />
+
+
+                                    <p:outputLabel  value="Is a third party involved in providing the POb? "/>
+                                    <p:selectOneMenu  value="" >
+                                        <f:selectItem itemLabel="No" itemValue="" noSelectionOption="true" />
+                                        <f:selectItems value="" />
+                                    </p:selectOneMenu>
+                                    <p:outputLabel  value="Yes Response should open frm_Agent"/>
+                                    <p:commandButton value="Agent"></p:commandButton>
+
+                                    <p:outputLabel  value="Warranty/Options/Financing Component"/>
+                                    <p:commandButton value="Options"></p:commandButton>
+                                    <p:outputLabel  value=""/>
+                                    <p:outputLabel  value=""/>
+
+
+                                </p:panelGrid>
+
+                                <p:panelGrid columns="3"  layout="grid" styleClass="ui-panelgrid-blank form-group" style="border:0px none; background-color:transparent;margin-left: 50px">
+
+                                    <p:outputLabel  value="If Stated Contract Price (USD) >$1m, frm_Warranty, frm_Financing, and frm_Options should open when closing frm_Agent or Third Party response is 'No'"/>
+                                    <p:commandButton value="Warranty"/>
+                                    <p:commandButton value="Financing"/>
+
+                                </p:panelGrid>
+                                <hr></hr>
+
+                                <p:panelGrid columns="2"  layout="grid" styleClass="ui-panelgrid-blank form-group" style="border:0px none; background-color:transparent;margin-left: 50px">
+                                    <p:outputLabel  value="Stand-alone Selling Price ('SSP')"/>
+                                    <p:outputLabel  value=""/>
+
+                                    <p:outputLabel  value="Is the contractually stated price of one or more of the POb's in the contract significantly different than the SSP?"/>
+                                    <p:selectOneMenu  value="" >
+                                        <f:selectItem itemLabel="No" itemValue="" noSelectionOption="true" />
+                                        <f:selectItems value="" />
+                                    </p:selectOneMenu>
+
+                                    <p:outputLabel  value="Does the contract contain a POb that has no assigned price?"/>
+                                    <p:selectOneMenu  value="" >
+                                        <f:selectItem itemLabel="No" itemValue="" noSelectionOption="true" />
+                                        <f:selectItems value="" />
+                                    </p:selectOneMenu>
+
+                                    <p:outputLabel  value="Is FLS acting as an agent for one (or more) of the POb's in the contract?"/>
+                                    <p:selectOneMenu  value="" >
+                                        <f:selectItem itemLabel="No" itemValue="" noSelectionOption="true" />
+                                        <f:selectItems value="" />
+                                    </p:selectOneMenu>
+
+                                    <p:outputLabel  value="An allocation of the Transaction Price must be performed"/>
+                                    <p:inputText   value="False"/>
+                                </p:panelGrid>
+                                <hr></hr>
+                                <p:panelGrid columns="4"  layout="grid" styleClass="ui-panelgrid-blank form-group" style="border:0px none; background-color:transparent;margin-left: 50px">
+
+                                    <p:outputLabel  value="Variable Consideration"/>
+                                    <p:outputLabel  value=""/>
+                                    <p:outputLabel  value=""/>
+                                    <p:outputLabel  value=""/>
+
+                                    <p:outputLabel  value="Are there types of variable consideration included in the contract?"/>
+                                    <p:selectOneMenu  value="" >
+                                        <f:selectItem itemLabel="No" itemValue="" noSelectionOption="true" />
+                                        <f:selectItems value="" />
+                                    </p:selectOneMenu>
+                                    <p:outputLabel  value="Yes response should open frm_Variable"/>
+                                    <p:commandButton value="Variable"/>
+
+                                    <p:outputLabel  value="Amounts Payable to Customers"/>
+                                    <p:outputLabel  value=""/>
+                                    <p:outputLabel  value=""/>
+                                    <p:outputLabel  value=""/>
+
+
+                                    <p:outputLabel  value="Is there a payment to the customer?"/>
+                                    <p:selectOneMenu  value="" >
+                                        <f:selectItem itemLabel="No" itemValue="" noSelectionOption="true" />
+                                        <f:selectItems value="" />
+                                    </p:selectOneMenu>
+                                    <p:outputLabel  value="Yes response should open frm_CustomerPayment"/>
+                                    <p:commandButton value="Cust. Pay"/>
+
+
+                                    <p:outputLabel  value="Are payment terms included in the contract?"/>
+                                    <p:selectOneMenu  value="" >
+                                        <f:selectItem itemLabel="No" itemValue="" noSelectionOption="true" />
+                                        <f:selectItems value="" />
+                                    </p:selectOneMenu>
+                                    <p:outputLabel  value=""/>
+                                    <p:outputLabel  value=""/>
+
+                                    <p:outputLabel  value="Payment terms"/>
+                                    <p:inputText   value=""/>
+                                    <p:outputLabel  value="Are milestone payments included?"/>
+                                    <p:selectOneMenu  value="" >
+                                        <f:selectItem itemLabel="No" itemValue="" noSelectionOption="true" />
+                                        <f:selectItems value="" />
+                                    </p:selectOneMenu>
+
+                                </p:panelGrid>
+                                <hr></hr>
+
+                                <p:panelGrid columns="2"  layout="grid" styleClass="ui-panelgrid-blank form-group" style="border:0px none; background-color:transparent;margin-left: 50px">
+                                    <p:outputLabel  value="Does the contract have commercial substance?"/>
+                                    <p:inputText   value=""/>
+
+                                </p:panelGrid>
+                                <hr></hr>
+
+                                <p:panelGrid columns="2"  layout="grid" styleClass="ui-panelgrid-blank form-group" style="border:0px none; background-color:transparent;margin-left: 50px">
+                                    <p:outputLabel  value="Is the contract collectable?"/>
+                                    <p:selectOneMenu  value="" >
+                                        <f:selectItem itemLabel="No" itemValue="" noSelectionOption="true" />
+                                        <f:selectItems value="" />
+                                    </p:selectOneMenu>
+                                </p:panelGrid>
+                                <hr></hr>
+
+                                <p:panelGrid columns="2"  layout="grid" styleClass="ui-panelgrid-blank form-group" style="border:0px none; background-color:transparent;margin-left: 50px">
+                                    <p:outputLabel  value="Contract Booking"/>
+                                    <p:outputLabel  value=""/>
+
+                                    <p:outputLabel  value="This contract meets the booking requirements"/>
+                                    <p:inputText   value=""/>
+                                </p:panelGrid>
+                                <hr></hr>
+
+                                <p:panelGrid columns="4"  layout="grid" styleClass="ui-panelgrid-blank form-group" style="border:0px none; background-color:transparent;margin-left: 50px">
+                                    <p:outputLabel  value="Contract Combination"/>
+                                    <p:commandButton value="Contract Lookup"/>
+
+                                    <p:outputLabel  value="Yes response should open frm_Combination"/>
+                                    <p:selectOneMenu  value="" >
+                                        <f:selectItem itemLabel="No" itemValue="" noSelectionOption="true" />
+                                        <f:selectItems value="" />
+                                    </p:selectOneMenu>
+
+                                </p:panelGrid>
+                                <p:panelGrid columns="2"  layout="grid" styleClass="ui-panelgrid-blank form-group" style="border:0px none; background-color:transparent;margin-left: 50px">
+
+                                    <p:outputLabel  value="Were multiple contracts entered into with the same customer (or related party) within the same 90-day period (consider all reporting units at FLS and the $250,000 threshold)."/>
+                                    <p:commandButton value="Combination"/>
+                                </p:panelGrid>
+
+                                <p:panelGrid columns="4"  layout="grid" styleClass="ui-panelgrid-blank form-group" style="border:0px none; background-color:transparent;margin-left: 50px">
+                                    <p:outputLabel  value="Did Flowserve incur pre-booking costs on this contract?"/>
+                                    <p:selectOneMenu  value="" >
+                                        <f:selectItem itemLabel="No" itemValue="" noSelectionOption="true" />
+                                        <f:selectItems value="" />
+                                    </p:selectOneMenu>
+
+                                    <p:outputLabel  value="Yes response should open frm_CapCosts"/>
+
+                                    <p:commandButton value="Cap. Costs"/>
+
+                                    <p:outputLabel  value=""/>
+                                    <p:outputLabel  value=""/>
+                                    <p:outputLabel  value=""/>
+                                    <p:commandButton value="Close"/>
+                                </p:panelGrid>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </h:form>
+        </div>
+    </ui:define>
+
+</ui:composition>
+
+
