@@ -522,7 +522,7 @@ public class BatchProcessingService {
         int count = 0;
         String line = null;
 
-        resultSet = statement.executeQuery("SELECT ID, Name, `BPC Reporting Unit`, `Sales Order #`, `Contract Currency` FROM tbl_Contracts");
+        resultSet = statement.executeQuery("SELECT ID, Name, `BPC Reporting Unit`, `Sales Order #`, `Contract Currency`, `Contract Description` FROM tbl_Contracts");
         ut.begin();
         while (resultSet.next()) {
 
@@ -577,6 +577,7 @@ public class BatchProcessingService {
 
             if ((count % 1000) == 0) {
                 Logger.getLogger(AppInitializeService.class.getName()).log(Level.INFO, "Contract import count: " + count);
+                Logger.getLogger(BatchProcessingService.class.getName()).log(Level.INFO, "Contract description: " + resultSet.getString(6));
             }
         }
         dataImport.setFilename(fileName + " - tbl_Contracts");

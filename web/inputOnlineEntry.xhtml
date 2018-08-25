@@ -39,6 +39,9 @@
                 font-style: italic;
                 font-weight: bold;
             }
+            body .ui-selectonemenu .ui-selectonemenu-trigger .ui-icon-triangle-1-s {
+                margin-top: 2px;
+            }
         </style>
 
     </ui:define>
@@ -433,8 +436,8 @@
                                                 <p:column colspan="1" style="white-space:pre-line;" headerText="RU / Contract / POB" />
                                                 <p:column colspan="1" style="white-space:pre-line;" headerText="Invoice Number" />
                                                 <p:column colspan="1" style="white-space:pre-line;" headerText="Invoice Date" />
-                                                <p:column colspan="1" style="white-space:pre-line;" headerText="Billing Contract Cur" />
-                                                <p:column colspan="1" style="white-space:pre-line;" headerText="Billing Local Cur" />
+                                                <p:column colspan="1" style="white-space:pre-line;" headerText="Billing Contract Currency" />
+                                                <p:column colspan="1" style="white-space:pre-line;" headerText="Billing Local Currency" />
                                                 <p:column colspan="1" style="white-space:pre-line;" headerText="Options" />
                                             </p:row>
                                         </p:columnGroup>
@@ -542,7 +545,7 @@
                                                     </p:inputText>
                                                 </f:facet>
                                                 <f:facet name="input">
-                                                    <p:inputText value="#{viewSupport.getCurrencyMetric('THIRD_PARTY_COMMISSION_CTD_LC', pob).lcValue}">
+                                                    <p:inputText value="#{viewSupport.getCurrencyMetric('THIRD_PARTY_COMMISSION_CTD_LC', pob).lcValue}" disabled="#{not viewSupport.periodOpen}">
                                                         <f:validateDoubleRange/>
                                                     </p:inputText>
                                                 </f:facet>
@@ -560,7 +563,7 @@
                                         <p:column style="white-space:pre-line;">
                                             <p:selectOneMenu rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}"
                                                              value="#{viewSupport.getStringMetric('OEAM_DISAGG', pob).value}"
-                                                             style="width:100px">
+                                                             style="width:130px">
                                                 <p:ajax event="change"  />
                                                 <f:selectItem itemLabel="OE/AM Disaggregation" itemValue="" />
                                                 <f:selectItems value="#{inputOnlineEntry.oeamDisagg}" var="sale" itemLabel="#{oeam}" itemValue="#{oeam}" />
