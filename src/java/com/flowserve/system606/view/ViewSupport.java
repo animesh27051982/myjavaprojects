@@ -447,12 +447,20 @@ public class ViewSupport implements Serializable {
         return calculationService.getDateMetric(metricCode, measurable, webSession.getCurrentPeriod());
     }
 
+    public DateMetric getDateMetricPriorPeriod(String metricCode, Measurable measurable) throws Exception {
+        return calculationService.getDateMetric(metricCode, measurable, webSession.getPriorPeriod());
+    }
+
     public DecimalMetric getDecimalMetric(String metricCode, Measurable measurable) throws Exception {
         return calculationService.getDecimalMetric(metricCode, measurable, webSession.getCurrentPeriod());
     }
 
     public StringMetric getStringMetric(String metricCode, PerformanceObligation pob) throws Exception {
         return calculationService.getStringMetric(metricCode, pob, webSession.getCurrentPeriod());
+    }
+
+    public StringMetric getStringMetricPriorPeriod(String metricCode, PerformanceObligation pob) throws Exception {
+        return calculationService.getStringMetric(metricCode, pob, webSession.getPriorPeriod());
     }
 
     public CurrencyMetric getCurrencyMetricPriorPeriod(String metricCode, Measurable measurable) throws Exception {

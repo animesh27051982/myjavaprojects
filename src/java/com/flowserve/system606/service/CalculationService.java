@@ -10,6 +10,7 @@ import com.flowserve.system606.model.Contract;
 import com.flowserve.system606.model.CurrencyMetric;
 import com.flowserve.system606.model.CurrencyMetricPriorPeriod;
 import com.flowserve.system606.model.DateMetric;
+import com.flowserve.system606.model.DateMetricPriorPeriod;
 import com.flowserve.system606.model.DecimalMetric;
 import com.flowserve.system606.model.FinancialPeriod;
 import com.flowserve.system606.model.Measurable;
@@ -19,6 +20,7 @@ import com.flowserve.system606.model.MetricType;
 import com.flowserve.system606.model.PerformanceObligation;
 import com.flowserve.system606.model.ReportingUnit;
 import com.flowserve.system606.model.StringMetric;
+import com.flowserve.system606.model.StringMetricPriorPeriod;
 import com.flowserve.system606.model.TransientMeasurable;
 import java.math.BigDecimal;
 import java.nio.file.Files;
@@ -294,15 +296,21 @@ public class CalculationService {
         return metrics;
     }
 
-    private Collection<CurrencyMetricPriorPeriod> getAllPriorPeriodMetrics(Measurable measurable, FinancialPeriod currentPeriod) throws Exception {
+    private Collection<Object> getAllPriorPeriodMetrics(Measurable measurable, FinancialPeriod currentPeriod) throws Exception {
         //FinancialPeriod priorPeriod = financialPeriodService.calculatePriorPeriod(currentPeriod);
         FinancialPeriod priorPeriod = currentPeriod.getPriorPeriod();
 
         Collection<Metric> metrics = getAllMetrics(measurable, priorPeriod);
-        List<CurrencyMetricPriorPeriod> priorPeriodMetrics = new ArrayList<CurrencyMetricPriorPeriod>();
+        List<Object> priorPeriodMetrics = new ArrayList<Object>();
         for (Metric metric : metrics) {
             if (metric instanceof CurrencyMetric) {
                 priorPeriodMetrics.add(new CurrencyMetricPriorPeriod((CurrencyMetric) metric));
+            }
+            if (metric instanceof DateMetric) {
+                priorPeriodMetrics.add(new DateMetricPriorPeriod((DateMetric) metric));
+            }
+            if (metric instanceof StringMetric) {
+                priorPeriodMetrics.add(new StringMetricPriorPeriod((StringMetric) metric));
             }
         }
 
