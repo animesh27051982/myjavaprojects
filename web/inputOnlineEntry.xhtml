@@ -493,7 +493,10 @@
                                         <p:columnGroup type="header">
                                             <p:row>
                                                 <p:column colspan="1" headerText="" />
-                                                <p:column colspan="5" style="background-color: #0071bc; color: #ffffff; white-space:pre-line;"  headerText="Billing Data" />
+                                                <p:column colspan="2" style="background-color: #0071bc; color: #ffffff; white-space:pre-line;"  headerText="Billing Data" />
+                                                <p:column colspan="2" style="background-color: #43C86F; color: #ffffff; white-space:pre-line;"  headerText="Contract Currency" />
+                                                <p:column colspan="1" headerText="" />
+                                                <p:column colspan="2" style="background-color: #5aa3d4; color: #ffffff; white-space:pre-line;"  headerText="Local Currency" />
                                             </p:row>
                                             <p:row>
                                                 <p:column colspan="1" style="white-space:pre-line;" id="bill_con" >
@@ -514,15 +517,33 @@
                                                         <p:tooltip  for="invoice_date" value="Invoice Date"  showEffect="slide" hideEffect="explode" position="top"/>
                                                     </f:facet>
                                                 </p:column>
+                                                <p:column colspan="1" style="white-space:pre-line;" headerText="Currency" id="cur1" >
+                                                    <f:facet name="header">
+                                                        <h:outputText  value="Currency" />
+                                                        <p:tooltip  for="cur1" value="Currency"  showEffect="clip" hideEffect="clip" position="top"/>
+                                                    </f:facet>
+                                                </p:column>
                                                 <p:column colspan="1" style="white-space:pre-line;" id="bill_cur" >
                                                     <f:facet name="header">
-                                                        <h:outputText  value="Billing Contract Cur" />
+                                                        <h:outputText  value="Billing Contract Currency" />
                                                         <p:tooltip  for="bill_cur" value="Billing Contract Cur"  showEffect="slide" hideEffect="explode" position="top"/>
+                                                    </f:facet>
+                                                </p:column>
+                                                <p:column colspan="1" style="white-space:pre-line;" id="fx">
+                                                    <f:facet name="header">
+                                                        <h:outputText  value="Fx Rate" />
+                                                        <p:tooltip  for="fx" value="Fx Rate"  showEffect="blind" hideEffect="clip" position="top"/>
+                                                    </f:facet>
+                                                </p:column>
+                                                <p:column colspan="1" style="white-space:pre-line;" headerText="Currency" id="cur2" >
+                                                    <f:facet name="header">
+                                                        <h:outputText  value="Currency" />
+                                                        <p:tooltip  for="cur2" value="Currency"  showEffect="clip" hideEffect="clip" position="top"/>
                                                     </f:facet>
                                                 </p:column>
                                                 <p:column colspan="1" style="white-space:pre-line;" id="bill_loc_cur" >
                                                     <f:facet name="header">
-                                                        <h:outputText  value="Billing Local Cur" />
+                                                        <h:outputText  value="Billing Local Currency" />
                                                         <p:tooltip  for="bill_loc_cur" value="Billing Local Cur"  showEffect="slide" hideEffect="explode" position="top"/>
                                                     </f:facet>
                                                 </p:column>
@@ -563,6 +584,9 @@
                                             </p:cellEditor>
                                         </p:column>
                                         <p:column style="white-space:pre-line;">
+                                            <h:outputText value="#{billEvent.contract.contractCurrency.currencyCode}" rendered="#{of:isInstance('com.flowserve.system606.model.BillingEvent', billEvent)}"/>
+                                        </p:column>
+                                        <p:column style="white-space:pre-line;">
                                             <h:outputText value="#{billEvent.totalBillingsContractCurrency}" rendered="#{of:isInstance('com.flowserve.system606.model.Contract', billEvent) and billEvent.totalBillingsContractCurrency != 0}" >
                                                 <f:convertNumber type="currency" currencySymbol=""/>
                                             </h:outputText>
@@ -579,6 +603,15 @@
                                                     </p:inputText>
                                                 </f:facet>
                                             </p:cellEditor>
+                                        </p:column>
+                                        <p:column style="white-space:pre-line;">
+                                            <h:outputText value="#{viewSupport.getExchangeRate(billEvent.contract)}" title="#{viewSupport.getExchangeRate(billEvent.contract)}"
+                                                          rendered="#{of:isInstance('com.flowserve.system606.model.BillingEvent', billEvent)}">
+                                                <f:convertNumber maxFractionDigits="2" />
+                                            </h:outputText>
+                                        </p:column>
+                                        <p:column style="white-space:pre-line;">
+                                            <h:outputText value="#{billEvent.contract.reportingUnit.localCurrency.currencyCode}" rendered="#{of:isInstance('com.flowserve.system606.model.BillingEvent', billEvent)}"/>
                                         </p:column>
                                         <p:column style="white-space:pre-line;">
                                             <h:outputText value="#{billEvent.totalBillingsLocalCurrency}" rendered="#{of:isInstance('com.flowserve.system606.model.Contract', billEvent) and billEvent.totalBillingsLocalCurrency != 0}" >
@@ -598,7 +631,6 @@
                                                 </f:facet>
                                             </p:cellEditor>
                                         </p:column>
-
                                         <p:column>
                                             <p:commandLink value="Add Billing" process="@this" update="treeTableId" actionListener="#{inputOnlineEntry.addBillingEvent(billEvent)}" rendered="#{of:isInstance('com.flowserve.system606.model.Contract', billEvent) and  viewSupport.periodOpen}" ></p:commandLink>
                                             <p:commandLink value="Remove Billing" process="@this" update="treeTableId" actionListener="#{inputOnlineEntry.removeBillingEvent(billEvent)}" rendered="#{of:isInstance('com.flowserve.system606.model.BillingEvent', billEvent) and  viewSupport.periodOpen}"></p:commandLink>
@@ -686,7 +718,7 @@
                                         <p:column style="white-space:pre-line;">
                                             <p:selectOneMenu rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}"
                                                              value="#{viewSupport.getStringMetric('OEAM_DISAGG', pob).value}"
-                                                             style="width:100px" disabled="#{not viewSupport.periodOpen}">
+                                                             style="width:130px" disabled="#{not viewSupport.periodOpen}">
                                                 <p:ajax event="change"  />
                                                 <f:selectItem itemLabel="OE/AM Disaggregation" itemValue="" />
                                                 <f:selectItems value="#{inputOnlineEntry.oeamDisagg}" var="sale" itemLabel="#{oeam}" itemValue="#{oeam}" />

@@ -227,7 +227,8 @@
                                         </p:column>
 
                                         <p:column style="white-space:pre-line;">
-                                            <h:outputText value="#{viewSupport.getExchangeRate(pob.contract)}" rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}" style="#{viewSupport.getTextStyle(pob)}">
+                                            <h:outputText value="#{viewSupport.getExchangeRate(pob.contract)}" rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}" style="#{viewSupport.getTextStyle(pob)}" title="#{viewSupport.getExchangeRate(pob.contract)}">
+                                                <f:convertNumber maxFractionDigits="2" />
                                             </h:outputText>
                                         </p:column>
 
@@ -290,8 +291,8 @@
                                                 </p:column>
                                                 <p:column colspan="1" style="white-space:pre-line;" id="ld_ldrctdpp" >
                                                     <f:facet name="header">
-                                                        <h:outputText  value="#{viewSupport.getMetricTypeName('LIQUIDATED_DAMAGES_TO_RECOGNIZE_CTD_CC')} - Prior Period" />
-                                                        <p:tooltip  for="ld_ldrctdpp" value="#{viewSupport.getMetricTypeDescription('LIQUIDATED_DAMAGES_TO_RECOGNIZE_CTD_CC')} - Prior Period"  showEffect="slide" hideEffect="explode" position="top"/>
+                                                        <h:outputText  value="#{viewSupport.getMetricTypeName('LIQUIDATED_DAMAGES_TO_RECOGNIZE_CTD_CC')} Prior Period" />
+                                                        <p:tooltip  for="ld_ldrctdpp" value="#{viewSupport.getMetricTypeDescription('LIQUIDATED_DAMAGES_TO_RECOGNIZE_CTD_CC')} Prior Period"  showEffect="slide" hideEffect="explode" position="top"/>
                                                     </f:facet>
                                                 </p:column>
                                                 <p:column colspan="1" style="white-space:pre-line;" id="ld7" >
@@ -452,8 +453,8 @@
                                                 </p:column>
                                                 <p:column colspan="1" style="white-space:pre-line;"  id="bl14" >
                                                     <f:facet name="header">
-                                                        <h:outputText  value="#{viewSupport.getMetricTypeName('PROJECT_GAIN_LOSS_BACKLOG_LC')}"/>
-                                                        <p:tooltip  for="bl14" value="#{viewSupport.getMetricTypeDescription('PROJECT_GAIN_LOSS_BACKLOG_LC')}"  showEffect="slide" hideEffect="explode" position="top"/>
+                                                        <h:outputText  value="#{viewSupport.getMetricTypeName('PROJECTED_GAIN_LOSS_BACKLOG_LC')}"/>
+                                                        <p:tooltip  for="bl14" value="#{viewSupport.getMetricTypeDescription('PROJECTED_GAIN_LOSS_BACKLOG_LC')}"  showEffect="slide" hideEffect="explode" position="top"/>
                                                     </f:facet>
                                                 </p:column>
                                                 <p:column colspan="1" style="white-space:pre-line;" id="bl15" >
@@ -537,7 +538,7 @@
                                             </h:outputText>
                                         </p:column>
                                         <p:column style="white-space:pre-line;">
-                                            <h:outputText value="#{viewSupport.getCurrencyMetric('PROJECT_GAIN_LOSS_BACKLOG_LC', pob).lcValue}" style="#{viewSupport.getTextStyle(pob)}">
+                                            <h:outputText value="#{viewSupport.getCurrencyMetric('PROJECTED_GAIN_LOSS_BACKLOG_LC', pob).lcValue}" style="#{viewSupport.getTextStyle(pob)}">
                                                 <f:convertNumber type="currency" currencySymbol=""/>
                                             </h:outputText>
                                         </p:column>

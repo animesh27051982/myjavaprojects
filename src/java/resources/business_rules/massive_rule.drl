@@ -131,11 +131,11 @@ end
 rule "Contract Third Party Commissions to Recognize"
     when
         contract : Contract()
-        percentComplete : Metric(metricType.code == "CONTRACT_PERCENT_COMPLETE", value != null)
+        contractPercentComplete : Metric(metricType.code == "CONTRACT_PERCENT_COMPLETE", value != null)
         thirdPartyCommCTD : CurrencyMetric(metricType.code == "THIRD_PARTY_COMMISSION_CTD_LC", lcValue != null)
-        thirdPartyCommToRecognize : CurrencyMetric(metricType.code == "THIRD_PARTY_COMMISSION_TO_RECOGNIZE_LC")
+        thirdPartyCommToRecognizeCTD : CurrencyMetric(metricType.code == "THIRD_PARTY_COMMISSION_TO_RECOGNIZE_CTD_LC")
     then
-        modify (thirdPartyCommToRecognize) { lcValue = (percentComplete.value * thirdPartyCommCTD.lcValue)};
+        modify (thirdPartyCommToRecognizeCTD) { lcValue = (contractPercentComplete.value * thirdPartyCommCTD.lcValue)};
 end
 
 rule "Contract Revenue Earned to Date"
@@ -176,19 +176,27 @@ rule "Revenue to Recognize CTD CC"
         modify (revenueToRecognizeCTD) { ccValue = (percentComplete.value * transactionPrice.ccValue)};
 end
 
-
-rule "Revenue to Recognize CTD LC"  // REVENUE_TO_RECOGNIZE_CTD_CC is a non-currency-convertable metric.
+/**
+* REVENUE_TO_RECOGNIZE_CTD_CC is a non-currency-convertible metric at the CTD level.  This is a system setting on the MetricType.
+* The sytem will not automatically currency-convert this metric.  A CTD level convertsion is an invalid operation due to the
+* order-of-conversion problem.  Simply stated one cannot convert, at the CTD level, a metric that contains previously converted LC compoenents
+* at previous exchange rates.  This renders a CTD level conversion inaccurate, so we must convert the LC (and RC) components manually.
+* Another way of stating this problem is that you must convert-and-accumulate the CTD level rather than accumulate-and-convert.  We
+* do not have access to all previous period values in the business rules, therefore we rely on the previous period values to derive the
+* same result.
+**/
+rule "Revenue to Recognize CTD LC"
     when
         pob : PerformanceObligation()
         period : FinancialPeriod()
-        currencyService : CurrencyService()  // Necessary due to mid rule-execution need for conversion.
+        currencyService : CurrencyService()  // Necessary due to mid rule-execution need for currency conversion.
         revenueToRecognizeCurrentPeriod : CurrencyMetric(metricType.code == "REVENUE_TO_RECOGNIZE_PERIOD_CC", ccValue != null)
         revenueToRecognizeCTDPriorPeriod : CurrencyMetricPriorPeriod(metricType.code == "REVENUE_TO_RECOGNIZE_CTD_CC")
         revenueToRecognizeCTD : CurrencyMetric(metricType.code == "REVENUE_TO_RECOGNIZE_CTD_CC")
     then
-        currencyService.convertCurrency(revenueToRecognizeCurrentPeriod, pob, period);  // Necessary due to mid rule-execution need for conversion.
+        currencyService.convertCurrency(revenueToRecognizeCurrentPeriod, pob, period);  // Necessary due to mid rule-execution need for manual conversion.
         modify (revenueToRecognizeCTD) { lcValue = (revenueToRecognizeCurrentPeriod.lcValue + (revenueToRecognizeCTDPriorPeriod.lcValue == null ? 0B : revenueToRecognizeCTDPriorPeriod.lcValue))};
-        modify (revenueToRecognizeCTD) { rcValue = (revenueToRecognizeCurrentPeriod.rcValue + (revenueToRecognizeCTDPriorPeriod.lcValue == null ? 0B : revenueToRecognizeCTDPriorPeriod.rcValue))};
+        modify (revenueToRecognizeCTD) { rcValue = (revenueToRecognizeCurrentPeriod.rcValue + (revenueToRecognizeCTDPriorPeriod.rcValue == null ? 0B : revenueToRecognizeCTDPriorPeriod.rcValue))};
 end
 
 
@@ -222,6 +230,29 @@ rule "Liquidated Damages to Recognize in Current Period"
         modify (liquidatedDamagesToRecognizeCurrentPeriod) { ccValue = (liquidatedDamagesRecognizedCTDPriorPeriod.ccValue == null ? liquidatedDamagesToRecognizeCTD.ccValue : liquidatedDamagesToRecognizeCTD.ccValue - liquidatedDamagesRecognizedCTDPriorPeriod.ccValue)};
 end
 
+/**
+* LIQUIDATED_DAMAGES_TO_RECOGNIZE_CTD_CC is a non-currency-convertible metric at the CTD level.  This is a system setting on the MetricType.
+* The sytem will not automatically currency-convert this metric.  A CTD level convertsion is an invalid operation due to the
+* order-of-conversion problem.  Simply stated one cannot convert, at the CTD level, a metric that contains previously converted LC compoenents
+* at previous exchange rates.  This renders a CTD level conversion inaccurate, so we must convert the LC (and RC) components manually.
+* Another way of stating this problem is that you must convert-and-accumulate the CTD level rather than accumulate-and-convert.  We
+* do not have access to all previous period values in the business rules, therefore we rely on the previous period values to derive the same
+* result.
+**/
+rule "Liquidated Damages Recognized CTD LC"  //
+    when
+        pob : PerformanceObligation()
+        period : FinancialPeriod()
+        currencyService : CurrencyService()  // Necessary due to mid rule-execution need for currency conversion.
+        liquidatedDamagesToRecognizeCurrentPeriod : CurrencyMetric(metricType.code == "LIQUIDATED_DAMAGES_TO_RECOGNIZE_PERIOD_CC", ccValue != null)
+        liquidatedDamagesRecognizedCTDPriorPeriod : CurrencyMetricPriorPeriod(metricType.code == "LIQUIDATED_DAMAGES_TO_RECOGNIZE_CTD_CC", ccValue != null)
+        liquidatedDamagesCTDToRecognize : CurrencyMetric(metricType.code == "LIQUIDATED_DAMAGES_TO_RECOGNIZE_CTD_CC")
+    then
+        currencyService.convertCurrency(liquidatedDamagesToRecognizeCurrentPeriod, pob, period);  // Necessary due to mid rule-execution need for manual conversion.
+        modify (liquidatedDamagesCTDToRecognize) { lcValue = (liquidatedDamagesToRecognizeCurrentPeriod.lcValue + (liquidatedDamagesRecognizedCTDPriorPeriod.lcValue == null ? 0B : liquidatedDamagesRecognizedCTDPriorPeriod.lcValue))};
+        modify (liquidatedDamagesCTDToRecognize) { rcValue = (liquidatedDamagesToRecognizeCurrentPeriod.rcValue + (liquidatedDamagesRecognizedCTDPriorPeriod.rcValue == null ? 0B : liquidatedDamagesRecognizedCTDPriorPeriod.rcValue))};
+end
+
 rule "Liquidated Damages in Backlog"
     when
         pob : PerformanceObligation()
@@ -232,7 +263,6 @@ rule "Liquidated Damages in Backlog"
         //logger.info("Calcing LD in Backlog");
         modify (liquidatedDamagesBacklog) { ccValue = (liquidatedDamagesCTD.ccValue - liquidatedDamagesCTDToRecognize.ccValue)};
 end
-
 
 rule "Net Period Sales"
     when
@@ -255,7 +285,6 @@ rule "Transaction Price in Backlog"
         modify (transactionPriceBacklog) { ccValue = (transactionPrice.ccValue - revenueToRecognizeCTD.ccValue)};
 end
 
-
 rule "Transaction Price Net LD"
     when
         pob : PerformanceObligation()
@@ -271,7 +300,7 @@ end
 //        pob : PerformanceObligation()
 //        transactionPriceNetLD : CurrencyMetric(metricType.code == "TRANSACTION_PRICE_NET_LD_LC", lcValue != null)
 //        estimatedCostAtCompletion : CurrencyMetric(metricType.code == "ESTIMATED_COST_AT_COMPLETION_LC", lcValue != null)
-//        projectedGainLoss : CurrencyMetric(metricType.code == "PROJECT_GAIN_LOSS_LC")
+//        projectedGainLoss : CurrencyMetric(metricType.code == "PROJECTED_GAIN_LOSS_LC")
  //   then
 //        modify (projectedGainLoss) { lcValue = (transactionPriceNetLD.lcValue - estimatedCostAtCompletion.lcValue)};
 //end
@@ -284,7 +313,7 @@ rule "Projected Gain/Loss in Backlog"
         transactionPriceBacklog : CurrencyMetric(metricType.code == "TRANSACTION_PRICE_BACKLOG_CC", ccValue != null)
         liquidatedDamagesBacklog : CurrencyMetric(metricType.code == "LIQUIDATED_DAMAGES_BACKLOG_CC", ccValue != null)
         costOfGoodsSoldBacklog : CurrencyMetric(metricType.code == "COST_GOODS_SOLD_BACKLOG_LC", lcValue != null)
-        projectedGainLossBacklog : CurrencyMetric(metricType.code == "PROJECT_GAIN_LOSS_BACKLOG_LC")
+        projectedGainLossBacklog : CurrencyMetric(metricType.code == "PROJECTED_GAIN_LOSS_BACKLOG_LC")
     then
         //logger.info("Calcing Projected Gain/Loss in Backlog");
         currencyService.convertCurrency(transactionPriceBacklog, pob, period);  // Necessary due to mid rule-execution need for conversion.
@@ -345,7 +374,7 @@ end
 rule "Loss Reserve"
     when
         contract : Contract()
-        gainLossBacklog : CurrencyMetric(metricType.code == "PROJECT_GAIN_LOSS_BACKLOG_LC", lcValue != null)
+        gainLossBacklog : CurrencyMetric(metricType.code == "PROJECTED_GAIN_LOSS_BACKLOG_LC", lcValue != null)
         lossReserveCTD : CurrencyMetric(metricType.code == "LOSS_RESERVE_CTD_LC")
     then
         modify (lossReserveCTD) { lcValue = (gainLossBacklog.lcValue >= 0B ? 0B : -gainLossBacklog.lcValue) };
@@ -365,7 +394,7 @@ end
 //    when
 //        contract : Contract()
 //        lossReserveAdjustmentCumulativePrior : CurrencyMetricPriorPeriod(metricType.code == "LOSS_RESERVE_ADJ_CUMULATIVE_LC")
-//        projectedGainLossBacklog : CurrencyMetric(metricType.code == "PROJECT_GAIN_LOSS_BACKLOG_LC", lcValue != null)
+//        projectedGainLossBacklog : CurrencyMetric(metricType.code == "PROJECTED_GAIN_LOSS_BACKLOG_LC", lcValue != null)
 //        lossReserveAdjustment : CurrencyMetric(metricType.code == "LOSS_RESERVE_PERIOD_ADJ_LC")
 //    then
 //        modify (lossReserveAdjustment) { lcValue = ((lossReserveAdjustmentCumulativePrior.lcValue == null ? 0B : lossReserveAdjustmentCumulativePrior.lcValue) + projectedGainLossBacklog.lcValue)};
@@ -406,36 +435,33 @@ end
 rule "Contract Third Party Commissions To Recognize Current Period"
     when
         contract : Contract()
-        thirdPartyCommToRegPeriodLC : CurrencyMetric(metricType.code == "THIRD_PARTY_COMMISSION_TO_RECOGNIZE_PERIOD_LC", lcValue != null)
-        thirdPartyCommToRegLC : CurrencyMetric(metricType.code == "THIRD_PARTY_COMMISSION_TO_RECOGNIZE_LC", lcValue != null)
+        thirdPartyCommToRecognizeCTDLC : CurrencyMetric(metricType.code == "THIRD_PARTY_COMMISSION_TO_RECOGNIZE_CTD_LC", lcValue != null)
+        thirdPartyCommToRecognizePriorPeriodCTDLC : CurrencyMetricPriorPeriod(metricType.code == "THIRD_PARTY_COMMISSION_TO_RECOGNIZE_CTD_LC", lcValue != null)
+        thirdPartyCommToRecognizePeriodLC : CurrencyMetric(metricType.code == "THIRD_PARTY_COMMISSION_TO_RECOGNIZE_PERIOD_LC")
     then
-        modify (thirdPartyCommToRegPeriodLC) { lcValue = (thirdPartyCommToRegLC.lcValue - thirdPartyCommToRegPeriodLC.lcValue)};
+        modify (thirdPartyCommToRegPeriodLC) { lcValue = (thirdPartyCommToRecognizeCTDLC.lcValue - thirdPartyCommToRecognizePriorPeriodCTDLC.lcValue)};
 end
 
 rule "Contract Projected Gain (Loss) in Backlog incl TPC"
     when
         contract : Contract()
-        projectGainLossINCLTPCBacklogLC : CurrencyMetric(metricType.code == "PROJECT_GAIN_LOSS_INCL_TPC_BACKLOG_LC", lcValue != null)
-        projectGainLossBacklogLC : CurrencyMetric(metricType.code == "PROJECT_GAIN_LOSS_BACKLOG_LC", lcValue != null)
+        projectGainLossBacklogLC : CurrencyMetric(metricType.code == "PROJECTED_GAIN_LOSS_BACKLOG_LC", lcValue != null)
         lossReserveCTDLC : CurrencyMetric(metricType.code == "LOSS_RESERVE_CTD_LC", lcValue != null)
         thirdPartyCommissionCTDLC : CurrencyMetric(metricType.code == "THIRD_PARTY_COMMISSION_CTD_LC", lcValue != null)
-        thirdPartyCommissonToRegLC : CurrencyMetric(metricType.code == "THIRD_PARTY_COMMISSION_TO_RECOGNIZE_LC", lcValue != null)
+        thirdPartyCommissonToRecCTDLC : CurrencyMetric(metricType.code == "THIRD_PARTY_COMMISSION_TO_RECOGNIZE_CTD_LC", lcValue != null)
+        projectedGainLossInclTPCBacklogLC : CurrencyMetric(metricType.code == "PROJECT_GAIN_LOSS_INCL_TPC_BACKLOG_LC")
     then
-        modify (projectGainLossINCLTPCBacklogLC) { lcValue = (projectGainLossBacklogLC.lcValue - lossReserveCTDLC.lcValue - thirdPartyCommissionCTDLC.lcValue +thirdPartyCommissonToRegLC.lcValue)};
-
+        modify (projectedGainLossInclTPCBacklogLC) { lcValue = (projectGainLossBacklogLC.lcValue - lossReserveCTDLC.lcValue - thirdPartyCommissionCTDLC.lcValue + thirdPartyCommissonToRecCTDLC.lcValue)};
 end
 
 rule "Contract TPC & Other Inputs Rolling Next Month"
     when
         contract : Contract()
-
         thirdPartyComCTDLC : CurrencyMetric(metricType.code == "THIRD_PARTY_COMMISSION_CTD_LC", lcValue == null)
         thirdPartyComCTDLCPriorPeriod : CurrencyMetricPriorPeriod(metricType.code == "THIRD_PARTY_COMMISSION_CTD_LC", lcValue != null)
-
     then
         logger.info("fired" +thirdPartyComCTDLCPriorPeriod.lcValue);
         modify (thirdPartyComCTDLC) { lcValue = (thirdPartyComCTDLCPriorPeriod.lcValue)};
-
 end
 
 rule "POB TPC & Other Inputs Rolling Next Month"
@@ -455,8 +481,9 @@ rule "POB TPC & Other Inputs Rolling Next Month"
         modify (oeamDisagg) { value = (oeamDisaggPriorPeriod.value)};
         modify (slStartDate) { value = (slStartDatePriorPeriod.value)};
         modify (slEndDate) { value = (slEndDatePriorPeriod.value)};
-
 end
+
+
 //
 // Begin Validation Rules Section
 //

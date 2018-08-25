@@ -957,8 +957,8 @@ public class ReportsService {
                     + "ESTIMATED_GROSS_MARGIN,PERCENT_COMPLETE,COST_OF_GOODS_SOLD_CTD_LC,COST_OF_GOODS_SOLD_PERIOD_LC,"
                     + "COST_GOODS_SOLD_BACKLOG_LC,CHANGE_IN_EAC_LC,REVENUE_TO_RECOGNIZE_CTD_CC,REVENUE_TO_RECOGNIZE_PERIOD_CC,"
                     + "LIQUIDATED_DAMAGES_TO_RECOGNIZE_CTD_CC,LIQUIDATED_DAMAGES_TO_RECOGNIZE_PERIOD_CC,LIQUIDATED_DAMAGES_BACKLOG_CC,"
-                    + "NET_PERIOD_SALES_CC,TRANSACTION_PRICE_BACKLOG_CC,TRANSACTION_PRICE_NET_LD_LC,REMAINING_ESTIMATE_COMPLETE_LC,PROJECT_GAIN_LOSS_LC,"
-                    + "PROJECT_GAIN_LOSS_BACKLOG_LC,CTD_STANDARD_COSTS_COGS_LC,LOSS_CONTRACT_ADJUSTED_LC) "
+                    + "NET_PERIOD_SALES_CC,TRANSACTION_PRICE_BACKLOG_CC,TRANSACTION_PRICE_NET_LD_LC,REMAINING_ESTIMATE_COMPLETE_LC,PROJECTED_GAIN_LOSS_LC,"
+                    + "PROJECTED_GAIN_LOSS_BACKLOG_LC,CTD_STANDARD_COSTS_COGS_LC,LOSS_CONTRACT_ADJUSTED_LC) "
                     + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 
             PreparedStatement contractST = connection.prepareStatement("INSERT INTO Contract_Ouput "
@@ -1016,8 +1016,8 @@ public class ReportsService {
                             pst.setBigDecimal(28, zeroIfNull(calculationService.getCurrencyMetric("TRANSACTION_PRICE_BACKLOG_CC", pob, period).getCcValue()));
                             pst.setBigDecimal(29, zeroIfNull(calculationService.getCurrencyMetric("TRANSACTION_PRICE_NET_LD_LC", pob, period).getLcValue()));
                             pst.setBigDecimal(30, zeroIfNull(calculationService.getCurrencyMetric("REMAINING_ESTIMATE_COMPLETE_LC", pob, period).getLcValue()));
-                            pst.setBigDecimal(31, zeroIfNull(calculationService.getCurrencyMetric("PROJECT_GAIN_LOSS_LC", pob, period).getLcValue()));
-                            pst.setBigDecimal(32, zeroIfNull(calculationService.getCurrencyMetric("PROJECT_GAIN_LOSS_BACKLOG_LC", pob, period).getLcValue()));
+                            pst.setBigDecimal(31, zeroIfNull(calculationService.getCurrencyMetric("PROJECTED_GAIN_LOSS_LC", pob, period).getLcValue()));
+                            pst.setBigDecimal(32, zeroIfNull(calculationService.getCurrencyMetric("PROJECTED_GAIN_LOSS_BACKLOG_LC", pob, period).getLcValue()));
                             //pst.setBigDecimal(33, zeroIfNull(calculationService.getCurrencyMetric("CTD_STANDARD_COSTS_COGS_LC", pob, hasPeriod).getLcValue()));
                             pst.setBigDecimal(33, zeroIfNull(null));  // KJG The metric type above does not exist.  Figure out what we were using it for.
                             pst.setBigDecimal(34, zeroIfNull(calculationService.getCurrencyMetric("LOSS_CONTRACT_ADJUSTED_LC", pob, period).getLcValue()));

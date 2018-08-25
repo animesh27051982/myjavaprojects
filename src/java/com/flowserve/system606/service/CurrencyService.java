@@ -104,8 +104,6 @@ public class CurrencyService {
         }
 
         if (currencyMetric.isLocalCurrencyMetric()) {
-
-            // if lcVaue is null then return;
             if (currencyMetric.getLcValue() == null) {
                 return;
             }
@@ -118,8 +116,6 @@ public class CurrencyService {
                 currencyMetric.setRcValue(convert(currencyMetric.getLcValue(), measurable.getLocalCurrency(), measurable.getReportingCurrency(), period.getReportingCurrencyRatePeriod()));
             }
         } else if (currencyMetric.isContractCurrencyMetric()) {
-
-            // if ccValue is null then return
             if (currencyMetric.getCcValue() == null) {
                 return;
             }
