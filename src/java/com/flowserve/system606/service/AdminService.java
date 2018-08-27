@@ -6,17 +6,16 @@
 package com.flowserve.system606.service;
 
 import com.flowserve.system606.model.ApprovalRequest;
-import com.flowserve.system606.model.BillingEvent;
 import com.flowserve.system606.model.BusinessRule;
 import com.flowserve.system606.model.BusinessUnit;
 import com.flowserve.system606.model.Company;
 import com.flowserve.system606.model.Contract;
 import com.flowserve.system606.model.Country;
+import com.flowserve.system606.model.CurrencyEvent;
 import com.flowserve.system606.model.DataImportFile;
 import com.flowserve.system606.model.ExchangeRate;
 import com.flowserve.system606.model.FinancialPeriod;
 import com.flowserve.system606.model.Holiday;
-import com.flowserve.system606.model.Measurable;
 import com.flowserve.system606.model.MetricType;
 import com.flowserve.system606.model.ReportingUnit;
 import com.flowserve.system606.model.SubledgerAccount;
@@ -25,8 +24,6 @@ import com.flowserve.system606.model.User;
 import com.flowserve.system606.model.WorkflowStatus;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
-import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Currency;
 import java.util.List;
@@ -107,11 +104,11 @@ public class AdminService {
         em.persist(bu);
     }
 
-    public void persist(BillingEvent be) throws Exception {
+    public void persist(CurrencyEvent be) throws Exception {
         em.persist(be);
     }
 
-    public BillingEvent update(BillingEvent be) throws Exception {
+    public CurrencyEvent update(CurrencyEvent be) throws Exception {
         return em.merge(be);
     }
 
@@ -204,24 +201,21 @@ public class AdminService {
         return em.find(SubledgerAccount.class, id);
     }
 
-    public List<BillingEvent> findBillingEvents() {
-        Query query = em.createQuery("SELECT b FROM BillingEvent b");
-        return (List<BillingEvent>) query.getResultList();
-    }
-
-    public List<BillingEvent> findBillingEventsByContract(Contract contract) {
-        Query query = em.createQuery("SELECT b FROM BillingEvent b WHERE b.contract = :CNT");
-        query.setParameter("CNT", contract);
-        return (List<BillingEvent>) query.getResultList();
-    }
-
-    public List<BillingEvent> findBillingEventsByInvoiceInContract(String invoice, Contract contract) {
-        Query query = em.createQuery("SELECT b FROM BillingEvent b WHERE b.contract = :CNT AND b.invoiceNumber = :INVOICE");
-        query.setParameter("CNT", contract);
-        query.setParameter("INVOICE", invoice);
-        return (List<BillingEvent>) query.getResultList();
-    }
-
+//    public List<BillingEvent> findBillingEvents() {
+//        Query query = em.createQuery("SELECT b FROM BillingEvent b");
+//        return (List<BillingEvent>) query.getResultList();
+//    }
+//    public List<CurrencyEvent> findBillingEventsByContract(Contract contract) {
+//        Query query = em.createQuery("SELECT b FROM BillingEvent b WHERE b.contract = :CNT");
+//        query.setParameter("CNT", contract);
+//        return (List<CurrencyEvent>) query.getResultList();
+//    }
+//    public List<CurrencyEvent> findBillingEventsByInvoiceInContract(String invoice, Contract contract) {
+//        Query query = em.createQuery("SELECT b FROM BillingEvent b WHERE b.contract = :CNT AND b.invoiceNumber = :INVOICE");
+//        query.setParameter("CNT", contract);
+//        query.setParameter("INVOICE", invoice);
+//        return (List<CurrencyEvent>) query.getResultList();
+//    }
     public List<SubledgerLine> findSubledgerLines() {
         TypedQuery<SubledgerLine> query = em.createQuery("SELECT s FROM SubledgerLine s", SubledgerLine.class);
         return (List<SubledgerLine>) query.getResultList();
@@ -342,10 +336,6 @@ public class AdminService {
     public Company updateCompany(Company c) throws Exception {
         Logger.getLogger(AdminService.class.getName()).log(Level.INFO, "Updating Company: " + c.getId());
         return em.merge(c);
-    }
-
-    public Measurable update(Measurable measurable) throws Exception {
-        return em.merge(measurable);
     }
 
     public Company update(Company c) throws Exception {
@@ -852,21 +842,20 @@ public class AdminService {
         }
     }
 
-    public void initBilings() throws Exception {
-        Contract ct = contractService.findContractById(new Long(3822));
-        if (findBillingEvents().isEmpty()) {
-            Logger.getLogger(AdminService.class.getName()).log(Level.INFO, "initBilings");
-            BillingEvent be = new BillingEvent();
-            be.setAmountContractCurrency(new BigDecimal(50));
-            be.setAmountLocalCurrency(new BigDecimal(50));
-            be.setBillingDate(LocalDate.now());
-            be.setContract(ct);
-            be.setDeliveryDate(LocalDate.now());
-            be.setInvoiceNumber("1234");
-            persist(be);
-        }
-    }
-
+//    public void initBilings() throws Exception {
+//        Contract ct = contractService.findContractById(new Long(3822));
+//        if (findBillingEvents().isEmpty()) {
+//            Logger.getLogger(AdminService.class.getName()).log(Level.INFO, "initBilings");
+//            BillingEvent be = new BillingEvent();
+//            be.setAmountContractCurrency(new BigDecimal(50));
+//            be.setAmountLocalCurrency(new BigDecimal(50));
+//            be.setBillingDate(LocalDate.now());
+//            be.setContract(ct);
+//            be.setDeliveryDate(LocalDate.now());
+//            be.setInvoiceNumber("1234");
+//            persist(be);
+//        }
+//    }
     public void initCountries() throws Exception {
         if (findCountryById("USA") == null) {
             Logger.getLogger(AdminService.class.getName()).log(Level.INFO, "Initializing Countries");

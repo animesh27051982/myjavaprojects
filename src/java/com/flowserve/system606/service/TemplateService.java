@@ -5,8 +5,9 @@
  */
 package com.flowserve.system606.service;
 
-import com.flowserve.system606.model.BillingEvent;
 import com.flowserve.system606.model.Contract;
+import com.flowserve.system606.model.CurrencyEvent;
+import com.flowserve.system606.model.EventType;
 import com.flowserve.system606.model.FinancialPeriod;
 import com.flowserve.system606.model.Measurable;
 import com.flowserve.system606.model.MetricSet;
@@ -30,6 +31,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.annotation.PostConstruct;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
@@ -54,9 +56,13 @@ public class TemplateService {
     @Inject
     private MetricService metricService;
     @Inject
+    private EventService eventService;
+    @Inject
     private CalculationService calculationService;
     @Inject
     private PerformanceObligationService pobService;
+    @Inject
+    private ContractService contractService;
     @Inject
     FinancialPeriodService financialPeriodService;
     @Inject
@@ -69,8 +75,14 @@ public class TemplateService {
     private InputStream inputStream;
     @Inject
     private WebSession webSession;
+    private EventType billingEventType;
 
     private static Logger logger = Logger.getLogger("com.flowserve.system606");
+
+    @PostConstruct
+    public void init() {
+        billingEventType = eventService.getEventTypeByCode("BILLING_EVENT_CC");
+    }
 
     public List<ReportingUnit> getReportingUnits() {
         return new ArrayList<ReportingUnit>();
@@ -199,7 +211,6 @@ public class TemplateService {
             // TODO - This needs to be read from the file and then checked to make sure it's open.
             FinancialPeriod period = financialPeriodService.getCurrentFinancialPeriod();
 
-            List<MetricType> inputTypes = metricService.getAllPobExcelInputMetricTypes();
             XSSFWorkbook workbook = new XSSFWorkbook(fis);
             XSSFSheet worksheet = workbook.getSheetAt(0);
             MetricSet inputSet = new MetricSet();
@@ -246,114 +257,115 @@ public class TemplateService {
                     setValueInMetricType(cell, pobIdCell, "THIRD_PARTY_COSTS_CTD_LC", pob, period);
                     cell = row.getCell(CellReference.convertColStringToIndex("R"));
                     setValueInMetricType(cell, pobIdCell, "INTERCOMPANY_COSTS_CTD_LC", pob, period);
-
                     cell = row.getCell(CellReference.convertColStringToIndex("S"));
                     setValueInMetricType(cell, pobIdCell, "COSTS_INCURRED_CTD_LC", pob, period);
-
                     cell = row.getCell(CellReference.convertColStringToIndex("T"));
                     setValueInDate(cell, pobIdCell, "DELIVERY_DATE", pob, period);
-
                     cell = row.getCell(CellReference.convertColStringToIndex("U"));
                     setValueInMetricType(cell, pobIdCell, "PARTIAL_SHIPMENT_COSTS_LC", pob, period);
-
                     cell = row.getCell(CellReference.convertColStringToIndex("AF"));
                     setValueInMetricType(cell, pobIdCell, "THIRD_PARTY_COMMISSION_CTD_LC", pob.getContract(), period);
-
                     cell = row.getCell(CellReference.convertColStringToIndex("AG"));
                     setValueInStringMetricType(cell, pobIdCell, "SALES_DESTINATION", pob, period);
-
                     cell = row.getCell(CellReference.convertColStringToIndex("AH"));
                     setValueInStringMetricType(cell, pobIdCell, "OEAM_DISAGG", pob, period);
-
                     cell = row.getCell(CellReference.convertColStringToIndex("AI"));
                     setValueInDate(cell, pobIdCell, "SL_START_DATE", pob, period);
-
                     cell = row.getCell(CellReference.convertColStringToIndex("AJ"));
                     setValueInDate(cell, pobIdCell, "SL_END_DATE", pob, period);
-
                 } catch (Exception rce) {
                     Logger.getLogger(TemplateService.class.getName()).log(Level.SEVERE, "Error processing ");
                     throw new Exception("processTemplateUpload row: " + row.getRowNum() + " cell: " + (cell.getColumnIndex() + 1) + " " + rce.getMessage());
                 }
                 try {
-                    List<BillingEvent> billingEvent = new ArrayList<BillingEvent>();
-                    BillingEvent bEvent = new BillingEvent();
+                    //List<CurrencyEvent> billingEvents = new ArrayList<CurrencyEvent>();
+
+                    // Process first billing event
+                    CurrencyEvent billingEvent = new CurrencyEvent();
+                    billingEvent.setEventType(billingEventType);
+                    billingEvent.setFinancialPeriod(period);
+                    billingEvent.setContract(pob.getContract());
+
                     cell = row.getCell(CellReference.convertColStringToIndex("W"));
                     if (cell == null || pobIdCell.getCellTypeEnum() == CellType.BLANK || ((XSSFCell) cell).getRawValue() == null) {
                         // TODO - figure out what to do in this blank case.  It will depend on the situation.
                     } else {
                         if (cell.getCellTypeEnum().toString().equalsIgnoreCase("STRING")) {
-                            bEvent.setInvoiceNumber(cell.getStringCellValue());
+                            billingEvent.setNumber(cell.getStringCellValue());
                         } else if (cell.getCellTypeEnum().toString().equalsIgnoreCase("NUMERIC")) {
-                            bEvent.setInvoiceNumber(NumberToTextConverter.toText(cell.getNumericCellValue()));
+                            billingEvent.setNumber(NumberToTextConverter.toText(cell.getNumericCellValue()));
                         }
 
                         cell = row.getCell(CellReference.convertColStringToIndex("X"));
                         if (cell.getCellTypeEnum().toString().equalsIgnoreCase("STRING")) {
-                            bEvent.setBillingDate(LocalDate.parse(cell.getStringCellValue()));
+                            billingEvent.setEventDate(LocalDate.parse(cell.getStringCellValue()));
                         } else if (cell.getCellTypeEnum().toString().equalsIgnoreCase("NUMERIC")) {
-                            bEvent.setBillingDate(cell.getDateCellValue().toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
-
+                            billingEvent.setEventDate(cell.getDateCellValue().toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
                         }
+
                         cell = row.getCell(CellReference.convertColStringToIndex("Y"));
                         if (cell == null || pobIdCell.getCellTypeEnum() == CellType.BLANK || ((XSSFCell) cell).getRawValue() == null) {
                             // TODO - figure out what to do in this blank case.  It will depend on the situation.
                         } else {
-                            bEvent.setAmountContractCurrency(new BigDecimal(NumberToTextConverter.toText(cell.getNumericCellValue())));
+                            billingEvent.setCcValue(new BigDecimal(NumberToTextConverter.toText(cell.getNumericCellValue())));
                         }
+
                         cell = row.getCell(CellReference.convertColStringToIndex("Z"));
                         if (cell == null || pobIdCell.getCellTypeEnum() == CellType.BLANK || ((XSSFCell) cell).getRawValue() == null) {
                             // TODO - figure out what to do in this blank case.  It will depend on the situation.
                         } else {
-                            bEvent.setAmountLocalCurrency(new BigDecimal(NumberToTextConverter.toText(cell.getNumericCellValue())));
+                            billingEvent.setLcValue(new BigDecimal(NumberToTextConverter.toText(cell.getNumericCellValue())));
+                        }
+
+                        if (billingEventDoesNotExistInContract(pob.getContract(), billingEvent.getNumber())) {
+                            billingEvent.setName("Billing " + billingEvent.getNumber());
+                            billingEvent = (CurrencyEvent) eventService.update(billingEvent);
+                            calculationService.addEvent(pob.getContract(), period, billingEvent);
+                            contractService.update(pob.getContract());
                         }
                     }
-                    billingEvent.add(bEvent);
-                    bEvent = new BillingEvent();
+
+                    // Process Second billing event
+                    billingEvent = new CurrencyEvent();
+                    billingEvent.setEventType(billingEventType);
+                    billingEvent.setFinancialPeriod(period);
+                    billingEvent.setContract(pob.getContract());
+
                     cell = row.getCell(CellReference.convertColStringToIndex("AA"));
                     if (cell == null || pobIdCell.getCellTypeEnum() == CellType.BLANK || ((XSSFCell) cell).getRawValue() == null) {
                         // TODO - figure out what to do in this blank case.  It will depend on the situation.
                     } else {
                         if (cell.getCellTypeEnum().toString().equalsIgnoreCase("STRING")) {
-                            bEvent.setInvoiceNumber(cell.getStringCellValue());
+                            billingEvent.setNumber(cell.getStringCellValue());
                         } else if (cell.getCellTypeEnum().toString().equalsIgnoreCase("NUMERIC")) {
-                            bEvent.setInvoiceNumber(NumberToTextConverter.toText(cell.getNumericCellValue()));
+                            billingEvent.setNumber(NumberToTextConverter.toText(cell.getNumericCellValue()));
                         }
 
                         cell = row.getCell(CellReference.convertColStringToIndex("AB"));
                         if (cell.getCellTypeEnum().toString().equalsIgnoreCase("STRING")) {
-                            bEvent.setBillingDate(LocalDate.parse(cell.getStringCellValue()));
+                            billingEvent.setEventDate(LocalDate.parse(cell.getStringCellValue()));
                         } else if (cell.getCellTypeEnum().toString().equalsIgnoreCase("NUMERIC")) {
-                            bEvent.setBillingDate(cell.getDateCellValue().toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
+                            billingEvent.setEventDate(cell.getDateCellValue().toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
                         }
                         cell = row.getCell(CellReference.convertColStringToIndex("AC"));
                         if (cell == null || pobIdCell.getCellTypeEnum() == CellType.BLANK || ((XSSFCell) cell).getRawValue() == null) {
                             // TODO - figure out what to do in this blank case.  It will depend on the situation.
                         } else {
-                            bEvent.setAmountContractCurrency(new BigDecimal(NumberToTextConverter.toText(cell.getNumericCellValue())));
+                            billingEvent.setCcValue(new BigDecimal(NumberToTextConverter.toText(cell.getNumericCellValue())));
                         }
                         cell = row.getCell(CellReference.convertColStringToIndex("AD"));
                         if (cell == null || pobIdCell.getCellTypeEnum() == CellType.BLANK || ((XSSFCell) cell).getRawValue() == null) {
                             // TODO - figure out what to do in this blank case.  It will depend on the situation.
                         } else {
-                            bEvent.setAmountLocalCurrency(new BigDecimal(NumberToTextConverter.toText(cell.getNumericCellValue())));
-                        }
-                    }
-                    billingEvent.add(bEvent);
-                    BillingEvent be = new BillingEvent();
-                    if (!billingEvent.isEmpty()) {
-                        if (adminService.findBillingEventsByInvoiceInContract(billingEvent.get(0).getInvoiceNumber(), pob.getContract()).isEmpty()) {
-                            billingEvent.get(0).setContract(pob.getContract());
-                            be = adminService.update(billingEvent.get(0));
-                            pob.getContract().getBillingEvents().add(be);
+                            billingEvent.setLcValue(new BigDecimal(NumberToTextConverter.toText(cell.getNumericCellValue())));
                         }
 
-                        if (adminService.findBillingEventsByInvoiceInContract(billingEvent.get(1).getInvoiceNumber(), pob.getContract()).isEmpty()) {
-                            billingEvent.get(1).setContract(pob.getContract());
-                            be = adminService.update(billingEvent.get(1));
-                            pob.getContract().getBillingEvents().add(be);
+                        if (billingEventDoesNotExistInContract(pob.getContract(), billingEvent.getName())) {
+                            billingEvent.setName("Billing " + billingEvent.getNumber());
+                            billingEvent = (CurrencyEvent) eventService.update(billingEvent);
+                            calculationService.addEvent(pob.getContract(), period, billingEvent);
+                            contractService.update(pob.getContract());
                         }
-
                     }
 
                 } catch (Exception rce) {
@@ -435,6 +447,10 @@ public class TemplateService {
         // going to change inputset to be pob level history only.  removing for now.
         //inputSet.setInputs(inputList);
         //persist(inputSet);
+    }
+
+    private boolean billingEventDoesNotExistInContract(Contract contract, String invoiceNumber) {
+        return contract.getAllEventsByEventTypeAndNumber(billingEventType, invoiceNumber).isEmpty();
     }
 
     public void reportingPreparersList() throws Exception {

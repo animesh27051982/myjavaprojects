@@ -5,8 +5,10 @@
  */
 package com.flowserve.system606.service;
 
+import com.flowserve.system606.model.CurrencyEvent;
 import com.flowserve.system606.model.CurrencyMetric;
 import com.flowserve.system606.model.DataImportFile;
+import com.flowserve.system606.model.Event;
 import com.flowserve.system606.model.ExchangeRate;
 import com.flowserve.system606.model.FinancialPeriod;
 import com.flowserve.system606.model.Measurable;
@@ -130,6 +132,57 @@ public class CurrencyService {
         }
     }
 
+    public void convertCurrency(Event event, Measurable measurable, FinancialPeriod period) throws Exception {
+        if (!(event instanceof CurrencyEvent)) {
+            return;
+        }
+
+        CurrencyEvent currencyEvent = (CurrencyEvent) event;
+
+        if (currencyEvent.getLcValue() == null && currencyEvent.getCcValue() == null) {
+            return;
+        }
+
+        if (event.getEventType().getEventCurrencyType() == null) {
+            throw new IllegalStateException("There is no currency type defined for the event type " + event.getEventType().getId() + ".  Please contact a system administrator.");
+        }
+        if (measurable.getLocalCurrency() == null) {
+            throw new IllegalStateException("There is no local currency defined.  Please contact a system administrator.");
+        }
+        if (measurable.getContractCurrency() == null) {
+            throw new IllegalStateException("There is no contract currency defined.  Please contact a system administrator.");
+        }
+        if (measurable.getReportingCurrency() == null) {
+            throw new IllegalStateException("There is no reporting currency defined.  Please contact a system administrator.");
+        }
+
+        if (currencyEvent.isLocalCurrencyEvent()) {
+            if (currencyEvent.getLcValue() == null) {
+                return;
+            }
+
+            if (BigDecimal.ZERO.equals(currencyEvent.getLcValue())) {
+                currencyEvent.setCcValue(BigDecimal.ZERO);
+                currencyEvent.setRcValue(BigDecimal.ZERO);
+            } else {
+                currencyEvent.setCcValue(convert(currencyEvent.getLcValue(), measurable.getLocalCurrency(), measurable.getContractCurrency(), period.getLocalCurrencyRatePeriod()));
+                currencyEvent.setRcValue(convert(currencyEvent.getLcValue(), measurable.getLocalCurrency(), measurable.getReportingCurrency(), period.getReportingCurrencyRatePeriod()));
+            }
+        } else if (currencyEvent.isContractCurrencyEvent()) {
+            if (currencyEvent.getCcValue() == null) {
+                return;
+            }
+
+            if (BigDecimal.ZERO.equals(currencyEvent.getCcValue())) {
+                currencyEvent.setLcValue(BigDecimal.ZERO);
+                currencyEvent.setRcValue(BigDecimal.ZERO);
+            } else {
+                currencyEvent.setLcValue(convert(currencyEvent.getCcValue(), measurable.getContractCurrency(), measurable.getLocalCurrency(), period.getLocalCurrencyRatePeriod()));
+                currencyEvent.setRcValue(convert(currencyEvent.getCcValue(), measurable.getContractCurrency(), measurable.getReportingCurrency(), period.getReportingCurrencyRatePeriod()));
+            }
+        }
+    }
+
     public void persist1(Object object) {
         em.persist(object);
     }
@@ -166,8 +219,13 @@ public class CurrencyService {
         em.persist(eRate);
     }
 
-    public BigDecimal convert(BigDecimal amount, Currency fromCurrency, Currency toCurrency, FinancialPeriod period) throws Exception {  // throw an application defined exception here instead of Exception
+    private BigDecimal convert(BigDecimal amount, Currency fromCurrency, Currency toCurrency, FinancialPeriod period) throws Exception {
 
+        ExchangeRate exchangeRate = getExchangeRate(fromCurrency, toCurrency, period);
+        return amount.multiply(exchangeRate.getPeriodEndRate()).setScale(SCALE, BigDecimal.ROUND_HALF_UP);
+    }
+
+    public ExchangeRate getExchangeRate(Currency fromCurrency, Currency toCurrency, FinancialPeriod period) throws Exception {
         ExchangeRate exchangeRate = null;
         try {
             String cacheKey = period.getId() + fromCurrency.getCurrencyCode() + toCurrency.getCurrencyCode();
@@ -179,15 +237,14 @@ public class CurrencyService {
         } catch (Exception e) {
             throw new IllegalStateException("Unable to find an exchange rate from " + fromCurrency.getCurrencyCode() + " to " + toCurrency.getCurrencyCode() + " in period " + period.getId());
         }
-        return amount.multiply(exchangeRate.getPeriodEndRate()).setScale(SCALE, BigDecimal.ROUND_HALF_UP);
+
+        return exchangeRate;
     }
 
     public void initCurrencyConverter(FinancialPeriod period) throws Exception {
         logger.info("initCurrencyConverter" + period.getId());
         //exchangeRateCache.clear();
         List<ExchangeRate> er = findRatesByPeriod(period);
-        //Logger.getLogger(CurrencyService.class.getName()).log(Level.INFO, "rate count: " + er.size());
-        //Logger.getLogger(CurrencyService.class.getName()).log(Level.INFO, "period: " + period.getId());
 
         final int SCALE = 14;
         final int ROUNDING_METHOD = BigDecimal.ROUND_HALF_UP;

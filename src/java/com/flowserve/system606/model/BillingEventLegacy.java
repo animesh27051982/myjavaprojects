@@ -21,7 +21,7 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name = "BILLING_EVENTS")
-public class BillingEvent implements Comparable<BillingEvent>, Serializable {
+public class BillingEventLegacy implements Comparable<CurrencyEvent>, Serializable {
 
     private static final long serialVersionUID = -1990764230607265489L;
     private static final Logger LOG = Logger.getLogger(Contract.class.getName());
@@ -52,10 +52,10 @@ public class BillingEvent implements Comparable<BillingEvent>, Serializable {
     @JoinColumn(name = "CONTRACT_ID")
     private Contract contract;
 
-    public BillingEvent() {
+    public BillingEventLegacy() {
     }
 
-    public BillingEvent(LocalDate billingDate, LocalDate deliveryDate, String invoiceNumber, BigDecimal amountLocalCurrency, BigDecimal amountContractCurrency, Contract contract) {
+    public BillingEventLegacy(LocalDate billingDate, LocalDate deliveryDate, String invoiceNumber, BigDecimal amountLocalCurrency, BigDecimal amountContractCurrency, Contract contract) {
         this.billingDate = billingDate;
         this.deliveryDate = deliveryDate;
         this.invoiceNumber = invoiceNumber;
@@ -65,7 +65,7 @@ public class BillingEvent implements Comparable<BillingEvent>, Serializable {
     }
 
     @Override
-    public int compareTo(BillingEvent obj) {
+    public int compareTo(CurrencyEvent obj) {
         return this.id.compareTo(obj.getId());
     }
 

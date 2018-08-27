@@ -30,10 +30,11 @@ import javax.persistence.OrderBy;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import static javax.persistence.TemporalType.TIMESTAMP;
+import javax.persistence.Transient;
 
 @Entity
 @Table(name = "CONTRACTS")
-public class Contract extends BaseEntity<Long> implements MetricStore, Measurable, Comparable<Contract>, Serializable {
+public class Contract extends BaseEntity<Long> implements MetricStore, EventStore, Measurable, Comparable<Contract>, Serializable {
 
     private static final long serialVersionUID = -1990764230607265489L;
     private static final Logger LOG = Logger.getLogger(Contract.class.getName());
@@ -80,6 +81,8 @@ public class Contract extends BaseEntity<Long> implements MetricStore, Measurabl
     private LocalDateTime lastUpdateDate;
     @Column(name = "IS_ACTIVE")
     private boolean active;
+    @Transient
+    private boolean nodeExpanded;
     @OneToOne
     @JoinColumn(name = "SALES_DESTINATION_COUNTRY_ID")
     private Country salesDestinationCountry;
@@ -90,8 +93,14 @@ public class Contract extends BaseEntity<Long> implements MetricStore, Measurabl
     @JoinTable(name = "CONTRACT_METRIC_SET", joinColumns = @JoinColumn(name = "CONTRACT_ID"), inverseJoinColumns = @JoinColumn(name = "METRIC_SET_ID"))
     @MapKeyJoinColumn(name = "PERIOD_ID")
     private Map<FinancialPeriod, MetricSet> periodMetricSetMap = new HashMap<FinancialPeriod, MetricSet>();
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "contract", orphanRemoval = true)
-    private List<BillingEvent> billingEvents = new ArrayList<BillingEvent>();
+
+    @OneToMany(fetch = FetchType.LAZY, cascade = {CascadeType.ALL}, orphanRemoval = true)
+    @JoinTable(name = "CONTRACT_EVENT_LIST", joinColumns = @JoinColumn(name = "CONTRACT_ID"), inverseJoinColumns = @JoinColumn(name = "EVENT_LIST_ID"))
+    @MapKeyJoinColumn(name = "PERIOD_ID")
+    private Map<FinancialPeriod, EventList> periodEventListMap = new HashMap<FinancialPeriod, EventList>();
+
+//    @OneToMany(fetch = FetchType.LAZY, mappedBy = "contract", orphanRemoval = true)
+//    private List<BillingEvent> billingEvents = new ArrayList<BillingEvent>();
     @OneToMany(fetch = FetchType.LAZY, cascade = {CascadeType.ALL}, orphanRemoval = true)
     @JoinTable(name = "CONTRACT_APPROVAL_REQUEST", joinColumns = @JoinColumn(name = "CONTRACT_ID"), inverseJoinColumns = @JoinColumn(name = "APPROVAL_REQUEST_ID"))
     @MapKeyJoinColumn(name = "PERIOD_ID")
@@ -105,26 +114,24 @@ public class Contract extends BaseEntity<Long> implements MetricStore, Measurabl
         return this.id.compareTo(obj.getId());
     }
 
-    public BigDecimal getTotalBillingsLocalCurrency() {
-        BigDecimal localCur = BigDecimal.ZERO;
-        for (BillingEvent be : billingEvents) {
-            if (be.getAmountLocalCurrency() != null && be.getAmountLocalCurrency().compareTo(BigDecimal.ZERO) != 0) {
-                localCur = localCur.add(be.getAmountLocalCurrency());
-            }
-        }
-        return localCur;
-    }
-
-    public BigDecimal getTotalBillingsContractCurrency() {
-        BigDecimal contractCur = BigDecimal.ZERO;
-        for (BillingEvent be : billingEvents) {
-            if (be.getAmountContractCurrency() != null && be.getAmountContractCurrency().compareTo(BigDecimal.ZERO) != 0) {
-                contractCur = contractCur.add(be.getAmountContractCurrency());
-            }
-        }
-        return contractCur;
-    }
-
+//    public BigDecimal getTotalBillingsLocalCurrency() {
+//        BigDecimal localCur = BigDecimal.ZERO;
+//        for (BillingEvent be : billingEvents) {
+//            if (be.getAmountLocalCurrency() != null && be.getAmountLocalCurrency().compareTo(BigDecimal.ZERO) != 0) {
+//                localCur = localCur.add(be.getAmountLocalCurrency());
+//            }
+//        }
+//        return localCur;
+//    }
+//    public BigDecimal getTotalBillingsContractCurrency() {
+//        BigDecimal contractCur = BigDecimal.ZERO;
+//        for (BillingEvent be : billingEvents) {
+//            if (be.getAmountContractCurrency() != null && be.getAmountContractCurrency().compareTo(BigDecimal.ZERO) != 0) {
+//                contractCur = contractCur.add(be.getAmountContractCurrency());
+//            }
+//        }
+//        return contractCur;
+//    }
     public List<PerformanceObligation> getPobsByRevenueMethod(RevenueMethod revenueMethod) {
         List<PerformanceObligation> pobs = new ArrayList<PerformanceObligation>();
 
@@ -135,6 +142,50 @@ public class Contract extends BaseEntity<Long> implements MetricStore, Measurabl
         }
 
         return pobs;
+    }
+
+    public List<Event> getAllEventsByEventType(EventType eventType) {
+        List<Event> events = new ArrayList<Event>();
+
+        for (FinancialPeriod period : periodEventListMap.keySet()) {
+            for (Event event : periodEventListMap.get(period).getEventList()) {
+                if (eventType.equals(event.getEventType())) {
+                    events.add(event);
+                }
+            }
+        }
+
+        return events;
+    }
+
+    public EventList getPeriodEventList(FinancialPeriod period) {
+        return periodEventListMap.get(period);
+    }
+
+    public List<Event> getAllEventsByPeriodAndEventType(FinancialPeriod period, EventType eventType) {
+        List<Event> events = new ArrayList<Event>();
+
+        for (Event event : periodEventListMap.get(period).getEventList()) {
+            if (eventType.equals(event.getEventType())) {
+                events.add(event);
+            }
+        }
+
+        return events;
+    }
+
+    public List<Event> getAllEventsByEventTypeAndNumber(EventType eventType, String number) {
+        List<Event> events = new ArrayList<Event>();
+
+        for (FinancialPeriod period : periodEventListMap.keySet()) {
+            for (Event event : periodEventListMap.get(period).getEventList()) {
+                if (eventType.equals(event.getEventType()) && event.getNumber().equals(number)) {
+                    events.add(event);
+                }
+            }
+        }
+
+        return events;
     }
 
     public ApprovalRequest getPeriodApprovalRequest(FinancialPeriod period) {
@@ -185,6 +236,17 @@ public class Contract extends BaseEntity<Long> implements MetricStore, Measurabl
             Logger.getLogger(Contract.class.getName()).log(Level.FINER, "Null metric at contract level!:  " + metricType.getCode());
         }
         return metric;
+    }
+
+    public boolean eventListExistsForPeriod(FinancialPeriod period) {
+        return periodEventListMap.get(period) != null;
+    }
+
+    public EventList initializeEventListForPeriod(FinancialPeriod period) {
+        EventList eventList = new EventList();
+        periodEventListMap.put(period, eventList);
+
+        return eventList;
     }
 
     public Currency getLocalCurrency() {
@@ -275,10 +337,9 @@ public class Contract extends BaseEntity<Long> implements MetricStore, Measurabl
         this.contractCurrency = contractCurrency;
     }
 
-    public List<BillingEvent> getBillingEvents() {
-        return billingEvents;
-    }
-
+//    public List<BillingEvent> getBillingEvents() {
+//        return billingEvents;
+//    }
     public ContractType getContractType() {
         return contractType;
     }
@@ -349,5 +410,16 @@ public class Contract extends BaseEntity<Long> implements MetricStore, Measurabl
 
     public void setLongDescription(String longDescription) {
         this.longDescription = longDescription;
+    }
+
+//    public EventList getPeriodEvents(FinancialPeriod period) {
+//        return periodEventListMap.get(period);
+//    }
+    public boolean isNodeExpanded() {
+        return nodeExpanded;
+    }
+
+    public void setNodeExpanded(boolean nodeExpanded) {
+        this.nodeExpanded = nodeExpanded;
     }
 }

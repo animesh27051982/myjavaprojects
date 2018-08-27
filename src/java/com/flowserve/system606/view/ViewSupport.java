@@ -5,13 +5,15 @@
  */
 package com.flowserve.system606.view;
 
-import com.flowserve.system606.model.BillingEvent;
 import com.flowserve.system606.model.BusinessUnit;
 import com.flowserve.system606.model.Company;
 import com.flowserve.system606.model.Contract;
+import com.flowserve.system606.model.CurrencyEvent;
 import com.flowserve.system606.model.CurrencyMetric;
 import com.flowserve.system606.model.DateMetric;
 import com.flowserve.system606.model.DecimalMetric;
+import com.flowserve.system606.model.Event;
+import com.flowserve.system606.model.EventType;
 import com.flowserve.system606.model.FinancialPeriod;
 import com.flowserve.system606.model.Measurable;
 import com.flowserve.system606.model.PerformanceObligation;
@@ -23,11 +25,14 @@ import com.flowserve.system606.service.AdminService;
 import com.flowserve.system606.service.CalculationService;
 import com.flowserve.system606.service.ContractService;
 import com.flowserve.system606.service.CurrencyService;
+import com.flowserve.system606.service.EventService;
 import com.flowserve.system606.service.FinancialPeriodService;
 import com.flowserve.system606.service.MetricService;
 import com.flowserve.system606.web.WebSession;
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Currency;
@@ -62,6 +67,8 @@ public class ViewSupport implements Serializable {
     private WebSession webSession;
     @Inject
     private MetricService metricService;
+    @Inject
+    private EventService eventService;
     private String searchString = "";
     @Inject
     private FinancialPeriodService financialPeriodService;
@@ -73,6 +80,7 @@ public class ViewSupport implements Serializable {
     private ContractService contractService;
 
     private List<FinancialPeriod> allPeriods = new ArrayList<FinancialPeriod>();
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy");
 
     public ViewSupport() {
     }
@@ -198,6 +206,14 @@ public class ViewSupport implements Serializable {
         return root;
     }
 
+    public LocalDate getCurrentPeriodMinDate() {
+        return webSession.getCurrentPeriod().getStartDate();
+    }
+
+    public LocalDate getCurrentPeriodMaxDate() {
+        return webSession.getCurrentPeriod().getEndDate();
+    }
+
     public TreeNode generateNodeTreeForBilling(ReportingUnit reportingUnit) {
         List<ReportingUnit> rus = new ArrayList<ReportingUnit>();
         rus.add(reportingUnit);
@@ -206,18 +222,19 @@ public class ViewSupport implements Serializable {
 
     public TreeNode generateNodeTreeForBilling(List<ReportingUnit> reportingUnits) {
         TreeNode root = new DefaultTreeNode(new BusinessUnit(), null);
+        EventType billingEventType = eventService.getEventTypeByCode("BILLING_EVENT_CC");
 
         for (ReportingUnit reportingUnit : reportingUnits) {
-            Logger.getLogger(WebSession.class.getName()).log(Level.FINER, "Adding to tree RU Name: " + reportingUnit.getName());
             TreeNode reportingUnitNode = new DefaultTreeNode(reportingUnit, root);
             reportingUnitNode.setExpanded(true);
             for (Contract contract : reportingUnit.getContracts()) {
-                Logger.getLogger(WebSession.class.getName()).log(Level.FINER, "Adding to tree Contract Name: " + contract.getName());
                 TreeNode contractNode = new DefaultTreeNode(contract, reportingUnitNode);
                 contractNode.setExpanded(false);
-                for (BillingEvent billEvent : contract.getBillingEvents()) {
-                    Logger.getLogger(WebSession.class.getName()).log(Level.FINER, "Adding to tree POB ID: " + billEvent.getId());
-                    new DefaultTreeNode(billEvent, contractNode);
+                if (contract.isNodeExpanded()) {
+                    contractNode.setExpanded(true);
+                }
+                for (Event billingEvent : calculationService.getAllEventsByEventType(contract, billingEventType)) {
+                    new DefaultTreeNode(billingEvent, contractNode);
                 }
             }
         }
@@ -323,17 +340,17 @@ public class ViewSupport implements Serializable {
                     continue;
                 }
 
-                for (TreeNode bill : contract.getChildren()) {
-                    String billName = ((BillingEvent) bill.getData()).getName();
-                    String billId = ((BillingEvent) bill.getData()).getId().toString();
+                for (TreeNode billingEvent : contract.getChildren()) {
+                    String billNumber = ((CurrencyEvent) billingEvent.getData()).getNumber();
+                    String billId = ((CurrencyEvent) billingEvent.getData()).getId().toString();
 
-                    if (billName == null) {
+                    if (billNumber == null) {
                         Logger.getLogger(ViewSupport.class.getName()).log(Level.INFO, "Encountered null Bill name Bill ID: " + billId);
-                        billsToRemove.add(bill);
+                        billsToRemove.add(billingEvent);
                     } else {
-                        if (!Pattern.compile(Pattern.quote(contractFilterText), Pattern.CASE_INSENSITIVE).matcher(billName).find()
+                        if (!Pattern.compile(Pattern.quote(contractFilterText), Pattern.CASE_INSENSITIVE).matcher(billNumber).find()
                                 && !Pattern.compile(Pattern.quote(contractFilterText), Pattern.CASE_INSENSITIVE).matcher(billId).find()) {
-                            billsToRemove.add(bill);
+                            billsToRemove.add(billingEvent);
                         }
                     }
                 }
@@ -472,7 +489,7 @@ public class ViewSupport implements Serializable {
     }
 
     public BigDecimal getExchangeRate(Contract contract) throws Exception {
-        return currencyService.findRateByFromToPeriod(contract.getContractCurrency(), contract.getLocalCurrency(), webSession.getCurrentPeriod().getLocalCurrencyRatePeriod()).getPeriodEndRate();
+        return currencyService.getExchangeRate(contract.getContractCurrency(), contract.getLocalCurrency(), webSession.getCurrentPeriod().getLocalCurrencyRatePeriod()).getPeriodEndRate();
     }
 
     public WorkflowStatus getPeriodWorkflowStatus(Contract contract) {
@@ -501,6 +518,14 @@ public class ViewSupport implements Serializable {
         }
 
         return false;
+    }
+
+    public boolean isCurrentPeriodEvent(Event event) {
+        if (event.getNumber() == null) {
+            return true;
+        }
+
+        return event != null && event.getFinancialPeriod() != null && event.getFinancialPeriod().equals(webSession.getCurrentPeriod());
     }
 
     public void setSearchString(String searchString) {

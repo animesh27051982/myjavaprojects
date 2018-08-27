@@ -37,6 +37,8 @@ public class FinancialPeriodService {
     @Inject
     private AdminService adminService;
     @Inject
+    private CalculationService calculationService;
+    @Inject
     private ReportingUnitService reportingUnitService;
     private Company company;
 
@@ -497,7 +499,7 @@ public class FinancialPeriodService {
                             contractApprovalRequest.setWorkflowStatus(WorkflowStatus.DRAFT);
                             adminService.persist(contractApprovalRequest);
                             contract.putPeriodApprovalRequest(period, contractApprovalRequest);
-                            adminService.update(contract);
+                            calculationService.update(contract);
                         }
                     }
                 }
@@ -536,7 +538,7 @@ public class FinancialPeriodService {
         contractApprovalRequest.setWorkflowStatus(WorkflowStatus.DRAFT);
         adminService.persist(contractApprovalRequest);
         contract.putPeriodApprovalRequest(period, contractApprovalRequest);
-        adminService.update(contract);
+        calculationService.update(contract);
 
     }
 

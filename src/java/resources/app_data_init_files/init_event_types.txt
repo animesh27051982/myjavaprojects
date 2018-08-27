@@ -1,7 +1,1 @@
-INPUT|BILLING_AMOUNT_CC|Contract||CurrencyMetric|CC|Billing Amount Contract Currency|Billing Amount Contract Currency|POC POB Metrics|Z|Group1|9
-INPUT|BILLING_AMOUNT_LC|Contract||CurrencyMetric|LC|Billing Amount|Billing Amount|POC POB Metrics|AA|Group1|10
-INPUT|BILLING_DATE|Contract||DateMetric||Billing Date|Billing Date|POC POB Metrics|AB|Group1|11
-INPUT|BILLING_INVOICE_NUMBER|Contract||StringMetric||Billing Invoice Number|Billing Invoice Number|POC POB Metrics|AC|Group1|12
-
-
-INPUT|THIRD_PARTY_COMISSION_ITD_LC|Contract||CurrencyMetric|LC|Third Party Comission|Third Party Comission|POC Contract Metrics|AE|Group1|10
+INPUT|BILLING_EVENT_CC|Contract||CurrencyEvent|CC|NonConvertible|Billing Event||Contract Events|O|Group1|2||

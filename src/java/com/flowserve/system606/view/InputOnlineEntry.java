@@ -5,8 +5,10 @@
  */
 package com.flowserve.system606.view;
 
-import com.flowserve.system606.model.BillingEvent;
 import com.flowserve.system606.model.Contract;
+import com.flowserve.system606.model.CurrencyEvent;
+import com.flowserve.system606.model.Event;
+import com.flowserve.system606.model.EventType;
 import com.flowserve.system606.model.FinancialPeriod;
 import com.flowserve.system606.model.Measurable;
 import com.flowserve.system606.model.PerformanceObligation;
@@ -14,6 +16,7 @@ import com.flowserve.system606.model.ReportingUnit;
 import com.flowserve.system606.service.AdminService;
 import com.flowserve.system606.service.CalculationService;
 import com.flowserve.system606.service.ContractService;
+import com.flowserve.system606.service.EventService;
 import com.flowserve.system606.service.PerformanceObligationService;
 import com.flowserve.system606.service.ReportingUnitService;
 import com.flowserve.system606.service.TemplateService;
@@ -61,6 +64,8 @@ public class InputOnlineEntry implements Serializable {
     TemplateService templateService;
     private TreeNode rootTreeNode;
     private TreeNode billingTreeNode;
+    @Inject
+    private EventService eventService;
     @Inject
     private AdminService adminService;
     @Inject
@@ -154,22 +159,29 @@ public class InputOnlineEntry implements Serializable {
     }
 
     public void addBillingEvent(Contract contract) throws Exception {
-        BillingEvent billingEvent = new BillingEvent();
+        EventType billingEventType = eventService.getEventTypeByCode("BILLING_EVENT_CC");
+        CurrencyEvent billingEvent = new CurrencyEvent();
+        billingEvent.setCreatedBy(webSession.getUser());
+        billingEvent.setCreationDate(LocalDateTime.now());
+        billingEvent.setEventType(billingEventType);
         billingEvent.setContract(contract);
-        billingEvent = adminService.update(billingEvent);
-        contract.getBillingEvents().add(billingEvent);
+        billingEvent = (CurrencyEvent) eventService.update(billingEvent);
+        billingEvent.setName("BillingEvent " + billingEvent.getId());
+        contract.setNodeExpanded(true);
+        calculationService.addEvent(contract, webSession.getCurrentPeriod(), billingEvent);
         contractService.update(contract);
 
         billingTreeNode = viewSupport.generateNodeTreeForBilling(reportingUnit);
     }
 
-    public void removeBillingEvent(BillingEvent bEvent) {
-        Contract contract = bEvent.getContract();
-        contract.getBillingEvents().remove(bEvent);
-        billingTreeNode = viewSupport.generateNodeTreeForBilling(reportingUnit);
+    public void setBillingName(Event billingEvent, String billingNumber) {
+        billingEvent.setName("Billing " + billingNumber);
     }
 
-    public void updateCumulativeCurrencies() {
+    public void removeBillingEvent(CurrencyEvent billingEvent) throws Exception {
+        Contract contract = billingEvent.getContract();
+        contract.setNodeExpanded(true);
+        calculationService.removeEvent(contract, webSession.getCurrentPeriod(), billingEvent);
         billingTreeNode = viewSupport.generateNodeTreeForBilling(reportingUnit);
     }
 
@@ -209,11 +221,21 @@ public class InputOnlineEntry implements Serializable {
     public void calculateOutputs(PerformanceObligation pob) throws Exception {
         try {
             Logger.getLogger(InputOnlineEntry.class.getName()).log(Level.INFO, "Calcing outputs...");
-            Logger.getLogger(InputOnlineEntry.class.getName()).log(Level.INFO, "Setting POB last updated by: " + webSession.getUser().getName());
             updateAuditInfo(pob);
-
             calculationService.executeBusinessRules(pob, webSession.getCurrentPeriod());
 
+        } catch (Exception e) {
+            FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", e.getCause().getCause().getMessage());
+            FacesContext.getCurrentInstance().addMessage(null, msg);
+            logger.log(Level.SEVERE, "Error calculateOutputs.", e);
+        }
+    }
+
+    public void calculateEventOutputs(Event event) throws Exception {
+        try {
+            Logger.getLogger(InputOnlineEntry.class.getName()).log(Level.INFO, "Calcing outputs...");
+            updateAuditInfo(event.getContract());
+            calculationService.executeBusinessRules(event.getContract(), webSession.getCurrentPeriod());
         } catch (Exception e) {
             FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", e.getCause().getCause().getMessage());
             FacesContext.getCurrentInstance().addMessage(null, msg);
@@ -288,6 +310,11 @@ public class InputOnlineEntry implements Serializable {
         pob.setLastUpdateDate(LocalDateTime.now());
         pob.getContract().setLastUpdatedBy(webSession.getUser());
         pob.getContract().setLastUpdateDate(LocalDateTime.now());
+    }
+
+    private void updateAuditInfo(Contract contract) {
+        contract.setLastUpdatedBy(webSession.getUser());
+        contract.setLastUpdateDate(LocalDateTime.now());
     }
 
     public StreamedContent getFile() throws Exception {

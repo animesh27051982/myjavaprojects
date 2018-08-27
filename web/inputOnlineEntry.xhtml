@@ -11,11 +11,6 @@
 
     <ui:define name="head">
         <script type="text/javascript">
-            $(document).on("keydown", ".ui-cell-editor-input input", function (event) {
-                if (event.keyCode == 13) {
-                    $(this).closest("tr").find(".ui-row-editor .ui-icon-check").click();
-                }
-            });
             function showStatus() {
                 PF('statusDialog').show();
             }
@@ -61,15 +56,15 @@
 
                         <!--<p:panelGrid columns="4" columnClasses="ui-grid-col-6,ui-grid-col-6,ui-grid-col-6,ui-grid-col-6" layout="grid" styleClass="ui-panelgrid-blank form-group" style="float: right; border:0px none; background-color:transparent; white-space: nowrap;">-->
                         <p:outputPanel style="width:600px;float: right;">
-                            <p:fileUpload  fileUploadListener="#{inputOnlineEntry.handleTemplateUpload}" auto="true" label="Upload Template"
-                                           multiple="false" update="messages" sizeLimit="10000000" allowTypes="/(\.|\/)(xlsx)$/" style="width:70%;float: left" rendered="#{viewSupport.periodOpen}"/>
+                            <p:fileUpload  fileUploadListener="#{inputOnlineEntry.handleTemplateUpload}" auto="true" label="Upload Excel Template" mode="simple" skinSimple="true"
+                                           multiple="false" update="messages" sizeLimit="10000000" allowTypes="/(\.|\/)(xlsx)$/" style="float: right; margin-left: 20px;" rendered="#{viewSupport.periodOpen}"/>
+                            <p:commandButton value="Download Excel Template" ajax="false" style="marign-left: 20px; width: auto; float: right" icon="ui-icon-arrowthick-1-s"
+                                             onclick="PrimeFaces.monitorDownload(showStatus, hideStatus)">
+                                <p:fileDownload value="#{inputOnlineEntry.file}" />
+                            </p:commandButton>
                             <p:dialog modal="true" widgetVar="statusDialog" header="Preparing Download..." draggable="false" closable="false">
                                 <p:graphicImage value="/images/pbar-ani.gif" style="height: 30px; width: 300px;"/>
                             </p:dialog>
-                            <p:commandButton value="Download Template" ajax="false" style="width:auto;float: right" icon="ui-icon-arrowthick-1-s" onclick="PrimeFaces.monitorDownload(showStatus, hideStatus)">
-                                <p:fileDownload value="#{inputOnlineEntry.file}" />
-                            </p:commandButton>
-
                         </p:outputPanel>
                         <!--</p:panelGrid>-->
 
@@ -503,9 +498,9 @@
                                             <p:row>
                                                 <p:column colspan="1" headerText="" />
                                                 <p:column colspan="2" style="background-color: #0071bc; color: #ffffff; white-space:pre-line;"  headerText="Billing Data" />
-                                                <p:column colspan="2" style="background-color: #43C86F; color: #ffffff; white-space:pre-line;"  headerText="Contract Currency" />
+                                                <p:column colspan="3" style="background-color: #43C86F; color: #ffffff; white-space:pre-line;"  headerText="Contract Currency" />
                                                 <p:column colspan="1" headerText="" />
-                                                <p:column colspan="2" style="background-color: #5aa3d4; color: #ffffff; white-space:pre-line;"  headerText="Local Currency" />
+                                                <p:column colspan="3" style="background-color: #5aa3d4; color: #ffffff; white-space:pre-line;"  headerText="Local Currency" />
                                             </p:row>
                                             <p:row>
                                                 <p:column colspan="1" style="white-space:pre-line;" id="bill_con" >
@@ -535,7 +530,13 @@
                                                 <p:column colspan="1" style="white-space:pre-line;" id="bill_cur" >
                                                     <f:facet name="header">
                                                         <h:outputText  value="Billing Contract Currency" />
-                                                        <p:tooltip  for="bill_cur" value="Billing Contract Cur"  showEffect="slide" hideEffect="explode" position="top"/>
+                                                        <p:tooltip  for="bill_cur" value="Billing Contract Curreency"  showEffect="slide" hideEffect="explode" position="top"/>
+                                                    </f:facet>
+                                                </p:column>
+                                                <p:column colspan="1" style="white-space:pre-line;" id="cc_bill" >
+                                                    <f:facet name="header">
+                                                        <h:outputText  value="Cumulative Billings CC" />
+                                                        <p:tooltip  for="cc_bill" value="Cumulative Billings"  showEffect="slide" hideEffect="explode" position="top"/>
                                                     </f:facet>
                                                 </p:column>
                                                 <p:column colspan="1" style="white-space:pre-line;" id="fx">
@@ -553,7 +554,13 @@
                                                 <p:column colspan="1" style="white-space:pre-line;" id="bill_loc_cur" >
                                                     <f:facet name="header">
                                                         <h:outputText  value="Billing Local Currency" />
-                                                        <p:tooltip  for="bill_loc_cur" value="Billing Local Cur"  showEffect="slide" hideEffect="explode" position="top"/>
+                                                        <p:tooltip  for="bill_loc_cur" value="Billing Local Currency"  showEffect="slide" hideEffect="explode" position="top"/>
+                                                    </f:facet>
+                                                </p:column>
+                                                <p:column colspan="1" style="white-space:pre-line;" id="lc_bill" >
+                                                    <f:facet name="header">
+                                                        <h:outputText  value="Cumulative Billings LC" />
+                                                        <p:tooltip  for="lc_bill" value="Cumulative Billings"  showEffect="slide" hideEffect="explode" position="top"/>
                                                     </f:facet>
                                                 </p:column>
                                                 <p:column colspan="1" style="white-space:pre-line;" id="opt" >
@@ -570,79 +577,87 @@
                                         </p:column>
 
                                         <p:column style="white-space:pre-line;">
-                                            <p:cellEditor rendered="#{of:isInstance('com.flowserve.system606.model.BillingEvent', billEvent)}">
+                                            <p:cellEditor rendered="#{of:isInstance('com.flowserve.system606.model.CurrencyEvent', billEvent)}">
                                                 <f:facet name="output">
-                                                    <p:inputText value="#{billEvent.invoiceNumber}" styleClass="#{empty billEvent.invoiceNumber ? 'ui-state-error' : ''}" readonly="true"/>
+                                                    <p:inputText value="#{billEvent.number}" styleClass="#{empty billEvent.number ? 'ui-state-error' : ''}" readonly="true"/>
                                                 </f:facet>
                                                 <f:facet name="input">
-                                                    <p:inputText value="#{billEvent.invoiceNumber}" disabled="#{not viewSupport.periodOpen}"/>
+                                                    <p:inputText value="#{billEvent.number}" disabled="#{not viewSupport.periodOpen}" >
+                                                        <p:ajax event="change" process="@this" listener="#{inputOnlineEntry.setBillingName(billEvent, billEvent.number)}"/>
+                                                    </p:inputText>
                                                 </f:facet>
                                             </p:cellEditor>
                                         </p:column>
                                         <p:column style="white-space:pre-line;">
-                                            <p:cellEditor rendered="#{of:isInstance('com.flowserve.system606.model.BillingEvent', billEvent)}">
+                                            <p:cellEditor rendered="#{of:isInstance('com.flowserve.system606.model.CurrencyEvent', billEvent)}">
                                                 <f:facet name="output">
-                                                    <p:inputText value="#{billEvent.billingDate}" styleClass="#{empty billEvent.billingDate ? 'ui-state-error' : ''}" readonly="true">
+                                                    <p:inputText value="#{billEvent.eventDate}" styleClass="#{empty billEvent.eventDate ? 'ui-state-error' : ''}" readonly="true">
                                                         <f:convertDateTime pattern="dd-MMM-yyyy" type="localDate" />
                                                     </p:inputText>
                                                 </f:facet>
                                                 <f:facet name="input">
-                                                    <p:calendar value="#{billEvent.billingDate}" converter="localDateConverter" pattern="MM/dd/yyyy" navigator="true" mode="popup"
-                                                                disabled="#{not viewSupport.periodOpen}"/>
+                                                    <p:calendar value="#{billEvent.eventDate}" converter="localDateConverter" pattern="MM/dd/yyyy" navigator="true" mode="popup"
+                                                                disabled="#{not viewSupport.periodOpen}" mindate="#{viewSupport.currentPeriodMinDate}" maxdate="#{viewSupport.currentPeriodMaxDate}"/>
                                                 </f:facet>
                                             </p:cellEditor>
                                         </p:column>
                                         <p:column style="white-space:pre-line;">
-                                            <h:outputText value="#{billEvent.contract.contractCurrency.currencyCode}" rendered="#{of:isInstance('com.flowserve.system606.model.BillingEvent', billEvent)}"/>
+                                            <h:outputText value="#{billEvent.contractCurrency.currencyCode}" rendered="#{of:isInstance('com.flowserve.system606.model.Contract', billEvent)}"/>
                                         </p:column>
                                         <p:column style="white-space:pre-line;">
-                                            <h:outputText value="#{billEvent.totalBillingsContractCurrency}" rendered="#{of:isInstance('com.flowserve.system606.model.Contract', billEvent) and billEvent.totalBillingsContractCurrency != 0}" >
-                                                <f:convertNumber type="currency" currencySymbol=""/>
-                                            </h:outputText>
-                                            <p:cellEditor rendered="#{of:isInstance('com.flowserve.system606.model.BillingEvent', billEvent)}">
+                                            <p:cellEditor rendered="#{of:isInstance('com.flowserve.system606.model.CurrencyEvent', billEvent)}">
                                                 <f:facet name="output">
-                                                    <p:inputText value="#{billEvent.amountContractCurrency}" styleClass="#{empty billEvent.amountContractCurrency ? 'ui-state-error' : ''}" readonly="true">
+                                                    <p:inputText value="#{billEvent.ccValue}" styleClass="#{empty billEvent.ccValue ? 'ui-state-error' : ''}" readonly="true">
                                                         <f:validateDoubleRange/>
                                                         <f:convertNumber type="currency" currencySymbol=""/>
                                                     </p:inputText>
                                                 </f:facet>
                                                 <f:facet name="input">
-                                                    <p:inputText value="#{billEvent.amountContractCurrency}" disabled="#{not viewSupport.periodOpen}">
-                                                        <p:ajax event="change" process="@this" update="treeTableId" listener="#{inputOnlineEntry.updateCumulativeCurrencies}"/>
+                                                    <p:inputText value="#{billEvent.ccValue}" disabled="#{not viewSupport.periodOpen}">
+                                                        <p:ajax event="change" process="@this" update="billLc" listener="#{inputOnlineEntry.calculateEventOutputs(billEvent)}"/>
                                                     </p:inputText>
                                                 </f:facet>
                                             </p:cellEditor>
                                         </p:column>
                                         <p:column style="white-space:pre-line;">
-                                            <h:outputText value="#{viewSupport.getExchangeRate(billEvent.contract)}" title="#{viewSupport.getExchangeRate(billEvent.contract)}"
-                                                          rendered="#{of:isInstance('com.flowserve.system606.model.BillingEvent', billEvent)}">
+                                            <h:outputText id="billCTDcc" value="#{viewSupport.getCurrencyMetric('CONTRACT_BILLINGS_CTD_CC', billEvent).ccValue}"
+                                                          rendered="#{of:isInstance('com.flowserve.system606.model.Contract', billEvent)}" >
+                                                <f:convertNumber type="currency" currencySymbol=""/>
+                                            </h:outputText>
+                                        </p:column>
+                                        <p:column style="white-space:pre-line;">
+                                            <h:outputText value="#{viewSupport.getExchangeRate(billEvent)}" title="#{viewSupport.getExchangeRate(billEvent)}"
+                                                          rendered="#{of:isInstance('com.flowserve.system606.model.Contract', billEvent)}">
                                                 <f:convertNumber maxFractionDigits="2" />
                                             </h:outputText>
                                         </p:column>
                                         <p:column style="white-space:pre-line;">
-                                            <h:outputText value="#{billEvent.contract.reportingUnit.localCurrency.currencyCode}" rendered="#{of:isInstance('com.flowserve.system606.model.BillingEvent', billEvent)}"/>
+                                            <h:outputText value="#{billEvent.localCurrency.currencyCode}" rendered="#{of:isInstance('com.flowserve.system606.model.Contract', billEvent)}"/>
                                         </p:column>
                                         <p:column style="white-space:pre-line;">
-                                            <h:outputText value="#{billEvent.totalBillingsLocalCurrency}" rendered="#{of:isInstance('com.flowserve.system606.model.Contract', billEvent) and billEvent.totalBillingsLocalCurrency != 0}" >
-                                                <f:convertNumber type="currency" currencySymbol=""/>
-                                            </h:outputText>
-                                            <p:cellEditor rendered="#{of:isInstance('com.flowserve.system606.model.BillingEvent', billEvent)}">
+                                            <p:cellEditor id="billLc" rendered="#{of:isInstance('com.flowserve.system606.model.CurrencyEvent', billEvent)}">
                                                 <f:facet name="output">
-                                                    <p:inputText value="#{billEvent.amountLocalCurrency}" styleClass="#{empty billEvent.amountLocalCurrency ? 'ui-state-error' : ''}" readonly="true">
+                                                    <p:inputText value="#{billEvent.lcValue}" styleClass="#{empty billEvent.lcValue ? 'ui-state-error' : ''}" readonly="true">
                                                         <f:validateDoubleRange/>
                                                         <f:convertNumber type="currency" currencySymbol=""/>
                                                     </p:inputText>
                                                 </f:facet>
                                                 <f:facet name="input">
-                                                    <p:inputText value="#{billEvent.amountLocalCurrency}" disabled="#{not viewSupport.periodOpen}">
-                                                        <p:ajax event="change" process="@this" update="treeTableId" listener="#{inputOnlineEntry.updateCumulativeCurrencies}"/>
+                                                    <p:inputText value="#{billEvent.lcValue}" disabled="#{not viewSupport.periodOpen}">
+                                                        <p:ajax event="change" process="@this"/>
                                                     </p:inputText>
                                                 </f:facet>
                                             </p:cellEditor>
                                         </p:column>
+                                        <p:column style="white-space:pre-line;">
+                                            <h:outputText id="billCTD" value="#{viewSupport.getCurrencyMetric('CONTRACT_BILLINGS_CTD_CC', billEvent).lcValue}"
+                                                          rendered="#{of:isInstance('com.flowserve.system606.model.Contract', billEvent)}" >
+                                                <f:convertNumber type="currency" currencySymbol=""/>
+                                            </h:outputText>
+                                        </p:column>
                                         <p:column>
                                             <p:commandLink value="Add Billing" process="@this" update="treeTableId" actionListener="#{inputOnlineEntry.addBillingEvent(billEvent)}" rendered="#{of:isInstance('com.flowserve.system606.model.Contract', billEvent) and  viewSupport.periodOpen}" ></p:commandLink>
-                                            <p:commandLink value="Remove Billing" process="@this" update="treeTableId" actionListener="#{inputOnlineEntry.removeBillingEvent(billEvent)}" rendered="#{of:isInstance('com.flowserve.system606.model.BillingEvent', billEvent) and  viewSupport.periodOpen}"></p:commandLink>
+                                            <p:commandLink value="Remove Billing" process="@this" update="treeTableId" actionListener="#{inputOnlineEntry.removeBillingEvent(billEvent)}" rendered="#{of:isInstance('com.flowserve.system606.model.CurrencyEvent', billEvent) and viewSupport.periodOpen and viewSupport.isCurrentPeriodEvent(billEvent)}"></p:commandLink>
                                         </p:column>
                                     </p:treeTable>
                                 </p:tab>

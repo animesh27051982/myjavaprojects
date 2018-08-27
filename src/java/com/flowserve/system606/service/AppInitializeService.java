@@ -34,6 +34,8 @@ public class AppInitializeService {
     @Inject
     private MetricService metricService;
     @Inject
+    private EventService eventService;
+    @Inject
     private CalculationService calculationService;
 
     @PostConstruct
@@ -49,8 +51,9 @@ public class AppInitializeService {
             //currencyService.initCurrencyConverter(financialPeriodService.findById("OCT-17"));
             //currencyService.initCurrencyConverter(financialPeriodService.findById("MAY-18"));
             adminService.initSubledgerAccount();
-            adminService.initBilings();
+            //adminService.initBilings();
             metricService.initMetricTypes();
+            eventService.initEventTypes();
             adminService.initCountries();
             adminService.initBusinessUnit();
             adminService.initReportingUnits();

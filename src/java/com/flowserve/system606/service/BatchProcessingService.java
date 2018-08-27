@@ -5,9 +5,10 @@
  */
 package com.flowserve.system606.service;
 
-import com.flowserve.system606.model.BillingEvent;
 import com.flowserve.system606.model.Contract;
+import com.flowserve.system606.model.CurrencyEvent;
 import com.flowserve.system606.model.DataImportFile;
+import com.flowserve.system606.model.EventType;
 import com.flowserve.system606.model.FinancialPeriod;
 import com.flowserve.system606.model.PerformanceObligation;
 import com.flowserve.system606.model.ReportingUnit;
@@ -61,6 +62,8 @@ public class BatchProcessingService {
     private ContractService contractService;
     @Inject
     private AdminService adminService;
+    @Inject
+    private EventService eventService;
     @Resource
     private UserTransaction ut;
     private Map<String, RevenueMethod> methodMap = new HashMap<String, RevenueMethod>();
@@ -335,29 +338,44 @@ public class BatchProcessingService {
         dataImport = new DataImportFile();
 
         ut.begin();
+        EventType billingEventType = eventService.getEventTypeByCode("BILLING_EVENT_CC");
 
         try {
             while (resultSet.next()) {
                 FinancialPeriod period = financialPeriodService.findByNumericString(resultSet.getString(1));
 
                 if (period != null) {
-                    int id = resultSet.getInt(2);
-                    if (id != 0) {
+                    int contractId = resultSet.getInt(2);
+                    if (contractId != 0) {
                         BigDecimal cc = resultSet.getBigDecimal(3);
                         BigDecimal lc = resultSet.getBigDecimal(4);
-                        Contract contract = contractService.findContractById(new Long(id));
+                        Contract contract = contractService.findContractById(new Long(contractId));
+                        if (cc == null && lc == null) {
+                            continue;
+                        }
+                        if (BigDecimal.ZERO.equals(cc) && BigDecimal.ZERO.equals(lc)) {
+                            continue;
+                        }
+                        if (cc != null && cc.floatValue() == 0.0f && lc != null && lc.floatValue() == 0.0f) {
+                            continue;
+                        }
                         if (contract != null) {
-                            BillingEvent bEvent = new BillingEvent();
-                            bEvent.setAmountContractCurrency(cc);
-                            bEvent.setAmountLocalCurrency(lc);
-                            bEvent.setInvoiceNumber("Migrated");
-                            bEvent.setContract(contract);
-                            bEvent.setBillingDate(LocalDate.of(period.getPeriodYear(), period.getPeriodMonth(), 1));
-                            contract.getBillingEvents().add(bEvent);
+                            CurrencyEvent billingEvent = new CurrencyEvent();
+                            billingEvent.setCcValue(cc);
+                            billingEvent.setLcValue(lc);
+                            billingEvent.setName("Migrated Billing");
+                            billingEvent.setEventDate(LocalDate.of(period.getPeriodYear(), period.getPeriodMonth(), 1));
+                            billingEvent.setCreationDate(LocalDateTime.now());
+                            billingEvent.setEventType(billingEventType);
+                            billingEvent.setFinancialPeriod(period);
+                            billingEvent.setContract(contract);
+                            billingEvent = (CurrencyEvent) eventService.update(billingEvent);
+                            //Logger.getLogger(BatchProcessingService.class.getName()).log(Level.INFO, "Adding billing event: " + billingEvent.getId());
+                            calculationService.addEvent(contract, period, billingEvent);
                             contractService.update(contract);
                         } else {
-                            importMessages.add("Contract not found when processing billing: " + id);
-                            logger.log(Level.FINER, "These POBs not found : " + id);
+                            importMessages.add("Contract not found when processing billing: " + contractId);
+                            logger.log(Level.INFO, "Contract not found : " + contractId);
                         }
                     }
                 } else {

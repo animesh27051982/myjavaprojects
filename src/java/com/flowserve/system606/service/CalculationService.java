@@ -12,6 +12,10 @@ import com.flowserve.system606.model.CurrencyMetricPriorPeriod;
 import com.flowserve.system606.model.DateMetric;
 import com.flowserve.system606.model.DateMetricPriorPeriod;
 import com.flowserve.system606.model.DecimalMetric;
+import com.flowserve.system606.model.Event;
+import com.flowserve.system606.model.EventList;
+import com.flowserve.system606.model.EventStore;
+import com.flowserve.system606.model.EventType;
 import com.flowserve.system606.model.FinancialPeriod;
 import com.flowserve.system606.model.Measurable;
 import com.flowserve.system606.model.Metric;
@@ -62,6 +66,8 @@ public class CalculationService {
     @Inject
     private MetricService metricService;
     @Inject
+    private EventService eventService;
+    @Inject
     private DroolsInitService droolsInitService;
     private StatelessKieSession kSession = null;
     private static final String PACKAGE_PREFIX = "com.flowserve.system606.model.";
@@ -85,7 +91,7 @@ public class CalculationService {
     }
 
     // intelliGet since this is no ordinary get.  Initialize any missing metrics on the fly.
-    private Metric intelliGetMetric(MetricType metricType, Measurable measurable, FinancialPeriod period) {  // TODO - Exception type to be thrown?
+    private Metric intelliGetMetric(MetricType metricType, Measurable measurable, FinancialPeriod period) {
         if (!measurable.metricSetExistsForPeriod(period)) {
             measurable.initializeMetricSetForPeriod(period);
         }
@@ -97,7 +103,6 @@ public class CalculationService {
     }
 
     private Metric getMetric(String metricCode, Measurable measurable, FinancialPeriod period) {
-        //FinancialPeriod period = financialPeriodService.getCurrentFinancialPeriod();
         return intelliGetMetric(metricService.getMetricTypeByCode(metricCode), measurable, period);
     }
 
@@ -138,7 +143,6 @@ public class CalculationService {
 
             for (Measurable childMeasurable : measurable.getChildMeasurables()) {
                 BigDecimal childMetricValue = getAccumulatedCurrencyMetric(metricCode, childMeasurable, period).getValue();
-                //Logger.getLogger(CalculationService.class.getName()).log(Level.INFO, "Adding: " + childMetricValue.toPlainString());
                 metric.setValue(metric.getValue().add(childMetricValue));
             }
 
@@ -159,6 +163,43 @@ public class CalculationService {
         }
 
         return getAccumulatedCurrencyMetric(metricCode, measurable, period);
+    }
+
+    private EventList intelliGetEventList(EventStore eventStore, FinancialPeriod period) {
+        if (!eventStore.eventListExistsForPeriod(period)) {
+            eventStore.initializeEventListForPeriod(period);
+        }
+
+        return eventStore.getPeriodEventList(period);
+    }
+
+    private EventList getEventList(EventStore eventStore, FinancialPeriod period) {
+        return intelliGetEventList(eventStore, period);
+    }
+
+    private List<Event> getPeriodEvents(Measurable measurable, FinancialPeriod period) {
+        List<Event> events = new ArrayList<Event>();
+
+        if (measurable instanceof EventStore) {
+            events.addAll(getEventList((EventStore) measurable, period).getEventList());
+        }
+
+        return events;
+    }
+
+    public void addEvent(EventStore eventStore, FinancialPeriod period, Event event) throws Exception {
+        if (eventStore instanceof EventStore) {
+            EventList eventList = getEventList(eventStore, period);
+            event.setEventList(eventList);
+            eventList.addEvent(event);
+        }
+    }
+
+    public void removeEvent(EventStore eventStore, FinancialPeriod period, Event event) throws Exception {
+        if (eventStore instanceof EventStore) {
+            EventList eventList = getEventList(eventStore, period);
+            eventList.removeEvent(event);
+        }
     }
 
     private boolean isMetricAvailableAtThisLevel(Metric metric) {
@@ -242,6 +283,7 @@ public class CalculationService {
         facts.add(period);
         facts.add(currencyService);
         facts.addAll(getAllPriorPeriodMetrics(measurable, period));
+        facts.addAll(getPeriodEvents(measurable, period));
         kSession.execute(facts);
         convertCurrencies(periodMetrics, measurable, period);
     }
@@ -250,7 +292,7 @@ public class CalculationService {
         for (Measurable measurable : measurables) {
             if (isValidForCalculations(measurable, period)) {
                 executeBusinessRules(measurable, period);
-                adminService.update(measurable);
+                update(measurable);
             }
         }
     }
@@ -258,8 +300,12 @@ public class CalculationService {
     public void executeBusinessRulesAndSave(Measurable measurable, FinancialPeriod period) throws Exception {
         if (isValidForCalculations(measurable, period)) {
             executeBusinessRules(measurable, period);
-            adminService.update(measurable);
+            update(measurable);
         }
+    }
+
+    public Measurable update(Measurable measurable) throws Exception {
+        return em.merge(measurable);
     }
 
     private Collection<Metric> getAllCurrentPeriodMetrics(Measurable measurable, FinancialPeriod period) throws Exception {
@@ -296,8 +342,11 @@ public class CalculationService {
         return metrics;
     }
 
+    public List<Event> getAllEventsByEventType(EventStore eventStore, EventType eventType) {
+        return eventStore.getAllEventsByEventType(eventType);
+    }
+
     private Collection<Object> getAllPriorPeriodMetrics(Measurable measurable, FinancialPeriod currentPeriod) throws Exception {
-        //FinancialPeriod priorPeriod = financialPeriodService.calculatePriorPeriod(currentPeriod);
         FinancialPeriod priorPeriod = currentPeriod.getPriorPeriod();
 
         Collection<Metric> metrics = getAllMetrics(measurable, priorPeriod);

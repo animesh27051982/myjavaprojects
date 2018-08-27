@@ -348,7 +348,8 @@
                                         </p:column>
 
                                         <p:column style="white-space:pre-line;">
-                                            <h:outputText value="#{viewSupport.getExchangeRate(pob.contract)}" rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}">
+                                            <h:outputText value="#{viewSupport.getExchangeRate(pob.contract)}" rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}" title="#{viewSupport.getExchangeRate(pob.contract)}">
+                                                <f:convertNumber maxFractionDigits="2" />
                                             </h:outputText>
                                         </p:column>
 
@@ -460,7 +461,7 @@
                                                 <p:column colspan="1" style="white-space:pre-line;" id="bl15" >
                                                     <f:facet name="header">
                                                         <h:outputText  value="#{viewSupport.getMetricTypeName('LOSS_RESERVE_CTD_LC')}"/>
-                                                        <p:tooltip  for="bl15" value="#{viewSupport.getMetricTypeDescription('LOSS_RESERVE_CTD_LC')}"  showEffect="slide" hideEffect="explode" position="top"/>
+                                                        <p:tooltip  for="bl15" value="#{viewSupport.getMetricTypeDescription('LOSS_RESERVE_CTD_LC')} Prior Period"  showEffect="slide" hideEffect="explode" position="top"/>
                                                     </f:facet>
                                                 </p:column>
                                                 <p:column colspan="1" style="white-space:pre-line;" id="bl16" >
@@ -574,27 +575,26 @@
                                                 </p:column>
                                                 <p:column colspan="1" style="white-space:pre-line;"  id="ov2" >  <!--REVENUE_TO_RECOGNIZE_PERIOD_CC-->
                                                     <f:facet name="header">
-                                                        <h:outputText  value="Sales POC - In Current Period"/>
-                                                        <p:tooltip  for="ov2" value="Sales POC - In Current Period"  showEffect="slide" hideEffect="explode" position="top"/>
+                                                        <h:outputText value="#{viewSupport.getMetricTypeName('REVENUE_TO_RECOGNIZE_PERIOD_CC')}"/>
+                                                        <p:tooltip  for="ov2" value="#{viewSupport.getMetricTypeDescription('REVENUE_TO_RECOGNIZE_PERIOD_CC')}" showEffect="slide" hideEffect="explode" position="top"/>
                                                     </f:facet>
                                                 </p:column>
                                                 <p:column colspan="1" style="white-space:pre-line;"  id="ov3" >
                                                     <f:facet name="header">
-                                                        <h:outputText  value="#{viewSupport.getMetricTypeName('LIQUIDATED_DAMAGES_TO_RECOGNIZE_PERIOD_CC')}"/>
+                                                        <h:outputText value="#{viewSupport.getMetricTypeName('LIQUIDATED_DAMAGES_TO_RECOGNIZE_PERIOD_CC')}"/>
                                                         <p:tooltip  for="ov3" value="#{viewSupport.getMetricTypeDescription('LIQUIDATED_DAMAGES_TO_RECOGNIZE_PERIOD_CC')}"  showEffect="slide" hideEffect="explode" position="top"/>
                                                     </f:facet>
                                                 </p:column>
                                                 <p:column colspan="1" style="white-space:pre-line;"  id="ov4">
                                                     <f:facet name="header">
-                                                        <h:outputText  value="#{viewSupport.getMetricTypeName('NET_PERIOD_SALES_CC')}"/>
+                                                        <h:outputText value="#{viewSupport.getMetricTypeName('NET_PERIOD_SALES_CC')}"/>
                                                         <p:tooltip  for="ov4" value="#{viewSupport.getMetricTypeDescription('NET_PERIOD_SALES_CC')}"  showEffect="slide" hideEffect="explode" position="top"/>
                                                     </f:facet>
-
                                                 </p:column>
                                                 <p:column colspan="1" style="white-space:pre-line;"  id="ov5" > <!-- COST_OF_GOODS_SOLD_PERIOD_LC -->
                                                     <f:facet name="header">
-                                                        <h:outputText  value="COS POC - In Current Period"/>
-                                                        <p:tooltip  for="ov5" value="COS POC - In Current Period"  showEffect="slide" hideEffect="explode" position="top"/>
+                                                        <h:outputText value="#{viewSupport.getMetricTypeName('COST_OF_GOODS_SOLD_PERIOD_LC')}"/>
+                                                        <p:tooltip  for="ov5" value="#{viewSupport.getMetricTypeDescription('COST_OF_GOODS_SOLD_PERIOD_LC')}"  showEffect="slide" hideEffect="explode" position="top"/>
                                                     </f:facet>
                                                 </p:column>
                                                 <p:column colspan="1" style="white-space:pre-line;"  id="ov6" >

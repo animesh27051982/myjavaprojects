@@ -5,8 +5,10 @@
  */
 package com.flowserve.system606.service;
 
-import com.flowserve.system606.model.BillingEvent;
 import com.flowserve.system606.model.Contract;
+import com.flowserve.system606.model.CurrencyEvent;
+import com.flowserve.system606.model.Event;
+import com.flowserve.system606.model.EventType;
 import com.flowserve.system606.model.FinancialPeriod;
 import com.flowserve.system606.model.Measurable;
 import com.flowserve.system606.model.PerformanceObligation;
@@ -52,6 +54,8 @@ public class ReportsService {
     private static Logger logger = Logger.getLogger("com.flowserve.system606");
     @Inject
     private MetricService metricService;
+    @Inject
+    private EventService eventService;
     @Inject
     private AdminService adminService;
     @Inject
@@ -112,7 +116,8 @@ public class ReportsService {
         BigDecimal costToComplete = getContractCostToCompleteLC(contract, period);
         BigDecimal billingsInExcess = getContractBillingsInExcess(contract, period);
         BigDecimal revenueInExcess = getContractRevenueInExcess(contract, period);
-        BigDecimal billToDate = contract.getTotalBillingsLocalCurrency();
+        BigDecimal billToDate = getContractBillingsCTDLC(contract, period);
+        //BigDecimal billToDate = contract.getTotalBillingsLocalCurrency();
         BigDecimal thirdPartyCommCTD = getCThirdPartyCommissionCTDLC(contract, period);
         BigDecimal thirdPartyRecogLC = getCThirdPartyCommRegLC(contract, period);
 
@@ -485,6 +490,7 @@ public class ReportsService {
         BigDecimal lossReservePeriodADJLC = getLossReservePeriodADJLC(contract, period);
         BigDecimal revenueInExcess = getContractRevenueInExcess(contract, period);
         BigDecimal billingsInExcess = getContractBillingsInExcess(contract, period);
+        BigDecimal bilingsPeriodLC = getContractBillingsPeriodLC(contract, period);
         row = worksheet.getRow(14);
         setCellValue(row, 2, revenueToRecognizePeriod);
         setCellValue(row, 3, liquidatedDamageRecognizePeriodLC);
@@ -492,7 +498,7 @@ public class ReportsService {
         setCellValue(row, 5, lossReservePeriodADJLC);
         setCellValue(row, 6, BigDecimal.ZERO);//TODO THIRD_PARTY_COMMISSION_TO_RECOGNIZE_PERIOD_LC
         setCellValue(row, 7, BigDecimal.ZERO);//TODO FX_GAIN_LOSS
-        setCellValue(row, 8, zeroIfNull(contract.getTotalBillingsLocalCurrency()));//TODO BILLINGS_PERIOD_CC
+        setCellValue(row, 8, bilingsPeriodLC);
         setCellValue(row, 9, costGoodsSoldPeriodLC);
         setCellValue(row, 10, lossReservePeriodADJLC);
         setCellValue(row, 11, revenueInExcess);
@@ -502,7 +508,7 @@ public class ReportsService {
 
         //For Contract Billings row
         row = worksheet.getRow(13);
-        setCellValue(row, 8, zeroIfNull(contract.getTotalBillingsLocalCurrency()));//TODO BILLINGS_PERIOD_CC
+        setCellValue(row, 8, bilingsPeriodLC);
 
         // Split the contract into groups.  We need totals per type of POB, so create 3 groups.  The PerformanceObligationGroup is just a shell Measurable non-entity class used for grouping.
         PerformanceObligationGroup pocPobs = new PerformanceObligationGroup("pocPobs", contract, contract.getPobsByRevenueMethod(RevenueMethod.PERC_OF_COMP));
@@ -735,7 +741,7 @@ public class ReportsService {
         BigDecimal estimatedGrossProfit = getEstimatedGrossProfit(contract, period);
         BigDecimal estimatedGrossMargin = getEstimatedGrossMargin(contract, period);
         BigDecimal localCostCTDLC = getCostOfGoodsSold(contract, period);
-        BigDecimal billToDate = contract.getTotalBillingsLocalCurrency();
+        BigDecimal billToDateLC = getContractBillingsCTDLC(contract, period);
 
         row = worksheet.getRow(6);
         setCellValue(row, colNum, transactionPrice);
@@ -756,7 +762,7 @@ public class ReportsService {
         row = worksheet.getRow(25);
         setCellValue(row, colNum, transactionPrice);
         row = worksheet.getRow(26);
-        setCellValue(row, colNum, billToDate);
+        setCellValue(row, colNum, billToDateLC);
         row = worksheet.getRow(29);
         setCellValue(row, colNum, liquidatedDamage);
         row = worksheet.getRow(32);
@@ -887,6 +893,14 @@ public class ReportsService {
 
     private BigDecimal getContractRevenueInExcess(Measurable measureable, FinancialPeriod period) throws Exception {
         return calculationService.getCurrencyMetric("CONTRACT_REVENUE_IN_EXCESS_LC", measureable, period).getValue();
+    }
+
+    private BigDecimal getContractBillingsCTDLC(Measurable measureable, FinancialPeriod period) throws Exception {
+        return calculationService.getCurrencyMetric("CONTRACT_BILLINGS_CTD_CC", measureable, period).getLcValue();
+    }
+
+    private BigDecimal getContractBillingsPeriodLC(Measurable measureable, FinancialPeriod period) throws Exception {
+        return calculationService.getCurrencyMetric("CONTRACT_BILLINGS_PERIOD_CC", measureable, period).getLcValue();
     }
 
     private BigDecimal getCThirdPartyCommissionCTDLC(Measurable measureable, FinancialPeriod period) throws Exception {
@@ -1048,18 +1062,20 @@ public class ReportsService {
                 }
             } while ((period = financialPeriodService.calculateNextPeriodUntilCurrent(period)) != null);
 
+            EventType billingEventType = eventService.getEventTypeByCode("BILLING_EVENT_CC");
             for (String code : reportingUnits) {
                 ReportingUnit reportingUnit = adminService.findReportingUnitByCode(code);
                 for (Contract contract : reportingUnit.getContracts()) {
-                    for (BillingEvent bEvent : contract.getBillingEvents()) {
+                    for (Event event : contract.getAllEventsByEventType(billingEventType)) {
+                        CurrencyEvent billingEvent = (CurrencyEvent) event;
                         billingST.setString(1, reportingUnit.getCode());
                         billingST.setString(2, String.valueOf(contract.getId()));
-                        billingST.setString(3, bEvent.getInvoiceNumber());
-                        billingST.setDate(4, sqlDateConverter(bEvent.getBillingDate()));
-                        billingST.setDate(5, sqlDateConverter(bEvent.getDeliveryDate()));
-                        billingST.setBigDecimal(6, zeroIfNull(bEvent.getAmountLocalCurrency()));
-                        billingST.setBigDecimal(7, zeroIfNull(bEvent.getAmountContractCurrency()));
-                        billingST.setString(8, bEvent.getDescription());
+                        billingST.setString(3, billingEvent.getNumber());
+                        billingST.setDate(4, sqlDateConverter(billingEvent.getEventDate()));
+                        billingST.setDate(5, sqlDateConverter(billingEvent.getEventDate()));
+                        billingST.setBigDecimal(6, zeroIfNull(billingEvent.getLcValue()));
+                        billingST.setBigDecimal(7, zeroIfNull(billingEvent.getCcValue()));
+                        billingST.setString(8, billingEvent.getDescription());
                         billingST.executeUpdate();
                     }
                 }
