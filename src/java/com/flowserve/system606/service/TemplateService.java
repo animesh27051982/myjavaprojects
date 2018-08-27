@@ -360,7 +360,7 @@ public class TemplateService {
                             billingEvent.setLcValue(new BigDecimal(NumberToTextConverter.toText(cell.getNumericCellValue())));
                         }
 
-                        if (billingEventDoesNotExistInContract(pob.getContract(), billingEvent.getName())) {
+                        if (billingEventDoesNotExistInContract(pob.getContract(), billingEvent.getNumber())) {//billingEvent.getName()
                             billingEvent.setName("Billing " + billingEvent.getNumber());
                             billingEvent = (CurrencyEvent) eventService.update(billingEvent);
                             calculationService.addEvent(pob.getContract(), period, billingEvent);
