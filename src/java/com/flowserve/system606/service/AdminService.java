@@ -316,6 +316,7 @@ public class AdminService {
 
     public void jpaEvictAllCache() {
         em.getEntityManagerFactory().getCache().evictAll();
+        Logger.getLogger(AdminService.class.getName()).log(Level.INFO, "JPA cache cleared.");
     }
 
     public void persist(ReportingUnit ru) throws Exception {

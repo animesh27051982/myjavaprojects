@@ -206,8 +206,6 @@ public class CurrencyService {
         query.setParameter("FROM", fromCurrency);
         query.setParameter("TO", toCurrency);
 
-        Logger.getLogger(CurrencyService.class.getName()).log(Level.INFO, "Retrieving from: " + fromCurrency.getCurrencyCode() + " to: " + toCurrency.getCurrencyCode() + " period: " + period.getId());
-
         return (ExchangeRate) query.getSingleResult();  // use singleresult here since we always expect to find one and only one value.  anything otherwise is an exception.
     }
 

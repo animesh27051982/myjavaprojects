@@ -197,7 +197,8 @@
                                             </h:outputText>
                                         </p:column>
                                         <p:column style="white-space:pre-line;">
-                                            <h:outputText value="#{viewSupport.getDecimalMetric('PERCENT_COMPLETE', pob).value}" rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}"  style="#{viewSupport.getTextStyle(pob)}">
+                                            <h:outputText value="#{viewSupport.getDecimalMetric('PERCENT_COMPLETE', pob).value}" rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}"
+                                                          style="#{viewSupport.getTextStyle(pob)}">
                                                 <f:convertNumber type="percent" minFractionDigits="1" maxFractionDigits="1"/>
                                             </h:outputText>
                                         </p:column>
@@ -227,7 +228,8 @@
                                         </p:column>
 
                                         <p:column style="white-space:pre-line;">
-                                            <h:outputText value="#{viewSupport.getExchangeRate(pob.contract)}" rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}" style="#{viewSupport.getTextStyle(pob)}" title="#{viewSupport.getExchangeRate(pob.contract)}">
+                                            <h:outputText value="#{viewSupport.getExchangeRate(pob.contract)}" rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}"
+                                                          style="#{viewSupport.getTextStyle(pob)}" title="#{viewSupport.getExchangeRate(pob.contract)}">
                                                 <f:convertNumber maxFractionDigits="2" />
                                             </h:outputText>
                                         </p:column>
@@ -460,8 +462,8 @@
                                                 </p:column>
                                                 <p:column colspan="1" style="white-space:pre-line;" id="bl15" >
                                                     <f:facet name="header">
-                                                        <h:outputText  value="#{viewSupport.getMetricTypeName('LOSS_RESERVE_CTD_LC')}"/>
-                                                        <p:tooltip  for="bl15" value="#{viewSupport.getMetricTypeDescription('LOSS_RESERVE_CTD_LC')} Prior Period"  showEffect="slide" hideEffect="explode" position="top"/>
+                                                        <h:outputText  value="#{viewSupport.getMetricTypeName('LOSS_RESERVE_CTD_LC')} Prior Period"/>
+                                                        <p:tooltip  for="bl15" value="#{viewSupport.getMetricTypeDescription('LOSS_RESERVE_CTD_LC')}"  showEffect="slide" hideEffect="explode" position="top"/>
                                                     </f:facet>
                                                 </p:column>
                                                 <p:column colspan="1" style="white-space:pre-line;" id="bl16" >
@@ -503,13 +505,14 @@
                                             </h:outputText>
                                         </p:column>
                                         <p:column style="white-space:pre-line;">
-                                            <h:outputText value="#{viewSupport.getCurrencyMetric('LIQUIDATED_DAMAGES_BACKLOG_CC', pob).ccValue}" style="#{viewSupport.getTextStyle(pob)}">
+                                            <h:outputText value="#{viewSupport.getCurrencyMetric('LIQUIDATED_DAMAGES_BACKLOG_CC', pob).ccValue}" style="#{viewSupport.getTextStyle(pob)}" >
                                                 <f:convertNumber type="currency" currencySymbol=""/>
                                             </h:outputText>
                                         </p:column>
 
                                         <p:column style="white-space:pre-line;">
-                                            <h:outputText value="#{viewSupport.getExchangeRate(pob.contract)}" rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}">
+                                            <h:outputText value="#{viewSupport.getExchangeRate(pob.contract)}" rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}" title="#{viewSupport.getExchangeRate(pob.contract)}">
+                                                <f:convertNumber maxFractionDigits="2" />
                                             </h:outputText>
                                         </p:column>
 
