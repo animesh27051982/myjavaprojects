@@ -11,7 +11,9 @@ import com.flowserve.system606.model.Holiday;
 import com.flowserve.system606.model.PeriodStatus;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.annotation.PostConstruct;
 import javax.ejb.Schedule;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
@@ -30,20 +32,30 @@ public class ScheduleService {
 
     private static final Logger logger = Logger.getLogger(ScheduleService.class.getName());
 
-    @Schedule(dayOfWeek = "Mon-Fri", month = "*", hour = "9-17", dayOfMonth = "*", year = "*", minute = "*", second = "0", persistent = false)
+    @PostConstruct
+    @Schedule(dayOfWeek = "Mon-Fri", month = "*", hour = "12", dayOfMonth = "*", year = "*", minute = "0", second = "0", persistent = false)
 
-    public void userFreezeCheckerCron() throws Exception {
+    public void userFreezeCheckerCron() {
         logger.info("cron started");
         Company com = adminService.findCompanyById("FLS");
         int workday = com.getInputFreezeWorkday();
-        List<Holiday> holidays = adminService.findHolidayList();
+        List<Holiday> holidays = null;
+        try {
+            holidays = adminService.findHolidayList();
+        } catch (Exception ex) {
+            Logger.getLogger(ScheduleService.class.getName()).log(Level.SEVERE, null, ex);
+        }
         LocalDate date = LocalDate.now();
-        if (financialPeriodService.isXWorkday(date, workday, holidays)) {
-            logger.info("freeze day");
-            FinancialPeriod period = financialPeriodService.getCurrentFinancialPeriod();
-            period.setStatus(PeriodStatus.USER_FREEZE);
-            financialPeriodService.update(period);
+        try {
+            if (financialPeriodService.isXWorkday(date, workday, holidays)) {
+                logger.info("freeze day");
+                FinancialPeriod period = financialPeriodService.getCurrentFinancialPeriod();
+                period.setStatus(PeriodStatus.USER_FREEZE);
+                financialPeriodService.update(period);
 
+            }
+        } catch (Exception ex) {
+            Logger.getLogger(ScheduleService.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
