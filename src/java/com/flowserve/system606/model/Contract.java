@@ -179,7 +179,7 @@ public class Contract extends BaseEntity<Long> implements MetricStore, EventStor
 
         for (FinancialPeriod period : periodEventListMap.keySet()) {
             for (Event event : periodEventListMap.get(period).getEventList()) {
-                if (eventType.equals(event.getEventType()) && event.getNumber().equals(number)) {
+                if (eventType.equals(event.getEventType()) && number.equals(event.getNumber())) { //event.getNumber().equals(number)
                     events.add(event);
                 }
             }

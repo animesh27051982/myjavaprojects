@@ -54,42 +54,42 @@
                         </div>
                     </div>
 
-                    <div class="ui-g-12 ui-md-6 ui-lg-3">
-                        <div class="stats">
-                            <div class="stats-icon">
-                                <p:graphicImage name="images/icon-doc.png" library="california-layout" styleClass="doc-icon" />
-                            </div>
-                            <div class="stats-numbers">#{dashboard.reportingUnitCount}</div>
-                            <div class="stats-title">Total Reporting Units</div>
-                        </div>
-                    </div>
-                    <div class="ui-g-12 ui-md-6 ui-lg-3">
-                        <div class="stats">
-                            <div class="stats-icon">
-                                <p:graphicImage name="images/icon-doc.png" library="california-layout" styleClass="doc-icon" />
-                            </div>
-                            <div class="stats-numbers">#{dashboard.contractCount}</div>
-                            <div class="stats-title">Total Contracts</div>
-                        </div>
-                    </div>
-                    <div class="ui-g-12 ui-md-6 ui-lg-3">
-                        <div class="stats">
-                            <div class="stats-icon">
-                                <p:graphicImage name="images/icon-mark.png" library="california-layout" styleClass="mark-icon" />
-                            </div>
-                            <div class="stats-numbers">#{dashboard.pobCount}</div>
-                            <div class="stats-title">Total POBs</div>
-                        </div>
-                    </div>
-                    <div class="ui-g-12 ui-md-6 ui-lg-3">
-                        <div class="stats">
-                            <div class="stats-icon">
-                                <p:graphicImage name="images/icon-profile.png" library="california-layout" styleClass="profile-icon" />
-                            </div>
-                            <div class="stats-numbers">#{dashboard.pobInputRequiredCount}</div>
-                            <div class="stats-title">POBs Needing Action</div>
-                        </div>
-                    </div>
+                    <!--                    <div class="ui-g-12 ui-md-6 ui-lg-3">
+                                            <div class="stats">
+                                                <div class="stats-icon">
+                                                    <p:graphicImage name="images/icon-doc.png" library="california-layout" styleClass="doc-icon" />
+                                                </div>
+                                                <div class="stats-numbers">#{dashboard.reportingUnitCount}</div>
+                                                <div class="stats-title">Total Reporting Units</div>
+                                            </div>
+                                        </div>
+                                        <div class="ui-g-12 ui-md-6 ui-lg-3">
+                                            <div class="stats">
+                                                <div class="stats-icon">
+                                                    <p:graphicImage name="images/icon-doc.png" library="california-layout" styleClass="doc-icon" />
+                                                </div>
+                                                <div class="stats-numbers">#{dashboard.contractCount}</div>
+                                                <div class="stats-title">Total Contracts</div>
+                                            </div>
+                                        </div>
+                                        <div class="ui-g-12 ui-md-6 ui-lg-3">
+                                            <div class="stats">
+                                                <div class="stats-icon">
+                                                    <p:graphicImage name="images/icon-mark.png" library="california-layout" styleClass="mark-icon" />
+                                                </div>
+                                                <div class="stats-numbers">#{dashboard.pobCount}</div>
+                                                <div class="stats-title">Total POBs</div>
+                                            </div>
+                                        </div>
+                                        <div class="ui-g-12 ui-md-6 ui-lg-3">
+                                            <div class="stats">
+                                                <div class="stats-icon">
+                                                    <p:graphicImage name="images/icon-profile.png" library="california-layout" styleClass="profile-icon" />
+                                                </div>
+                                                <div class="stats-numbers">#{dashboard.pobInputRequiredCount}</div>
+                                                <div class="stats-title">POBs Needing Action</div>
+                                            </div>
+                                        </div>-->
 
                     <div class="ui-g-12">
                         <div class="card card-w-title">
@@ -128,6 +128,9 @@
                                 </f:facet>
                                 <p:column style="width: 350px;" headerText="Reporting Unit" sortBy="#{ru.name}">
                                     <h:outputText value="#{ru.name}" />
+                                </p:column>
+                                <p:column headerText="Total Contracts">
+                                    <h:outputText value="#{dashboard.contractCount}" />
                                 </p:column>
                                 <p:column headerText="Platform">
                                     <h:outputText value="#{ru.businessUnit.name}" />
