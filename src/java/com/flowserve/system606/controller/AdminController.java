@@ -147,11 +147,13 @@ public class AdminController implements Serializable {
 
     public String generateReportReportingUnit(ReportingUnit u) throws Exception {
         webSession.setEditReportingUnit(u);
+
         return "reportReportingUnit";
     }
 
     public String generateReportBusinessUnit(BusinessUnit u) throws Exception {
         webSession.setEditBusinessUnit(u);
+
         return "reportBusinessUnit";
     }
 
@@ -163,6 +165,7 @@ public class AdminController implements Serializable {
 
     public String assumeIdentity(User u) throws Exception {
         webSession.setUser(u);
+        webSession.init();
 
         return "dashboard";
     }

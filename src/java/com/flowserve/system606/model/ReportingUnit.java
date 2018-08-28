@@ -236,6 +236,10 @@ public class ReportingUnit extends TransientMeasurable<Long> implements Measurab
         return getPerformanceObligations().size();
     }
 
+    public int getContractCount() {
+        return getContracts().size();
+    }
+
     public long getPobInputRequiredCount() {
         return 0l;
         //return getPerformanceObligations().stream().filter(PerformanceObligation::isInputRequired).count();

@@ -15,9 +15,10 @@ import com.flowserve.system606.web.WebSession;
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.ZoneOffset;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
@@ -51,18 +52,17 @@ public class Dashboard implements Serializable {
     private ViewSupport viewSupport;
     @Inject
     private FinancialPeriodService financialPeriodService;
-
-    private List<ReportingUnit> reportingUnits = new ArrayList<ReportingUnit>();
+    private Set<ReportingUnit> reportingUnits = new TreeSet<ReportingUnit>();
     private ScheduleModel eventModel;
-    private int contractCount = 0;
-    private int pobRequiredCount = 0;
-    private int pobCount = 0;
 
     @PostConstruct
     public void init() {
         reportingUnits.clear();
         // TODO - These could be stale if redeploy.  Reload every time instead of session.
         reportingUnits.addAll(webSession.getPreparableReportingUnits());
+        if (webSession.getCurrentReportingUnit() != null) {
+            reportingUnits.add(webSession.getCurrentReportingUnit());
+        }
 
         try {
             List<Holiday> holidays = adminService.findHolidayList();
@@ -70,30 +70,15 @@ public class Dashboard implements Serializable {
             LocalDate freeze = financialPeriodService.calcInputFreezeWorkday(LocalDate.now(), holidays, company.getInputFreezeWorkday());
             LocalDate poci = financialPeriodService.calcInputFreezeWorkday(LocalDate.now(), holidays, company.getPociDueWorkday());
             eventModel = new DefaultScheduleModel();
+
             for (Holiday holiday : holidays) {
                 Date date = Date.from(holiday.getHolidayDate().atStartOfDay(ZoneOffset.UTC).toInstant());
                 eventModel.addEvent(new DefaultScheduleEvent(holiday.getName(), date, date, true));
             }
             Date Freezeday = Date.from(freeze.atStartOfDay(ZoneOffset.UTC).toInstant());
             eventModel.addEvent(new DefaultScheduleEvent("Input Freeze Day", Freezeday, Freezeday, true));
-
             Date Pociworkday = Date.from(poci.atStartOfDay(ZoneOffset.UTC).toInstant());
             eventModel.addEvent(new DefaultScheduleEvent("POCI Due Workday", Pociworkday, Pociworkday, true));
-
-            if (reportingUnits.size() > 0) {
-                for (ReportingUnit reportingUnit : reportingUnits) {
-                    contractCount += reportingUnit.getContracts().size();
-                }
-            }
-
-            for (ReportingUnit reportingUnit : reportingUnits) {
-                pobRequiredCount += reportingUnit.getPobInputRequiredCount();
-            }
-
-            for (ReportingUnit reportingUnit : reportingUnits) {
-                pobCount += reportingUnit.getPobCount();
-            }
-
         } catch (Exception ex) {
             Logger.getLogger(Calendar.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -103,12 +88,13 @@ public class Dashboard implements Serializable {
         return eventModel;
     }
 
-    public List<ReportingUnit> getReportingUnits() {
+    public Set<ReportingUnit> getReportingUnits() {
         return reportingUnits;
     }
 
     public void onReportingUnitSelect(SelectEvent event) {
         Logger.getLogger(Dashboard.class.getName()).log(Level.INFO, "RU Select Dashboard");
+
         webSession.setFilterText(null);
         init();
     }
@@ -123,16 +109,16 @@ public class Dashboard implements Serializable {
         return reportingUnits.size();
     }
 
-    public int getContractCount() {
-        return contractCount;
+    public int getContractCount(ReportingUnit reportingUnit) {
+        return reportingUnit.getContracts().size();
     }
 
-    public long getPobCount() {
-        return pobCount;
+    public long getPobCount(ReportingUnit reportingUnit) {
+        return reportingUnit.getPobCount();
     }
 
-    public long getPobInputRequiredCount() {
-        return pobRequiredCount;
+    public long getPobInputRequiredCount(ReportingUnit reportingUnit) {
+        return reportingUnit.getPobInputRequiredCount();
 
     }
 }

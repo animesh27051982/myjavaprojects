@@ -118,7 +118,7 @@ rule "Percent Complete POB"
         modify (percentComplete) { value = (costOfGoodsSoldCTD.lcValue == 0B || estimatedCostAtCompletion.lcValue == 0B ? 0B : costOfGoodsSoldCTD.lcValue / estimatedCostAtCompletion.lcValue)};
 end
 
-rule "Percent Complete Contract"
+rule "Contract Percent Complete"
     when
         contract : Contract()
         costOfGoodsSoldCTD : CurrencyMetric(metricType.code == "COST_OF_GOODS_SOLD_CTD_LC", lcValue != null)

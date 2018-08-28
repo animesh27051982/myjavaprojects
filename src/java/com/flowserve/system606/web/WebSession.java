@@ -10,15 +10,13 @@ import com.flowserve.system606.model.Holiday;
 import com.flowserve.system606.model.MetricType;
 import com.flowserve.system606.model.ReportingUnit;
 import com.flowserve.system606.model.User;
-import com.flowserve.system606.service.AdminService;
 import com.flowserve.system606.service.AppInitializeService;
 import com.flowserve.system606.service.FinancialPeriodService;
 import com.flowserve.system606.service.ReportingUnitService;
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.Collection;
+import java.util.Set;
+import java.util.TreeSet;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.SessionScoped;
 import javax.inject.Inject;
@@ -36,11 +34,8 @@ public class WebSession implements Serializable {
     @Inject
     private ReportingUnitService reportingUnitService;
     @Inject
-    private AdminService adminService;
-    @Inject
     private AppInitializeService appInitializeService;
     private BusinessUnit editBusinessUnit;
-    //private TreeNode reportingUnitTreeNode = new DefaultTreeNode();  // this is temp for calculatin testing.
     private ReportingUnit editReportingUnit;
     private User editUser;
     private Country country;
@@ -50,13 +45,12 @@ public class WebSession implements Serializable {
     private FinancialPeriod editFinancialPeriod;
     private FinancialPeriod currentPeriod;
     private FinancialPeriod priorPeriod;
-    //private Long currentReportingUnitId;
     private DataImportFile dataImportFile;
     private String filterText;
     private Contract[] selectedContracts;
-    //private ReportingUnit adminReportingUnit;
     private ReportingUnit currentReportingUnit;
     private MetricType metricType;
+    private Set<ReportingUnit> preparableReportingUnits = new TreeSet<ReportingUnit>();
 
     // The currently logged in user.
     private User user;
@@ -65,10 +59,23 @@ public class WebSession implements Serializable {
     public void init() {
         currentPeriod = financialPeriodService.getCurrentFinancialPeriod();
         priorPeriod = financialPeriodService.getPriorFinancialPeriod();
-        Logger.getLogger(WebSession.class.getName()).log(Level.INFO, "WebSession current: " + currentPeriod.getId());
-        Logger.getLogger(WebSession.class.getName()).log(Level.INFO, "WebSession prior: " + priorPeriod.getId());
-
         user = appInitializeService.getAdminUser();  // For now, may be overridden later by login.  Remove this call.
+
+        preparableReportingUnits = new TreeSet<ReportingUnit>();
+
+        if (user.isAdmin()) {
+            if (currentReportingUnit != null) {
+                preparableReportingUnits.add(currentReportingUnit);
+            }
+        } else {
+            for (ReportingUnit ru : reportingUnitService.getPreparableReportingUnits(user)) {
+                if (ru.isParent()) {
+                    preparableReportingUnits.addAll(ru.getChildReportingUnits());
+                } else {
+                    preparableReportingUnits.add(ru);
+                }
+            }
+        }
     }
 
     public boolean isAdmin() {
@@ -78,7 +85,6 @@ public class WebSession implements Serializable {
     public void switchPeriod(FinancialPeriod newCurrentPeriod) {
         currentPeriod = newCurrentPeriod;
         priorPeriod = currentPeriod.getPriorPeriod();
-        //priorPeriod = financialPeriodService.calculatePriorPeriod(currentPeriod);
     }
 
     public BusinessUnit getEditBusinessUnit() {
@@ -113,9 +119,6 @@ public class WebSession implements Serializable {
         this.country = country;
     }
 
-//    public TreeNode getReportingUnitTreeNode() {
-//        return reportingUnitTreeNode;
-//    }
     public void setEditFinancialPeriod(FinancialPeriod editFinancialPeriod) {
         this.editFinancialPeriod = editFinancialPeriod;
     }
@@ -164,13 +167,6 @@ public class WebSession implements Serializable {
         this.priorPeriod = priorPeriod;
     }
 
-//    public void setCurrentReportingUnitId(Long reportingUnitId) {
-//        this.currentReportingUnitId = reportingUnitId;
-//    }
-//
-//    public Long getCurrentReportingUnitId() {
-//        return currentReportingUnitId;
-//    }
     public DataImportFile getDataImportFile() {
         return dataImportFile;
     }
@@ -219,33 +215,10 @@ public class WebSession implements Serializable {
         this.user = user;
     }
 
-    public List<ReportingUnit> getPreparableReportingUnits() {
-        List<ReportingUnit> rus = new ArrayList<ReportingUnit>();
-
-        if (user.isAdmin()) {
-            if (currentReportingUnit != null) {
-                rus.add(currentReportingUnit);
-            }
-            return rus;
-        }
-
-        for (ReportingUnit ru : reportingUnitService.getPreparableReportingUnits(user)) {
-            if (ru.isParent()) {
-                rus.addAll(ru.getChildReportingUnits());
-            } else {
-                rus.add(ru);
-            }
-        }
-
-        return rus;
+    public Collection<ReportingUnit> getPreparableReportingUnits() {
+        return preparableReportingUnits;
     }
 
-//    public void setAdminReportingUnit(ReportingUnit adminReportingUnit) {
-//        if (adminReportingUnit != null) {
-//            Logger.getLogger(WebSession.class.getName()).log(Level.INFO, "Setting Admin RU: " + adminReportingUnit.getCode());
-//        }
-//        this.adminReportingUnit = adminReportingUnit;
-//    }
     public ReportingUnit getCurrentReportingUnit() {
         return currentReportingUnit;
     }

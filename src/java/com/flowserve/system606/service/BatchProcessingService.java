@@ -15,6 +15,7 @@ import com.flowserve.system606.model.ReportingUnit;
 import com.flowserve.system606.model.RevenueMethod;
 import java.math.BigDecimal;
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -154,7 +155,7 @@ public class BatchProcessingService {
 
         resultSet = statement.executeQuery(
                 "SELECT Period,`POb NAME (TAB NAME)`,`Transaction Price/Changes to Trans Price (excl LDs)`,`Estimated at Completion (EAC)/ Changes to EAC (excl TPCs)`,"
-                + "`Cumulative Costs Incurred`,`Liquidated Damages (LDs)/Changes to LDs` FROM `tbl_POCI_POb Changes` ORDER BY Period");
+                + "`Cumulative Costs Incurred`,`Liquidated Damages (LDs)/Changes to LDs`, `Contract Sales Destination`, `POB Identifiers (DRM)`, `SL POb Revenue Start Date`, `SL  POb Revenue End Date` FROM `tbl_POCI_POb Changes` ORDER BY Period");
 
         logger.log(Level.INFO, "Period\tPOCC File Name\tC Page Number\tReporting Unit Number");
         logger.log(Level.INFO, "==\t================\t===\t=======");
@@ -178,6 +179,10 @@ public class BatchProcessingService {
                             BigDecimal eac = resultSet.getBigDecimal(4);
                             BigDecimal costs = resultSet.getBigDecimal(5);
                             BigDecimal ld = resultSet.getBigDecimal(6);
+                            String salesDestination = resultSet.getString(7);
+                            String oeam = resultSet.getString(8);
+                            Date slStart = resultSet.getDate(9);
+                            Date slEnd = resultSet.getDate(10);
                             // checking valid integer using parseInt() method
                             Integer.parseInt(lastId);
                             PerformanceObligation pob = performanceObligationService.findPerformanceObligationById(new Long(lastId));
@@ -203,6 +208,15 @@ public class BatchProcessingService {
                                 //calculationService.getCurrencyMetric("THIRD_PARTY_COSTS_CTD_LC", pob, period).setValue(BigDecimal.ZERO);
                                 //calculationService.getCurrencyMetric("INTERCOMPANY_COSTS_CTD_LC", pob, period).setValue(BigDecimal.ZERO);
                                 calculationService.getCurrencyMetric("LIQUIDATED_DAMAGES_CTD_CC", pob, period).setValue(ld);
+                                calculationService.getStringMetric("SALES_DESTINATION", pob, period).setValue(salesDestination);
+                                calculationService.getStringMetric("OEAM_DISAGG", pob, period).setValue(oeam);
+                                if (slStart != null) {
+                                    calculationService.getDateMetric("SL_START_DATE", pob, period).setValue(slStart.toLocalDate());
+                                }
+                                if (slEnd != null) {
+                                    calculationService.getDateMetric("SL_END_DATE", pob, period).setValue(slEnd.toLocalDate());
+                                }
+
                                 rusToSave.add(pob.getContract().getReportingUnit());
                             } else {
                                 importMessages.add("These POBs not found : " + id);
@@ -263,53 +277,49 @@ public class BatchProcessingService {
 
         try {
             while (resultSet.next()) {
-                FinancialPeriod period = null;//financialPeriodService.getCurrentFinancialPeriod();
-                String periodDate = resultSet.getString(1);
-                period = financialPeriodService.findByNumericString(periodDate);
+                FinancialPeriod period = financialPeriodService.findByNumericString(resultSet.getString(1));
+                Long contractId = resultSet.getLong(2);
+                if (contractId != null) {
+                    try {
+                        BigDecimal thirdParyComm = resultSet.getBigDecimal(3);
+                        Contract contract = contractService.findContractById((contractId));
 
-                if (period != null) {
-                    String contractId = resultSet.getString(2);
-                    if (contractId != null) {
-                        try {
-                            BigDecimal thirdParyComm = resultSet.getBigDecimal(3);
-                            Contract contract = contractService.findContractById(new Long(contractId));
-
-                            if (contract != null) {
-                                ReportingUnit reportingUnit = contract.getReportingUnit();
-                                if (reportingUnit == null) {
-                                    //String msg = "No local currency found for RU: " + ru.getCode();
-                                    //importMSG.add(msg);
-                                    logger.log(Level.SEVERE, "RU is null ");
-                                    continue;
-                                }
-                                if (reportingUnit.getLocalCurrency() == null) {
-                                    String msg = "No local currency found for RU: " + reportingUnit.getCode();
-                                    importMessages.add(msg);
-                                    logger.log(Level.INFO, "RU local currency is null for RU: " + reportingUnit.getCode());
-                                    continue;
-                                }
-                                logger.log(Level.FINER, "Populating Contract TPC: " + contract.getId());
-                                calculationService.getCurrencyMetric("THIRD_PARTY_COMMISSION_CTD_LC", contract, period).setValue(thirdParyComm);
-                                rusToSave.add(contract.getReportingUnit());
-
-                            } else {
-                                importMessages.add("Contract not found when processing TPC.  Contract id: " + contractId);
+                        if (contract != null) {
+                            ReportingUnit reportingUnit = contract.getReportingUnit();
+                            if (reportingUnit == null) {
+                                //String msg = "No local currency found for RU: " + ru.getCode();
+                                //importMSG.add(msg);
+                                logger.log(Level.SEVERE, "RU is null ");
+                                continue;
                             }
-                        } catch (NumberFormatException e) {
-                            importMessages.add("This is not a Valid Contract ID : " + contractId);
+                            if (reportingUnit.getLocalCurrency() == null) {
+                                String msg = "No local currency found for RU: " + reportingUnit.getCode();
+                                importMessages.add(msg);
+                                logger.log(Level.INFO, "RU local currency is null for RU: " + reportingUnit.getCode());
+                                continue;
+                            }
+//                            if (thirdParyComm.compareTo(BigDecimal.ZERO) > 0) {
+//                                Logger.getLogger(BatchProcessingService.class.getName()).log(Level.INFO, "TPC: " + thirdParyComm.toPlainString());
+//                            }
+                            logger.log(Level.FINER, "Populating Contract TPC: " + contract.getId());
+                            calculationService.getCurrencyMetric("THIRD_PARTY_COMMISSION_CTD_LC", contract, period).setLcValue(thirdParyComm);
+                            rusToSave.add(contract.getReportingUnit());
+
+                        } else {
+                            importMessages.add("Contract not found when processing TPC.  Contract id: " + contractId);
                         }
+                        if ((count % 1000) == 0) {
+                            logger.log(Level.INFO, "Processed " + count + " POCI TPC records");
+                            timeInterval = System.currentTimeMillis();
+                        }
+                        count++;
+
+                    } catch (NumberFormatException e) {
+                        importMessages.add("Invalid Contract ID : " + contractId);
+                        Logger.getLogger(BatchProcessingService.class.getName()).log(Level.INFO, "Invalid Contract ID : " + contractId);
                     }
-                } else {
-                    ut.rollback();
-                    importMessages.add("Financial Period not available : " + periodDate);
-                    throw new IllegalStateException("Financial Period not available :" + periodDate);
                 }
 
-                if ((count % 1000) == 0) {
-                    logger.log(Level.INFO, "Processed " + count + " POCI TPC records");
-                    timeInterval = System.currentTimeMillis();
-                }
-                count++;
             }
         } catch (Exception exception) {
             Logger.getLogger(BatchProcessingService.class.getName()).log(Level.SEVERE, "Error TPC Import: ", exception);
@@ -364,6 +374,7 @@ public class BatchProcessingService {
                             billingEvent.setCcValue(cc);
                             billingEvent.setLcValue(lc);
                             billingEvent.setName("Migrated Billing");
+                            billingEvent.setNumber("Migrated Billing");
                             billingEvent.setEventDate(LocalDate.of(period.getPeriodYear(), period.getPeriodMonth(), 1));
                             billingEvent.setCreationDate(LocalDateTime.now());
                             billingEvent.setEventType(billingEventType);
@@ -533,7 +544,7 @@ public class BatchProcessingService {
         ResultSet resultSet = null;
 
         String ru = null;
-        long contractId = 0;
+        Long contractId;
         String contractCurrencyCode = null;
         DataImportFile dataImport = null;
         List<String> importMessages = new ArrayList<String>();
@@ -545,7 +556,7 @@ public class BatchProcessingService {
         ut.begin();
         while (resultSet.next()) {
 
-            contractId = resultSet.getInt(1);
+            contractId = resultSet.getLong(1);
             if (contractService.findContractById(contractId) != null) {
                 continue;  // we've already processed this contract.  dont' process the repeated lines.
             }
