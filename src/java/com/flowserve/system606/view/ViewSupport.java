@@ -37,6 +37,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Currency;
 import java.util.List;
+import java.util.function.Supplier;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
@@ -572,6 +573,14 @@ public class ViewSupport implements Serializable {
             return true;
         }
 
+        return false;
+    }
+
+    public boolean isMenuClickable() {
+        ReportingUnit ru = webSession.getCurrentReportingUnit();
+        if (ru == null) {
+            return true;
+        }
         return false;
     }
 }

@@ -18,37 +18,34 @@
             <div class="dashboard">
                 <div class="ui-g">
                     <div class="ui-g-12 ui-md-12 ui-lg-4">
-                        <div class="overview-box monthly-sales">
-                            <div class="overview-title">CONTRACTS</div>
-                            <i class="fa fa-arrow-circle-up" />
-                            <div class="overview-numbers">
-                                <strong>$ 0.00</strong>
-                            </div>
-                            <div class="overview-ratios">16% more than previous month</div>
-                            <p:graphicImage name="images/icon-sales.png" library="california-layout" />
-                        </div>
-                    </div>
-                    <div class="ui-g-12 ui-md-12 ui-lg-4">
-                        <div class="overview-box monthly-views">
-                            <div class="overview-title">PERFORMANCE
-                                <i class="fa fa-arrow-circle-down" />
-                            </div>
-                            <div class="overview-numbers">
-                                <strong>$ 0.00</strong></div>
-                            <div class="overview-ratios">2% less than previous month</div>
-                            <p:graphicImage name="images/icon-views.png" library="california-layout" />
-                        </div>
-                    </div>
-                    <div class="ui-g-12 ui-md-12 ui-lg-4">
-                        <div class="overview-box monthly-users">
-                            <div class="overview-title">LOSS
+                        <p:commandLink disabled="#{viewSupport.menuClickable}"  action="inputOnlineEntry.xhtml" >
+                            <div class="overview-box monthly-sales">
+                                <div class="overview-title"><strong>INPUTS</strong></div>
                                 <i class="fa fa-arrow-circle-up" />
+                                <p:graphicImage name="images/icon-sales.png" library="california-layout" />
                             </div>
-                            <div class="overview-numbers">
-                                <strong>$ 0.00</strong></div>
-                            <div class="overview-ratios">9% more than previous month </div>
-                            <p:graphicImage name="images/icon-users.png" library="california-layout" />
-                        </div>
+                        </p:commandLink>
+                       
+                    </div>
+                    <div class="ui-g-12 ui-md-12 ui-lg-4">
+                        <p:commandLink disabled="#{viewSupport.menuClickable}"  action="pobCalculationReview.xhtml" >
+                            <div class="overview-box monthly-views">
+                                <div class="overview-title"><strong>CALCULATIONS</strong>
+                                    <i class="fa fa-arrow-circle-down" />
+                                </div>
+                                <p:graphicImage name="images/icon-views.png" library="california-layout" />
+                            </div>
+                        </p:commandLink>
+                    </div>
+                    <div class="ui-g-12 ui-md-12 ui-lg-4">
+                        <p:commandLink disabled="#{viewSupport.menuClickable}"  action="reportsList.xhtml" >
+                            <div class="overview-box monthly-users">
+                                <div class="overview-title"><strong>REPORTS</strong>
+                                    <i class="fa fa-arrow-circle-up" />
+                                </div>
+                                <p:graphicImage name="images/icon-users.png" library="california-layout" />
+                            </div>
+                       </p:commandLink>
                     </div>
 
 
