@@ -36,6 +36,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.CreationHelper;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.util.CellAddress;
 import org.apache.poi.xssf.usermodel.XSSFRow;
@@ -95,6 +96,8 @@ public class ReportsService {
 
         // For now, get the period from the user's session.  Later we will be passing in the period from the reports generation page.
         FinancialPeriod period = webSession.getCurrentPeriod();
+        row = worksheet.getRow(3);
+        row.getCell(0).setCellValue(Date.valueOf(period.getEndDate()));
 
         // Execute buisness rules on the contract to fill in any values we might need at the contract level (e.g. gross margin)
         calculationService.executeBusinessRules(contract, period);
@@ -122,7 +125,7 @@ public class ReportsService {
         BigDecimal thirdPartyRecogLC = getCThirdPartyCommRegLC(contract, period);
 
         row = worksheet.getRow(13);
-        setCellValue(row, 4, lossReservePeriodADJLC);
+        setCellValue(row, 11, lossReservePeriodADJLC);
 
         row = worksheet.getRow(14);
         setCellValue(row, 6, thirdPartyCommCTD);
@@ -135,15 +138,15 @@ public class ReportsService {
         setCellValue(row, 2, liquidatedDamage);
         setCellValue(row, 3, EAC);
         setCellValue(row, 4, estimatedGrossProfit);
-        setCellValue(row, 5, estimatedGrossMargin);
+        setPercentCellValue(row, 5, estimatedGrossMargin);
 
-        setCellValue(row, 7, percentComplete);
+        setPercentCellValue(row, 7, percentComplete);
         setCellValue(row, 8, revenueCTD);
         setCellValue(row, 9, liquidatedDamagePeriod);
         setCellValue(row, 10, localCostCTDLC);
         setCellValue(row, 11, lossReserveCTD);
         setCellValue(row, 12, grossProfitCTD);
-        setCellValue(row, 13, grossMarginCTD);
+        setPercentCellValue(row, 13, grossMarginCTD);
         setCellValue(row, 15, billToDate);
         setCellValue(row, 16, costToComplete);
         setCellValue(row, 17, billingsInExcess);
@@ -161,9 +164,9 @@ public class ReportsService {
         printContractEsimatesPobsGroups(11, 22, worksheet, pitPobs, period);
         printContractEsimatesPobsGroups(12, 25, worksheet, slPobs, period);
 
-        printContractEsimatesPobsDetailLines(19, 25, worksheet, pocPobs, period);
-        printContractEsimatesPobsDetailLines(22, 25, worksheet, pitPobs, period);
-        printContractEsimatesPobsDetailLines(25, 25, worksheet, slPobs, period);
+        int shiftInRow = printContractEsimatesPobsDetailLines(19, 25, worksheet, pocPobs, period);
+        shiftInRow = printContractEsimatesPobsDetailLines(shiftInRow + 3, shiftInRow + 6, worksheet, pitPobs, period);
+        shiftInRow = printContractEsimatesPobsDetailLines(shiftInRow + 3, shiftInRow + 6, worksheet, slPobs, period);
 
         return worksheet;
     }
@@ -195,15 +198,14 @@ public class ReportsService {
         setCellValue(row, 2, liquidatedDamage);
         setCellValue(row, 3, EAC);
         setCellValue(row, 4, estimatedGrossProfit);
-        setCellValue(row, 5, estimatedGrossMargin);
+        setPercentCellValue(row, 5, estimatedGrossMargin);
 
-        //setCellValue(row, 7, percentComplete);
         setCellValue(row, 8, revenueCTD);
         setCellValue(row, 9, liquidatedDamagePeriod);
         setCellValue(row, 10, localCostCTDLC);
         setCellValue(row, 11, lossReserveCTD);
         setCellValue(row, 12, grossProfitCTD);
-        setCellValue(row, 13, grossMarginCTD);
+        setPercentCellValue(row, 13, grossMarginCTD);
         setCellValue(row, 15, billToDate);
         setCellValue(row, 16, costToComplete);
         setCellValue(row, 17, billingsInExcess);
@@ -215,7 +217,7 @@ public class ReportsService {
         setCellValue(row, 2, liquidatedDamage);
         setCellValue(row, 3, EAC);
         setCellValue(row, 4, estimatedGrossProfit);
-        setCellValue(row, 5, estimatedGrossMargin);
+        setPercentCellValue(row, 5, estimatedGrossMargin);
 
         //setCellValue(row, 7, percentComplete);
         setCellValue(row, 8, revenueCTD);
@@ -223,14 +225,14 @@ public class ReportsService {
         setCellValue(row, 10, localCostCTDLC);
         setCellValue(row, 11, lossReserveCTD);
         setCellValue(row, 12, grossProfitCTD);
-        setCellValue(row, 13, grossMarginCTD);
+        setPercentCellValue(row, 13, grossMarginCTD);
         setCellValue(row, 15, billToDate);
         setCellValue(row, 16, costToComplete);
         setCellValue(row, 17, billingsInExcess);
         setCellValue(row, 18, revenueInExcess);
     }
 
-    public void printContractEsimatesPobsDetailLines(int insertRow, int shiftRow, XSSFSheet worksheet, PerformanceObligationGroup pGroup, FinancialPeriod period) throws Exception {
+    public int printContractEsimatesPobsDetailLines(int insertRow, int shiftRow, XSSFSheet worksheet, PerformanceObligationGroup pGroup, FinancialPeriod period) throws Exception {
         XSSFRow row;
         Cell cell = null;
         if (pGroup.getPerformanceObligations().size() > 0) {
@@ -245,14 +247,9 @@ public class ReportsService {
 
                 BigDecimal liquidatedDamagePeriod = getLiquidatedDamagesPeriod(pob, period);
                 BigDecimal localCostCTDLC = getCostOfGoodsSold(pob, period);
-                //BigDecimal percentComplete = getPercentComplete(pob, period);
                 BigDecimal revenueCTD = getRevenueRecognizeCTD(pob, period);
-                //BigDecimal lossReserveCTD = getLossReserveCTD(pob, period);
                 BigDecimal grossProfitCTD = getEstimatedGrossProfit(pob, period);
                 BigDecimal grossMarginCTD = getEstimatedGrossMargin(pob, period);
-                //BigDecimal costToComplete = getContractCostToCompleteLC(pob, period);
-//                BigDecimal billingsInExcess = getContractBillingsInExcess(pob, period);
-//                BigDecimal revenueInExcess = getContractRevenueInExcess(pob, period);
 
                 row = worksheet.createRow(insertRow);
                 cell = row.getCell(0, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
@@ -261,23 +258,18 @@ public class ReportsService {
                 setCellValue(row, 2, liquidatedDamage);
                 setCellValue(row, 3, EAC);
                 setCellValue(row, 4, estimatedGrossProfit);
-                setCellValue(row, 5, estimatedGrossMargin);
+                setPercentCellValue(row, 5, estimatedGrossMargin);
 
-                //setCellValue(row, 7, percentComplete);
                 setCellValue(row, 8, revenueCTD);
                 setCellValue(row, 9, liquidatedDamagePeriod);
                 setCellValue(row, 10, localCostCTDLC);
-                //setCellValue(row, 11, lossReserveCTD);
                 setCellValue(row, 12, grossProfitCTD);
-                setCellValue(row, 13, grossMarginCTD);
-//                setCellValue(row, 15, billToDate);
-//                setCellValue(row, 16, costToComplete);
-//                setCellValue(row, 17, billingsInExcess);
-//                setCellValue(row, 18, revenueInExcess);
+                setPercentCellValue(row, 13, grossMarginCTD);
 
                 insertRow++;
             }
         }
+        return insertRow;
     }
 
     public void generateReportByFinancialPeriod(InputStream inputStream, FileOutputStream outputStream, Contract contract) throws Exception {
@@ -305,6 +297,8 @@ public class ReportsService {
         cell.setCellValue(contract.getName());
 
         FinancialPeriod period = webSession.getCurrentPeriod();
+        row = worksheet.getRow(3);
+        row.getCell(0).setCellValue(Date.valueOf(period.getEndDate()));
 
         BigDecimal revenueToRecognize = getRevenueRecognizeCTD(contract, period);
         BigDecimal liquidatedDamage = getLiquidatedDamages(contract, period);
@@ -312,8 +306,8 @@ public class ReportsService {
         BigDecimal EstimatedGrossProfitLC = getEstimatedGrossProfit(contract, period);
         BigDecimal lossReservePeriodADJLC = getLossReservePeriodADJLC(contract, period);
 
-        BigDecimal tcpIncured = getTCPIncured(contract, period);
-        BigDecimal acceleratedTCP = getAcceleratedTCP(contract, period);
+        BigDecimal tcpIncured = getTPCIncured(contract, period);
+        BigDecimal acceleratedTCP = getAcceleratedTPC(contract, period);
 
         row = worksheet.getRow(13);
         setCellValue(row, 4, lossReservePeriodADJLC);
@@ -334,8 +328,8 @@ public class ReportsService {
         cumulativeCostGoodsSoldLC = getAccuCumulativeCostGoodsSoldLC(contract, qtdPeriods);
         EstimatedGrossProfitLC = getAccuEstimatedGrossProfitLC(contract, qtdPeriods);
         lossReservePeriodADJLC = getAccuLossReservePeriodADJLC(contract, qtdPeriods);
-        tcpIncured = getAccuTCPIncured(contract, qtdPeriods);
-        acceleratedTCP = getAccuAcceleratedTCP(contract, qtdPeriods);
+        tcpIncured = getAccuTPCIncured(contract, qtdPeriods);
+        acceleratedTCP = getAccuAcceleratedTPC(contract, qtdPeriods);
 
         row = worksheet.getRow(13);
         setCellValue(row, 12, lossReservePeriodADJLC);
@@ -356,8 +350,8 @@ public class ReportsService {
         cumulativeCostGoodsSoldLC = getAccuCumulativeCostGoodsSoldLC(contract, ytdPeriods);
         EstimatedGrossProfitLC = getAccuEstimatedGrossProfitLC(contract, ytdPeriods);
         lossReservePeriodADJLC = getAccuLossReservePeriodADJLC(contract, ytdPeriods);
-        tcpIncured = getAccuTCPIncured(contract, ytdPeriods);
-        acceleratedTCP = getAccuAcceleratedTCP(contract, ytdPeriods);
+        tcpIncured = getAccuTPCIncured(contract, ytdPeriods);
+        acceleratedTCP = getAccuAcceleratedTPC(contract, ytdPeriods);
 
         row = worksheet.getRow(13);
         setCellValue(row, 20, lossReservePeriodADJLC);
@@ -519,6 +513,8 @@ public class ReportsService {
         cell = contract_name.getCell(0, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
         cell.setCellValue(contract.getName());
         FinancialPeriod period = webSession.getCurrentPeriod();
+        row = worksheet.getRow(5);
+        row.getCell(0).setCellValue(Date.valueOf(period.getEndDate()));
 
         BigDecimal revenueToRecognizePeriod = getRevenueRecognizePeriodLC(contract, period);
         BigDecimal liquidatedDamageRecognizePeriodLC = getLiquidatedDamagesRecognizePeriodLC(contract, period);
@@ -527,12 +523,13 @@ public class ReportsService {
         BigDecimal revenueInExcess = getContractRevenueInExcess(contract, period);
         BigDecimal billingsInExcess = getContractBillingsInExcess(contract, period);
         BigDecimal bilingsPeriodLC = getContractBillingsPeriodLC(contract, period);
+        BigDecimal commExp = getTPCIncured(contract, period);
         row = worksheet.getRow(14);
         setCellValue(row, 2, revenueToRecognizePeriod);
         setCellValue(row, 3, liquidatedDamageRecognizePeriodLC);
         setCellValue(row, 4, costGoodsSoldPeriodLC);
         setCellValue(row, 5, lossReservePeriodADJLC);
-        setCellValue(row, 6, BigDecimal.ZERO);//TODO THIRD_PARTY_COMMISSION_TO_RECOGNIZE_PERIOD_LC
+        setCellValue(row, 6, commExp);
         setCellValue(row, 7, BigDecimal.ZERO);//TODO FX_GAIN_LOSS
         setCellValue(row, 8, bilingsPeriodLC);
         setCellValue(row, 9, costGoodsSoldPeriodLC);
@@ -540,7 +537,7 @@ public class ReportsService {
         setCellValue(row, 11, revenueInExcess);
         setCellValue(row, 12, billingsInExcess);
         setCellValue(row, 13, lossReservePeriodADJLC);
-        setCellValue(row, 14, BigDecimal.ZERO);//TODO THIRD_PARTY_COMMISSION_TO_RECOGNIZE_PERIOD_LC
+        setCellValue(row, 14, commExp);
 
         //For Contract Billings row
         row = worksheet.getRow(13);
@@ -569,14 +566,14 @@ public class ReportsService {
         BigDecimal lossReservePeriodADJLC = getLossReservePeriodADJLC(pGroup, period);
         BigDecimal revenueInExcess = getContractRevenueInExcess(pGroup, period);
         BigDecimal billingsInExcess = getContractBillingsInExcess(pGroup, period);
-
+        BigDecimal commExp = getTPCIncured(pGroup, period);
         // Percentage of completion Pobs.  Set total row for POC POBs
         row = worksheet.getRow(single);
         setCellValue(row, 2, revenueToRecognizePeriod);
         setCellValue(row, 3, liquidatedDamageRecognizePeriodLC);
         setCellValue(row, 4, costGoodsSoldPeriodLC);
         setCellValue(row, 5, lossReservePeriodADJLC);
-        setCellValue(row, 6, BigDecimal.ZERO);//TODO THIRD_PARTY_COMMISSION_TO_RECOGNIZE_PERIOD_LC
+        setCellValue(row, 6, commExp);
         setCellValue(row, 7, BigDecimal.ZERO);//TODO FX_GAIN_LOSS
         setCellValue(row, 8, BigDecimal.ZERO);//TODO BILLINGS_PERIOD_CC
         setCellValue(row, 9, costGoodsSoldPeriodLC);
@@ -584,7 +581,7 @@ public class ReportsService {
         setCellValue(row, 11, revenueInExcess);
         setCellValue(row, 12, billingsInExcess);
         setCellValue(row, 13, lossReservePeriodADJLC);
-        setCellValue(row, 14, BigDecimal.ZERO);//TODO THIRD_PARTY_COMMISSION_TO_RECOGNIZE_PERIOD_LC
+        setCellValue(row, 14, commExp);
 
     }
 
@@ -741,13 +738,13 @@ public class ReportsService {
         startRow = startRow + 2;
         BigDecimal grossMarginCTD = getEstimatedGrossMargin(pocPobs, period);
         row = worksheet.getRow(startRow++);
-        setCellValue(row, colNum, grossMarginCTD);
+        setPercentCellValue(row, colNum, grossMarginCTD);
         grossMarginCTD = getEstimatedGrossMargin(pitPobs, period);
         row = worksheet.getRow(startRow++);
-        setCellValue(row, colNum, grossMarginCTD);
+        setPercentCellValue(row, colNum, grossMarginCTD);
         grossMarginCTD = getEstimatedGrossMargin(slPobs, period);
         row = worksheet.getRow(startRow++);
-        setCellValue(row, colNum, grossMarginCTD);
+        setPercentCellValue(row, colNum, grossMarginCTD);
 
     }
 
@@ -873,23 +870,27 @@ public class ReportsService {
     }
 
     private BigDecimal getTransactionPrice(Measurable measureable, FinancialPeriod period) throws Exception {
-        return calculationService.getCurrencyMetric("TRANSACTION_PRICE_CC", measureable, period).getValue();
+        BigDecimal value = calculationService.getCurrencyMetric("TRANSACTION_PRICE_CC", measureable, period).getValue();
+        return value != null ? value : new BigDecimal(BigInteger.ZERO);
     }
 
     private BigDecimal getLiquidatedDamages(Measurable measureable, FinancialPeriod period) throws Exception {
-        return calculationService.getCurrencyMetric("LIQUIDATED_DAMAGES_CTD_CC", measureable, period).getValue();
+        BigDecimal value = calculationService.getCurrencyMetric("LIQUIDATED_DAMAGES_CTD_CC", measureable, period).getValue();
+        return value != null ? value : new BigDecimal(BigInteger.ZERO);
     }
 
     private BigDecimal getLiquidatedDamagesPeriod(Measurable measureable, FinancialPeriod period) throws Exception {
         return calculationService.getCurrencyMetric("LIQUIDATED_DAMAGES_TO_RECOGNIZE_PERIOD_CC", measureable, period).getValue();
     }
 
-    private BigDecimal getTCPIncured(Measurable measureable, FinancialPeriod period) throws Exception {
-        return calculationService.getCurrencyMetric("LOSS_RESERVE_INCL_TPC_PERIOD_LC", measureable, period).getValue();
+    private BigDecimal getTPCIncured(Measurable measureable, FinancialPeriod period) throws Exception {
+        BigDecimal value = calculationService.getCurrencyMetric("THIRD_PARTY_COMMISSION_TO_RECOGNIZE_PERIOD_LC", measureable, period).getValue();
+        return value != null ? value : new BigDecimal(BigInteger.ZERO);
     }
 
-    private BigDecimal getAcceleratedTCP(Measurable measureable, FinancialPeriod period) throws Exception {
-        return calculationService.getCurrencyMetric("LOSS_RESERVE_INCL_TPC_CTD_LC", measureable, period).getValue();
+    private BigDecimal getAcceleratedTPC(Measurable measureable, FinancialPeriod period) throws Exception {
+        BigDecimal value = calculationService.getCurrencyMetric("LOSS_RESERVE_INCL_TPC_PERIOD_LC", measureable, period).getValue();
+        return value != null ? value : new BigDecimal(BigInteger.ZERO);
     }
 
     private BigDecimal getEAC(Measurable measureable, FinancialPeriod period) throws Exception {
@@ -909,10 +910,26 @@ public class ReportsService {
             return;
         }
         Cell cell = row.getCell(cellNum, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
-        CellStyle currentStyle = cell.getCellStyle();
+        //CellStyle currentStyle = cell.getCellStyle();
+        CellStyle currentStyle = row.getSheet().getWorkbook().createCellStyle();
+        CreationHelper ch = row.getSheet().getWorkbook().getCreationHelper();
         cell.setCellValue(value.doubleValue());
+        currentStyle.setDataFormat(ch.createDataFormat().getFormat("_(* #,##0_);_(* (#,##0);_(* \"-\"??_);_(@_)"));
         cell.setCellStyle(currentStyle);
 
+    }
+
+    private void setPercentCellValue(XSSFRow row, int cellNum, BigDecimal value) {
+        if (value == null) {
+            return;
+        }
+        Cell cell = row.getCell(cellNum, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
+        //CellStyle currentStyle = cell.getCellStyle();
+        CellStyle currentStyle = row.getSheet().getWorkbook().createCellStyle();
+        CreationHelper ch = row.getSheet().getWorkbook().getCreationHelper();
+        cell.setCellValue(value.doubleValue());
+        currentStyle.setDataFormat(ch.createDataFormat().getFormat("0.00%"));
+        cell.setCellStyle(currentStyle);
     }
 
     private BigDecimal getCostOfGoodsSold(Measurable measureable, FinancialPeriod period) throws Exception {
@@ -952,11 +969,13 @@ public class ReportsService {
     }
 
     private BigDecimal getCThirdPartyCommissionCTDLC(Measurable measureable, FinancialPeriod period) throws Exception {
-        return calculationService.getCurrencyMetric("THIRD_PARTY_COMMISSION_CTD_LC", measureable, period).getValue();
+        BigDecimal value = calculationService.getCurrencyMetric("THIRD_PARTY_COMMISSION_CTD_LC", measureable, period).getValue();
+        return value != null ? value : new BigDecimal(BigInteger.ZERO);
     }
 
     private BigDecimal getCThirdPartyCommRegLC(Measurable measureable, FinancialPeriod period) throws Exception {
-        return calculationService.getCurrencyMetric("THIRD_PARTY_COMMISSION_TO_RECOGNIZE_CTD_LC", measureable, period).getValue();
+        BigDecimal value = calculationService.getCurrencyMetric("THIRD_PARTY_COMMISSION_TO_RECOGNIZE_CTD_LC", measureable, period).getValue();
+        return value != null ? value : new BigDecimal(BigInteger.ZERO);
     }
 
     private BigDecimal getCumulativeCostGoodsSoldLC(Measurable measureable, FinancialPeriod period) throws Exception {
@@ -983,12 +1002,12 @@ public class ReportsService {
         return calculationService.getAccumulatedCurrencyMetricAcrossPeriods("LOSS_RESERVE_PERIOD_ADJ_LC", measureable, qtdPeriods).getValue();
     }
 
-    private BigDecimal getAccuTCPIncured(Measurable measureable, List<FinancialPeriod> qtdPeriods) throws Exception {
-        return calculationService.getAccumulatedCurrencyMetricAcrossPeriods("LOSS_RESERVE_INCL_TPC_PERIOD_LC", measureable, qtdPeriods).getValue();
+    private BigDecimal getAccuTPCIncured(Measurable measureable, List<FinancialPeriod> qtdPeriods) throws Exception {
+        return calculationService.getAccumulatedCurrencyMetricAcrossPeriods("THIRD_PARTY_COMMISSION_TO_RECOGNIZE_PERIOD_LC", measureable, qtdPeriods).getValue();
     }
 
-    private BigDecimal getAccuAcceleratedTCP(Measurable measureable, List<FinancialPeriod> qtdPeriods) throws Exception {
-        return calculationService.getAccumulatedCurrencyMetricAcrossPeriods("LOSS_RESERVE_INCL_TPC_CTD_LC", measureable, qtdPeriods).getValue();
+    private BigDecimal getAccuAcceleratedTPC(Measurable measureable, List<FinancialPeriod> qtdPeriods) throws Exception {
+        return calculationService.getAccumulatedCurrencyMetricAcrossPeriods("LOSS_RESERVE_INCL_TPC_PERIOD_LC", measureable, qtdPeriods).getValue();
     }
 
     private BigDecimal getAccuRevenueToRecognizeLC(Measurable measureable, List<FinancialPeriod> qtdPeriods) throws Exception {
