@@ -35,7 +35,7 @@ OUTPUT|COST_GOODS_SOLD_BACKLOG_LC|POB||CurrencyMetric|LC|Convertible|COGS in Bac
 OUTPUT|CHANGE_IN_EAC_LC|POB||CurrencyMetric|LC|Convertible|Change in EAC|Change in EAC|POC POB Outputs|O|Group1|2||
 OUTPUT|REVENUE_TO_RECOGNIZE_CTD_CC|POB||CurrencyMetric|CC|NonConvertible|CTD Revenue Recognized|CTD Revenue Recognized|POC POB Outputs|O|Group1|2||
 OUTPUT|CONTRACT_REVENUE_TO_RECOGNIZE_CTD_CC|Contract||CurrencyMetric|CC|Convertible|CTD Revenue to Recognize|CTD Revenue to Recognize|POC POB Outputs|O|Group1|2||
-OUTPUT|REVENUE_TO_RECOGNIZE_PERIOD_CC|POB||CurrencyMetric|CC|Convertible|Period Revenue To Recognize|Period Revenue To Recognize|POC POB Outputs|O|Group1|2|SALESPOC.IN|STCONTLIAB
+OUTPUT|REVENUE_TO_RECOGNIZE_PERIOD_CC|POB||CurrencyMetric|CC|NonConvertible|Period Revenue To Recognize|Period Revenue To Recognize|POC POB Outputs|O|Group1|2|SALESPOC.IN|STCONTLIAB
 OUTPUT|LIQUIDATED_DAMAGES_TO_RECOGNIZE_CTD_CC|POB||CurrencyMetric|CC|NonConvertible|Liquidated Damages Penalties Recognized|Liquidated Damages Penalties Recognized|POC POB Outputs|O|Group1|2||
 OUTPUT|LIQUIDATED_DAMAGES_TO_RECOGNIZE_PERIOD_CC|POB||CurrencyMetric|CC|Convertible|Liquidated Damages To Recognize In Current Period|Liquidated Damages To Recognize In Current Period|POC POB Outputs|O|Group1|2||
 OUTPUT|LIQUIDATED_DAMAGES_BACKLOG_CC|POB||CurrencyMetric|CC|Convertible|LD Penalties in Backlog||POC POB Outputs|O|Group1|2||

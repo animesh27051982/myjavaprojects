@@ -99,14 +99,14 @@
                                                         <p:tooltip  for="pcal_ru" value="Reporting Unit - Contract"  showEffect="slide" hideEffect="explode" position="top"/>
                                                     </f:facet>
                                                 </p:column>
-                                                
-                                                 <p:column colspan="1" style="white-space:pre-line;" id="pcal_cost_cur" >
+
+                                                <p:column colspan="1" style="white-space:pre-line;" id="pcal_cost_cur" >
                                                     <f:facet name="header">
                                                         <h:outputText  value="Currency" />
                                                         <p:tooltip  for="pcal_cost_cur" value="Local Currency"  showEffect="slide" hideEffect="explode" position="top"/>
                                                     </f:facet>
                                                 </p:column>
-                                                
+
                                                 <p:column colspan="1" style="white-space:pre-line;" id="pcal_cost_inc" >
                                                     <f:facet name="header">
                                                         <h:outputText  value="#{viewSupport.getMetricTypeName('COSTS_INCURRED_CTD_LC')}" />
@@ -131,14 +131,14 @@
                                                         <p:tooltip  for="pcal_pc" value="#{viewSupport.getMetricTypeDescription('PERCENT_COMPLETE')}"  showEffect="slide" hideEffect="explode" position="top"/>
                                                     </f:facet>
                                                 </p:column>
-                                                
-                                                 <p:column colspan="1" style="white-space:pre-line;" id="pcal_cost_ccur" >
+
+                                                <p:column colspan="1" style="white-space:pre-line;" id="pcal_cost_ccur" >
                                                     <f:facet name="header">
                                                         <h:outputText  value="Currency" />
                                                         <p:tooltip  for="pcal_cost_ccur" value="Contract Currency"  showEffect="slide" hideEffect="explode" position="top"/>
                                                     </f:facet>
                                                 </p:column>
-                                                
+
                                                 <p:column colspan="1" style="white-space:pre-line;" id="pcal_tpc" >
                                                     <f:facet name="header">
                                                         <h:outputText  value="#{viewSupport.getMetricTypeName('TRANSACTION_PRICE_CC')}" />
@@ -194,7 +194,7 @@
                                         <p:column sortBy="#{pob.name}">
                                             <h:outputText value="#{pob.name}" title="#{pob.description}"/>
                                         </p:column>
-                                        
+
                                         <p:column style="white-space:pre-line;">
                                             <h:outputText value="#{pob.localCurrency.currencyCode}" style="#{viewSupport.getTextStyle(pob)}" rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob) or of:isInstance('com.flowserve.system606.model.Contract', pob)}"/>
                                         </p:column>
@@ -222,12 +222,12 @@
                                                 <f:convertNumber type="percent" minFractionDigits="1" maxFractionDigits="1"/>
                                             </h:outputText>
                                         </p:column>
-                                        
-                                         <p:column style="white-space:pre-line;">
+
+                                        <p:column style="white-space:pre-line;">
                                             <h:outputText value="#{pob.contractCurrency.currencyCode}" rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob) or of:isInstance('com.flowserve.system606.model.Contract', pob)}"
                                                           style="#{viewSupport.getTextStyle(pob)}"/>
                                         </p:column>
-                                        
+
                                         <p:column style="white-space:pre-line;">
                                             <h:outputText value="#{viewSupport.getCurrencyMetric('TRANSACTION_PRICE_CC', pob).ccValue}" style="#{viewSupport.getTextStyle(pob)}">
                                                 <f:convertNumber type="currency" currencySymbol=""/>
@@ -253,8 +253,8 @@
                                         </p:column>
 
                                         <p:column style="white-space:pre-line;">
-                                            <h:outputText value="#{viewSupport.getExchangeRate(pob.contract)}" rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}"
-                                                          style="#{viewSupport.getTextStyle(pob)}" title="#{viewSupport.getExchangeRate(pob.contract)}">
+                                            <h:outputText value="#{viewSupport.getCCtoLCExchangeRate(pob.contract)}" rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}"
+                                                          style="#{viewSupport.getTextStyle(pob)}" title="#{viewSupport.getCCtoLCExchangeRate(pob.contract)}">
                                                 <f:convertNumber maxFractionDigits="2" />
                                             </h:outputText>
                                         </p:column>
@@ -310,7 +310,7 @@
                                                         <p:tooltip  for="ld_percent_cc" value="Contract Currency"  showEffect="slide" hideEffect="explode" position="top"/>
                                                     </f:facet>
                                                 </p:column>
-                                                
+
                                                 <p:column colspan="1" style="white-space:pre-line;" id="ld_ldctd">
                                                     <f:facet name="header">
                                                         <h:outputText  value="#{viewSupport.getMetricTypeName('LIQUIDATED_DAMAGES_CTD_CC')}" />
@@ -341,14 +341,14 @@
                                                         <p:tooltip  for="ld8" value="Period Fx Rate"  showEffect="slide" hideEffect="explode" position="top"/>
                                                     </f:facet>
                                                 </p:column>
-                                                
-                                                 <p:column colspan="1" style="white-space:pre-line;" id="ldc">
+
+                                                <p:column colspan="1" style="white-space:pre-line;" id="ldc">
                                                     <f:facet name="header">
                                                         <h:outputText  value="Currency"/>
                                                         <p:tooltip  for="ldc" value="Local Currency"  showEffect="slide" hideEffect="explode" position="top"/>
                                                     </f:facet>
                                                 </p:column>
-                                                
+
                                                 <p:column colspan="1" style="white-space:pre-line;" id="ld9">
                                                     <f:facet name="header">
                                                         <h:outputText  value="#{viewSupport.getMetricTypeName('LIQUIDATED_DAMAGES_TO_RECOGNIZE_PERIOD_CC')}"/>
@@ -367,8 +367,8 @@
                                                 <f:convertNumber type="percent" minFractionDigits="1" maxFractionDigits="1"/>
                                             </h:outputText>
                                         </p:column>
-                                        
-                                         
+
+
                                         <p:column style="white-space:pre-line;">
                                             <h:outputText value="#{pob.contractCurrency.currencyCode}" rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob) or of:isInstance('com.flowserve.system606.model.Contract', pob)}"
                                                           style="#{viewSupport.getTextStyle(pob)}"/>
@@ -379,7 +379,7 @@
                                                 <f:convertNumber type="currency" currencySymbol=""/>
                                             </h:outputText>
                                         </p:column>
-                                       
+
                                         <p:column style="white-space:pre-line;">
                                             <h:outputText value="#{viewSupport.getCurrencyMetric('LIQUIDATED_DAMAGES_TO_RECOGNIZE_CTD_CC', pob).ccValue}" style="#{viewSupport.getTextStyle(pob)}">
                                                 <f:convertNumber type="currency" currencySymbol=""/>
@@ -397,15 +397,15 @@
                                         </p:column>
 
                                         <p:column style="white-space:pre-line;">
-                                            <h:outputText value="#{viewSupport.getExchangeRate(pob.contract)}" rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}" title="#{viewSupport.getExchangeRate(pob.contract)}">
+                                            <h:outputText value="#{viewSupport.getCCtoLCExchangeRate(pob.contract)}" rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}" title="#{viewSupport.getCCtoLCExchangeRate(pob.contract)}">
                                                 <f:convertNumber maxFractionDigits="2" />
                                             </h:outputText>
                                         </p:column>
-                                        
+
                                         <p:column style="white-space:pre-line;">
                                             <h:outputText value="#{pob.localCurrency.currencyCode}" style="#{viewSupport.getTextStyle(pob)}" rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob) or of:isInstance('com.flowserve.system606.model.Contract', pob)}"/>
                                         </p:column>
-                                        
+
                                         <p:column style="white-space:pre-line;">
                                             <h:outputText value="#{viewSupport.getCurrencyMetric('LIQUIDATED_DAMAGES_TO_RECOGNIZE_PERIOD_CC', pob).lcValue}" style="#{viewSupport.getTextStyle(pob)}">
                                                 <f:convertNumber type="currency" currencySymbol=""/>
@@ -481,13 +481,13 @@
                                                         <p:tooltip  for="bl8" value="Period Fx Rate"  showEffect="slide" hideEffect="explode" position="top"/>
                                                     </f:facet>
                                                 </p:column>
-                                                 <p:column colspan="1" style="white-space:pre-line;" id="bllc" >
+                                                <p:column colspan="1" style="white-space:pre-line;" id="bllc" >
                                                     <f:facet name="header">
                                                         <h:outputText  value="Currency"/>
                                                         <p:tooltip  for="bllc" value="Local Currency"  showEffect="slide" hideEffect="explode" position="top"/>
                                                     </f:facet>
                                                 </p:column>
-                                                
+
                                                 <p:column colspan="1" style="white-space:pre-line;"  id="bl9" >
                                                     <f:facet name="header">
                                                         <h:outputText  value="#{viewSupport.getMetricTypeName('TRANSACTION_PRICE_BACKLOG_CC')}"/>
@@ -542,7 +542,7 @@
                                         <p:column>
                                             <h:outputText value="#{pob.name}" title="#{pob.description}"/>
                                         </p:column>
-                                        
+
                                         <p:column style="white-space:pre-line;">
                                             <h:outputText value="#{pob.contractCurrency.currencyCode}" rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob) or of:isInstance('com.flowserve.system606.model.Contract', pob)}"
                                                           style="#{viewSupport.getTextStyle(pob)}"/>
@@ -580,15 +580,15 @@
                                         </p:column>
 
                                         <p:column style="white-space:pre-line;">
-                                            <h:outputText value="#{viewSupport.getExchangeRate(pob.contract)}" rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}" title="#{viewSupport.getExchangeRate(pob.contract)}">
+                                            <h:outputText value="#{viewSupport.getCCtoLCExchangeRate(pob.contract)}" rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}" title="#{viewSupport.getCCtoLCExchangeRate(pob.contract)}">
                                                 <f:convertNumber maxFractionDigits="2" />
                                             </h:outputText>
                                         </p:column>
-                                        
-                                      <p:column style="white-space:pre-line;">
+
+                                        <p:column style="white-space:pre-line;">
                                             <h:outputText value="#{pob.localCurrency.currencyCode}" style="#{viewSupport.getTextStyle(pob)}" rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob) or of:isInstance('com.flowserve.system606.model.Contract', pob)}"/>
                                         </p:column>
-                                        
+
                                         <p:column style="white-space:pre-line;">
                                             <h:outputText value="#{viewSupport.getCurrencyMetric('TRANSACTION_PRICE_BACKLOG_CC', pob).lcValue}" style="#{viewSupport.getTextStyle(pob)}">
                                                 <f:convertNumber type="currency" currencySymbol=""/>
@@ -649,8 +649,8 @@
                                                         <p:tooltip  for="ov1" value="Ru / Contract / POB"  showEffect="slide" hideEffect="explode" position="top"/>
                                                     </f:facet>
                                                 </p:column>
-                                                
-                                                 <p:column colspan="1" style="white-space:pre-line;" id="ovc" >
+
+                                                <p:column colspan="1" style="white-space:pre-line;" id="ovc" >
                                                     <f:facet name="header">
                                                         <h:outputText  value="Currency"/>
                                                         <p:tooltip  for="ovc" value="Local Currency"  showEffect="slide" hideEffect="explode" position="top"/>
@@ -698,7 +698,7 @@
                                         <p:column>
                                             <h:outputText value="#{pob.name}" title="#{pob.description}"/>
                                         </p:column>
-                                      <p:column style="white-space:pre-line;">
+                                        <p:column style="white-space:pre-line;">
                                             <h:outputText value="#{pob.localCurrency.currencyCode}" style="#{viewSupport.getTextStyle(pob)}" rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob) or of:isInstance('com.flowserve.system606.model.Contract', pob)}"/>
                                         </p:column>
 

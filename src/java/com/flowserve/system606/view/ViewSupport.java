@@ -37,7 +37,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Currency;
 import java.util.List;
-import java.util.function.Supplier;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
@@ -489,8 +488,12 @@ public class ViewSupport implements Serializable {
         return allPeriods;
     }
 
-    public BigDecimal getExchangeRate(Contract contract) throws Exception {
-        return currencyService.getExchangeRate(contract.getContractCurrency(), contract.getLocalCurrency(), webSession.getCurrentPeriod().getLocalCurrencyRatePeriod()).getPeriodEndRate();
+    public BigDecimal getCCtoLCExchangeRate(Contract contract) throws Exception {
+        return currencyService.getCCtoLCExchangeRate(contract, webSession.getCurrentPeriod());
+    }
+
+    public BigDecimal getLCtoRCExchangeRate(Contract contract) throws Exception {
+        return currencyService.getLCtoRCExchangeRate(contract, webSession.getCurrentPeriod());
     }
 
     public WorkflowStatus getPeriodWorkflowStatus(Contract contract) {
