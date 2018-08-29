@@ -126,6 +126,33 @@
                                         </p:autoComplete>
                                         <p:commandButton value="Add Approver" style="vertical-align:middle;" ajax="true" actionListener="#{reportingUnitEdit.addApprover(reportingUnitEdit.completedUser)}" update=":mainForm:approvers" process="@this, :mainForm:approverField" />
                                     </p:panelGrid>
+                                    <p:outputLabel for="viewers" value="Viewers" />
+                                    <p:panelGrid id="viewers" columns="1">
+                                        <p:dataTable id="viewersTable" style="margin-bottom: 10px;" var="reviewer" value="#{reportingUnitEdit.editReporintgUnit.reviewers}" >
+                                            <p:column headerText="Viewers Name">
+                                                <h:outputText value="#{reviewer.name}" />
+                                            </p:column>
+                                            <p:column>
+                                                <p:commandLink title="Remove" ajax="true" actionListener="#{reportingUnitEdit.removeReviewer(reviewer)}" style="color: blue;" update=":mainForm:viewers" process="@this">
+                                                    <h:outputText value="Remove" />
+                                                </p:commandLink>
+                                            </p:column>
+                                        </p:dataTable>
+                                        <p:autoComplete
+                                            id="reviewerField"
+                                            var="user"
+                                            maxResults="10"
+                                            required="#{false}"
+                                            forceSelection="#{true}"
+                                            value="#{reportingUnitEdit.completedVUser}"
+                                            completeMethod="#{viewSupport.completeUser}"
+                                            itemLabel="#{user.name}"
+                                            itemValue="#{user}"
+                                            converter="userConverter"
+                                            placeholder="Begin typing last name">
+                                        </p:autoComplete>
+                                        <p:commandButton value="Add Viewers" style="vertical-align:middle;" ajax="true" actionListener="#{reportingUnitEdit.addReviewer(reportingUnitEdit.completedVUser)}" update=":mainForm:viewers" process="@this, :mainForm:reviewerField" />
+                                    </p:panelGrid>
                                     <p:outputLabel for="parentRU" value="Parent Reporting Unit"/>
                                     <p:autoComplete
                                         id="parentRU"

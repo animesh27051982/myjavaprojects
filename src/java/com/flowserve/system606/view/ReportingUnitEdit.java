@@ -37,6 +37,7 @@ public class ReportingUnitEdit implements Serializable {
     List<Country> countries = new ArrayList<Country>();
     private User completedUser;
     private User completedPUser;
+    private User completedVUser;
     @Inject
     private WebSession webSession;
     @Inject
@@ -114,6 +115,33 @@ public class ReportingUnitEdit implements Serializable {
         }
     }
 
+    public void addReviewer(User reviewer) {
+        try {
+            if (reviewer == null || editReporintgUnit.getReviewers().contains(reviewer)) {
+                return;
+            }
+            editReporintgUnit.getReviewers().add(reviewer);
+            editReporintgUnit = adminService.update(editReporintgUnit);
+            completedVUser = null;
+        } catch (Exception e) {
+            FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", "Site save error " + e.getMessage());
+            FacesContext.getCurrentInstance().addMessage(null, msg);
+            logger.log(Level.SEVERE, "Error site save.", e);
+        }
+    }
+
+    public void removeReviewer(User reviewer) {
+
+        try {
+            editReporintgUnit.getReviewers().remove(reviewer);
+            editReporintgUnit = adminService.update(editReporintgUnit);
+        } catch (Exception e) {
+            FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", "Site save error " + e.getMessage());
+            FacesContext.getCurrentInstance().addMessage(null, msg);
+            logger.log(Level.SEVERE, "Error site save.", e);
+        }
+    }
+
     public String addUpdateCondition() throws Exception {
         return this.editReporintgUnit.getId() == null ? adminController.addReportingUnit(this.editReporintgUnit) : adminController.updateReportingUnit(this.editReporintgUnit);
     }
@@ -152,6 +180,14 @@ public class ReportingUnitEdit implements Serializable {
 
     public void setCompletedPUser(User completedPUser) {
         this.completedPUser = completedPUser;
+    }
+
+    public User getCompletedVUser() {
+        return completedVUser;
+    }
+
+    public void setCompletedVUser(User completedVUser) {
+        this.completedVUser = completedVUser;
     }
 
 }

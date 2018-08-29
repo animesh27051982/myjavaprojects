@@ -60,6 +60,8 @@
                                     </p:autoComplete>
                                     <p:outputLabel for="admin" value="Administrator"/>
                                     <p:selectBooleanCheckbox id="admin" value="#{userEdit.editUser.admin}"/>
+                                    <p:outputLabel for="globalViewer" value="Global Viewer"/>
+                                    <p:selectBooleanCheckbox id="globalViewer" value="#{userEdit.editUser.globalViewer}"/>
                                     <!-- Use p:toolbar for nicely stlyed command button area -->
                                     <f:facet name="footer">
                                         <p:toolbar>

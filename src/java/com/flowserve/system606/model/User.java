@@ -60,6 +60,8 @@ public class User implements Principal, Comparable<User>, Serializable {
     private String locale;
     @Column(name = "IS_ADMIN")
     private boolean admin;
+    @Column(name = "GlOBAL_VIEWER")
+    private boolean globalViewer;
 
     public User(String flsId, String name, String displayName, String emailAddress) {
         this.flsId = flsId;
@@ -229,6 +231,14 @@ public class User implements Principal, Comparable<User>, Serializable {
 
     public void setLocale(String locale) {
         this.locale = locale;
+    }
+
+    public boolean isGlobalViewer() {
+        return globalViewer;
+    }
+
+    public void setGlobalViewer(boolean globalViewer) {
+        this.globalViewer = globalViewer;
     }
 
 }

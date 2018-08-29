@@ -248,7 +248,7 @@ public class InputOnlineEntry implements Serializable {
     }
 
     public void saveInputs() throws Exception {
-        if (viewSupport.isPeriodOpen()) {
+        if (viewSupport.isEditable()) {
             Logger.getLogger(InputOnlineEntry.class.getName()).log(Level.FINE, "Saving inputs.");
             adminService.update(reportingUnit);
             for (Contract contract : reportingUnit.getContracts()) {
