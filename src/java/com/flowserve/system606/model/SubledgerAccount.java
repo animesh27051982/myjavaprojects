@@ -28,6 +28,9 @@ public class SubledgerAccount implements Serializable {
     @OneToOne
     @JoinColumn(name = "COMPANY_ID")
     private Company company;
+    @OneToOne
+    @JoinColumn(name = "SL_ACCT_OFFSET_ID")
+    private SubledgerAccount offsetAccount;
 
     public String getId() {
         return id;
@@ -67,6 +70,14 @@ public class SubledgerAccount implements Serializable {
 
     public void setCompany(Company company) {
         this.company = company;
+    }
+
+    public SubledgerAccount getOffsetAccount() {
+        return offsetAccount;
+    }
+
+    public void setOffsetAccount(SubledgerAccount offsetAccount) {
+        this.offsetAccount = offsetAccount;
     }
 
 }
