@@ -70,22 +70,21 @@ public class ReportsService {
 
     private static final int HEADER_ROW_COUNT = 10;
 
-    public void generateContractEsimatesReport(InputStream inputStream, FileOutputStream outputStream, Contract contract) throws Exception {
-        calculationService.executeBusinessRules(contract, webSession.getCurrentPeriod());
-        try (XSSFWorkbook workbook = new XSSFWorkbook(inputStream)) {
-            workbook.removeSheetAt(workbook.getSheetIndex("Contract Summary-2"));
-            XSSFSheet worksheet = workbook.getSheet("Contract Summary-1");
-
-            worksheet = writeContractEsimatesReport(worksheet, contract);
-            ((XSSFSheet) worksheet).getCTWorksheet().getSheetViews().getSheetViewArray(0).setTopLeftCell("A1");
-            ((XSSFSheet) worksheet).setActiveCell(new CellAddress("A2"));
-            workbook.write(outputStream);
-            workbook.close();
-        }
-        inputStream.close();
-        outputStream.close();
-    }
-
+//    public void generateContractEsimatesReport(InputStream inputStream, FileOutputStream outputStream, Contract contract) throws Exception {
+//        calculationService.executeBusinessRules(contract, webSession.getCurrentPeriod());
+//        try (XSSFWorkbook workbook = new XSSFWorkbook(inputStream)) {
+//            workbook.removeSheetAt(workbook.getSheetIndex("Contract Summary-2"));
+//            XSSFSheet worksheet = workbook.getSheet("Contract Summary-1");
+//
+//            worksheet = writeContractEsimatesReport(worksheet, contract);
+//            ((XSSFSheet) worksheet).getCTWorksheet().getSheetViews().getSheetViewArray(0).setTopLeftCell("A1");
+//            ((XSSFSheet) worksheet).setActiveCell(new CellAddress("A2"));
+//            workbook.write(outputStream);
+//            workbook.close();
+//        }
+//        inputStream.close();
+//        outputStream.close();
+//    }
     public XSSFSheet writeContractEsimatesReport(XSSFSheet worksheet, Contract contract) throws Exception {
         XSSFRow row;
         Cell cell = null;
@@ -272,22 +271,21 @@ public class ReportsService {
         return insertRow;
     }
 
-    public void generateReportByFinancialPeriod(InputStream inputStream, FileOutputStream outputStream, Contract contract) throws Exception {
-        calculationService.executeBusinessRules(contract, webSession.getCurrentPeriod());
-        try (XSSFWorkbook workbook = new XSSFWorkbook(inputStream)) {
-            workbook.removeSheetAt(workbook.getSheetIndex("Contract Summary-1"));
-            XSSFSheet worksheet = workbook.getSheet("Contract Summary-2");
-
-            worksheet = writeReportByFinancialPeriod(worksheet, contract);
-            ((XSSFSheet) worksheet).getCTWorksheet().getSheetViews().getSheetViewArray(0).setTopLeftCell("A1");
-            ((XSSFSheet) worksheet).setActiveCell(new CellAddress("A2"));
-            workbook.write(outputStream);
-        }
-        inputStream.close();
-        outputStream.close();
-
-    }
-
+//    public void generateReportByFinancialPeriod(InputStream inputStream, FileOutputStream outputStream, Contract contract) throws Exception {
+//        calculationService.executeBusinessRules(contract, webSession.getCurrentPeriod());
+//        try (XSSFWorkbook workbook = new XSSFWorkbook(inputStream)) {
+//            workbook.removeSheetAt(workbook.getSheetIndex("Contract Summary-1"));
+//            XSSFSheet worksheet = workbook.getSheet("Contract Summary-2");
+//
+//            worksheet = writeReportByFinancialPeriod(worksheet, contract);
+//            ((XSSFSheet) worksheet).getCTWorksheet().getSheetViews().getSheetViewArray(0).setTopLeftCell("A1");
+//            ((XSSFSheet) worksheet).setActiveCell(new CellAddress("A2"));
+//            workbook.write(outputStream);
+//        }
+//        inputStream.close();
+//        outputStream.close();
+//
+//    }
     public XSSFSheet writeReportByFinancialPeriod(XSSFSheet worksheet, Contract contract) throws Exception {
         XSSFRow row;
         Cell cell = null;
@@ -616,6 +614,8 @@ public class ReportsService {
             workbook.removeSheetAt(workbook.getSheetIndex("Journal Entry-1"));
             workbook.removeSheetAt(workbook.getSheetIndex("Journal Entry-2"));
             workbook.removeSheetAt(workbook.getSheetIndex("Financial Summary"));
+            workbook.removeSheetAt(workbook.getSheetIndex("Financial Summary-2"));
+            workbook.removeSheetAt(workbook.getSheetIndex("Financial Summary-3"));
             workbook.removeSheetAt(workbook.getSheetIndex("Disclosures"));
             workbook.removeSheetAt(workbook.getSheetIndex("Disclosures-1"));
             workbook.removeSheetAt(workbook.getSheetIndex("Disclosures-2"));
@@ -629,8 +629,8 @@ public class ReportsService {
             worksheet = writeFinancialSummary1(worksheet, contract);
             ((XSSFSheet) worksheet).getCTWorksheet().getSheetViews().getSheetViewArray(0).setTopLeftCell("A1");
             ((XSSFSheet) worksheet).setActiveCell(new CellAddress("A2"));
-            worksheet = workbook.getSheet("Financial Summary-3");
-            worksheet = writeFinancialSummary2(worksheet, contract);
+//            worksheet = workbook.getSheet("Financial Summary-3");
+//            worksheet = writeFinancialSummary2(worksheet, contract);
 
             workbook.write(outputStream);
         }
@@ -748,63 +748,61 @@ public class ReportsService {
 
     }
 
-    public XSSFSheet writeFinancialSummary2(XSSFSheet worksheet, Contract contract) throws Exception {
-
-        Cell cell = null;
-        XSSFRow rowTitle = worksheet.getRow(1);
-        cell = rowTitle.getCell(0, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
-        cell.setCellValue(contract.getName());
-
-        List<FinancialPeriod> ytdPeriods = financialPeriodService.getYTDFinancialPeriods(viewSupport.getCurrentPeriod());
-        for (int i = 0; i < ytdPeriods.size(); i++) {
-            int colNum = i + 1;
-            printSummaryByContract(colNum, worksheet, contract, ytdPeriods.get(i));
-        }
-        return worksheet;
-    }
-
-    public void printSummaryByContract(int colNum, XSSFSheet worksheet, Contract contract, FinancialPeriod period) throws Exception {
-
-        XSSFRow row;
-
-        BigDecimal transactionPrice = getTransactionPrice(contract, period);
-        BigDecimal revenueToRecognize = getRevenueRecognizeCTD(contract, period);
-        BigDecimal liquidatedDamage = getLiquidatedDamages(contract, period);
-        BigDecimal EAC = getEAC(contract, period);
-        BigDecimal estimatedGrossProfit = getEstimatedGrossProfit(contract, period);
-        BigDecimal estimatedGrossMargin = getEstimatedGrossMargin(contract, period);
-        BigDecimal localCostCTDLC = getCostOfGoodsSold(contract, period);
-        BigDecimal billToDateLC = getContractBillingsCTDLC(contract, period);
-
-        row = worksheet.getRow(6);
-        setCellValue(row, colNum, transactionPrice);
-        row = worksheet.getRow(7);
-        setCellValue(row, colNum, revenueToRecognize);
-        row = worksheet.getRow(11);
-        setCellValue(row, colNum, liquidatedDamage);
-        row = worksheet.getRow(16);
-        setCellValue(row, colNum, EAC);
-        row = worksheet.getRow(17);
-        setCellValue(row, colNum, localCostCTDLC);
-        row = worksheet.getRow(20);
-        setCellValue(row, colNum, estimatedGrossProfit);
-        row = worksheet.getRow(21);
-        //Getting NPE
-        //setCellValue(row, colNum, estimatedGrossMargin);
-
-        row = worksheet.getRow(25);
-        setCellValue(row, colNum, transactionPrice);
-        row = worksheet.getRow(26);
-        setCellValue(row, colNum, billToDateLC);
-        row = worksheet.getRow(29);
-        setCellValue(row, colNum, liquidatedDamage);
-        row = worksheet.getRow(32);
-        setCellValue(row, colNum, EAC);
-        row = worksheet.getRow(33);
-        setCellValue(row, colNum, localCostCTDLC);
-
-    }
-
+//    public XSSFSheet writeFinancialSummary2(XSSFSheet worksheet, Contract contract) throws Exception {
+//
+//        Cell cell = null;
+//        XSSFRow rowTitle = worksheet.getRow(1);
+//        cell = rowTitle.getCell(0, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
+//        cell.setCellValue(contract.getName());
+//
+//        List<FinancialPeriod> ytdPeriods = financialPeriodService.getYTDFinancialPeriods(viewSupport.getCurrentPeriod());
+//        for (int i = 0; i < ytdPeriods.size(); i++) {
+//            int colNum = i + 1;
+//            printSummaryByContract(colNum, worksheet, contract, ytdPeriods.get(i));
+//        }
+//        return worksheet;
+//    }
+//    public void printSummaryByContract(int colNum, XSSFSheet worksheet, Contract contract, FinancialPeriod period) throws Exception {
+//
+//        XSSFRow row;
+//
+//        BigDecimal transactionPrice = getTransactionPrice(contract, period);
+//        BigDecimal revenueToRecognize = getRevenueRecognizeCTD(contract, period);
+//        BigDecimal liquidatedDamage = getLiquidatedDamages(contract, period);
+//        BigDecimal EAC = getEAC(contract, period);
+//        BigDecimal estimatedGrossProfit = getEstimatedGrossProfit(contract, period);
+//        BigDecimal estimatedGrossMargin = getEstimatedGrossMargin(contract, period);
+//        BigDecimal localCostCTDLC = getCostOfGoodsSold(contract, period);
+//        BigDecimal billToDateLC = getContractBillingsCTDLC(contract, period);
+//
+//        row = worksheet.getRow(6);
+//        setCellValue(row, colNum, transactionPrice);
+//        row = worksheet.getRow(7);
+//        setCellValue(row, colNum, revenueToRecognize);
+//        row = worksheet.getRow(11);
+//        setCellValue(row, colNum, liquidatedDamage);
+//        row = worksheet.getRow(16);
+//        setCellValue(row, colNum, EAC);
+//        row = worksheet.getRow(17);
+//        setCellValue(row, colNum, localCostCTDLC);
+//        row = worksheet.getRow(20);
+//        setCellValue(row, colNum, estimatedGrossProfit);
+//        row = worksheet.getRow(21);
+//        //Getting NPE
+//        //setCellValue(row, colNum, estimatedGrossMargin);
+//
+//        row = worksheet.getRow(25);
+//        setCellValue(row, colNum, transactionPrice);
+//        row = worksheet.getRow(26);
+//        setCellValue(row, colNum, billToDateLC);
+//        row = worksheet.getRow(29);
+//        setCellValue(row, colNum, liquidatedDamage);
+//        row = worksheet.getRow(32);
+//        setCellValue(row, colNum, EAC);
+//        row = worksheet.getRow(33);
+//        setCellValue(row, colNum, localCostCTDLC);
+//
+//    }
     public void generateCompanyReportFinancialSummary(InputStream inputStream, FileOutputStream outputStream) throws Exception {
         try (XSSFWorkbook workbook = new XSSFWorkbook(inputStream)) {
             workbook.removeSheetAt(workbook.getSheetIndex("Contract Summary"));

@@ -47,40 +47,38 @@ public class ReportContractEstimate implements Serializable {
         contract = webSession.getEditContract();
     }
 
-    public StreamedContent getFile() throws Exception {
-        try {
-
-            inputStream = RceInput.class.getResourceAsStream("/resources/excel_input_templates/Outputs_Summary_v2.xlsx");
-            outputStream = new FileOutputStream(new File("Outputs_Summary_v2.xlsx"));
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        reportsService.generateContractEsimatesReport(inputStream, outputStream, contract);
-
-        InputStream inputStreamFromOutputStream = new FileInputStream(new File("Outputs_Summary_v2.xlsx"));
-        file = new DefaultStreamedContent(inputStreamFromOutputStream, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "Total_Contract_Estimate.xlsx");
-        return file;
-    }
-
-    public StreamedContent getFileMonthlyIncomeImpact() throws Exception {
-        try {
-
-            inputStream = RceInput.class.getResourceAsStream("/resources/excel_input_templates/Outputs_Summary_v2.xlsx");
-            outputStream = new FileOutputStream(new File("Outputs_Summary_v2.xlsx"));
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        reportsService.generateReportByFinancialPeriod(inputStream, outputStream, contract);
-
-        InputStream inputStreamFromOutputStream = new FileInputStream(new File("Outputs_Summary_v2.xlsx"));
-        file = new DefaultStreamedContent(inputStreamFromOutputStream, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "Monthly_Income_Statement_Impact.xlsx");
-        return file;
-    }
-
+//    public StreamedContent getFile() throws Exception {
+//        try {
+//
+//            inputStream = RceInput.class.getResourceAsStream("/resources/excel_input_templates/Outputs_Summary_v2.xlsx");
+//            outputStream = new FileOutputStream(new File("Outputs_Summary_v2.xlsx"));
+//
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//
+//        reportsService.generateContractEsimatesReport(inputStream, outputStream, contract);
+//
+//        InputStream inputStreamFromOutputStream = new FileInputStream(new File("Outputs_Summary_v2.xlsx"));
+//        file = new DefaultStreamedContent(inputStreamFromOutputStream, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "Total_Contract_Estimate.xlsx");
+//        return file;
+//    }
+//    public StreamedContent getFileMonthlyIncomeImpact() throws Exception {
+//        try {
+//
+//            inputStream = RceInput.class.getResourceAsStream("/resources/excel_input_templates/Outputs_Summary_v2.xlsx");
+//            outputStream = new FileOutputStream(new File("Outputs_Summary_v2.xlsx"));
+//
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//
+//        reportsService.generateReportByFinancialPeriod(inputStream, outputStream, contract);
+//
+//        InputStream inputStreamFromOutputStream = new FileInputStream(new File("Outputs_Summary_v2.xlsx"));
+//        file = new DefaultStreamedContent(inputStreamFromOutputStream, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "Monthly_Income_Statement_Impact.xlsx");
+//        return file;
+//    }
     public StreamedContent getFinancialSummaryReport() throws Exception {
         try {
 
@@ -133,18 +131,16 @@ public class ReportContractEstimate implements Serializable {
         return getFinancialSummaryReport();
     }
 
-    public StreamedContent getFileMonthlyIncomeImpact(Contract contract) throws Exception {
-        this.contract = contract;
-
-        return getFileMonthlyIncomeImpact();
-    }
-
-    public StreamedContent getFile(Contract contract) throws Exception {
-        this.contract = contract;
-
-        return getFile();
-    }
-
+//    public StreamedContent getFileMonthlyIncomeImpact(Contract contract) throws Exception {
+//        this.contract = contract;
+//
+//        return getFileMonthlyIncomeImpact();
+//    }
+//    public StreamedContent getFile(Contract contract) throws Exception {
+//        this.contract = contract;
+//
+//        return getFile();
+//    }
     public StreamedContent getJournalEntryReport() throws Exception {
         try {
 
