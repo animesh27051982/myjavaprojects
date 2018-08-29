@@ -329,6 +329,7 @@ rule "Revenue to Recognize CTD CC RevRec Method is PIT And Delivery Date Does No
         currencyService.convertCurrency(revenueToRecognizeCTD, pob, period);  // We can convert right in-line since this is a single point-in-time transaction.
 end
 
+/**
 rule "Revenue to Recognize CTD CC RevRec Method is PIT And Delivery Date Exists"
     when
         pob : PerformanceObligation(revenueMethod == RevenueMethod.POINT_IN_TIME)
@@ -341,7 +342,7 @@ rule "Revenue to Recognize CTD CC RevRec Method is PIT And Delivery Date Exists"
         modify (revenueToRecognizeCTD) { ccValue = (deliveryDate.value.compareTo(period.endDate) <= 0 ? transactionPrice.ccValue : 0B)};
         currencyService.convertCurrency(revenueToRecognizeCTD, pob, period);  // We can convert right in-line since this is a single point-in-time transaction.
 end
-
+**/
 
 
 // KJG Working 8/28...
