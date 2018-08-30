@@ -29,7 +29,8 @@ rule "Estimated Gross Profit and Margin"
         estimatedGrossMargin : Metric(metricType.code == "ESTIMATED_GROSS_MARGIN")
     then
         modify (estimatedGrossProfit) { lcValue = (transactionPrice.lcValue - estimatedCostAtCompletion.lcValue)};
-        modify (estimatedGrossMargin) { value = ((estimatedGrossProfit.lcValue == 0B || transactionPrice.lcValue == 0B) ? 0B : estimatedGrossProfit.lcValue / transactionPrice.lcValue)};
+        modify (estimatedGrossMargin) { value = ((estimatedGrossProfit.lcValue == 0B || transactionPrice.lcValue == 0B) ? 0B :
+                                                    estimatedGrossProfit.lcValue / transactionPrice.lcValue)};
 end
 
 rule "EAC Change"
@@ -116,7 +117,8 @@ rule "Percent Complete POB : Rev Rec Method is Percentage of Completion"
         estimatedCostAtCompletion : CurrencyMetric(metricType.code == "ESTIMATED_COST_AT_COMPLETION_LC", lcValue != null)
         percentComplete : Metric(metricType.code == "PERCENT_COMPLETE")
     then
-        modify (percentComplete) { value = (costOfGoodsSoldCTD.lcValue == 0B || estimatedCostAtCompletion.lcValue == 0B ? 0B : costOfGoodsSoldCTD.lcValue / estimatedCostAtCompletion.lcValue)};
+        modify (percentComplete) { value = (costOfGoodsSoldCTD.lcValue == 0B || estimatedCostAtCompletion.lcValue == 0B ? 0B :
+                                            costOfGoodsSoldCTD.lcValue / estimatedCostAtCompletion.lcValue)};
 end
 
 rule "Percent Complete POB : Rev Rec Method is non-POC"
@@ -286,17 +288,27 @@ end
 * do not have access to all previous period values in the business rules, therefore we rely on the previous period values to derive the
 * same result.
 **/
-rule "Revenue to Recognize CTD LC and RC"
+rule "Revenue to Recognize CTD LC"
     when
         pob : PerformanceObligation(revenueMethod == RevenueMethod.PERC_OF_COMP)
         period : FinancialPeriod()
         currencyService : CurrencyService()  // Necessary due to mid rule-execution need for currency conversion.
-        revenueToRecognizeCurrentPeriod : CurrencyMetric(metricType.code == "REVENUE_TO_RECOGNIZE_PERIOD_CC", ccValue != null)
+        revenueToRecognizeCurrentPeriod : CurrencyMetric(metricType.code == "REVENUE_TO_RECOGNIZE_PERIOD_CC", lcValue != null)
         revenueToRecognizeCTDPriorPeriod : CurrencyMetricPriorPeriod(metricType.code == "REVENUE_TO_RECOGNIZE_CTD_CC")
         revenueToRecognizeCTD : CurrencyMetric(metricType.code == "REVENUE_TO_RECOGNIZE_CTD_CC")
     then
-        currencyService.convertCurrency(revenueToRecognizeCurrentPeriod, pob, period);  // Necessary due to mid rule-execution need for manual conversion.
         modify (revenueToRecognizeCTD) { lcValue = (revenueToRecognizeCurrentPeriod.lcValue + (revenueToRecognizeCTDPriorPeriod.lcValue == null ? 0B : revenueToRecognizeCTDPriorPeriod.lcValue))};
+end
+
+rule "Revenue to Recognize CTD RC"
+    when
+        pob : PerformanceObligation(revenueMethod == RevenueMethod.PERC_OF_COMP)
+        period : FinancialPeriod()
+        currencyService : CurrencyService()  // Necessary due to mid rule-execution need for currency conversion.
+        revenueToRecognizeCurrentPeriod : CurrencyMetric(metricType.code == "REVENUE_TO_RECOGNIZE_PERIOD_CC", rcValue != null)
+        revenueToRecognizeCTDPriorPeriod : CurrencyMetricPriorPeriod(metricType.code == "REVENUE_TO_RECOGNIZE_CTD_CC")
+        revenueToRecognizeCTD : CurrencyMetric(metricType.code == "REVENUE_TO_RECOGNIZE_CTD_CC")
+    then
         modify (revenueToRecognizeCTD) { rcValue = (revenueToRecognizeCurrentPeriod.rcValue + (revenueToRecognizeCTDPriorPeriod.rcValue == null ? 0B : revenueToRecognizeCTDPriorPeriod.rcValue))};
 end
 
@@ -325,7 +337,7 @@ rule "Revenue to Recognize CTD CC RevRec Method is PIT And Delivery Date Does No
         revenueToRecognizeCTDPriorPeriod : CurrencyMetricPriorPeriod(metricType.code == "REVENUE_TO_RECOGNIZE_CTD_CC")
         revenueToRecognizeCTD : CurrencyMetric(metricType.code == "REVENUE_TO_RECOGNIZE_CTD_CC")
     then
-        modify (revenueToRecognizeCTD) { ccValue = (revenueToRecognizeCTDPriorPeriod.ccValue == null ? 0B : revenueToRecognizeCTDPriorPeriod.ccValue)};
+        modify (revenueToRecognizeCTD) { ccValue = (revenueToRecognizeCTDPriorPeriod.ccValue == null ? 0B : revenueToRecognizeCTDPriorPeriod.ccValue) };
         currencyService.convertCurrency(revenueToRecognizeCTD, pob, period);  // We can convert right in-line since this is a single point-in-time transaction.
 end
 
@@ -339,35 +351,73 @@ rule "Revenue to Recognize CTD CC RevRec Method is PIT And Delivery Date Exists"
         transactionPrice : CurrencyMetric(metricType.code == "TRANSACTION_PRICE_CC", ccValue != null)
         revenueToRecognizeCTD : CurrencyMetric(metricType.code == "REVENUE_TO_RECOGNIZE_CTD_CC", ccValue == null || ccValue == 0B)  // If we have already recognized rev, don't do it again.
     then
-        modify (revenueToRecognizeCTD) { ccValue = (deliveryDate.value.compareTo(period.endDate) <= 0 ? transactionPrice.ccValue : 0B)};
+        modify (revenueToRecognizeCTD) { ccValue = (deliveryDate.value.compareTo(period.endDate) <= 0 ? transactionPrice.ccValue : 0B) };
         currencyService.convertCurrency(revenueToRecognizeCTD, pob, period);  // We can convert right in-line since this is a single point-in-time transaction.
 end
 **/
 
 
-// KJG Working 8/28...
-/**
-rule "Revenue to Recognize CTD CC RevRec Method is SL : Straight Line"
+
+rule "Revenue to Recognize CTD CC Straight Line"
     when
         pob : PerformanceObligation(revenueMethod == RevenueMethod.STRAIGHT_LINE)
         period : FinancialPeriod()
-        slStartDate : DateMetric(metricType.code == "SL_START_DATE", value != null)
-        slEndDate : DateMetric(metricType.code == "SL_END_DATE", value != null)
+        slStartDate : DateMetric(metricType.code == "SL_START_DATE")
+        slEndDate : DateMetric(metricType.code == "SL_END_DATE")
+        transactionPrice : CurrencyMetric(metricType.code == "TRANSACTION_PRICE_CC", ccValue != null)
+        revenueToRecognizeCTDPriorPeriod : CurrencyMetricPriorPeriod(metricType.code == "REVENUE_TO_RECOGNIZE_CTD_CC")
+        revenueToRecognizeCTD : CurrencyMetric(metricType.code == "REVENUE_TO_RECOGNIZE_CTD_CC")
+    then
+        modify (revenueToRecognizeCTD) { ccValue = (transactionPrice.ccValue * period.getStraightLineRevenueAllocationFactor(slStartDate.value, slEndDate.value)) };
+        modify (revenueToRecognizeCTD) { ccValue = (revenueToRecognizeCTD.ccValue == 0B) ? revenueToRecognizeCTDPriorPeriod.ccValue : revenueToRecognizeCTD.ccValue };
+        modify (revenueToRecognizeCTD) { ccValue = (revenueToRecognizeCTD.ccValue == null) ? 0B : revenueToRecognizeCTD.ccValue };
+        logger.info("SL Rev Calc: " + revenueToRecognizeCTD);
+end
 
+/**
+* REVENUE_TO_RECOGNIZE_CTD_CC is a non-currency-convertible metric at the CTD level.  This is a system setting on the MetricType.
+* The sytem will not automatically currency-convert this metric.  A CTD level convertsion is an invalid operation due to the
+* order-of-conversion problem.  Simply stated one cannot convert, at the CTD level, a metric that contains previously converted LC components
+* at previous exchange rates.  This renders a CTD level conversion inaccurate, so we must convert the LC (and RC) components manually.
+* Another way of stating this problem is that you must convert-and-accumulate the CTD level rather than accumulate-and-convert.  We
+* do not have access to all previous period values in the business rules, therefore we rely on the previous period values to derive the
+* same result.
+**/
+rule "Revenue to Recognize CTD LC Straight Line"
+    when
+        pob : PerformanceObligation(revenueMethod == RevenueMethod.STRAIGHT_LINE)
+        period : FinancialPeriod()
+        currencyService : CurrencyService()  // Necessary due to mid rule-execution need for currency conversion.
+        revenueToRecognizeCurrentPeriod : CurrencyMetric(metricType.code == "REVENUE_TO_RECOGNIZE_PERIOD_CC", lcValue != null)
+        revenueToRecognizeCTDPriorPeriod : CurrencyMetricPriorPeriod(metricType.code == "REVENUE_TO_RECOGNIZE_CTD_CC")
+        revenueToRecognizeCTD : CurrencyMetric(metricType.code == "REVENUE_TO_RECOGNIZE_CTD_CC")
+    then
+        modify (revenueToRecognizeCTD) { lcValue = (revenueToRecognizeCurrentPeriod.lcValue + (revenueToRecognizeCTDPriorPeriod.lcValue == null ? 0B : revenueToRecognizeCTDPriorPeriod.lcValue))};
+end
+
+rule "Revenue to Recognize CTD RC Straight Line"
+    when
+        pob : PerformanceObligation(revenueMethod == RevenueMethod.STRAIGHT_LINE)
+        period : FinancialPeriod()
+        currencyService : CurrencyService()  // Necessary due to mid rule-execution need for currency conversion.
+        revenueToRecognizeCurrentPeriod : CurrencyMetric(metricType.code == "REVENUE_TO_RECOGNIZE_PERIOD_CC", rcValue != null)
+        revenueToRecognizeCTDPriorPeriod : CurrencyMetricPriorPeriod(metricType.code == "REVENUE_TO_RECOGNIZE_CTD_CC")
+        revenueToRecognizeCTD : CurrencyMetric(metricType.code == "REVENUE_TO_RECOGNIZE_CTD_CC")
+    then
+        modify (revenueToRecognizeCTD) { rcValue = (revenueToRecognizeCurrentPeriod.rcValue + (revenueToRecognizeCTDPriorPeriod.rcValue == null ? 0B : revenueToRecognizeCTDPriorPeriod.rcValue))};
+end
+
+
+rule "Revenue to Recognize CTD CC RTI Right to Invoice"
+    when
+        pob : PerformanceObligation(revenueMethod == RevenueMethod.RIGHT_TO_INVOICE)
+        contractBillingsPeriodCC : CurrencyMetric(metricType.code == "CONTRACT_BILLINGS_PERIOD_CC", ccValue != null)
         revenueToRecognizeCTD : CurrencyMetric(metricType.code == "REVENUE_TO_RECOGNIZE_CTD_CC")
     then
         modify (revenueToRecognizeCTD) { ccValue = contractBillingsPeriodCC};
 end
-**/
 
-
-
-
-
-
-
-
-rule "Revenue to Recognize CTD LC RevRec Method is RTI Right to Invoice"
+rule "Revenue to Recognize CTD LC RTI Right to Invoice"
     when
         pob : PerformanceObligation(revenueMethod == RevenueMethod.RIGHT_TO_INVOICE)
         contractBillingsPeriodLC : CurrencyMetric(metricType.code == "CONTRACT_BILLINGS_PERIOD_CC", lcValue != null)
@@ -376,7 +426,7 @@ rule "Revenue to Recognize CTD LC RevRec Method is RTI Right to Invoice"
         modify (revenueToRecognizeCTD) { lcValue = contractBillingsPeriodLC};
 end
 
-rule "Revenue to Recognize CTD RC RevRec Method is RTI Right to Invoice"
+rule "Revenue to Recognize CTD RC RTI Right to Invoice"
     when
         pob : PerformanceObligation(revenueMethod == RevenueMethod.RIGHT_TO_INVOICE)
         contractBillingsPeriodRC : CurrencyMetric(metricType.code == "CONTRACT_BILLINGS_PERIOD_CC", rcValue != null)
@@ -385,42 +435,22 @@ rule "Revenue to Recognize CTD RC RevRec Method is RTI Right to Invoice"
         modify (revenueToRecognizeCTD) { rcValue = contractBillingsPeriodRC};
 end
 
-
-// Revenue Current Period CC
+/**
+*  Revenue Current Period
+**/
 rule "Revenue to Recognize Current Period CC"
     when
         pob : PerformanceObligation()
+        period : FinancialPeriod()
+        currencyService : CurrencyService()  // Requires immediate conversions since LC needed for other rules.
         revenueToRecognizeCTD : CurrencyMetric(metricType.code == "REVENUE_TO_RECOGNIZE_CTD_CC", ccValue != null)
         revenueToRecognizeCTDPriorPeriod : CurrencyMetricPriorPeriod(metricType.code == "REVENUE_TO_RECOGNIZE_CTD_CC")
         revenueToRecognizeCurrentPeriod : CurrencyMetric(metricType.code == "REVENUE_TO_RECOGNIZE_PERIOD_CC")
     then
         modify (revenueToRecognizeCurrentPeriod) { ccValue = (revenueToRecognizeCTDPriorPeriod.ccValue == null ? revenueToRecognizeCTD.ccValue : revenueToRecognizeCTD.ccValue - revenueToRecognizeCTDPriorPeriod.ccValue)};
+        modify (revenueToRecognizeCurrentPeriod) { lcValue = (revenueToRecognizeCurrentPeriod.ccValue * currencyService.getCCtoLCExchangeRate(pob, period)) };
+        modify (revenueToRecognizeCurrentPeriod) { rcValue = (revenueToRecognizeCurrentPeriod.lcValue * currencyService.getLCtoRCExchangeRate(pob, period)) };
 end
-
-// Revenue Current Period LC
-rule "Revenue to Recognize Current Period LC"
-    when
-        pob : PerformanceObligation()
-        revenueToRecognizeCTD : CurrencyMetric(metricType.code == "REVENUE_TO_RECOGNIZE_CTD_CC", lcValue != null)
-        revenueToRecognizeCTDPriorPeriod : CurrencyMetricPriorPeriod(metricType.code == "REVENUE_TO_RECOGNIZE_CTD_CC")
-        revenueToRecognizeCurrentPeriod : CurrencyMetric(metricType.code == "REVENUE_TO_RECOGNIZE_PERIOD_CC")
-    then
-        modify (revenueToRecognizeCurrentPeriod) { lcValue = (revenueToRecognizeCTDPriorPeriod.lcValue == null ? revenueToRecognizeCTD.lcValue : revenueToRecognizeCTD.lcValue - revenueToRecognizeCTDPriorPeriod.lcValue)};
-end
-
-// Revenue Current Period RC
-rule "Revenue to Recognize Current Period RC"
-    when
-        pob : PerformanceObligation()
-        revenueToRecognizeCTD : CurrencyMetric(metricType.code == "REVENUE_TO_RECOGNIZE_CTD_CC", rcValue != null)
-        revenueToRecognizeCTDPriorPeriod : CurrencyMetricPriorPeriod(metricType.code == "REVENUE_TO_RECOGNIZE_CTD_CC")
-        revenueToRecognizeCurrentPeriod : CurrencyMetric(metricType.code == "REVENUE_TO_RECOGNIZE_PERIOD_CC")
-    then
-        modify (revenueToRecognizeCurrentPeriod) { rcValue = (revenueToRecognizeCTDPriorPeriod.rcValue == null ? revenueToRecognizeCTD.rcValue : revenueToRecognizeCTD.rcValue - revenueToRecognizeCTDPriorPeriod.rcValue)};
-end
-
-
-
 
 
 // Liquidated Damanges Calcs

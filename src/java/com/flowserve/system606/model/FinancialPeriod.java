@@ -8,6 +8,7 @@ package com.flowserve.system606.model;
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.Period;
 import java.util.logging.Logger;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -82,6 +83,64 @@ public class FinancialPeriod extends BaseEntity<String> implements Comparable<Fi
         this.periodYear = periodYear;
         this.periodMonth = periodMonth;
         this.status = status;
+    }
+
+    public boolean isBetween(LocalDate startDate, LocalDate endDate) {
+        if (startDate == null || endDate == null) {
+            return false;
+        }
+
+        if (this.startDate.withDayOfMonth(15).isAfter(startDate.withDayOfMonth(1))
+                && this.startDate.withDayOfMonth(15).isBefore(endDate.withDayOfMonth(25))) {
+            return true;
+        }
+
+        return false;
+    }
+
+    public int getPeriodMonthDuration(LocalDate startDate, LocalDate endDate) {
+        if (!this.isBetween(startDate, endDate)) {
+            return 0;
+        }
+
+        if (startDate == null || endDate == null) {
+            return 0;
+        }
+
+        if (startDate.isAfter(endDate)) {
+            return 0;
+        }
+
+        if (this.startDate.withDayOfMonth(1).isBefore(endDate.withDayOfMonth(1))) {
+            endDate = this.startDate.withDayOfMonth(1);
+        }
+
+        Period diff = Period.between(startDate.withDayOfMonth(1), endDate.withDayOfMonth(1));
+
+        return diff.getMonths();
+    }
+
+    public float getStraightLineRevenueAllocationFactor(LocalDate slStartDate, LocalDate slEndDate) {
+        if (slStartDate == null || slEndDate == null) {
+            return 0.0f;
+        }
+
+        slStartDate = slStartDate.withDayOfMonth(1);
+        slEndDate = slEndDate.withDayOfMonth(1);
+
+        if (this.startDate.isBefore(slStartDate)) {
+            return 0.0f;
+        }
+
+        if (this.startDate.isAfter(slEndDate) || this.startDate.isEqual(slEndDate)) {
+            return 1.0f;
+        }
+
+        if (this.isBetween(slStartDate, slEndDate)) {
+            return Period.between(this.startDate, slStartDate).getMonths() / Period.between(slEndDate, slStartDate).getMonths();
+        }
+
+        return 0.0f;
     }
 
     @Override

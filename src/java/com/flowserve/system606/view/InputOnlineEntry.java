@@ -96,7 +96,7 @@ public class InputOnlineEntry implements Serializable {
     public void init() {
         reportingUnit = adminService.findReportingUnitById(webSession.getCurrentReportingUnit().getId());
         rootTreeNode = viewSupport.generateNodeTree(reportingUnit);
-        billingTreeNode = viewSupport.generateNodeTreeForBilling(reportingUnit);
+        billingTreeNode = viewSupport.generateNodeTreeForBilling(reportingUnit, webSession.getCurrentPeriod());
         initContracts(reportingUnit);
 
         if (webSession.getFilterText() != null) {
@@ -139,7 +139,7 @@ public class InputOnlineEntry implements Serializable {
         if (isEmpty(webSession.getFilterText())) {
             //rootTreeNode = viewSupport.generateNodeTree(reportingUnits);
             rootTreeNode = viewSupport.generateNodeTree(reportingUnit);
-            billingTreeNode = viewSupport.generateNodeTreeForBilling(reportingUnit);
+            billingTreeNode = viewSupport.generateNodeTreeForBilling(reportingUnit, webSession.getCurrentPeriod());
         } else {
             viewSupport.filterNodeTree(rootTreeNode, webSession.getFilterText());
             viewSupport.filterBillingNodeTree(billingTreeNode, webSession.getFilterText());
@@ -148,10 +148,10 @@ public class InputOnlineEntry implements Serializable {
 
     public void filterByContracts() {
         rootTreeNode = viewSupport.generateNodeTree(reportingUnit);
-        billingTreeNode = viewSupport.generateNodeTreeForBilling(reportingUnit);
+        billingTreeNode = viewSupport.generateNodeTreeForBilling(reportingUnit, webSession.getCurrentPeriod());
         if (webSession.getSelectedContracts().length == 0) {
             rootTreeNode = viewSupport.generateNodeTree(reportingUnit);
-            billingTreeNode = viewSupport.generateNodeTreeForBilling(reportingUnit);
+            billingTreeNode = viewSupport.generateNodeTreeForBilling(reportingUnit, webSession.getCurrentPeriod());
         } else {
             viewSupport.filterNodeTreeContracts(rootTreeNode, Arrays.asList(webSession.getSelectedContracts()));
             viewSupport.filterNodeTreeContracts(billingTreeNode, Arrays.asList(webSession.getSelectedContracts()));
@@ -171,7 +171,7 @@ public class InputOnlineEntry implements Serializable {
         calculationService.addEvent(contract, webSession.getCurrentPeriod(), billingEvent);
         contractService.update(contract);
 
-        billingTreeNode = viewSupport.generateNodeTreeForBilling(reportingUnit);
+        billingTreeNode = viewSupport.generateNodeTreeForBilling(reportingUnit, webSession.getCurrentPeriod());
     }
 
     public void setBillingName(Event billingEvent, String billingNumber) {
@@ -182,14 +182,14 @@ public class InputOnlineEntry implements Serializable {
         Contract contract = billingEvent.getContract();
         contract.setNodeExpanded(true);
         calculationService.removeEvent(contract, webSession.getCurrentPeriod(), billingEvent);
-        billingTreeNode = viewSupport.generateNodeTreeForBilling(reportingUnit);
+        billingTreeNode = viewSupport.generateNodeTreeForBilling(reportingUnit, webSession.getCurrentPeriod());
     }
 
     public void clearFilterByContractText() {
         webSession.setFilterText(null);
         webSession.setSelectedContracts(null);
         rootTreeNode = viewSupport.generateNodeTree(reportingUnit);
-        billingTreeNode = viewSupport.generateNodeTreeForBilling(reportingUnit);
+        billingTreeNode = viewSupport.generateNodeTreeForBilling(reportingUnit, webSession.getCurrentPeriod());
     }
 
     private boolean isEmpty(String text) {

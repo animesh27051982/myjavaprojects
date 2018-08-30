@@ -196,6 +196,9 @@ public class ViewSupport implements Serializable {
                 Logger.getLogger(WebSession.class.getName()).log(Level.FINER, "Adding to tree Contract Name: " + contract.getName());
                 TreeNode contractNode = new DefaultTreeNode(contract, reportingUnitNode);
                 contractNode.setExpanded(false);
+                if (contract.isNodeExpanded()) {
+                    contractNode.setExpanded(true);
+                }
                 for (PerformanceObligation pob : contract.getPerformanceObligations()) {
                     Logger.getLogger(WebSession.class.getName()).log(Level.FINER, "Adding to tree POB ID: " + pob.getId());
                     new DefaultTreeNode(pob, contractNode);
@@ -214,32 +217,35 @@ public class ViewSupport implements Serializable {
         return webSession.getCurrentPeriod().getEndDate();
     }
 
-    public TreeNode generateNodeTreeForBilling(ReportingUnit reportingUnit) {
-        List<ReportingUnit> rus = new ArrayList<ReportingUnit>();
-        rus.add(reportingUnit);
-        return generateNodeTreeForBilling(rus);
-    }
-
-    public TreeNode generateNodeTreeForBilling(List<ReportingUnit> reportingUnits) {
+//    public TreeNode generateNodeTreeForBilling(ReportingUnit reportingUnit) {
+//        List<ReportingUnit> rus = new ArrayList<ReportingUnit>();
+//        rus.add(reportingUnit);
+//        return generateNodeTreeForBilling(rus);
+//    }
+    public TreeNode generateNodeTreeForBilling(ReportingUnit reportingUnit, FinancialPeriod period) {
         TreeNode root = new DefaultTreeNode(new BusinessUnit(), null);
         EventType billingEventType = eventService.getEventTypeByCode("BILLING_EVENT_CC");
 
-        for (ReportingUnit reportingUnit : reportingUnits) {
-            TreeNode reportingUnitNode = new DefaultTreeNode(reportingUnit, root);
-            reportingUnitNode.setExpanded(true);
-            for (Contract contract : reportingUnit.getContracts()) {
-                TreeNode contractNode = new DefaultTreeNode(contract, reportingUnitNode);
-                contractNode.setExpanded(false);
-                if (contract.isNodeExpanded()) {
-                    contractNode.setExpanded(true);
-                }
-                for (Event billingEvent : calculationService.getAllEventsByEventType(contract, billingEventType)) {
-                    new DefaultTreeNode(billingEvent, contractNode);
-                }
+        TreeNode reportingUnitNode = new DefaultTreeNode(reportingUnit, root);
+        reportingUnitNode.setExpanded(true);
+        for (Contract contract : reportingUnit.getContracts()) {
+            TreeNode contractNode = new DefaultTreeNode(contract, reportingUnitNode);
+            contractNode.setExpanded(false);
+            if (contract.isNodeExpanded()) {
+                contractNode.setExpanded(true);
+            }
+            for (Event billingEvent : calculationService.getAllEventsByPeriodAndEventType(contract, billingEventType, period)) {
+                new DefaultTreeNode(billingEvent, contractNode);
             }
         }
 
         return root;
+    }
+
+    public List<Event> getAllBillingEvents(Contract contract) {
+        EventType billingEventType = eventService.getEventTypeByCode("BILLING_EVENT_CC");
+
+        return calculationService.getAllEventsByEventType(contract, billingEventType);
     }
 
     public void filterNodeTree(TreeNode root, String contractFilterText) {

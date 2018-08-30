@@ -342,6 +342,10 @@ public class CalculationService {
         return metrics;
     }
 
+    public List<Event> getAllEventsByPeriodAndEventType(EventStore eventStore, EventType eventType, FinancialPeriod period) {
+        return eventStore.getAllEventsByPeriodAndEventType(period, eventType);
+    }
+
     public List<Event> getAllEventsByEventType(EventStore eventStore, EventType eventType) {
         return eventStore.getAllEventsByEventType(eventType);
     }

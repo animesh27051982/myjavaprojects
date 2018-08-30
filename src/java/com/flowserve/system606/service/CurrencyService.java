@@ -5,7 +5,6 @@
  */
 package com.flowserve.system606.service;
 
-import com.flowserve.system606.model.Contract;
 import com.flowserve.system606.model.CurrencyEvent;
 import com.flowserve.system606.model.CurrencyMetric;
 import com.flowserve.system606.model.DataImportFile;
@@ -224,12 +223,12 @@ public class CurrencyService {
         return amount.multiply(exchangeRate.getPeriodEndRate()).setScale(SCALE, BigDecimal.ROUND_HALF_UP);
     }
 
-    public BigDecimal getCCtoLCExchangeRate(Contract contract, FinancialPeriod currentPeriod) throws Exception {
-        return getExchangeRate(contract.getContractCurrency(), contract.getLocalCurrency(), currentPeriod.getLocalCurrencyRatePeriod()).getPeriodEndRate();
+    public BigDecimal getCCtoLCExchangeRate(Measurable measureable, FinancialPeriod currentPeriod) throws Exception {
+        return getExchangeRate(measureable.getContractCurrency(), measureable.getLocalCurrency(), currentPeriod.getLocalCurrencyRatePeriod()).getPeriodEndRate();
     }
 
-    public BigDecimal getLCtoRCExchangeRate(Contract contract, FinancialPeriod currentPeriod) throws Exception {
-        return getExchangeRate(contract.getLocalCurrency(), contract.getReportingCurrency(), currentPeriod.getReportingCurrencyRatePeriod()).getPeriodEndRate();
+    public BigDecimal getLCtoRCExchangeRate(Measurable measureable, FinancialPeriod currentPeriod) throws Exception {
+        return getExchangeRate(measureable.getLocalCurrency(), measureable.getReportingCurrency(), currentPeriod.getReportingCurrencyRatePeriod()).getPeriodEndRate();
     }
 
     private ExchangeRate getExchangeRate(Currency fromCurrency, Currency toCurrency, FinancialPeriod period) throws Exception {

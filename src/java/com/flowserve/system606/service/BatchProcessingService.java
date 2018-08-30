@@ -572,7 +572,7 @@ public class BatchProcessingService {
                 importMessages.add("Skipping WAIVER contract.  ID: " + contractId);
                 continue;
             }
-            contract.setName("C-" + resultSet.getString(1) + " " + (resultSet.getString(6) == null ? "" : resultSet.getString(6)));
+            contract.setName("" + resultSet.getLong(1) + " " + (resultSet.getString(6) == null ? "" : resultSet.getString(6)));
             contract.setDescription(resultSet.getString(2));
             String ruStr = StringUtils.substringBefore(resultSet.getString(3).trim(), "-");
             ru = ruStr.replace("RU", "").trim();

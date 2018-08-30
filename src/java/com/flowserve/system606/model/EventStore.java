@@ -10,7 +10,6 @@ public interface EventStore {
 
     public Long getId();
 
-    //public EventList getPeriodEvents(FinancialPeriod period);
     public List<Event> getAllEventsByEventType(EventType eventType);
 
     public List<Event> getAllEventsByPeriodAndEventType(FinancialPeriod period, EventType eventType);

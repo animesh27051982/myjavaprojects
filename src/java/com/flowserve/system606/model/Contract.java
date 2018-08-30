@@ -165,6 +165,10 @@ public class Contract extends BaseEntity<Long> implements MetricStore, EventStor
     public List<Event> getAllEventsByPeriodAndEventType(FinancialPeriod period, EventType eventType) {
         List<Event> events = new ArrayList<Event>();
 
+        if (periodEventListMap.get(period) == null) {
+            return events;
+        }
+
         for (Event event : periodEventListMap.get(period).getEventList()) {
             if (eventType.equals(event.getEventType())) {
                 events.add(event);
