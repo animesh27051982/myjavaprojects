@@ -436,7 +436,9 @@ rule "Revenue to Recognize CTD RC RTI Right to Invoice"
 end
 
 /**
-*  Revenue Current Period
+*  Revenue Current Period - Using the same rule for all POB types since this is a current period calculation.
+*  We do need to convert in realtime here since we need the LC values for other calcs.
+*  Using an alternate method of converting currency here, need to decide which way is best.. individually or calling currencyService.convert...
 **/
 rule "Revenue to Recognize Current Period CC"
     when

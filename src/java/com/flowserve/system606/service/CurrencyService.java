@@ -502,27 +502,12 @@ public class CurrencyService {
             resultSet = statement.executeQuery("SELECT Period FROM `tbl_ExchangeRates` GROUP BY Period");
 
             int count = 0;
-            // processing returned data and printing into console
             while (resultSet.next()) {
 
-                //if (!resultSet.getString(1).equalsIgnoreCase("2018-5")) {
-                // KJG - Re-anabling all...
                 if (true) {
                     String periodDate = resultSet.getString(1);
-                    String[] sp = periodDate.split("-");
                     try {
-                        String[] monthName = {"JAN", "FEB",
-                            "MAR", "APR", "MAY", "JUN", "JUL",
-                            "AUG", "SEP", "OCT", "NOV",
-                            "DEC"};
-                        // checking valid integer using parseInt() method
-                        int year = Integer.parseInt(sp[0]);
-                        int month = Integer.parseInt(sp[1]);
-                        String yrStr = Integer.toString(year);
-                        String finalYear = yrStr.substring(yrStr.length() - 2);
-                        String exPeriod = monthName[month - 1] + "-" + finalYear;
-                        period = financialPeriodService.findById(exPeriod);
-
+                        period = financialPeriodService.findById(periodDate);
                     } catch (NumberFormatException e) {
                         Logger.getLogger(CurrencyService.class.getName()).log(Level.INFO, "Error " + e);
                     } catch (Exception e) {
@@ -605,11 +590,6 @@ public class CurrencyService {
                                 if (fromCurrency == null || toCurrency == null) {
                                     Logger.getLogger(CurrencyService.class.getName()).log(Level.INFO, "Issue with currency load.!!  Please investigate.  Currency is null");
                                 }
-//                                if (fromCurrency != null && toCurrency != null && "USD".equals(fromCurrency.getCurrencyCode()) && "INR".equals(toCurrency.getCurrencyCode()) && "JAN-18".equals(period.getId())) {
-//                                    Logger.getLogger(CurrencyService.class.getName()).log(Level.INFO, "USD/INR periodRate: " + periodRate.toPlainString());
-//                                    Logger.getLogger(CurrencyService.class.getName()).log(Level.INFO, "USD/INR: monthly avg rate: " + monthlyRate.toPlainString());
-//                                    Logger.getLogger(CurrencyService.class.getName()).log(Level.INFO, "USD/INR: ytd avg rate: " + YTDRate.toPlainString());
-//                                }
 
                                 ExchangeRate exRate = new ExchangeRate();
                                 exRate.setType(type);
