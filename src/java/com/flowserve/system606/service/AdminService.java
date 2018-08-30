@@ -516,27 +516,31 @@ public class AdminService {
                 ReportingUnit ru = new ReportingUnit();
                 ru.setCode(values[1].trim());
                 ru.setName(ru.getCode() + " " + values[0]);
-                if (values.length > 2) {
-                    Country cn = findCountryByName(values[2]);
-                    if (cn != null) {
-                        ru.setCountry(cn);
-                        ru.setLocalCurrency(Currency.getInstance(new Locale("en", cn.getCode())));
-
-                    } else {
-                        Logger.getLogger(AdminService.class.getName()).log(Level.INFO, "Reporting Unit invalid country code: " + ru.getCode() + " : " + values[2]);
-                    }
-                }
+                ru.setLocalCurrency(Currency.getInstance(values[2]));
+                ru.setRegion(values[3]);
                 ru.setActive(true);
                 persist(ru);
-                //initializing RUs in Countries
-                if (values.length > 2) {
-                    Country cnt = findCountryByName(values[2]);
-                    if (cnt != null) {
-                        ReportingUnit addRU = findReportingUnitByCode(values[1].trim());
-                        cnt.getReportingUnit().add(addRU);
-                        update(cnt);
-                    }
-                }
+//                if (values.length > 2) {
+//                    Country cn = findCountryByName(values[2]);
+//                    if (cn != null) {
+//                        ru.setCountry(cn);
+//                        ru.setLocalCurrency(Currency.getInstance(new Locale("en", cn.getCode())));
+//
+//                    } else {
+//                        Logger.getLogger(AdminService.class.getName()).log(Level.INFO, "Reporting Unit invalid country code: " + ru.getCode() + " : " + values[2]);
+//                    }
+//                }
+//                ru.setActive(true);
+//                persist(ru);
+//                //initializing RUs in Countries
+//                if (values.length > 2) {
+//                    Country cnt = findCountryByName(values[2]);
+//                    if (cnt != null) {
+//                        ReportingUnit addRU = findReportingUnitByCode(values[1].trim());
+//                        cnt.getReportingUnit().add(addRU);
+//                        update(cnt);
+//                    }
+//                }
             }
             reader.close();
             Logger.getLogger(AdminService.class.getName()).log(Level.INFO, "Finished initializing Reporting Units.");
@@ -606,11 +610,14 @@ public class AdminService {
                 String[] values = line.split("\\t");
                 if (values.length == 3) {
                     ReportingUnit ru = findReportingUnitByCode(values[0]);
-                    BusinessUnit bu = findBusinessUnitById(values[2]);
-                    ru.setBusinessUnit(bu);
-                    bu.getReportingUnit().add(ru);
-                    update(ru);
-                    updateBusinessUnit(bu);
+                    if (ru != null) {
+                        BusinessUnit bu = findBusinessUnitById(values[2]);
+                        ru.setBusinessUnit(bu);
+                        bu.getReportingUnit().add(ru);
+                        update(ru);
+                        updateBusinessUnit(bu);
+                    }
+
                 }
             }
             reader.close();
@@ -764,32 +771,44 @@ public class AdminService {
                 }
 
                 String[] values = line.split("\\t");
-                if (values.length > 6 && values[5].equalsIgnoreCase("Preparer")) {
+                if (values.length > 4 && values[4].equalsIgnoreCase("Preparer")) {
 
-                    String[] code = values[6].split(",");
-                    User user = findUserByFlsIdType(values[0]);
-                    int len = code.length;
-                    for (int i = 0; i < len; i++) {
-                        ReportingUnit ru = findReportingUnitByCode(code[i]);
-                        if (ru != null && user != null) {
-                            ru.getPreparers().add(user);
-                            update(ru);
-                        }
-
+                    ReportingUnit ru = findReportingUnitByCode(values[0]);
+                    User user = findUserByFlsIdType(values[2]);
+                    if (ru != null && user != null && !ru.getPreparers().contains(user)) {
+                        ru.getPreparers().add(user);
+                        update(ru);
                     }
 
-                } else if (values.length > 6 && values[5].equalsIgnoreCase("Reviewer")) {
-                    String[] code = values[6].split(",");
-                    User user = findUserByFlsIdType(values[0]);
-                    int len = code.length;
-                    for (int i = 0; i < len; i++) {
-                        ReportingUnit ru = findReportingUnitByCode(code[i]);
-                        if (ru != null && user != null) {
-                            ru.getApprovers().add(user);
-                            update(ru);
-                        }
+//                    String[] code = values[6].split(",");
+//                    User user = findUserByFlsIdType(values[0]);
+//                    int len = code.length;
+//                    for (int i = 0; i < len; i++) {
+//                        ReportingUnit ru = findReportingUnitByCode(code[i]);
+//                        if (ru != null && user != null) {
+//                            ru.getPreparers().add(user);
+//                            update(ru);
+//                        }
+//
+//                    }
+                } else if (values.length > 4 && values[4].equalsIgnoreCase("Reviewer")) {
 
+                    ReportingUnit ru = findReportingUnitByCode(values[0]);
+                    User user = findUserByFlsIdType(values[2]);
+                    if (ru != null && user != null && !ru.getApprovers().contains(user)) {
+                        ru.getApprovers().add(user);
+                        update(ru);
                     }
+
+                } else if (values.length > 4 && values[4].equalsIgnoreCase("Viewer")) {
+
+                    ReportingUnit ru = findReportingUnitByCode(values[0]);
+                    User user = findUserByFlsIdType(values[2]);
+                    if (ru != null && user != null && !ru.getReviewers().contains(user)) {
+                        ru.getReviewers().add(user);
+                        update(ru);
+                    }
+
                 }
 
             }

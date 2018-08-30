@@ -588,7 +588,7 @@ public class BatchProcessingService {
 
             if (reportingUnit == null) {
                 importMessages.add("Countract refers to a non-existent RU : " + resultSet.getString(3));
-                throw new IllegalStateException("Countract refers to a non-existent RU.  Invalid.");
+                //throw new IllegalStateException("Countract refers to a non-existent RU.  Invalid.");
             }
 
             if (reportingUnit != null) {

@@ -68,6 +68,8 @@ public class ReportingUnit extends TransientMeasurable<Long> implements Measurab
     private List<User> approvers = new ArrayList<User>();
     @Column(name = "IS_ACTIVE")
     private boolean active;
+    @Column(name = "REGION")
+    private String region;
     @ManyToOne
     @JoinColumn(name = "PARENT_ID")
     private ReportingUnit parentReportingUnit;
@@ -299,5 +301,13 @@ public class ReportingUnit extends TransientMeasurable<Long> implements Measurab
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public String getRegion() {
+        return region;
+    }
+
+    public void setRegion(String region) {
+        this.region = region;
     }
 }
