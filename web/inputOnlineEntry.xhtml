@@ -572,6 +572,12 @@
                                                         <p:tooltip  for="opt" value="Options"  showEffect="slide" hideEffect="explode" position="top"/>
                                                     </f:facet>
                                                 </p:column>
+                                                 <p:column colspan="1" style="white-space:pre-line;" id="view_bill" >
+                                                    <f:facet name="header">
+                                                        <h:outputText  value="Billing History" />
+                                                        <p:tooltip  for="view_bill" value="Billing History"  showEffect="slide" hideEffect="explode" position="top"/>
+                                                    </f:facet>
+                                                </p:column>
                                             </p:row>
                                         </p:columnGroup>
 
@@ -661,6 +667,41 @@
                                         <p:column>
                                             <p:commandLink value="Add Billing" process="@this" update="treeTableId" actionListener="#{inputOnlineEntry.addBillingEvent(billEvent)}" rendered="#{of:isInstance('com.flowserve.system606.model.Contract', billEvent) and  viewSupport.editable}" ></p:commandLink>
                                             <p:commandLink value="Remove Billing" process="@this" update="treeTableId" actionListener="#{inputOnlineEntry.removeBillingEvent(billEvent)}" rendered="#{of:isInstance('com.flowserve.system606.model.CurrencyEvent', billEvent) and viewSupport.editable and viewSupport.isCurrentPeriodEvent(billEvent)}"></p:commandLink>
+                                        </p:column>
+                                        <p:column>
+                                            <p:commandLink value="Billing History" update="tlbbill" actionListener="#{viewSupport.getAllBillingEvents(billEvent)}"   id="billing_history"   rendered="#{of:isInstance('com.flowserve.system606.model.Contract', billEvent) and  viewSupport.editable}"  ></p:commandLink>
+                                            <p:overlayPanel id="imagePanel" dynamic="true" my="left" showEffect="clip"    for="billing_history" hideEffect="explode"  at="top" style="width:800px" appendToBody="true" showCloseIcon="true">
+                                                <p:dataTable tableStyle="table-layout:auto"  id="tlbbill" var="billevt"  value="#{viewSupport.getAllBillingEvents(billEvent)}" rows="10" paginator="true" rendered="#{of:isInstance('com.flowserve.system606.model.Contract', billEvent) and  viewSupport.editable}">
+                                                    <p:column headerText="ID" >
+                                                        <h:outputText value="#{billevt.id}" />
+                                                    </p:column>
+                                                    
+                                                    <p:column headerText="NAME" >
+                                                        <h:outputText value="#{billevt.name}" />
+                                                    </p:column>
+                                                    
+                                                    <p:column headerText="NUMBER" >
+                                                        <h:outputText value="#{billevt.number}" />
+                                                    </p:column>
+                                                    
+                                                    <p:column headerText="PERIOD" >
+                                                        <h:outputText value="#{billevt.financialPeriod.name}" />
+                                                    </p:column>
+                                                    
+                                                    <p:column headerText="EVENT" >
+                                                        <h:outputText value="#{billevt.eventList.id}" />
+                                                    </p:column>
+                                                    
+                                                    <p:column headerText="CREATED BY" >
+                                                        <h:outputText value="#{billevt.createdBy.name}" />
+                                                    </p:column>
+                                                    
+                                                    <p:column headerText="CREATION DATE" >
+                                                        <h:outputText value="#{billevt.creationDate}" />
+                                                    </p:column>
+                                                    
+                                                </p:dataTable> 
+                                            </p:overlayPanel>
                                         </p:column>
                                     </p:treeTable>
                                 </p:tab>
