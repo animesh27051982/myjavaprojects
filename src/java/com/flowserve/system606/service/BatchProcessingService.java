@@ -167,7 +167,7 @@ public class BatchProcessingService {
 
         try {
             while (resultSet.next()) {
-                FinancialPeriod period = financialPeriodService.findByNumericString(resultSet.getString(1));
+                FinancialPeriod period = financialPeriodService.findById(resultSet.getString(1));
 
                 if (period != null) {
                     String id = resultSet.getString(2);
@@ -277,7 +277,7 @@ public class BatchProcessingService {
 
         try {
             while (resultSet.next()) {
-                FinancialPeriod period = financialPeriodService.findByNumericString(resultSet.getString(1));
+                FinancialPeriod period = financialPeriodService.findById(resultSet.getString(1));
                 Long contractId = resultSet.getLong(2);
                 if (contractId != null) {
                     try {
@@ -352,7 +352,7 @@ public class BatchProcessingService {
 
         try {
             while (resultSet.next()) {
-                FinancialPeriod period = financialPeriodService.findByNumericString(resultSet.getString(1));
+                FinancialPeriod period = financialPeriodService.findById(resultSet.getString(1));
 
                 if (period != null) {
                     int contractId = resultSet.getInt(2);

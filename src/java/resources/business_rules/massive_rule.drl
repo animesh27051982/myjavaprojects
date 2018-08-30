@@ -712,21 +712,39 @@ rule "Contract TPC & Other Inputs Rolling Next Month"
         modify (thirdPartyComCTDLC) { lcValue = (thirdPartyComCTDLCPriorPeriod.lcValue)};
 end
 
-rule "POB TPC & Other Inputs Rolling Next Month"
+rule "POB TPC & Other Inputs Rolling Next Month - Sales Dest"
     when
         pob : PerformanceObligation()
         salesDestination : StringMetric(metricType.code == "SALES_DESTINATION", value == null)
-        oeamDisagg : StringMetric(metricType.code == "OEAM_DISAGG", value == null)
-        slStartDate : DateMetric(metricType.code == "SL_START_DATE", value == null)
-        slEndDate : DateMetric(metricType.code == "SL_END_DATE", value == null)
         salesDestinationPriorPeriod : StringMetricPriorPeriod(metricType.code == "SALES_DESTINATION" , value != null)
-        oeamDisaggPriorPeriod : StringMetricPriorPeriod(metricType.code == "OEAM_DISAGG", value != null)
-        slStartDatePriorPeriod : DateMetricPriorPeriod(metricType.code == "SL_START_DATE", value != null)
-        slEndDatePriorPeriod : DateMetricPriorPeriod(metricType.code == "SL_END_DATE", value != null)
     then
         modify (salesDestination) { value = (salesDestinationPriorPeriod.value)};
+end
+
+rule "POB TPC & Other Inputs Rolling Next Month - OE AM"
+    when
+        pob : PerformanceObligation()
+        oeamDisagg : StringMetric(metricType.code == "OEAM_DISAGG", value == null)
+        oeamDisaggPriorPeriod : StringMetricPriorPeriod(metricType.code == "OEAM_DISAGG", value != null)
+    then
         modify (oeamDisagg) { value = (oeamDisaggPriorPeriod.value)};
+end
+
+rule "POB TPC & Other Inputs Rolling Next Month - Start Date"
+    when
+        pob : PerformanceObligation()
+        slStartDate : DateMetric(metricType.code == "SL_START_DATE", value == null)
+        slStartDatePriorPeriod : DateMetricPriorPeriod(metricType.code == "SL_START_DATE", value != null)
+    then
         modify (slStartDate) { value = (slStartDatePriorPeriod.value)};
+end
+
+rule "POB TPC & Other Inputs Rolling Next Month - End Date"
+    when
+        pob : PerformanceObligation()
+        slEndDate : DateMetric(metricType.code == "SL_END_DATE", value == null)
+        slEndDatePriorPeriod : DateMetricPriorPeriod(metricType.code == "SL_END_DATE", value != null)
+    then
         modify (slEndDate) { value = (slEndDatePriorPeriod.value)};
 end
 
