@@ -1,4 +1,13 @@
-DummyDR|Payable|DummyDR|DummyDR|FLS
-DummyCR|Receivable|DummyCR|DummyCR|FLS
-SALESPOC.IN|Credit|Sales_POC - In|SALESPOC.IN|FLS
-STCONTLIAB|Debit|Current Contract Liability|STCONTLIAB|FLS
+STCONTLIAB|Debit|Current Contract Liability|STCONTLIAB|FLS|null
+INV.WIP|Debit|Inventory Work in Progress|INV.WIP|FLS|null
+ACCLOSSRES|Debit|AccLiab.OthExp-Loss Reserve|ACCLOSSRES|FLS|null
+ACCOTHEXP.ROYALTY|Debit|AccLiab.OthExp-Accrued Royalties & Commissions|ACCOTHEXP.ROYALTY|FLS|null
+SALESPOC.IN|Credit|Sales_POC - In|SALESPOC.IN|FLS|STCONTLIAB
+SALESLDPENALTY|Debit|Sales-Liquidated Damage Penalty|SALESLDPENALTY|FLS|STCONTLIAB
+COSPOS.IN|Debit|COS_POS-In|COSPOS.IN|FLS|INV.WIP
+GLVAR.INVADJ|Debit|GLVariances-Inventory Adjustments|GLVAR.INVADJ|FLS|ACCLOSSRES
+COMMISH.EXP|Debit|Commissions Expense External|COMMISH.EXP|FLS|ACCOTHEXP.ROYALTY
+SALESOC|Credit|Sales-Outside Customers|SALESOC|FLS|STCONTLIAB
+COSOC|Debit|Cost of Sales-Outside Customers|COSOC|FLS|INV.WIP
+RECNET|Debit|RecNet-Net Receivables|RECNET|FLS|STCONTLIAB
+

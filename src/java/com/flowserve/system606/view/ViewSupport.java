@@ -517,11 +517,13 @@ public class ViewSupport implements Serializable {
         return searchString;
     }
 
-    public boolean isPeriodOpen() {
+    public boolean isEditable() {
         FinancialPeriod period = webSession.getCurrentPeriod();
         ReportingUnit ru = webSession.getCurrentReportingUnit();
         User user = webSession.getUser();
-        if (period.isOpen() && ru.isDraft(period) && (user.isAdmin() || webSession.getPreparableReportingUnits().contains(ru))) {
+        if (user.isGlobalViewer() || ru.getReviewers().contains(user)) {
+            return false;
+        } else if (period.isOpen() && ru.isDraft(period) && (user.isAdmin() || webSession.getPreparableReportingUnits().contains(ru))) {
             return true;
         } else if (period.isUserFreeze() && user.isAdmin()) {
             return true;

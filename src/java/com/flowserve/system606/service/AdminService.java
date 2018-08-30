@@ -691,7 +691,7 @@ public class AdminService {
     public void initSubledgerAccount() throws Exception {
         logger.info("Initializing SubLedgerAccounts");
         BufferedReader reader = new BufferedReader(new InputStreamReader(AppInitializeService.class.getResourceAsStream("/resources/app_data_init_files/init_sl_accounts.txt"), "UTF-8"));
-
+        //  BufferedReader reader2 = new BufferedReader(new InputStreamReader(AppInitializeService.class.getResourceAsStream("/resources/app_data_init_files/init_sl_accounts.txt"), "UTF-8"));
         int count = 0;
         String line = null;
 
@@ -703,15 +703,44 @@ public class AdminService {
             count = 0;
             String[] values = line.split("\\|");
             if (findSubledgerAccountById(values[count]) == null) {
-                SubledgerAccount ledger = new SubledgerAccount();
-                ledger.setId(values[count++]);
-                ledger.setAccountType(values[count++]);
-                ledger.setDescription(values[count++]);
-                ledger.setName(values[count++]);
-                ledger.setCompany(findCompanyById(values[count++]));
-                persist(ledger);
+                if ("null".equals(values[5].trim())) {
+                    SubledgerAccount ledger = new SubledgerAccount();
+                    ledger.setId(values[count++]);
+                    ledger.setAccountType(values[count++]);
+                    ledger.setDescription(values[count++]);
+                    ledger.setName(values[count++]);
+                    ledger.setCompany(findCompanyById(values[count++]));
+                    ledger.setOffsetAccount(findSubledgerAccountById(values[count++]));
+                    persist(ledger);
+                }
             }
         }
+        BufferedReader reader2 = new BufferedReader(new InputStreamReader(AppInitializeService.class.getResourceAsStream("/resources/app_data_init_files/init_sl_accounts.txt"), "UTF-8"));
+        int count2 = 0;
+        String line2 = null;
+
+        while ((line2 = reader2.readLine()) != null) {
+            if (line2.trim().length() == 0) {
+                continue;
+            }
+
+            count2 = 0;
+            String[] values = line2.split("\\|");
+            if (findSubledgerAccountById(values[count2]) == null) {
+                if (!"null".equals(values[5].trim())) {
+                    SubledgerAccount ledger = new SubledgerAccount();
+                    ledger.setId(values[count2++]);
+                    ledger.setAccountType(values[count2++]);
+                    ledger.setDescription(values[count2++]);
+                    ledger.setName(values[count2++]);
+                    ledger.setCompany(findCompanyById(values[count2++]));
+                    ledger.setOffsetAccount(findSubledgerAccountById(values[count2++]));
+                    persist(ledger);
+                }
+            }
+        }
+        reader.close();
+        reader2.close();
         logger.info("Finished initializing SubLedgerAccounts");
     }
 

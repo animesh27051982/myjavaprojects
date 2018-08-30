@@ -60,7 +60,7 @@
                         <!--<p:panelGrid columns="4" columnClasses="ui-grid-col-6,ui-grid-col-6,ui-grid-col-6,ui-grid-col-6" layout="grid" styleClass="ui-panelgrid-blank form-group" style="float: right; border:0px none; background-color:transparent; white-space: nowrap;">-->
                         <p:outputPanel style="width:600px;float: right;">
                             <p:fileUpload  fileUploadListener="#{inputOnlineEntry.handleTemplateUpload}" auto="true" label="Upload Excel Template" mode="advanced"
-                                           multiple="false" update="messages" sizeLimit="10000000" allowTypes="/(\.|\/)(xlsx)$/" style="float: right; margin-left: 20px;" rendered="#{viewSupport.periodOpen}"/>
+                                           multiple="false" update="messages" sizeLimit="10000000" allowTypes="/(\.|\/)(xlsx)$/" style="float: right; margin-left: 20px;" rendered="#{viewSupport.editable}"/>
                             <p:commandButton value="Download Excel Template" ajax="false" style="marign-left: 20px; width: auto; float: right" icon="ui-icon-arrowthick-1-s"
                                              onclick="PrimeFaces.monitorDownload(showStatus, hideStatus)">
                                 <p:fileDownload value="#{inputOnlineEntry.file}" />
@@ -119,7 +119,7 @@
                             </p:selectCheckboxMenu>
                             <p:commandButton id="globalFilterClear2" style="font-size: 80%; margin-left: 20px;" value="Clear All Filters" actionListener="#{inputOnlineEntry.clearFilterByContractText()}" update=":form:topLevelTabView, :form:globalFilterText, :form:contracts"/>
                             <p:commandButton value="Save Inputs" icon="ui-icon-disk" ajax="true" update="form"
-                                             actionListener="#{inputOnlineEntry.saveInputs()}" rendered="#{viewSupport.periodOpen}"
+                                             actionListener="#{inputOnlineEntry.saveInputs()}" rendered="#{viewSupport.editable}"
                                              style="float: right;width: 160px;"/>
 
                         </p:outputPanel>
@@ -235,7 +235,7 @@
                                                 </f:facet>
                                                 <f:facet name="input">
                                                     <p:inputText value="#{viewSupport.getCurrencyMetric('TRANSACTION_PRICE_CC', pob).ccValue}"
-                                                                 disabled="#{of:isInstance('com.flowserve.system606.model.Contract', pob) or not viewSupport.periodOpen}">
+                                                                 disabled="#{of:isInstance('com.flowserve.system606.model.Contract', pob) or not viewSupport.editable}">
                                                         <f:validateDoubleRange/>
                                                         <p:ajax event="change" update="tpCurrent, :form:messages" process="@this" listener="#{inputOnlineEntry.calculateOutputs(pob)}"/>
                                                     </p:inputText>
@@ -259,7 +259,7 @@
                                                 </f:facet>
                                                 <f:facet name="input">
                                                     <p:inputText value="#{viewSupport.getCurrencyMetric('LIQUIDATED_DAMAGES_CTD_CC', pob).ccValue}"
-                                                                 disabled="#{of:isInstance('com.flowserve.system606.model.Contract', pob) or not viewSupport.periodOpen}" >
+                                                                 disabled="#{of:isInstance('com.flowserve.system606.model.Contract', pob) or not viewSupport.editable}" >
                                                         <p:ajax event="change" update="ldCurrent, :form:messages" process="@this" listener="#{inputOnlineEntry.calculateOutputs(pob)}"/>
                                                     </p:inputText>
                                                 </f:facet>
@@ -295,7 +295,7 @@
                                                 </f:facet>
                                                 <f:facet name="input">
                                                     <p:inputText value="#{viewSupport.getCurrencyMetric('ESTIMATED_COST_AT_COMPLETION_LC', pob).lcValue}"
-                                                                 disabled="#{of:isInstance('com.flowserve.system606.model.Contract', pob) or not viewSupport.periodOpen}">
+                                                                 disabled="#{of:isInstance('com.flowserve.system606.model.Contract', pob) or not viewSupport.editable}">
                                                         <p:ajax event="change" update="eacCurrent, eacPrior, eacChange, :form:messages" process="@this" listener="#{inputOnlineEntry.calculateOutputs(pob)}"/>
                                                     </p:inputText>
                                                 </f:facet>
@@ -401,7 +401,7 @@
                                                 </f:facet>
                                                 <f:facet name="input">
                                                     <p:inputText value="#{viewSupport.getCurrencyMetric('LOCAL_COSTS_CTD_LC', pob).lcValue}"
-                                                                 disabled="#{of:isInstance('com.flowserve.system606.model.Contract', pob) or not viewSupport.periodOpen}">
+                                                                 disabled="#{of:isInstance('com.flowserve.system606.model.Contract', pob) or not viewSupport.editable}">
                                                         <p:ajax event="change" update="costCurrent, totalCTD" process="@this" listener="#{inputOnlineEntry.calculateOutputs(pob)}"/>
                                                     </p:inputText>
                                                 </f:facet>
@@ -420,7 +420,7 @@
                                                 </f:facet>
                                                 <f:facet name="input">
                                                     <p:inputText value="#{viewSupport.getCurrencyMetric('THIRD_PARTY_COSTS_CTD_LC', pob).lcValue}"
-                                                                 disabled="#{of:isInstance('com.flowserve.system606.model.Contract', pob) or not viewSupport.periodOpen}">
+                                                                 disabled="#{of:isInstance('com.flowserve.system606.model.Contract', pob) or not viewSupport.editable}">
                                                         <p:ajax event="change" update="totalCTD" process="@this" listener="#{inputOnlineEntry.calculateOutputs(pob)}"/>
                                                     </p:inputText>
                                                 </f:facet>
@@ -439,7 +439,7 @@
                                                 </f:facet>
                                                 <f:facet name="input">
                                                     <p:inputText value="#{viewSupport.getCurrencyMetric('INTERCOMPANY_COSTS_CTD_LC', pob).lcValue}"
-                                                                 disabled="#{of:isInstance('com.flowserve.system606.model.Contract', pob) or not viewSupport.periodOpen}">
+                                                                 disabled="#{of:isInstance('com.flowserve.system606.model.Contract', pob) or not viewSupport.editable}">
                                                         <p:ajax event="change" update="totalCTD" process="@this" listener="#{inputOnlineEntry.calculateOutputs(pob)}"/>
                                                     </p:inputText>
                                                 </f:facet>
@@ -468,7 +468,7 @@
                                                 </f:facet>
                                                 <f:facet name="input">
                                                     <p:calendar value="#{viewSupport.getDateMetric('DELIVERY_DATE', pob).value}" converter="localDateConverter" pattern="MM/dd/yyyy"
-                                                                navigator="true" mode="popup" disabled="#{not viewSupport.periodOpen}">
+                                                                navigator="true" mode="popup" disabled="#{not viewSupport.editable}">
                                                         <p:ajax event="dateSelect" update="deliveryCurrent, :form:messages" process="@this" listener="#{inputOnlineEntry.calculateOutputs(pob)}"/>
                                                     </p:calendar>
                                                 </f:facet>
@@ -483,7 +483,7 @@
                                                     </p:inputText>
                                                 </f:facet>
                                                 <f:facet name="input">
-                                                    <p:inputText value="#{viewSupport.getCurrencyMetric('PARTIAL_SHIPMENT_COSTS_LC', pob).lcValue}" disabled="#{not viewSupport.periodOpen}">
+                                                    <p:inputText value="#{viewSupport.getCurrencyMetric('PARTIAL_SHIPMENT_COSTS_LC', pob).lcValue}" disabled="#{not viewSupport.editable}">
                                                         <f:validateDoubleRange/>
                                                     </p:inputText>
                                                 </f:facet>
@@ -585,7 +585,7 @@
                                                     <p:inputText value="#{billEvent.number}" styleClass="#{empty billEvent.number ? 'ui-state-error' : ''}" readonly="true"/>
                                                 </f:facet>
                                                 <f:facet name="input">
-                                                    <p:inputText value="#{billEvent.number}" disabled="#{not viewSupport.periodOpen}" >
+                                                    <p:inputText value="#{billEvent.number}" disabled="#{not viewSupport.editable}" >
                                                         <p:ajax event="change" process="@this" listener="#{inputOnlineEntry.setBillingName(billEvent, billEvent.number)}"/>
                                                     </p:inputText>
                                                 </f:facet>
@@ -600,7 +600,7 @@
                                                 </f:facet>
                                                 <f:facet name="input">
                                                     <p:calendar value="#{billEvent.eventDate}" converter="localDateConverter" pattern="MM/dd/yyyy" navigator="true" mode="popup"
-                                                                disabled="#{not viewSupport.periodOpen}" mindate="#{viewSupport.currentPeriodMinDate}" maxdate="#{viewSupport.currentPeriodMaxDate}"/>
+                                                                disabled="#{not viewSupport.editable}" mindate="#{viewSupport.currentPeriodMinDate}" maxdate="#{viewSupport.currentPeriodMaxDate}"/>
                                                 </f:facet>
                                             </p:cellEditor>
                                         </p:column>
@@ -616,7 +616,7 @@
                                                     </p:inputText>
                                                 </f:facet>
                                                 <f:facet name="input">
-                                                    <p:inputText value="#{billEvent.ccValue}" disabled="#{not viewSupport.periodOpen}">
+                                                    <p:inputText value="#{billEvent.ccValue}" disabled="#{not viewSupport.editable}">
                                                         <p:ajax event="change" process="@this" update="billLc" listener="#{inputOnlineEntry.calculateEventOutputs(billEvent)}"/>
                                                     </p:inputText>
                                                 </f:facet>
@@ -646,7 +646,7 @@
                                                     </p:inputText>
                                                 </f:facet>
                                                 <f:facet name="input">
-                                                    <p:inputText value="#{billEvent.lcValue}" disabled="#{not viewSupport.periodOpen}">
+                                                    <p:inputText value="#{billEvent.lcValue}" disabled="#{not viewSupport.editable}">
                                                         <p:ajax event="change" process="@this"/>
                                                     </p:inputText>
                                                 </f:facet>
@@ -659,8 +659,8 @@
                                             </h:outputText>
                                         </p:column>
                                         <p:column>
-                                            <p:commandLink value="Add Billing" process="@this" update="treeTableId" actionListener="#{inputOnlineEntry.addBillingEvent(billEvent)}" rendered="#{of:isInstance('com.flowserve.system606.model.Contract', billEvent) and  viewSupport.periodOpen}" ></p:commandLink>
-                                            <p:commandLink value="Remove Billing" process="@this" update="treeTableId" actionListener="#{inputOnlineEntry.removeBillingEvent(billEvent)}" rendered="#{of:isInstance('com.flowserve.system606.model.CurrencyEvent', billEvent) and viewSupport.periodOpen and viewSupport.isCurrentPeriodEvent(billEvent)}"></p:commandLink>
+                                            <p:commandLink value="Add Billing" process="@this" update="treeTableId" actionListener="#{inputOnlineEntry.addBillingEvent(billEvent)}" rendered="#{of:isInstance('com.flowserve.system606.model.Contract', billEvent) and  viewSupport.editable}" ></p:commandLink>
+                                            <p:commandLink value="Remove Billing" process="@this" update="treeTableId" actionListener="#{inputOnlineEntry.removeBillingEvent(billEvent)}" rendered="#{of:isInstance('com.flowserve.system606.model.CurrencyEvent', billEvent) and viewSupport.editable and viewSupport.isCurrentPeriodEvent(billEvent)}"></p:commandLink>
                                         </p:column>
                                     </p:treeTable>
                                 </p:tab>
@@ -727,7 +727,7 @@
                                                     </p:inputText>
                                                 </f:facet>
                                                 <f:facet name="input">
-                                                    <p:inputText value="#{viewSupport.getCurrencyMetric('THIRD_PARTY_COMMISSION_CTD_LC', pob).lcValue}" disabled="#{not viewSupport.periodOpen}">
+                                                    <p:inputText value="#{viewSupport.getCurrencyMetric('THIRD_PARTY_COMMISSION_CTD_LC', pob).lcValue}" disabled="#{not viewSupport.editable}">
                                                         <f:validateDoubleRange/>
                                                     </p:inputText>
                                                 </f:facet>
@@ -736,7 +736,7 @@
                                         <p:column style="white-space:pre-line;">
                                             <p:selectOneMenu rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}"
                                                              value="#{viewSupport.getStringMetric('SALES_DESTINATION', pob).value}"
-                                                             style="width:100px" disabled="#{not viewSupport.periodOpen}">
+                                                             style="width:100px" disabled="#{not viewSupport.editable}">
                                                 <p:ajax event="change"  />
                                                 <f:selectItem itemLabel="Sales Destination List" itemValue="" />
                                                 <f:selectItems value="#{inputOnlineEntry.salesDestination}" var="sale" itemLabel="#{sale}" itemValue="#{sale}" />
@@ -745,7 +745,7 @@
                                         <p:column style="white-space:pre-line;">
                                             <p:selectOneMenu rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}"
                                                              value="#{viewSupport.getStringMetric('OEAM_DISAGG', pob).value}"
-                                                             style="width:130px" disabled="#{not viewSupport.periodOpen}">
+                                                             style="width:130px" disabled="#{not viewSupport.editable}">
                                                 <p:ajax event="change"  />
                                                 <f:selectItem itemLabel="OE/AM Disaggregation" itemValue="" />
                                                 <f:selectItems value="#{inputOnlineEntry.oeamDisagg}" var="sale" itemLabel="#{oeam}" itemValue="#{oeam}" />
@@ -764,7 +764,7 @@
                                                 </f:facet>
                                                 <f:facet name="input">
                                                     <p:calendar value="#{viewSupport.getDateMetric('SL_START_DATE', pob).value}" converter="localDateConverter" pattern="MM/dd/yyyy"
-                                                                navigator="true" mode="popup" disabled="#{not viewSupport.periodOpen}">
+                                                                navigator="true" mode="popup" disabled="#{not viewSupport.editable}">
                                                         <p:ajax event="dateSelect" />
                                                     </p:calendar>
                                                 </f:facet>
@@ -783,7 +783,7 @@
                                                 </f:facet>
                                                 <f:facet name="input">
                                                     <p:calendar value="#{viewSupport.getDateMetric('SL_END_DATE', pob).value}" converter="localDateConverter" pattern="MM/dd/yyyy"
-                                                                navigator="true" mode="popup" disabled="#{not viewSupport.periodOpen}">
+                                                                navigator="true" mode="popup" disabled="#{not viewSupport.editable}">
                                                         <p:ajax event="dateSelect" />
                                                     </p:calendar>
                                                 </f:facet>
@@ -856,7 +856,7 @@
                             </f:facet>
                             <f:facet name="right">
                                 <p:commandButton value="Return to Dashboard" icon="ui-icon-arrowthick-1-w" ajax="false" action="#{inputController.inputDashboard()}"/>
-                                <p:commandButton value="Undo Edits" icon="ui-icon-cancel" ajax="false" action="#{inputOnlineEntry.cancelEdits()}" rendered="#{viewSupport.periodOpen}"/>
+                                <p:commandButton value="Undo Edits" icon="ui-icon-cancel" ajax="false" action="#{inputOnlineEntry.cancelEdits()}" rendered="#{viewSupport.editable}"/>
                                 <p:commandButton value="Calculation Review" icon="ui-icon-arrowthick-1-e" ajax="false" actionListener="#{inputOnlineEntry.saveInputs()}" action="#{calcReviewController.reviewCalculations()}"/>
                             </f:facet>
                         </p:toolbar>
