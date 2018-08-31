@@ -1112,8 +1112,8 @@ public class ReportsService {
                             //pst.setBigDecimal(33, zeroIfNull(calculationService.getCurrencyMetric("CTD_STANDARD_COSTS_COGS_LC", pob, hasPeriod).getLcValue()));
                             pst.setBigDecimal(33, zeroIfNull(null));  // KJG The metric type above does not exist.  Figure out what we were using it for.
                             pst.setBigDecimal(34, zeroIfNull(calculationService.getCurrencyMetric("LOSS_CONTRACT_ADJUSTED_LC", pob, period).getLcValue()));
-                            pst.setString(35, String.valueOf(calculationService.getStringMetric("SALES_DESTINATION", pob, period)));
-                            pst.setString(36, String.valueOf(calculationService.getStringMetric("OEAM_DISAGG", pob, period)));
+                            pst.setString(35, String.valueOf(calculationService.getStringMetric("SALES_DESTINATION", pob, period).getValue()));
+                            pst.setString(36, String.valueOf(calculationService.getStringMetric("OEAM_DISAGG", pob, period).getValue()));
                             pst.setDate(37, sqlDateConverter(calculationService.getDateMetric("SL_START_DATE", pob, period).getValue()));
                             pst.setDate(38, sqlDateConverter(calculationService.getDateMetric("SL_END_DATE", pob, period).getValue()));
                             pst.setBigDecimal(39, zeroIfNull(calculationService.getCurrencyMetric("COSTS_INCURRED_CTD_LC", pob, period).getLcValue()));
@@ -1125,7 +1125,7 @@ public class ReportsService {
 
                         contractST.setBigDecimal(4, zeroIfNull(calculationService.getCurrencyMetric("TOTAL_TRANS_PRICE_CC", contract, period).getCcValue()));
                         contractST.setBigDecimal(5, zeroIfNull(calculationService.getCurrencyMetric("THIRD_PARTY_COMMISSION_CTD_LC", contract, period).getLcValue()));
-                        contractST.setBigDecimal(6, zeroIfNull(calculationService.getCurrencyMetric("THIRD_PARTY_COMMISSION_TO_RECOGNIZE_LC", contract, period).getLcValue()));
+                        contractST.setBigDecimal(6, zeroIfNull(calculationService.getCurrencyMetric("THIRD_PARTY_COMMISSION_TO_RECOGNIZE_PERIOD_LC", contract, period).getLcValue()));
                         contractST.setBigDecimal(7, zeroIfNull(calculationService.getCurrencyMetric("CONTRACT_GROSS_PROFIT_LC", contract, period).getLcValue()));
                         contractST.setBigDecimal(8, zeroIfNull(calculationService.getCurrencyMetric("CONTRACT_COST_TO_COMPLETE_LC", contract, period).getLcValue()));
                         contractST.setBigDecimal(9, zeroIfNull(calculationService.getCurrencyMetric("CONTRACT_BILLINGS_IN_EXCESS_LC", contract, period).getLcValue()));
