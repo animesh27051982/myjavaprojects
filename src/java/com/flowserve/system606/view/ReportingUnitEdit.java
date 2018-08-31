@@ -37,6 +37,7 @@ public class ReportingUnitEdit implements Serializable {
     List<Country> countries = new ArrayList<Country>();
     private User completedUser;
     private User completedPUser;
+    private User completedRUser;
     private User completedVUser;
     @Inject
     private WebSession webSession;
@@ -122,7 +123,7 @@ public class ReportingUnitEdit implements Serializable {
             }
             editReporintgUnit.getReviewers().add(reviewer);
             editReporintgUnit = adminService.update(editReporintgUnit);
-            completedVUser = null;
+            completedRUser = null;
         } catch (Exception e) {
             FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", "Site save error " + e.getMessage());
             FacesContext.getCurrentInstance().addMessage(null, msg);
@@ -134,6 +135,33 @@ public class ReportingUnitEdit implements Serializable {
 
         try {
             editReporintgUnit.getReviewers().remove(reviewer);
+            editReporintgUnit = adminService.update(editReporintgUnit);
+        } catch (Exception e) {
+            FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", "Site save error " + e.getMessage());
+            FacesContext.getCurrentInstance().addMessage(null, msg);
+            logger.log(Level.SEVERE, "Error site save.", e);
+        }
+    }
+
+    public void addViewer(User viewer) {
+        try {
+            if (viewer == null || editReporintgUnit.getReviewers().contains(viewer)) {
+                return;
+            }
+            editReporintgUnit.getViewers().add(viewer);
+            editReporintgUnit = adminService.update(editReporintgUnit);
+            completedVUser = null;
+        } catch (Exception e) {
+            FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", "Site save error " + e.getMessage());
+            FacesContext.getCurrentInstance().addMessage(null, msg);
+            logger.log(Level.SEVERE, "Error site save.", e);
+        }
+    }
+
+    public void removeViewer(User viewer) {
+
+        try {
+            editReporintgUnit.getViewers().remove(viewer);
             editReporintgUnit = adminService.update(editReporintgUnit);
         } catch (Exception e) {
             FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", "Site save error " + e.getMessage());
@@ -188,6 +216,14 @@ public class ReportingUnitEdit implements Serializable {
 
     public void setCompletedVUser(User completedVUser) {
         this.completedVUser = completedVUser;
+    }
+
+    public User getCompletedRUser() {
+        return completedRUser;
+    }
+
+    public void setCompletedRUser(User completedRUser) {
+        this.completedRUser = completedRUser;
     }
 
 }

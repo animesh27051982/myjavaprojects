@@ -523,7 +523,7 @@ public class ViewSupport implements Serializable {
         FinancialPeriod period = webSession.getCurrentPeriod();
         ReportingUnit ru = webSession.getCurrentReportingUnit();
         User user = webSession.getUser();
-        if (user.isGlobalViewer() || ru.getReviewers().contains(user)) {
+        if (user.isGlobalViewer() || ru.getViewers().contains(user)) {
             return false;
         } else if (period.isOpen() && ru.isDraft(period) && (user.isAdmin() || webSession.getPreparableReportingUnits().contains(ru))) {
             return true;

@@ -241,6 +241,16 @@ public class AdminService {
         return null;
     }
 
+    public ReportingUnit findReportingUnitByCOERole(String role) {
+        Query query = em.createQuery("SELECT reportingUnit FROM ReportingUnit reportingUnit WHERE UPPER(reportingUnit.coeRole) = :ROLE");
+        query.setParameter("ROLE", role.toUpperCase());
+        List<ReportingUnit> reportingUnits = query.getResultList();
+        if (reportingUnits.size() > 0) {
+            return reportingUnits.get(0);
+        }
+        return null;
+    }
+
     public ReportingUnit findPreparersByReportingUnitCode(String code) {
         Query query = em.createQuery("SELECT reportingUnit FROM ReportingUnit reportingUnit WHERE reportingUnit.code = :CODE");
         query.setParameter("CODE", code);
@@ -432,7 +442,7 @@ public class AdminService {
             ad.setTitle("Full Admin Access");
             persist(ad);
         } else {
-            ad = admin.get(0);
+            ad = findUserByFlsId("EVet").get(0);//admin.get(0);
         }
 
         if (findUserByFlsId("aloeffler").isEmpty()) {
@@ -513,30 +523,24 @@ public class AdminService {
                     continue;
                 }
                 String[] values = line.split("\\t");
+                String coeRole = null;
+                if (values.length > 6) {
+                    coeRole = "SS" + values[5];
+                }
                 ReportingUnit ru = new ReportingUnit();
                 ru.setCode(values[1].trim());
                 ru.setName(ru.getCode() + " " + values[0]);
-                if (values.length > 2) {
-                    Country cn = findCountryByName(values[2]);
-                    if (cn != null) {
-                        ru.setCountry(cn);
-                        ru.setLocalCurrency(Currency.getInstance(new Locale("en", cn.getCode())));
-
-                    } else {
-                        Logger.getLogger(AdminService.class.getName()).log(Level.INFO, "Reporting Unit invalid country code: " + ru.getCode() + " : " + values[2]);
-                    }
-                }
+                ru.setLocalCurrency(Currency.getInstance(values[2]));
+                ru.setRegion(values[4]);
+                ru.setCoeRole(coeRole);
                 ru.setActive(true);
                 persist(ru);
-                //initializing RUs in Countries
-                if (values.length > 2) {
-                    Country cnt = findCountryByName(values[2]);
-                    if (cnt != null) {
-                        ReportingUnit addRU = findReportingUnitByCode(values[1].trim());
-                        cnt.getReportingUnit().add(addRU);
-                        update(cnt);
-                    }
-                }
+                ru = findReportingUnitByCode(values[1].trim());
+                BusinessUnit bu = findBusinessUnitById(values[3]);
+                ru.setBusinessUnit(bu);
+                bu.getReportingUnit().add(ru);
+                update(ru);
+                updateBusinessUnit(bu);
             }
             reader.close();
             Logger.getLogger(AdminService.class.getName()).log(Level.INFO, "Finished initializing Reporting Units.");
@@ -606,11 +610,14 @@ public class AdminService {
                 String[] values = line.split("\\t");
                 if (values.length == 3) {
                     ReportingUnit ru = findReportingUnitByCode(values[0]);
-                    BusinessUnit bu = findBusinessUnitById(values[2]);
-                    ru.setBusinessUnit(bu);
-                    bu.getReportingUnit().add(ru);
-                    update(ru);
-                    updateBusinessUnit(bu);
+                    if (ru != null) {
+                        BusinessUnit bu = findBusinessUnitById(values[2]);
+                        ru.setBusinessUnit(bu);
+                        bu.getReportingUnit().add(ru);
+                        update(ru);
+                        updateBusinessUnit(bu);
+                    }
+
                 }
             }
             reader.close();
@@ -629,25 +636,21 @@ public class AdminService {
                     continue;
                 }
                 String[] values = line.split("\\t");
-                if (values.length > 3) {
-                    ReportingUnit ru = findReportingUnitByCode(values[3]);
-                    if (ru == null) {
-                        ReportingUnit addRU = new ReportingUnit();
-                        String code = values[3];
-                        addRU.setCode(code);
-                        String[] sp = code.split("\\s+");
-                        String CoENumber = sp[sp.length - 1];
-                        addRU.setName("Center of Excellence " + CoENumber);
-                        addRU.setActive(true);
-                        persist(addRU);
-                        ru = findReportingUnitByCode(code);
+                if (values.length > 6) {
+                    //Logger.getLogger(AdminService.class.getName()).log(Level.INFO, "message" + values[6]);
+                    continue;
+                } else {
+                    ReportingUnit childRU = findReportingUnitByCode(values[1]);
+                    ReportingUnit parentRU = findReportingUnitByCOERole(values[5]);
+                    if (parentRU != null) {
+                        childRU.setParentReportingUnit(parentRU);
+                        parentRU.getChildReportingUnits().add(childRU);
+                        update(childRU);
+                        update(parentRU);
                     }
-                    ReportingUnit preRU = findReportingUnitByCode(values[1]);
-                    preRU.setParentReportingUnit(ru);
-                    ru.getChildReportingUnits().add(preRU);
-                    update(preRU);
-                    update(ru);
+
                 }
+
             }
             reader.close();
             Logger.getLogger(AdminService.class.getName()).log(Level.INFO, "initCoEtoParentRU");
@@ -764,32 +767,53 @@ public class AdminService {
                 }
 
                 String[] values = line.split("\\t");
-                if (values.length > 6 && values[5].equalsIgnoreCase("Preparer")) {
+                if (values.length > 4 && values[4].equalsIgnoreCase("Preparer")) {
 
-                    String[] code = values[6].split(",");
-                    User user = findUserByFlsIdType(values[0]);
-                    int len = code.length;
-                    for (int i = 0; i < len; i++) {
-                        ReportingUnit ru = findReportingUnitByCode(code[i]);
-                        if (ru != null && user != null) {
-                            ru.getPreparers().add(user);
-                            update(ru);
-                        }
-
+                    ReportingUnit ru = findReportingUnitByCode(values[0]);
+                    User user = findUserByFlsIdType(values[2]);
+                    if (ru != null && user != null && !ru.getPreparers().contains(user)) {
+                        ru.getPreparers().add(user);
+                        update(ru);
                     }
 
-                } else if (values.length > 6 && values[5].equalsIgnoreCase("Reviewer")) {
-                    String[] code = values[6].split(",");
-                    User user = findUserByFlsIdType(values[0]);
-                    int len = code.length;
-                    for (int i = 0; i < len; i++) {
-                        ReportingUnit ru = findReportingUnitByCode(code[i]);
-                        if (ru != null && user != null) {
-                            ru.getApprovers().add(user);
-                            update(ru);
-                        }
+//                    String[] code = values[6].split(",");
+//                    User user = findUserByFlsIdType(values[0]);
+//                    int len = code.length;
+//                    for (int i = 0; i < len; i++) {
+//                        ReportingUnit ru = findReportingUnitByCode(code[i]);
+//                        if (ru != null && user != null) {
+//                            ru.getPreparers().add(user);
+//                            update(ru);
+//                        }
+//
+//                    }
+                } else if (values.length > 4 && values[4].equalsIgnoreCase("Approver")) {
 
+                    ReportingUnit ru = findReportingUnitByCode(values[0]);
+                    User user = findUserByFlsIdType(values[2]);
+                    if (ru != null && user != null && !ru.getApprovers().contains(user)) {
+                        ru.getApprovers().add(user);
+                        update(ru);
                     }
+
+                } else if (values.length > 4 && values[4].equalsIgnoreCase("Reviewer")) {
+
+                    ReportingUnit ru = findReportingUnitByCode(values[0]);
+                    User user = findUserByFlsIdType(values[2]);
+                    if (ru != null && user != null && !ru.getReviewers().contains(user)) {
+                        ru.getReviewers().add(user);
+                        update(ru);
+                    }
+
+                } else if (values.length > 4 && values[4].equalsIgnoreCase("Viewer")) {
+
+                    ReportingUnit ru = findReportingUnitByCode(values[0]);
+                    User user = findUserByFlsIdType(values[2]);
+                    if (ru != null && user != null && !ru.getViewers().contains(user)) {
+                        ru.getViewers().add(user);
+                        update(ru);
+                    }
+
                 }
 
             }

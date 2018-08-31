@@ -57,11 +57,11 @@ public class AppInitializeService {
             adminService.initCountries();
             adminService.initBusinessUnit();
             adminService.initReportingUnits();
-            adminService.initBUinRU();
+//            adminService.initBUinRU(); Not needed now
             adminService.initCoEtoParentRU();
             adminService.initCompaniesInRUs();
             adminService.initPreparersReviewerForRU();
-            adminService.initPreparersReviewerForCOE();
+//            adminService.initPreparersReviewerForCOE(); Not needed now
             adminService.initReportingUnitWorkflowStatus();
             calculationService.initBusinessRules();
 

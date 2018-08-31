@@ -1049,15 +1049,15 @@ public class ReportsService {
                     + "COST_GOODS_SOLD_BACKLOG_LC,CHANGE_IN_EAC_LC,REVENUE_TO_RECOGNIZE_CTD_CC,REVENUE_TO_RECOGNIZE_PERIOD_CC,"
                     + "LIQUIDATED_DAMAGES_TO_RECOGNIZE_CTD_CC,LIQUIDATED_DAMAGES_TO_RECOGNIZE_PERIOD_CC,LIQUIDATED_DAMAGES_BACKLOG_CC,"
                     + "NET_PERIOD_SALES_CC,TRANSACTION_PRICE_BACKLOG_CC,TRANSACTION_PRICE_NET_LD_LC,REMAINING_ESTIMATE_COMPLETE_LC,PROJECTED_GAIN_LOSS_LC,"
-                    + "PROJECTED_GAIN_LOSS_BACKLOG_LC,CTD_STANDARD_COSTS_COGS_LC,LOSS_CONTRACT_ADJUSTED_LC) "
-                    + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+                    + "PROJECTED_GAIN_LOSS_BACKLOG_LC,CTD_STANDARD_COSTS_COGS_LC,LOSS_CONTRACT_ADJUSTED_LC,SALES_DESTINATION,OEAM_DISAGG,SL_START_DATE,SL_END_DATE,COSTS_INCURRED_CTD_LC) "
+                    + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?,?,?,?,?)");
 
             PreparedStatement contractST = connection.prepareStatement("INSERT INTO Contract_Ouput "
                     + "(PERIOD_ID, RU_CODE, CONTRACT_ID, TOTAL_TRANS_PRICE_CC, THIRD_PARTY_COMMISSION_CTD_LC,THIRD_PARTY_COMMISSION_TO_RECOGNIZE_LC,"
                     + "CONTRACT_GROSS_PROFIT_LC,CONTRACT_COST_TO_COMPLETE_LC,CONTRACT_BILLINGS_IN_EXCESS_LC,CONTRACT_REVENUE_IN_EXCESS_LC,CONTRACT_PERCENT_COMPLETE,"
                     + "CONTRACT_REVENUE_TO_RECOGNIZE_CTD_CC,TOTAL_COST_GOODS_SOLD_LC,LOSS_RESERVE_CTD_LC,LOSS_RESERVE_PERIOD_ADJ_LC,"
-                    + "LOSS_RESERVE_ADJ_CUMULATIVE_LC,GROSS_PROFIT_LOSS_PERIOD_LC,BOOKING_DATE) "
-                    + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+                    + "LOSS_RESERVE_ADJ_CUMULATIVE_LC,GROSS_PROFIT_LOSS_PERIOD_LC,BOOKING_DATE,THIRD_PARTY_COMMISSION_TO_RECOGNIZE_CTD_LC,THIRD_PARTY_COMMISSION_TO_RECOGNIZE_PERIOD_LC,PROJECT_GAIN_LOSS_INCL_TPC_BACKLOG_LC,CONTRACT_BILLINGS_CTD_CC,LOSS_RESERVE_INCL_TPC_PERIOD_LC,LOSS_RESERVE_INCL_TPC_CTD_LC) "
+                    + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?,?,?,?,?,?)");
 
             PreparedStatement billingST = connection.prepareStatement("INSERT INTO Billings (RU_CODE, CONTRACT_ID, INVOICE_NUMBER, BILLING_DATE,DELIVERY_DATE,"
                     + "AMOUNT_LOCAL_CURRENCY,AMOUNT_CONTRACT_CURRENCY,DESCRIPTION) "
@@ -1112,7 +1112,11 @@ public class ReportsService {
                             //pst.setBigDecimal(33, zeroIfNull(calculationService.getCurrencyMetric("CTD_STANDARD_COSTS_COGS_LC", pob, hasPeriod).getLcValue()));
                             pst.setBigDecimal(33, zeroIfNull(null));  // KJG The metric type above does not exist.  Figure out what we were using it for.
                             pst.setBigDecimal(34, zeroIfNull(calculationService.getCurrencyMetric("LOSS_CONTRACT_ADJUSTED_LC", pob, period).getLcValue()));
-
+                            pst.setString(35, String.valueOf(calculationService.getStringMetric("SALES_DESTINATION", pob, period).getValue()));
+                            pst.setString(36, String.valueOf(calculationService.getStringMetric("OEAM_DISAGG", pob, period).getValue()));
+                            pst.setDate(37, sqlDateConverter(calculationService.getDateMetric("SL_START_DATE", pob, period).getValue()));
+                            pst.setDate(38, sqlDateConverter(calculationService.getDateMetric("SL_END_DATE", pob, period).getValue()));
+                            pst.setBigDecimal(39, zeroIfNull(calculationService.getCurrencyMetric("COSTS_INCURRED_CTD_LC", pob, period).getLcValue()));
                             pst.executeUpdate();
                         }
                         contractST.setString(1, period.getId());
@@ -1121,7 +1125,7 @@ public class ReportsService {
 
                         contractST.setBigDecimal(4, zeroIfNull(calculationService.getCurrencyMetric("TOTAL_TRANS_PRICE_CC", contract, period).getCcValue()));
                         contractST.setBigDecimal(5, zeroIfNull(calculationService.getCurrencyMetric("THIRD_PARTY_COMMISSION_CTD_LC", contract, period).getLcValue()));
-                        contractST.setBigDecimal(6, zeroIfNull(calculationService.getCurrencyMetric("THIRD_PARTY_COMMISSION_TO_RECOGNIZE_LC", contract, period).getLcValue()));
+                        contractST.setBigDecimal(6, zeroIfNull(calculationService.getCurrencyMetric("THIRD_PARTY_COMMISSION_TO_RECOGNIZE_PERIOD_LC", contract, period).getLcValue()));
                         contractST.setBigDecimal(7, zeroIfNull(calculationService.getCurrencyMetric("CONTRACT_GROSS_PROFIT_LC", contract, period).getLcValue()));
                         contractST.setBigDecimal(8, zeroIfNull(calculationService.getCurrencyMetric("CONTRACT_COST_TO_COMPLETE_LC", contract, period).getLcValue()));
                         contractST.setBigDecimal(9, zeroIfNull(calculationService.getCurrencyMetric("CONTRACT_BILLINGS_IN_EXCESS_LC", contract, period).getLcValue()));
@@ -1134,6 +1138,12 @@ public class ReportsService {
                         contractST.setBigDecimal(16, zeroIfNull(calculationService.getCurrencyMetric("LOSS_RESERVE_ADJ_CUMULATIVE_LC", contract, period).getLcValue()));
                         contractST.setBigDecimal(17, zeroIfNull(calculationService.getCurrencyMetric("GROSS_PROFIT_LOSS_PERIOD_LC", contract, period).getLcValue()));
                         contractST.setDate(18, sqlDateConverter(calculationService.getDateMetric("BOOKING_DATE", contract, period).getValue()));
+                        contractST.setBigDecimal(19, zeroIfNull(calculationService.getCurrencyMetric("THIRD_PARTY_COMMISSION_TO_RECOGNIZE_CTD_LC", contract, period).getLcValue()));
+                        contractST.setBigDecimal(20, zeroIfNull(calculationService.getCurrencyMetric("THIRD_PARTY_COMMISSION_TO_RECOGNIZE_PERIOD_LC", contract, period).getLcValue()));
+                        contractST.setBigDecimal(21, zeroIfNull(calculationService.getCurrencyMetric("PROJECT_GAIN_LOSS_INCL_TPC_BACKLOG_LC", contract, period).getLcValue()));
+                        contractST.setBigDecimal(22, zeroIfNull(calculationService.getCurrencyMetric("CONTRACT_BILLINGS_CTD_CC", contract, period).getCcValue()));
+                        contractST.setBigDecimal(23, zeroIfNull(calculationService.getCurrencyMetric("LOSS_RESERVE_INCL_TPC_PERIOD_LC", contract, period).getLcValue()));
+                        contractST.setBigDecimal(24, zeroIfNull(calculationService.getCurrencyMetric("LOSS_RESERVE_INCL_TPC_CTD_LC", contract, period).getLcValue()));
                         contractST.executeUpdate();
                     }
                 }

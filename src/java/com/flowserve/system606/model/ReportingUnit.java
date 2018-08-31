@@ -66,8 +66,15 @@ public class ReportingUnit extends TransientMeasurable<Long> implements Measurab
     @OneToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "REPORTING_UNIT_APPROVERS", joinColumns = @JoinColumn(name = "REPORTING_UNIT_ID"), inverseJoinColumns = @JoinColumn(name = "USER_ID"))
     private List<User> approvers = new ArrayList<User>();
+    @OneToMany(fetch = FetchType.EAGER)
+    @JoinTable(name = "REPORTING_UNIT_VIEWERS", joinColumns = @JoinColumn(name = "REPORTING_UNIT_ID"), inverseJoinColumns = @JoinColumn(name = "USER_ID"))
+    private List<User> viewers = new ArrayList<User>();
     @Column(name = "IS_ACTIVE")
     private boolean active;
+    @Column(name = "REGION")
+    private String region;
+    @Column(name = "COE_ROLE")
+    private String coeRole;
     @ManyToOne
     @JoinColumn(name = "PARENT_ID")
     private ReportingUnit parentReportingUnit;
@@ -299,5 +306,29 @@ public class ReportingUnit extends TransientMeasurable<Long> implements Measurab
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public String getRegion() {
+        return region;
+    }
+
+    public void setRegion(String region) {
+        this.region = region;
+    }
+
+    public String getCoeRole() {
+        return coeRole;
+    }
+
+    public void setCoeRole(String coeRole) {
+        this.coeRole = coeRole;
+    }
+
+    public List<User> getViewers() {
+        return viewers;
+    }
+
+    public void setViewers(List<User> viewers) {
+        this.viewers = viewers;
     }
 }
