@@ -25,7 +25,7 @@
                                 <p:graphicImage name="images/icon-sales.png" library="california-layout" />
                             </div>
                         </p:commandLink>
-                       
+
                     </div>
                     <div class="ui-g-12 ui-md-12 ui-lg-4">
                         <p:commandLink disabled="#{viewSupport.menuClickable}"  action="pobCalculationReview.xhtml" >
@@ -45,7 +45,7 @@
                                 </div>
                                 <p:graphicImage name="images/icon-users.png" library="california-layout" />
                             </div>
-                       </p:commandLink>
+                        </p:commandLink>
                     </div>
 
 
@@ -99,10 +99,6 @@
                                 <p:column headerText="POB Input Required Count">
                                     <h:outputText value="#{ru.pobInputRequiredCount}" />
                                 </p:column>
-                                <p:column headerText="POB Invalid Count">
-                                    <h:outputText value="#{ru.pobInvalidCount}" />
-                                </p:column>
-
                                 <p:column headerText="Actions">
                                     <span style="white-space: nowrap;">
                                         <p:commandButton value="Inputs" icon="ui-icon-arrowthick-1-e" ajax="false" actionListener="#{webSession.setCurrentReportingUnit(ru)}" action="#{inputController.proceedToOnlineEntry()}"/>

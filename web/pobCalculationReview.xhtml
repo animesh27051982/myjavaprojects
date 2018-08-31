@@ -24,9 +24,9 @@
         </style>
     </ui:define>
 
-    <ui:define name="title">Calculation Review</ui:define>
+    <ui:define name="title">RCS Calculation Review</ui:define>
 
-    <ui:define name="viewname">Calculation Review</ui:define>
+    <ui:define name="viewname">RCS Calculation Review</ui:define>
 
     <ui:define name="content">
         <h:form id="form">
@@ -83,6 +83,7 @@
                             <p:tabView id="topLevelTabView" dynamic="true" style="margin-top: 15px;">
                                 <p:tab title="Revenue">
                                     <p:treeTable tableStyle="width:auto" value="#{pobCalculationReview.rootTreeNode}" var="pob" selectionMode="single" selection="#{pobCalculationReview.selectedNode}">
+
                                         <p:columnGroup type="header">
                                             <p:row>
                                                 <p:column colspan="1" headerText="" />

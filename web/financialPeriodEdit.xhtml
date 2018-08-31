@@ -18,7 +18,7 @@
     <ui:define name="content">
         <div style="min-height: calc(100vh - 235px);">
             <h:form>
-                <p:growl id="messages" showDetail="true" />
+                <p:growl id="messages" showDetail="true" sticky="true"/>
                 <div class="ui-fluid">
                     <div class="ui-g">
                         <div class="ui-g-12">
@@ -26,31 +26,34 @@
                                 <h1>#{financialPeriodEdit.financialPeriod.getId() == null ? "New" : "Edit" } Financial Period</h1>
                                 <p:panelGrid columns="2" columnClasses="ui-grid-col-3,ui-grid-col-6,ui-grid-col-3,ui-grid-col-6" layout="grid" styleClass="ui-panelgrid-blank form-group" style="border:0px none; background-color:transparent;">
                                     <p:outputLabel for="name" value="Name"/>
-                                    <p:outputLabel id="name" value="#{financialPeriodEdit.financialPeriod.name}"/>
+                                    <p:outputLabel id="name" value="#{financialPeriodEdit.financialPeriod.name}" style="font-weight: bold;"/>
+
                                     <p:outputLabel for="startDate" value="StartDate"/>
                                     <p:outputLabel id="startDate" value="#{financialPeriodEdit.financialPeriod.startDate}"/>
+
                                     <p:outputLabel for="endDate" value="EndDate"/>
                                     <p:outputLabel id="endDate" value="#{financialPeriodEdit.financialPeriod.endDate}"/>
+
                                     <p:outputLabel for="status" value="Status"/>
                                     <p:outputLabel id="status" value="#{financialPeriodEdit.financialPeriod.status}"/>
 
-                                    <p:outputLabel for="local" value="Local Currency Rate Period"/>
+                                    <p:outputLabel for="local" value="Local Currency Conversion Rate Period"/>
                                     <p:outputLabel id="local" value="#{financialPeriodEdit.financialPeriod.localCurrencyRatePeriod.id}"/>
-                                    <p:outputLabel for="report" value="Reporting Currency Rate Period"/>
+
+                                    <p:outputLabel for="report" value="Reporting Currency Conversion Rate Period"/>
                                     <p:outputLabel id="report" value="#{financialPeriodEdit.financialPeriod.reportingCurrencyRatePeriod.id}"/>
-                                    <f:facet name="footer">
-                                        <p:toolbar>
-                                            <f:facet name="left">
-                                                <p:outputLabel for="btnOpen" value="" />
-                                                <p:commandButton id="btnOpen" value="Open" icon="ui-icon-folder-open" ajax="false" action="#{financialPeriodEdit.openPeriod()}" style="max-width:100px;"/>
-                                                <p:outputLabel for="btnFreeze" value="" />
-                                                <p:commandButton id="btnFreeze" value="User Freeze" icon="fa fa-fw fa-gg" ajax="false" action="#{financialPeriodEdit.freezePeriod()}" style="max-width:150px;"/>
-                                                <p:outputLabel for="btnClose" value="" />
-                                                <p:commandButton id="btnClose" value="Close" icon="fa fa-fw fa-sign-in" ajax="false" action="#{financialPeriodEdit.closePeriod()}" style="max-width:100px;"/>
-                                            </f:facet>
-                                        </p:toolbar>
-                                    </f:facet>
                                 </p:panelGrid>
+                                <p:toolbar>
+                                    <f:facet name="left">
+                                        <p:commandButton value="Back to Period List" ajax="false" action="financialPeriodList" style="max-width:150px;"/>
+                                    </f:facet>
+                                    <f:facet name="right">
+                                        <p:commandButton value="Open Period" icon="ui-icon-folder-open" ajax="false" action="#{financialPeriodEdit.openPeriod()}" style="max-width:150px;"/>
+                                        <p:commandButton value="User Freeze Period" icon="fa fa-fw fa-gg" ajax="false" action="#{financialPeriodEdit.freezePeriod()}" style="margin-left: 5px; max-width:175px;"/>
+                                        <p:commandButton value="Close Period" icon="fa fa-fw fa-sign-in" ajax="false" action="#{financialPeriodEdit.closePeriod()}" style="margin-left: 5px; max-width:150px;"/>
+                                    </f:facet>
+                                </p:toolbar>
+
                             </div>
                         </div>
                     </div>

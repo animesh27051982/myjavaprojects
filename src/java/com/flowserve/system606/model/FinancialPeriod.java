@@ -9,6 +9,7 @@ import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.Period;
+import java.time.temporal.ChronoUnit;
 import java.util.logging.Logger;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -137,7 +138,8 @@ public class FinancialPeriod extends BaseEntity<String> implements Comparable<Fi
         }
 
         if (this.isBetween(slStartDate, slEndDate)) {
-            return Period.between(this.startDate, slStartDate).getMonths() / Period.between(slEndDate, slStartDate).getMonths();
+            float factor = ((float) ChronoUnit.MONTHS.between(this.startDate, slStartDate)) / ((float) ChronoUnit.MONTHS.between(slEndDate, slStartDate));
+            return factor;
         }
 
         return 0.0f;

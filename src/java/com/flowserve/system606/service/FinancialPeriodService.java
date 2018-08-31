@@ -96,16 +96,14 @@ public class FinancialPeriodService {
                 String exPeriod = shortMonth[j - 1] + "-" + shortYear;
                 if (findById(exPeriod) == null) {
                     LocalDate date = LocalDate.of(totalYear[i], Month.of(j), 1);
-//                    if (date.getYear() == 2018 && date.getMonthValue() > 6) {
-//                        continue;  // KJG Tempoararily only create up to JUN-18  // KJG Changed for loading exchange rates for June.
-//                    }
+                    if (date.getYear() == 2018 && date.getMonthValue() > 6) {
+                        continue;  // KJG Tempoararily only create up to JUN-18
+                    }
                     LocalDate lastOfMonth = date.with(TemporalAdjusters.lastDayOfMonth());
-                    FinancialPeriod thisPeriod = new FinancialPeriod(exPeriod, exPeriod, LocalDate.of(totalYear[i], Month.of(j), 1), lastOfMonth, totalYear[i], j, PeriodStatus.NEVER_OPENED);
-                    //fPeriod.setLocalCurrencyRatePeriod(calculatePriorPeriod(fPeriod));
-                    //fPeriod.setReportingCurrencyRatePeriod(fPeriod);
+                    FinancialPeriod thisPeriod = new FinancialPeriod(exPeriod, exPeriod, LocalDate.of(totalYear[i], Month.of(j), 1), lastOfMonth, totalYear[i], j, PeriodStatus.CLOSED);
                     thisPeriod.setCreationDate(LocalDateTime.now());
                     thisPeriod.setLastUpdateDate(LocalDateTime.now());
-                    logger.info("persist " + thisPeriod.getId());
+                    logger.info("Creating period: " + thisPeriod.getId());
                     thisPeriod.setReportingCurrencyRatePeriod(thisPeriod);
                     if (priorPeriod != null) {
                         thisPeriod.setLocalCurrencyRatePeriod(priorPeriod);
@@ -113,7 +111,6 @@ public class FinancialPeriodService {
                         priorPeriod.setNextPeriod(thisPeriod);
                     }
                     persist(thisPeriod);
-                    //update(priorPeriod);
                     priorPeriod = thisPeriod;
                 }
             }
@@ -122,6 +119,7 @@ public class FinancialPeriodService {
         logger.info("Finding company");
         Company fls = adminService.findCompanyById("FLS");
 
+        openPeriod(findById("JUN-18"));
         fls.setCurrentPeriod(findById("JUN-18"));
         fls.setPriorPeriod(findById("MAY-18"));
 
@@ -429,8 +427,8 @@ public class FinancialPeriodService {
         return (List<FinancialPeriod>) query.getResultList();
     }
 
-    public void updateFinancialPeriod(FinancialPeriod financialPeriod) {
-        em.merge(financialPeriod);
+    public FinancialPeriod updateFinancialPeriod(FinancialPeriod financialPeriod) {
+        return em.merge(financialPeriod);
     }
 
     public List<FinancialPeriod> getQTDFinancialPeriods(FinancialPeriod period) {
@@ -513,11 +511,11 @@ public class FinancialPeriodService {
         updateFinancialPeriod(period);
     }
 
-    public void closePeriod(FinancialPeriod period) throws Exception {
+    public FinancialPeriod closePeriod(FinancialPeriod period) throws Exception {
         if (period.isOpen() || period.isUserFreeze()) {
             period.setStatus(PeriodStatus.CLOSED);
         }
-        updateFinancialPeriod(period);
+        return updateFinancialPeriod(period);
     }
 
     public void freezePeriod(FinancialPeriod period) throws Exception {

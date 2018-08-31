@@ -202,9 +202,9 @@ public class AdminController implements Serializable {
         return "userProfile";
     }
 
-    public String editFinancialPeriod(FinancialPeriod f) throws Exception {
+    public String editFinancialPeriod(FinancialPeriod period) throws Exception {
+        webSession.setEditFinancialPeriodId(period.getId());
 
-        webSession.setEditFinancialPeriod(f);
         return "financialPeriodEdit";
     }
 

@@ -14,14 +14,12 @@ import javax.inject.Named;
 @ViewScoped
 public class FinancialPeriodSearch implements Serializable {
 
-    // private static final long serialVersionUID = -1438027991420003830L;
     List<FinancialPeriod> financialPeriods = new ArrayList<FinancialPeriod>();
     @Inject
     private FinancialPeriodService financialPeriodService;
     private String searchString = "";
 
     public void search() throws Exception {
-
     }
 
     public String getSearchString() {
@@ -33,9 +31,9 @@ public class FinancialPeriodSearch implements Serializable {
     }
 
     public List<FinancialPeriod> getFinancialPeriods() throws Exception {
-        System.out.println("getFinancialPeriods");
         financialPeriods = financialPeriodService.findFinancialPeriods();
         Collections.sort(financialPeriods);
+
         return financialPeriods;
     }
 

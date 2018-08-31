@@ -44,9 +44,9 @@
 
     </ui:define>
 
-    <ui:define name="title">Input Summary 1</ui:define>
+    <ui:define name="title">RCS Online Input</ui:define>
 
-    <ui:define name="viewname">Input Summary 1</ui:define>
+    <ui:define name="viewname">RCS Online Input</ui:define>
 
     <ui:define name="content">
         <p:tooltip />
@@ -131,8 +131,6 @@
                                 <p:tab title="Trans Price &amp; EAC Inputs">
 
                                     <p:treeTable tableStyle="width:auto" id="eactbl" value="#{inputOnlineEntry.rootTreeNode}" editable="true" editMode="cell" var="pob" >
-
-                                        <p:ajax event="cellEdit" listener="#{inputOnlineEntry.onCellEdit}" />
 
                                         <p:columnGroup type="header">
                                             <p:row>

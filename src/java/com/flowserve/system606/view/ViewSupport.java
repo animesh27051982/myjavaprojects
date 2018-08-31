@@ -46,6 +46,7 @@ import javax.faces.context.FacesContext;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
+import org.primefaces.event.NodeExpandEvent;
 import org.primefaces.model.DefaultTreeNode;
 import org.primefaces.model.TreeNode;
 
@@ -189,24 +190,25 @@ public class ViewSupport implements Serializable {
         TreeNode root = new DefaultTreeNode(new BusinessUnit(), null);
 
         for (ReportingUnit reportingUnit : reportingUnits) {
-            Logger.getLogger(WebSession.class.getName()).log(Level.FINER, "Adding to tree RU Name: " + reportingUnit.getName());
             TreeNode reportingUnitNode = new DefaultTreeNode(reportingUnit, root);
             reportingUnitNode.setExpanded(true);
             for (Contract contract : reportingUnit.getContracts()) {
-                Logger.getLogger(WebSession.class.getName()).log(Level.FINER, "Adding to tree Contract Name: " + contract.getName());
                 TreeNode contractNode = new DefaultTreeNode(contract, reportingUnitNode);
-                contractNode.setExpanded(false);
-                if (contract.isNodeExpanded()) {
-                    contractNode.setExpanded(true);
-                }
+                contractNode.setExpanded(contract.isNodeExpanded());
                 for (PerformanceObligation pob : contract.getPerformanceObligations()) {
-                    Logger.getLogger(WebSession.class.getName()).log(Level.FINER, "Adding to tree POB ID: " + pob.getId());
                     new DefaultTreeNode(pob, contractNode);
                 }
             }
         }
 
         return root;
+    }
+
+    public void onNodeExpand(NodeExpandEvent event) {
+        if (event.getTreeNode().getData() instanceof Contract) {
+            Logger.getLogger(ViewSupport.class.getName()).log(Level.INFO, "setNodeExpanded");
+            ((Contract) event.getTreeNode().getData()).setNodeExpanded(true);
+        }
     }
 
     public LocalDate getCurrentPeriodMinDate() {

@@ -219,7 +219,7 @@ public class BatchProcessingService {
 
                                 rusToSave.add(pob.getContract().getReportingUnit());
                             } else {
-                                importMessages.add("These POBs not found : " + id);
+                                importMessages.add("POB not found : " + id);
                                 //logger.log(Level.FINER, "These POBs not found : " + id);
                             }
                         } catch (NumberFormatException e) {

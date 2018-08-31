@@ -264,9 +264,23 @@ end
 
 
 
+
 /**
-* Revenue calcs POC.  The CTD values will be calculated first.  CTD values need to be currency-converted manually. Due to the order-of-conversion issue (see below.)
-* Current period revnue will be calculated based on the CTD values, hence listing CTD rules first.
+* REVENUE_TO_RECOGNIZE_CTD_CC POC
+*
+* REVENUE_TO_RECOGNIZE_CTD_CC is a non-currency-convertible metric at the CTD level.  Convertibility is a setting on the MetricType.
+* The sytem will not automatically currency-convert this metric.  A CTD level convertsion is an invalid operation due to the
+* order-of-conversion problem.  Simply stated one cannot convert, at the CTD level, a metric that contains previously converted LC components
+* at previous exchange rates.  Doing so renders a CTD level conversion inaccurate, so we must convert the LC (and RC) components manually.
+* Another way of stating this problem is that you must convert-and-accumulate the CTD level rather than accumulate-and-convert.  We
+* do not have access to all previous period values in the business rules, therefore we rely on the previous period values to derive the
+* same result.  The order in wihch the rules engine will execute these rules is
+* REVENUE_TO_RECOGNIZE_CTD_CC CC value
+* Once CC value is set, we can use it to conver to calculate REVENUE_TO_RECOGNIZE_PERIOD_CC CC value
+* Once REVENUE_TO_RECOGNIZE_PERIOD_CC is set rules engine will execute the LC and RC rules below for
+* REVENUE_TO_RECOGNIZE_CTD_CC  LC and RC.  In total this is a very complex set of logic to follow but this woudl be the case no matter
+* what type of technology we choose to implement.  The best we can do is to properly document and try to make the rules as clear as possible.
+* We can do more in that regard here and hopefully that will become evident.
 **/
 
 rule "Revenue to Recognize CTD CC-Only RevRec Method is POC"
@@ -279,15 +293,6 @@ rule "Revenue to Recognize CTD CC-Only RevRec Method is POC"
         modify (revenueToRecognizeCTD) { ccValue = (percentComplete.value * transactionPrice.ccValue)};
 end
 
-/**
-* REVENUE_TO_RECOGNIZE_CTD_CC is a non-currency-convertible metric at the CTD level.  This is a system setting on the MetricType.
-* The sytem will not automatically currency-convert this metric.  A CTD level convertsion is an invalid operation due to the
-* order-of-conversion problem.  Simply stated one cannot convert, at the CTD level, a metric that contains previously converted LC components
-* at previous exchange rates.  This renders a CTD level conversion inaccurate, so we must convert the LC (and RC) components manually.
-* Another way of stating this problem is that you must convert-and-accumulate the CTD level rather than accumulate-and-convert.  We
-* do not have access to all previous period values in the business rules, therefore we rely on the previous period values to derive the
-* same result.
-**/
 rule "Revenue to Recognize CTD LC"
     when
         pob : PerformanceObligation(revenueMethod == RevenueMethod.PERC_OF_COMP)
@@ -341,23 +346,20 @@ rule "Revenue to Recognize CTD CC RevRec Method is PIT And Delivery Date Does No
         currencyService.convertCurrency(revenueToRecognizeCTD, pob, period);  // We can convert right in-line since this is a single point-in-time transaction.
 end
 
+
 /**
-rule "Revenue to Recognize CTD CC RevRec Method is PIT And Delivery Date Exists"
-    when
-        pob : PerformanceObligation(revenueMethod == RevenueMethod.POINT_IN_TIME)
-        period : FinancialPeriod()
-        currencyService : CurrencyService()  // Necessary due to mid rule-execution need for currency conversion.
-        deliveryDate : DateMetric(metricType.code == "DELIVERY_DATE", value != null )
-        transactionPrice : CurrencyMetric(metricType.code == "TRANSACTION_PRICE_CC", ccValue != null)
-        revenueToRecognizeCTD : CurrencyMetric(metricType.code == "REVENUE_TO_RECOGNIZE_CTD_CC", ccValue == null || ccValue == 0B)  // If we have already recognized rev, don't do it again.
-    then
-        modify (revenueToRecognizeCTD) { ccValue = (deliveryDate.value.compareTo(period.endDate) <= 0 ? transactionPrice.ccValue : 0B) };
-        currencyService.convertCurrency(revenueToRecognizeCTD, pob, period);  // We can convert right in-line since this is a single point-in-time transaction.
-end
+* REVENUE_TO_RECOGNIZE_CTD_CC - Straight Line - Currency Convertible
+*
+* The SL revenue requires a utility function.  The date-math was too complex for the rules.
+* The basic operation of the function is to return a factor between 0 and 1 inclusive indicating
+* the amount of revnue that should be recognized.  The operation is a ratio of month differentials
+* (lesser of (period start date, SL start date) - SL start date) / (SL start date - sl end date)
+* This is a simplified explanation however, the rule also does some zero and null checking to
+* carry forward the previous period value if necessary, but the factor above also does this since
+* we also carry forward the SL start/end dates if they are blank.  All in all a fairly complex
+* set of operations in total.  The previous commentary above on POC based revenue cacls also applies
+* here.
 **/
-
-
-
 rule "Revenue to Recognize CTD CC Straight Line"
     when
         pob : PerformanceObligation(revenueMethod == RevenueMethod.STRAIGHT_LINE)
@@ -371,18 +373,9 @@ rule "Revenue to Recognize CTD CC Straight Line"
         modify (revenueToRecognizeCTD) { ccValue = (transactionPrice.ccValue * period.getStraightLineRevenueAllocationFactor(slStartDate.value, slEndDate.value)) };
         modify (revenueToRecognizeCTD) { ccValue = (revenueToRecognizeCTD.ccValue == 0B) ? revenueToRecognizeCTDPriorPeriod.ccValue : revenueToRecognizeCTD.ccValue };
         modify (revenueToRecognizeCTD) { ccValue = (revenueToRecognizeCTD.ccValue == null) ? 0B : revenueToRecognizeCTD.ccValue };
-        logger.info("SL Rev Calc: " + revenueToRecognizeCTD);
+        logger.info("SL Rev Calc: Revenue Alloc Factor: " + period.getStraightLineRevenueAllocationFactor(slStartDate.value, slEndDate.value));
 end
 
-/**
-* REVENUE_TO_RECOGNIZE_CTD_CC is a non-currency-convertible metric at the CTD level.  This is a system setting on the MetricType.
-* The sytem will not automatically currency-convert this metric.  A CTD level convertsion is an invalid operation due to the
-* order-of-conversion problem.  Simply stated one cannot convert, at the CTD level, a metric that contains previously converted LC components
-* at previous exchange rates.  This renders a CTD level conversion inaccurate, so we must convert the LC (and RC) components manually.
-* Another way of stating this problem is that you must convert-and-accumulate the CTD level rather than accumulate-and-convert.  We
-* do not have access to all previous period values in the business rules, therefore we rely on the previous period values to derive the
-* same result.
-**/
 rule "Revenue to Recognize CTD LC Straight Line"
     when
         pob : PerformanceObligation(revenueMethod == RevenueMethod.STRAIGHT_LINE)
@@ -407,7 +400,12 @@ rule "Revenue to Recognize CTD RC Straight Line"
         modify (revenueToRecognizeCTD) { rcValue = (revenueToRecognizeCurrentPeriod.rcValue + (revenueToRecognizeCTDPriorPeriod.rcValue == null ? 0B : revenueToRecognizeCTDPriorPeriod.rcValue))};
 end
 
-
+/**
+* REVENUE_TO_RECOGNIZE_CTD_CC Right to Invoice
+*
+* These revenue calcs are based on bilings.  We calculate each currency type individually since they
+* may have local currency components and also in this cse the LC can be overridden by the end user.
+*/
 rule "Revenue to Recognize CTD CC RTI Right to Invoice"
     when
         pob : PerformanceObligation(revenueMethod == RevenueMethod.RIGHT_TO_INVOICE)
@@ -436,9 +434,10 @@ rule "Revenue to Recognize CTD RC RTI Right to Invoice"
 end
 
 /**
-*  Revenue Current Period - Using the same rule for all POB types since this is a current period calculation.
-*  We do need to convert in realtime here since we need the LC values for other calcs.
-*  Using an alternate method of converting currency here, need to decide which way is best.. individually or calling currencyService.convert...
+*  Revenue Current Period - Using the same rule for all POB types since this is a current period calculation using the previously calculated CTD values.
+*  We do need to convert in realtime here since we need the LC and RC values for other calcs above.
+*  Using an alternate method of converting currency here, need to decide which way is best.. individually or calling currencyService.convert for both
+*  conversions at once.
 **/
 rule "Revenue to Recognize Current Period CC"
     when
@@ -449,13 +448,22 @@ rule "Revenue to Recognize Current Period CC"
         revenueToRecognizeCTDPriorPeriod : CurrencyMetricPriorPeriod(metricType.code == "REVENUE_TO_RECOGNIZE_CTD_CC")
         revenueToRecognizeCurrentPeriod : CurrencyMetric(metricType.code == "REVENUE_TO_RECOGNIZE_PERIOD_CC")
     then
-        modify (revenueToRecognizeCurrentPeriod) { ccValue = (revenueToRecognizeCTDPriorPeriod.ccValue == null ? revenueToRecognizeCTD.ccValue : revenueToRecognizeCTD.ccValue - revenueToRecognizeCTDPriorPeriod.ccValue)};
+        modify (revenueToRecognizeCurrentPeriod) { ccValue = (revenueToRecognizeCTDPriorPeriod.ccValue == null ? revenueToRecognizeCTD.ccValue :
+                                                              revenueToRecognizeCTD.ccValue - revenueToRecognizeCTDPriorPeriod.ccValue)};
         modify (revenueToRecognizeCurrentPeriod) { lcValue = (revenueToRecognizeCurrentPeriod.ccValue * currencyService.getCCtoLCExchangeRate(pob, period)) };
         modify (revenueToRecognizeCurrentPeriod) { rcValue = (revenueToRecognizeCurrentPeriod.lcValue * currencyService.getLCtoRCExchangeRate(pob, period)) };
 end
 
 
-// Liquidated Damanges Calcs
+/**
+* LIQUIDATED_DAMAGES_TO_RECOGNIZE_CTD_CC is a non-currency-convertible metric at the CTD level.  This is a system setting on the MetricType.
+* The sytem will not automatically currency-convert this metric.  A CTD level convertsion is an invalid operation due to the
+* order-of-conversion problem.  Simply stated one cannot convert, at the CTD level, a metric that contains previously converted LC components
+* at previous exchange rates.  This renders a CTD level conversion inaccurate, so we must convert the LC (and RC) components manually.
+* Another way of stating this problem is that you must convert-and-accumulate the CTD level rather than accumulate-and-convert.  We
+* do not have access to all previous period values in the business rules, therefore we rely on the previous period values to derive the same
+* result.
+**/
 
 rule "Liquidated Damages Recognized CTD"
     when
@@ -474,18 +482,10 @@ rule "Liquidated Damages to Recognize in Current Period"
         liquidatedDamagesRecognizedCTDPriorPeriod : CurrencyMetricPriorPeriod(metricType.code == "LIQUIDATED_DAMAGES_TO_RECOGNIZE_CTD_CC")
         liquidatedDamagesToRecognizeCurrentPeriod : CurrencyMetric(metricType.code == "LIQUIDATED_DAMAGES_TO_RECOGNIZE_PERIOD_CC")
     then
-        modify (liquidatedDamagesToRecognizeCurrentPeriod) { ccValue = (liquidatedDamagesRecognizedCTDPriorPeriod.ccValue == null ? liquidatedDamagesToRecognizeCTD.ccValue : liquidatedDamagesToRecognizeCTD.ccValue - liquidatedDamagesRecognizedCTDPriorPeriod.ccValue)};
+        modify (liquidatedDamagesToRecognizeCurrentPeriod) { ccValue = (liquidatedDamagesRecognizedCTDPriorPeriod.ccValue == null ? liquidatedDamagesToRecognizeCTD.ccValue :
+                                                                        liquidatedDamagesToRecognizeCTD.ccValue - liquidatedDamagesRecognizedCTDPriorPeriod.ccValue)};
 end
 
-/**
-* LIQUIDATED_DAMAGES_TO_RECOGNIZE_CTD_CC is a non-currency-convertible metric at the CTD level.  This is a system setting on the MetricType.
-* The sytem will not automatically currency-convert this metric.  A CTD level convertsion is an invalid operation due to the
-* order-of-conversion problem.  Simply stated one cannot convert, at the CTD level, a metric that contains previously converted LC components
-* at previous exchange rates.  This renders a CTD level conversion inaccurate, so we must convert the LC (and RC) components manually.
-* Another way of stating this problem is that you must convert-and-accumulate the CTD level rather than accumulate-and-convert.  We
-* do not have access to all previous period values in the business rules, therefore we rely on the previous period values to derive the same
-* result.
-**/
 rule "Liquidated Damages Recognized CTD LC"  //
     when
         pob : PerformanceObligation()

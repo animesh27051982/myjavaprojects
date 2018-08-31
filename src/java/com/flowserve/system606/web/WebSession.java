@@ -42,7 +42,7 @@ public class WebSession implements Serializable {
     private Holiday editHolidays;
     private Company editCompany;
     private Contract editContract;
-    private FinancialPeriod editFinancialPeriod;
+    private String editFinancialPeriodId;
     private FinancialPeriod currentPeriod;
     private FinancialPeriod priorPeriod;
     private DataImportFile dataImportFile;
@@ -117,14 +117,6 @@ public class WebSession implements Serializable {
 
     public void setCountry(Country country) {
         this.country = country;
-    }
-
-    public void setEditFinancialPeriod(FinancialPeriod editFinancialPeriod) {
-        this.editFinancialPeriod = editFinancialPeriod;
-    }
-
-    public FinancialPeriod getEditFinancialPeriod() {
-        return editFinancialPeriod;
     }
 
     public Holiday getEditHolidays() {
@@ -233,6 +225,14 @@ public class WebSession implements Serializable {
 
     public void setMetricType(MetricType metricType) {
         this.metricType = metricType;
+    }
+
+    public String getEditFinancialPeriodId() {
+        return editFinancialPeriodId;
+    }
+
+    public void setEditFinancialPeriodId(String editFinancialPeriodId) {
+        this.editFinancialPeriodId = editFinancialPeriodId;
     }
 
 }
