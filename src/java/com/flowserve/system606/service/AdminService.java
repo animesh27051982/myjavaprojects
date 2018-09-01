@@ -442,7 +442,7 @@ public class AdminService {
             ad.setTitle("Full Admin Access");
             persist(ad);
         } else {
-            ad = findUserByFlsId("EVet").get(0);//admin.get(0);
+            ad = admin.get(0);//findUserByFlsId("EVet").get(0);
         }
 
         if (findUserByFlsId("aloeffler").isEmpty()) {
