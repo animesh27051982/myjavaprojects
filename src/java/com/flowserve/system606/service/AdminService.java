@@ -6,6 +6,7 @@
 package com.flowserve.system606.service;
 
 import com.flowserve.system606.model.Account;
+import com.flowserve.system606.model.AccountMapping;
 import com.flowserve.system606.model.AccountType;
 import com.flowserve.system606.model.ApprovalRequest;
 import com.flowserve.system606.model.BusinessRule;
@@ -20,6 +21,7 @@ import com.flowserve.system606.model.FinancialPeriod;
 import com.flowserve.system606.model.Holiday;
 import com.flowserve.system606.model.MetricType;
 import com.flowserve.system606.model.ReportingUnit;
+import com.flowserve.system606.model.RevenueMethod;
 import com.flowserve.system606.model.SubledgerLine;
 import com.flowserve.system606.model.User;
 import com.flowserve.system606.model.WorkflowStatus;
@@ -954,4 +956,42 @@ public class AdminService {
 
         return (List<BusinessRule>) query.getResultList();
     }
+
+    public AccountMapping findAccountMappingByMetricType(String code) {
+        Query query = em.createQuery("SELECT a FROM AccountMapping a WHERE a.metricType  = :ID");
+        query.setParameter("ID", findMetricTypeByCode(code));
+
+        List<AccountMapping> am = query.getResultList();
+        if (am.size() > 0) {
+            return am.get(0);
+        }
+        return null;
+
+    }
+
+    public void initAccountsMapping() throws Exception {
+
+        Logger.getLogger(AdminService.class.getName()).log(Level.INFO, "Initializing Accounts Mapping");
+        BufferedReader reader = new BufferedReader(new InputStreamReader(AppInitializeService.class.getResourceAsStream("/resources/app_data_init_files/metric_account_mappings.txt"), "UTF-8"));
+        String line = null;
+        int count = 0;
+        while ((line = reader.readLine()) != null) {
+            if (line.trim().length() == 0) {
+                continue;
+            }
+            count = 0;
+            String[] values = line.split("\\|");
+            if (findAccountMappingByMetricType("CONTRACT_BILLINGS_PERIOD_CC") == null) {
+                AccountMapping acm = new AccountMapping();
+                acm.setMetricType(findMetricTypeByCode(values[count++]));
+                acm.setOwnerEntityType(values[count++]);
+                acm.setRevenueMethod(RevenueMethod.fromShortName(values[count++]));
+                acm.setAccount(findAccountById(values[count++]));
+                persist(acm);
+            }
+        }
+        reader.close();
+        Logger.getLogger(AdminService.class.getName()).log(Level.INFO, "Finished initializing Accounts Mapping.");
+    }
+
 }

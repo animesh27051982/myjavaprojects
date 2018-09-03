@@ -35,6 +35,8 @@ public enum RevenueMethod {
 
             case "RTI":
                 return RevenueMethod.RIGHT_TO_INVOICE;
+            case "":
+                return null;
 
             default:
                 throw new IllegalArgumentException("ShortName [" + shortName + "] not supported.");
