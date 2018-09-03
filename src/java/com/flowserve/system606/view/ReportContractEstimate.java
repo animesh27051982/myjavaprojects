@@ -119,6 +119,29 @@ public class ReportContractEstimate implements Serializable {
         return getContractSummaryReport();
     }
 
+    public StreamedContent getRUSummaryReport() throws Exception {
+        try {
+
+            inputStream = RceInput.class.getResourceAsStream("/resources/excel_input_templates/Outputs_Summary_v2.xlsx");
+            outputStream = new FileOutputStream(new File("Outputs_Summary_v2.xlsx"));
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        reportsService.generateRUSummaryReport(inputStream, outputStream, contract);
+
+        InputStream inputStreamFromOutputStream = new FileInputStream(new File("Outputs_Summary_v2.xlsx"));
+        file = new DefaultStreamedContent(inputStreamFromOutputStream, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "Contract Summary RU Level.xlsx");
+        return file;
+    }
+
+    public StreamedContent getRUSummaryReport(Contract contract) throws Exception {
+        this.contract = contract;
+
+        return getRUSummaryReport();
+    }
+
     public StreamedContent getJournalEntryReport(Contract contract) throws Exception {
         this.contract = contract;
 

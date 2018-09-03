@@ -75,6 +75,7 @@ public class WebSession implements Serializable {
         } else {
             for (ReportingUnit ru : reportingUnitService.getPreparableReportingUnits(user)) {
                 if (ru.isParent()) {
+                    preparableReportingUnits.add(ru);
                     preparableReportingUnits.addAll(ru.getChildReportingUnits());
                 } else {
                     preparableReportingUnits.add(ru);
