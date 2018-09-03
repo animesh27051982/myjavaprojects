@@ -14,6 +14,7 @@ public class PerformanceObligationGroup extends TransientMeasurable<String> impl
     private Currency localCurrency;
     private Currency contractCurrency;
     private Company company;
+    private RevenueMethod revenueMethod;
 
     private List<PerformanceObligation> performanceObligations = new ArrayList<PerformanceObligation>();
 
@@ -36,6 +37,15 @@ public class PerformanceObligationGroup extends TransientMeasurable<String> impl
         this.localCurrency = contract.getLocalCurrency();
         this.contractCurrency = contract.getContractCurrency();
         this.company = contract.getReportingUnit().getCompany();
+        this.performanceObligations = pobs;
+    }
+
+    public PerformanceObligationGroup(String id, Contract contract, RevenueMethod revenueMethod, List<PerformanceObligation> pobs) {
+        this.id = id;
+        this.localCurrency = contract.getLocalCurrency();
+        this.contractCurrency = contract.getContractCurrency();
+        this.company = contract.getReportingUnit().getCompany();
+        this.revenueMethod = revenueMethod;
         this.performanceObligations = pobs;
     }
 
@@ -85,6 +95,14 @@ public class PerformanceObligationGroup extends TransientMeasurable<String> impl
 
     public List<PerformanceObligation> getPerformanceObligations() {
         return performanceObligations;
+    }
+
+    public RevenueMethod getRevenueMethod() {
+        return revenueMethod;
+    }
+
+    public void setRevenueMethod(RevenueMethod revenueMethod) {
+        this.revenueMethod = revenueMethod;
     }
 
 }

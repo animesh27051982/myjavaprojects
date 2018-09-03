@@ -7,12 +7,15 @@ package com.flowserve.system606.model;
 
 import java.util.ArrayList;
 import java.util.List;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
@@ -38,7 +41,11 @@ public class ContractJournal {
     @OneToOne
     @JoinColumn(name = "CONTRACT_ID")
     private Contract contract;
+    @OneToOne
+    @JoinColumn(name = "RU_JOURNAL_ID")
+    private ReportingUnitJournal reportingUnitJournal;
 
+    @OneToMany(cascade = {CascadeType.ALL}, fetch = FetchType.LAZY, mappedBy = "contractJournal", orphanRemoval = true)
     private List<JournalEntryHeader> journalEntryHeaders = new ArrayList<JournalEntryHeader>();
 
     public ContractJournal() {
@@ -91,4 +98,13 @@ public class ContractJournal {
     public void setPeriod(FinancialPeriod period) {
         this.period = period;
     }
+
+    public ReportingUnitJournal getReportingUnitJournal() {
+        return reportingUnitJournal;
+    }
+
+    public void setReportingUnitJournal(ReportingUnitJournal reportingUnitJournal) {
+        this.reportingUnitJournal = reportingUnitJournal;
+    }
+
 }

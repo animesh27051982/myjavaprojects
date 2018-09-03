@@ -24,8 +24,8 @@ public class MetricType extends BaseEntity<Long> implements Comparable<MetricTyp
     private static final String DECIMAL_METRIC = "DecimalMetric";
     public static final String CURRENCY_METRIC = "CurrencyMetric";
     public static final String PACKAGE_PREFIX = "com.flowserve.system606.model.";
-    private static final String OWNER_ENTITY_TYPE_CONTRACT = "Contract";
-    private static final String OWNER_ENTITY_TYPE_POB = "POB";
+    public static final String OWNER_ENTITY_TYPE_CONTRACT = "Contract";
+    public static final String OWNER_ENTITY_TYPE_POB = "POB";
     private static final String OWNER_ENTITY_TYPE_ALL = "ALL";
 
     @Id

@@ -40,18 +40,32 @@ public class JournalEntryLine {
     private BigDecimal creditAmount;
     @Column(name = "CURRENCY")
     private Currency currency;
+    @Column(name = "REVENUE_METHOD")
+    private RevenueMethod revenueMethod;
+    @OneToOne
+    @JoinColumn(name = "JE_HEADER_ID")
+    private JournalEntryHeader journalEntryHeader;
 
     public JournalEntryLine() {
     }
 
-    public JournalEntryLine(Account account, BigDecimal debitAmount, BigDecimal creditAmount, Currency currency) {
+    public JournalEntryLine(JournalEntryHeader header, Account account, BigDecimal debitAmount, BigDecimal creditAmount, Currency currency) {
+        this.journalEntryHeader = header;
         this.account = account;
         this.debitAmount = debitAmount;
         this.creditAmount = creditAmount;
         this.currency = currency;
     }
 
-    public JournalEntryLine(Account account, Currency currency) {
+    public JournalEntryLine(JournalEntryHeader header, Account account, Currency currency, RevenueMethod revenueMethod) {
+        this.journalEntryHeader = header;
+        this.account = account;
+        this.currency = currency;
+        this.revenueMethod = revenueMethod;
+    }
+
+    public JournalEntryLine(JournalEntryHeader header, Account account, Currency currency) {
+        this.journalEntryHeader = header;
         this.account = account;
         this.currency = currency;
     }
@@ -94,6 +108,22 @@ public class JournalEntryLine {
 
     public void setAccount(Account account) {
         this.account = account;
+    }
+
+    public RevenueMethod getRevenueMethod() {
+        return revenueMethod;
+    }
+
+    public void setRevenueMethod(RevenueMethod revenueMethod) {
+        this.revenueMethod = revenueMethod;
+    }
+
+    public JournalEntryHeader getJournalEntryHeader() {
+        return journalEntryHeader;
+    }
+
+    public void setJournalEntryHeader(JournalEntryHeader journalEntryHeader) {
+        this.journalEntryHeader = journalEntryHeader;
     }
 
 }

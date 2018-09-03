@@ -10,12 +10,15 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Currency;
 import java.util.List;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
@@ -43,7 +46,12 @@ public class JournalEntryHeader {
     private LocalDate transactionDate;
     @Column(name = "JOURNAL_ENTRY_TYPE")
     private JournalEntryType journalEntryType;
-
+    @Column(name = "REVENUE_METHOD")
+    private RevenueMethod revenueMethod;
+    @OneToOne
+    @JoinColumn(name = "CONTRACT_JOURNAL_ID")
+    private ContractJournal contractJournal;
+    @OneToMany(cascade = {CascadeType.ALL}, fetch = FetchType.LAZY, mappedBy = "journalEntryHeader", orphanRemoval = true)
     private List<JournalEntryLine> journalEntryLines = new ArrayList<JournalEntryLine>();
 
     public JournalEntryHeader() {
@@ -102,5 +110,21 @@ public class JournalEntryHeader {
 
     public void setJournalEntryType(JournalEntryType journalEntryType) {
         this.journalEntryType = journalEntryType;
+    }
+
+    public RevenueMethod getRevenueMethod() {
+        return revenueMethod;
+    }
+
+    public void setRevenueMethod(RevenueMethod revenueMethod) {
+        this.revenueMethod = revenueMethod;
+    }
+
+    public ContractJournal getContractJournal() {
+        return contractJournal;
+    }
+
+    public void setContractJournal(ContractJournal contractJournal) {
+        this.contractJournal = contractJournal;
     }
 }

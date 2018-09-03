@@ -6,7 +6,9 @@
 package com.flowserve.system606.view;
 
 import com.flowserve.system606.model.Contract;
+import com.flowserve.system606.model.ReportingUnit;
 import com.flowserve.system606.service.AdminService;
+import com.flowserve.system606.service.JournalService;
 import com.flowserve.system606.service.ReportsService;
 import com.flowserve.system606.web.WebSession;
 import java.io.File;
@@ -41,6 +43,8 @@ public class ReportContractEstimate implements Serializable {
     ReportsService reportsService;
     @Inject
     private WebSession webSession;
+    @Inject
+    private JournalService journalService;
 
     @PostConstruct
     public void init() {
@@ -79,6 +83,10 @@ public class ReportContractEstimate implements Serializable {
 //        file = new DefaultStreamedContent(inputStreamFromOutputStream, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "Monthly_Income_Statement_Impact.xlsx");
 //        return file;
 //    }
+    public void generateJournal(ReportingUnit reortingUnit) throws Exception {
+        journalService.generateJournal(reortingUnit, webSession.getCurrentPeriod());
+    }
+
     public StreamedContent getFinancialSummaryReport() throws Exception {
         try {
 
