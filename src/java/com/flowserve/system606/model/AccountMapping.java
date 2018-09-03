@@ -35,6 +35,8 @@ public class AccountMapping implements Serializable {
     @OneToOne
     @JoinColumn(name = "ACCOUNT_ID")
     private Account account;
+    @Column(name = "IS_INFORMATIONAL")
+    private boolean informational;
 
     public AccountMapping() {
     }
@@ -77,6 +79,14 @@ public class AccountMapping implements Serializable {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public boolean isInformational() {
+        return informational;
+    }
+
+    public void setInformational(boolean informational) {
+        this.informational = informational;
     }
 
 }
