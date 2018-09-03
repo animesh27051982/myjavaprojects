@@ -61,7 +61,6 @@ public class PobCalculationReview implements Serializable {
             rootTreeNode = viewSupport.generateNodeTree(reportingUnit);
             initContracts();
 
-            Logger.getLogger(PobCalculationReview.class.getName()).log(Level.INFO, "webSession: " + webSession.getFilterText());
             if (webSession.getFilterText() != null) {
                 filterByContractText();
             }
@@ -84,10 +83,8 @@ public class PobCalculationReview implements Serializable {
 
     public void filterByContractText() {
         if (isEmpty(webSession.getFilterText())) {
-            Logger.getLogger(PobCalculationReview.class.getName()).log(Level.INFO, "Not filtering");
             rootTreeNode = viewSupport.generateNodeTree(reportingUnit);
         } else {
-            Logger.getLogger(PobCalculationReview.class.getName()).log(Level.INFO, "filtering...");
             viewSupport.filterNodeTree(rootTreeNode, webSession.getFilterText());
         }
     }

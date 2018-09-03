@@ -34,7 +34,7 @@ public class SubledgerLine implements Serializable {
     private String description;
     @OneToOne
     @JoinColumn(name = "SL_ACCOUNT_ID")
-    private SubledgerAccount subledgerAccount;
+    private Account subledgerAccount;
     @OneToOne
     @JoinColumn(name = "COMPANY_ID")
     private Company company;
@@ -77,11 +77,11 @@ public class SubledgerLine implements Serializable {
         this.description = description;
     }
 
-    public SubledgerAccount getSubledgerAccount() {
+    public Account getSubledgerAccount() {
         return subledgerAccount;
     }
 
-    public void setSubledgerAccount(SubledgerAccount subledgerAccount) {
+    public void setSubledgerAccount(Account subledgerAccount) {
         this.subledgerAccount = subledgerAccount;
     }
 

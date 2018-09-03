@@ -53,9 +53,9 @@ public class CalculateInitialDataSet implements Serializable {
         Logger.getLogger(CalculateInitialDataSet.class.getName()).log(Level.INFO, "Calculating RUs from initial data set...");
 
         for (ReportingUnit reportingUnit : reportingUnitsToProcess) {
-            if (reportingUnit.isParent()) {
-                continue;
-            }
+//            if (reportingUnit.isParent()) {
+//                continue;
+//            }
             try {
                 logger.log(Level.INFO, "Calculating RU: " + reportingUnit.getCode() + " POB Count: " + reportingUnit.getPerformanceObligations().size());
                 calculationService.calculateAndSave(reportingUnit, startPeriod);

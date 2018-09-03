@@ -6,7 +6,7 @@
 package com.flowserve.system606.view;
 
 import com.flowserve.system606.model.SubledgerLine;
-import com.flowserve.system606.service.AccountingService;
+import com.flowserve.system606.service.JournalService;
 import com.flowserve.system606.service.AdminService;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -33,7 +33,7 @@ public class SubledgerLineList implements Serializable{
     @Inject
     private AdminService adminService;
     @Inject
-    private AccountingService accountingService;
+    private JournalService accountingService;
     @PostConstruct
     public void init() 
     {

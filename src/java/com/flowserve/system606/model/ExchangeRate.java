@@ -29,7 +29,7 @@ cache in CurrencyService.java.  Leaving the query cache settings in place for no
 @Entity
 @Table(name = "EXCHANGE_RATES")
 @NamedQueries({
-    @NamedQuery(name = "Currency.findRateByFromToPeriod",
+    @NamedQuery(name = "ExchangeRate.findRateByFromToPeriod",
             query = "SELECT er FROM ExchangeRate er WHERE er.financialPeriod = :PERIOD and er.fromCurrency = :FROM and er.toCurrency = :TO",
             hints = {
                 @QueryHint(name = "eclipselink.query-results-cache", value = "true")
@@ -47,17 +47,17 @@ public class ExchangeRate implements Serializable, Comparable<ExchangeRate> {
     private Long id;
     @Column(name = "TYPE")
     private String type;
-    @Column(name = "FROM_CURRENCY")
+    @Column(name = "FROM_CURRENCY", nullable = false)
     private Currency fromCurrency;
-    @Column(name = "TO_CURRENCY")
+    @Column(name = "TO_CURRENCY", nullable = false)
     private Currency toCurrency;
-    @JoinColumn(name = "PERIOD_ID")
+    @JoinColumn(name = "PERIOD_ID", nullable = false)
     private FinancialPeriod financialPeriod;
-    @Column(name = "PERIOD_END_RATE", precision = 38, scale = 14)
+    @Column(name = "PERIOD_END_RATE", precision = 38, scale = 14, nullable = false)
     private BigDecimal periodEndRate;
-    @Column(name = "MONTHLY_AVG_RATE", precision = 38, scale = 14)
+    @Column(name = "MONTHLY_AVG_RATE", precision = 38, scale = 14, nullable = false)
     private BigDecimal monthlyAverageRate;
-    @Column(name = "YTD_AVG_RATE", precision = 38, scale = 14)
+    @Column(name = "YTD_AVG_RATE", precision = 38, scale = 14, nullable = false)
     private BigDecimal ytdAverageRate;
 
     public ExchangeRate() {

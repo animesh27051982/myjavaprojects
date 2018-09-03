@@ -45,6 +45,11 @@ public class MetricService {
         return (List<MetricType>) query.getResultList();
     }
 
+    public List<MetricType> findActiveCurrencyMetricTypesWithAccount() {
+        Query query = em.createQuery("SELECT it FROM MetricType it WHERE it.active = TRUE AND it.inputClass = 'CurrencyType' AND it.account IS NOT NULL");
+        return (List<MetricType>) query.getResultList();
+    }
+
     private List<MetricType> findActiveMetricTypesByOwnerEntityType(String ownerEntityType) {
         Query query = em.createQuery("SELECT it FROM MetricType it WHERE (it.ownerEntityType = :OET OR it.ownerEntityType = 'ALL') AND it.active = TRUE");
         query.setParameter("OET", ownerEntityType);
@@ -130,8 +135,7 @@ public class MetricService {
             metricType.setGroupPosition(Integer.parseInt(values[count++]));
             metricType.setEffectiveFrom(LocalDate.now());
             metricType.setActive(true);
-            metricType.setCreditAccount(adminService.findSubledgerAccountById(values[count++]));
-            metricType.setDebitAccount(adminService.findSubledgerAccountById(values[count++]));
+            //metricType.setAccount(adminService.findAccountById(values[count++]));
             logger.info("Creating MetricType: " + metricType.getName());
             adminService.persist(metricType);
         }

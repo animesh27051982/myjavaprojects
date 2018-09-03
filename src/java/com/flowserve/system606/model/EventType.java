@@ -70,11 +70,11 @@ public class EventType extends BaseEntity<Long> implements Comparable<EventType>
 
     @OneToOne
     @JoinColumn(name = "SL_ACCT_CR_ID")
-    private SubledgerAccount creditAccount;
+    private Account creditAccount;
 
     @OneToOne
     @JoinColumn(name = "SL_ACCT_DR_ID")
-    private SubledgerAccount debitAccount;
+    private Account debitAccount;
 
     public EventType() {
     }
@@ -233,19 +233,19 @@ public class EventType extends BaseEntity<Long> implements Comparable<EventType>
         this.code = code;
     }
 
-    public SubledgerAccount getCreditAccount() {
+    public Account getCreditAccount() {
         return creditAccount;
     }
 
-    public void setCreditAccount(SubledgerAccount creditAccount) {
+    public void setCreditAccount(Account creditAccount) {
         this.creditAccount = creditAccount;
     }
 
-    public SubledgerAccount getDebitAccount() {
+    public Account getDebitAccount() {
         return debitAccount;
     }
 
-    public void setDebitAccount(SubledgerAccount debitAccount) {
+    public void setDebitAccount(Account debitAccount) {
         this.debitAccount = debitAccount;
     }
 

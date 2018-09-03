@@ -46,6 +46,7 @@ import javax.faces.context.FacesContext;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
+import org.primefaces.event.NodeCollapseEvent;
 import org.primefaces.event.NodeExpandEvent;
 import org.primefaces.model.DefaultTreeNode;
 import org.primefaces.model.TreeNode;
@@ -194,7 +195,7 @@ public class ViewSupport implements Serializable {
             reportingUnitNode.setExpanded(true);
             for (Contract contract : reportingUnit.getContracts()) {
                 TreeNode contractNode = new DefaultTreeNode(contract, reportingUnitNode);
-                contractNode.setExpanded(contract.isNodeExpanded());
+                contractNode.setExpanded(webSession.getExpandedContractIds().contains(contract.getId()));
                 for (PerformanceObligation pob : contract.getPerformanceObligations()) {
                     new DefaultTreeNode(pob, contractNode);
                 }
@@ -204,10 +205,32 @@ public class ViewSupport implements Serializable {
         return root;
     }
 
+    public TreeNode generateNodeTreeForBilling(ReportingUnit reportingUnit, FinancialPeriod period) {
+        TreeNode root = new DefaultTreeNode(new BusinessUnit(), null);
+        EventType billingEventType = eventService.getEventTypeByCode("BILLING_EVENT_CC");
+
+        TreeNode reportingUnitNode = new DefaultTreeNode(reportingUnit, root);
+        reportingUnitNode.setExpanded(true);
+        for (Contract contract : reportingUnit.getContracts()) {
+            TreeNode contractNode = new DefaultTreeNode(contract, reportingUnitNode);
+            contractNode.setExpanded(webSession.getExpandedContractIds().contains(contract.getId()));
+            for (Event billingEvent : calculationService.getAllEventsByPeriodAndEventType(contract, billingEventType, period)) {
+                new DefaultTreeNode(billingEvent, contractNode);
+            }
+        }
+
+        return root;
+    }
+
     public void onNodeExpand(NodeExpandEvent event) {
         if (event.getTreeNode().getData() instanceof Contract) {
-            Logger.getLogger(ViewSupport.class.getName()).log(Level.INFO, "setNodeExpanded");
-            ((Contract) event.getTreeNode().getData()).setNodeExpanded(true);
+            webSession.getExpandedContractIds().add(((Contract) event.getTreeNode().getData()).getId());
+        }
+    }
+
+    public void onNodeCollapse(NodeCollapseEvent event) {
+        if (event.getTreeNode().getData() instanceof Contract) {
+            webSession.getExpandedContractIds().remove(((Contract) event.getTreeNode().getData()).getId());
         }
     }
 
@@ -217,31 +240,6 @@ public class ViewSupport implements Serializable {
 
     public LocalDate getCurrentPeriodMaxDate() {
         return webSession.getCurrentPeriod().getEndDate();
-    }
-
-//    public TreeNode generateNodeTreeForBilling(ReportingUnit reportingUnit) {
-//        List<ReportingUnit> rus = new ArrayList<ReportingUnit>();
-//        rus.add(reportingUnit);
-//        return generateNodeTreeForBilling(rus);
-//    }
-    public TreeNode generateNodeTreeForBilling(ReportingUnit reportingUnit, FinancialPeriod period) {
-        TreeNode root = new DefaultTreeNode(new BusinessUnit(), null);
-        EventType billingEventType = eventService.getEventTypeByCode("BILLING_EVENT_CC");
-
-        TreeNode reportingUnitNode = new DefaultTreeNode(reportingUnit, root);
-        reportingUnitNode.setExpanded(true);
-        for (Contract contract : reportingUnit.getContracts()) {
-            TreeNode contractNode = new DefaultTreeNode(contract, reportingUnitNode);
-            contractNode.setExpanded(false);
-            if (contract.isNodeExpanded()) {
-                contractNode.setExpanded(true);
-            }
-            for (Event billingEvent : calculationService.getAllEventsByPeriodAndEventType(contract, billingEventType, period)) {
-                new DefaultTreeNode(billingEvent, contractNode);
-            }
-        }
-
-        return root;
     }
 
     public List<Event> getAllBillingEvents(Contract contract) {

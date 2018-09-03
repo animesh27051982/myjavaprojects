@@ -5,6 +5,8 @@
  */
 package com.flowserve.system606.service;
 
+import com.flowserve.system606.model.Account;
+import com.flowserve.system606.model.AccountType;
 import com.flowserve.system606.model.ApprovalRequest;
 import com.flowserve.system606.model.BusinessRule;
 import com.flowserve.system606.model.BusinessUnit;
@@ -18,7 +20,6 @@ import com.flowserve.system606.model.FinancialPeriod;
 import com.flowserve.system606.model.Holiday;
 import com.flowserve.system606.model.MetricType;
 import com.flowserve.system606.model.ReportingUnit;
-import com.flowserve.system606.model.SubledgerAccount;
 import com.flowserve.system606.model.SubledgerLine;
 import com.flowserve.system606.model.User;
 import com.flowserve.system606.model.WorkflowStatus;
@@ -188,34 +189,10 @@ public class AdminService {
         return null;
     }
 
-//    public SubledgerAccount findSubledgerAccountByCode(String code) {
-//        Query query = em.createQuery("SELECT s FROM SubledgerAccount s WHERE (s.code)=:code ");
-//        query.setParameter("code", code);
-//        List<SubledgerAccount> list = query.getResultList();
-//        if (list.size() > 0) {
-//            return list.get(0);
-//        }
-//        return null;
-//    }
-    public SubledgerAccount findSubledgerAccountById(String id) {
-        return em.find(SubledgerAccount.class, id);
+    public Account findAccountById(String id) {
+        return em.find(Account.class, id);
     }
 
-//    public List<BillingEvent> findBillingEvents() {
-//        Query query = em.createQuery("SELECT b FROM BillingEvent b");
-//        return (List<BillingEvent>) query.getResultList();
-//    }
-//    public List<CurrencyEvent> findBillingEventsByContract(Contract contract) {
-//        Query query = em.createQuery("SELECT b FROM BillingEvent b WHERE b.contract = :CNT");
-//        query.setParameter("CNT", contract);
-//        return (List<CurrencyEvent>) query.getResultList();
-//    }
-//    public List<CurrencyEvent> findBillingEventsByInvoiceInContract(String invoice, Contract contract) {
-//        Query query = em.createQuery("SELECT b FROM BillingEvent b WHERE b.contract = :CNT AND b.invoiceNumber = :INVOICE");
-//        query.setParameter("CNT", contract);
-//        query.setParameter("INVOICE", invoice);
-//        return (List<CurrencyEvent>) query.getResultList();
-//    }
     public List<SubledgerLine> findSubledgerLines() {
         TypedQuery<SubledgerLine> query = em.createQuery("SELECT s FROM SubledgerLine s", SubledgerLine.class);
         return (List<SubledgerLine>) query.getResultList();
@@ -441,9 +418,10 @@ public class AdminService {
             ad.setLocale("en_US");
             ad.setTitle("Full Admin Access");
             persist(ad);
-        } else {
-            ad = findUserByFlsId("EVet").get(0);//admin.get(0);
         }
+
+        //ad = findUserByFlsId("EVet").get(0);//admin.get(0);
+        ad = findUserByFlsId("rcs_admin").get(0);//admin.get(0);
 
         if (findUserByFlsId("aloeffler").isEmpty()) {
             BufferedReader reader = new BufferedReader(new InputStreamReader(AppInitializeService.class.getResourceAsStream("/resources/app_data_init_files/fls_user_init.txt"), "UTF-8"));
@@ -691,7 +669,7 @@ public class AdminService {
 //     initMetricTypeAccounts();
 //     initSubledgerAccountFromTxt();
 //    }
-    public void initSubledgerAccount() throws Exception {
+    public void initAccounts() throws Exception {
         logger.info("Initializing SubLedgerAccounts");
         BufferedReader reader = new BufferedReader(new InputStreamReader(AppInitializeService.class.getResourceAsStream("/resources/app_data_init_files/init_sl_accounts.txt"), "UTF-8"));
         //  BufferedReader reader2 = new BufferedReader(new InputStreamReader(AppInitializeService.class.getResourceAsStream("/resources/app_data_init_files/init_sl_accounts.txt"), "UTF-8"));
@@ -705,15 +683,15 @@ public class AdminService {
 
             count = 0;
             String[] values = line.split("\\|");
-            if (findSubledgerAccountById(values[count]) == null) {
+            if (findAccountById(values[count]) == null) {
                 if ("null".equals(values[5].trim())) {
-                    SubledgerAccount ledger = new SubledgerAccount();
+                    Account ledger = new Account();
                     ledger.setId(values[count++]);
-                    ledger.setAccountType(values[count++]);
+                    ledger.setAccountType(AccountType.valueOf(values[count++]));
                     ledger.setDescription(values[count++]);
                     ledger.setName(values[count++]);
                     ledger.setCompany(findCompanyById(values[count++]));
-                    ledger.setOffsetAccount(findSubledgerAccountById(values[count++]));
+                    ledger.setOffsetAccount(findAccountById(values[count++]));
                     persist(ledger);
                 }
             }
@@ -729,15 +707,15 @@ public class AdminService {
 
             count2 = 0;
             String[] values = line2.split("\\|");
-            if (findSubledgerAccountById(values[count2]) == null) {
+            if (findAccountById(values[count2]) == null) {
                 if (!"null".equals(values[5].trim())) {
-                    SubledgerAccount ledger = new SubledgerAccount();
+                    Account ledger = new Account();
                     ledger.setId(values[count2++]);
-                    ledger.setAccountType(values[count2++]);
+                    ledger.setAccountType(AccountType.valueOf(values[count2++]));
                     ledger.setDescription(values[count2++]);
                     ledger.setName(values[count2++]);
                     ledger.setCompany(findCompanyById(values[count2++]));
-                    ledger.setOffsetAccount(findSubledgerAccountById(values[count2++]));
+                    ledger.setOffsetAccount(findAccountById(values[count2++]));
                     persist(ledger);
                 }
             }

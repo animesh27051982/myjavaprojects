@@ -200,7 +200,7 @@ public class CurrencyService {
 
     public ExchangeRate findRateByFromToPeriod(Currency fromCurrency, Currency toCurrency, FinancialPeriod period) throws Exception {
         // Using NamedQuery for performance.
-        Query query = em.createNamedQuery("Currency.findRateByFromToPeriod");
+        Query query = em.createNamedQuery("ExchangeRate.findRateByFromToPeriod");
         //query.setHint("eclipselink.QUERY_RESULTS_CACHE", "TRUE");
         query.setParameter("PERIOD", period);
         query.setParameter("FROM", fromCurrency);
@@ -237,6 +237,7 @@ public class CurrencyService {
             String cacheKey = period.getId() + fromCurrency.getCurrencyCode() + toCurrency.getCurrencyCode();
             exchangeRate = exchangeRateCache.get(cacheKey);
             if (exchangeRate == null) {
+                Logger.getLogger(CurrencyService.class.getName()).log(Level.INFO, "from: " + fromCurrency.getCurrencyCode() + " to: " + toCurrency.getCurrencyCode() + " period: " + period.getId());
                 exchangeRate = findRateByFromToPeriod(fromCurrency, toCurrency, period);
                 exchangeRateCache.put(cacheKey, exchangeRate);
             }

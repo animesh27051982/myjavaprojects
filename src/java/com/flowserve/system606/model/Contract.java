@@ -30,7 +30,6 @@ import javax.persistence.OrderBy;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import static javax.persistence.TemporalType.TIMESTAMP;
-import javax.persistence.Transient;
 
 @Entity
 @Table(name = "CONTRACTS")
@@ -81,14 +80,14 @@ public class Contract extends BaseEntity<Long> implements MetricStore, EventStor
     private LocalDateTime lastUpdateDate;
     @Column(name = "IS_ACTIVE")
     private boolean active;
-    @Transient
-    private boolean nodeExpanded;
     @OneToOne
     @JoinColumn(name = "SALES_DESTINATION_COUNTRY_ID")
     private Country salesDestinationCountry;
+
     @OneToMany(fetch = FetchType.LAZY, cascade = {CascadeType.ALL}, mappedBy = "contract")
     @OrderBy("id ASC")
     private List<PerformanceObligation> performanceObligations = new ArrayList<PerformanceObligation>();
+
     @OneToMany(fetch = FetchType.LAZY, cascade = {CascadeType.ALL}, orphanRemoval = true)
     @JoinTable(name = "CONTRACT_METRIC_SET", joinColumns = @JoinColumn(name = "CONTRACT_ID"), inverseJoinColumns = @JoinColumn(name = "METRIC_SET_ID"))
     @MapKeyJoinColumn(name = "PERIOD_ID")
@@ -99,8 +98,6 @@ public class Contract extends BaseEntity<Long> implements MetricStore, EventStor
     @MapKeyJoinColumn(name = "PERIOD_ID")
     private Map<FinancialPeriod, EventList> periodEventListMap = new HashMap<FinancialPeriod, EventList>();
 
-//    @OneToMany(fetch = FetchType.LAZY, mappedBy = "contract", orphanRemoval = true)
-//    private List<BillingEvent> billingEvents = new ArrayList<BillingEvent>();
     @OneToMany(fetch = FetchType.LAZY, cascade = {CascadeType.ALL}, orphanRemoval = true)
     @JoinTable(name = "CONTRACT_APPROVAL_REQUEST", joinColumns = @JoinColumn(name = "CONTRACT_ID"), inverseJoinColumns = @JoinColumn(name = "APPROVAL_REQUEST_ID"))
     @MapKeyJoinColumn(name = "PERIOD_ID")
@@ -114,24 +111,6 @@ public class Contract extends BaseEntity<Long> implements MetricStore, EventStor
         return this.id.compareTo(obj.getId());
     }
 
-//    public BigDecimal getTotalBillingsLocalCurrency() {
-//        BigDecimal localCur = BigDecimal.ZERO;
-//        for (BillingEvent be : billingEvents) {
-//            if (be.getAmountLocalCurrency() != null && be.getAmountLocalCurrency().compareTo(BigDecimal.ZERO) != 0) {
-//                localCur = localCur.add(be.getAmountLocalCurrency());
-//            }
-//        }
-//        return localCur;
-//    }
-//    public BigDecimal getTotalBillingsContractCurrency() {
-//        BigDecimal contractCur = BigDecimal.ZERO;
-//        for (BillingEvent be : billingEvents) {
-//            if (be.getAmountContractCurrency() != null && be.getAmountContractCurrency().compareTo(BigDecimal.ZERO) != 0) {
-//                contractCur = contractCur.add(be.getAmountContractCurrency());
-//            }
-//        }
-//        return contractCur;
-//    }
     public List<PerformanceObligation> getPobsByRevenueMethod(RevenueMethod revenueMethod) {
         List<PerformanceObligation> pobs = new ArrayList<PerformanceObligation>();
 
@@ -414,16 +393,5 @@ public class Contract extends BaseEntity<Long> implements MetricStore, EventStor
 
     public void setLongDescription(String longDescription) {
         this.longDescription = longDescription;
-    }
-
-//    public EventList getPeriodEvents(FinancialPeriod period) {
-//        return periodEventListMap.get(period);
-//    }
-    public boolean isNodeExpanded() {
-        return nodeExpanded;
-    }
-
-    public void setNodeExpanded(boolean nodeExpanded) {
-        this.nodeExpanded = nodeExpanded;
     }
 }

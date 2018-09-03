@@ -167,7 +167,7 @@ public class InputOnlineEntry implements Serializable {
         billingEvent.setContract(contract);
         billingEvent = (CurrencyEvent) eventService.update(billingEvent);
         billingEvent.setName("BillingEvent " + billingEvent.getId());
-        contract.setNodeExpanded(true);
+        webSession.getExpandedContractIds().add(contract.getId());
         calculationService.addEvent(contract, webSession.getCurrentPeriod(), billingEvent);
         contractService.update(contract);
 
@@ -180,7 +180,6 @@ public class InputOnlineEntry implements Serializable {
 
     public void removeBillingEvent(CurrencyEvent billingEvent) throws Exception {
         Contract contract = billingEvent.getContract();
-        contract.setNodeExpanded(true);
         calculationService.removeEvent(contract, webSession.getCurrentPeriod(), billingEvent);
         billingTreeNode = viewSupport.generateNodeTreeForBilling(reportingUnit, webSession.getCurrentPeriod());
     }
@@ -260,9 +259,6 @@ public class InputOnlineEntry implements Serializable {
         }
     }
 
-//    public boolean isUpdatable() {
-//        return reportingUnitService.isUpdatable(reportingUnit, webSession.getCurrentPeriod(), webSession.getUser());
-//    }
     public void cancelEdits() throws Exception {
         Logger.getLogger(InputOnlineEntry.class.getName()).log(Level.FINE, "Current edits canceled.");
         FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Current edits canceled.", ""));

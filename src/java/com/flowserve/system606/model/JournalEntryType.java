@@ -5,11 +5,9 @@
  */
 package com.flowserve.system606.model;
 
-import java.io.Serializable;
-import javax.persistence.Table;
-
-//@Entity
-@Table(name = "JOURNAL_ENTRIES")
-public class JournalEntry implements Serializable {
-
+/**
+ * @author kgraves
+ */
+public enum JournalEntryType {
+    NORMAL, REVERSE;
 }

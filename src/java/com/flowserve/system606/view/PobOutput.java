@@ -5,7 +5,7 @@
  */
 package com.flowserve.system606.view;
 
-import com.flowserve.system606.service.ReportsService;
+import com.flowserve.system606.service.DataExtractionService;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -29,7 +29,7 @@ import org.primefaces.model.StreamedContent;
 public class PobOutput implements Serializable {
 
     @Inject
-    ReportsService reportsService;
+    private DataExtractionService dataExtractionService;
     private static Logger logger = Logger.getLogger("com.flowserve.system606");
     public static final String PREFIX = "msaccess";
     public static final String SUFFIX = ".accdb";
@@ -44,8 +44,8 @@ public class PobOutput implements Serializable {
         File accessFile = stream2file(inputStream);
         String fileName = accessFile.getAbsolutePath();
 
-        reportsService.generateContractPobStructural(fileName);
-        reportsService.generatePobOutput(fileName);
+        dataExtractionService.generateContractPobStructural(fileName);
+        dataExtractionService.generatePobOutput(fileName);
 
         InputStream inputStreamFromOutputStream = new FileInputStream(accessFile);
         file = new DefaultStreamedContent(inputStreamFromOutputStream, "accdb", "POB_Output.accdb");

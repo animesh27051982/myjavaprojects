@@ -96,7 +96,7 @@ public class ReportContractEstimate implements Serializable {
         return file;
     }
 
-    public StreamedContent getCombineReport() throws Exception {
+    public StreamedContent getContractSummaryReport() throws Exception {
         try {
 
             inputStream = RceInput.class.getResourceAsStream("/resources/excel_input_templates/Outputs_Summary_v2.xlsx");
@@ -106,17 +106,17 @@ public class ReportContractEstimate implements Serializable {
             e.printStackTrace();
         }
 
-        reportsService.generateCombineReport(inputStream, outputStream, contract);
+        reportsService.generateContractSummaryReport(inputStream, outputStream, contract);
 
         InputStream inputStreamFromOutputStream = new FileInputStream(new File("Outputs_Summary_v2.xlsx"));
         file = new DefaultStreamedContent(inputStreamFromOutputStream, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "Combine Contract Report.xlsx");
         return file;
     }
 
-    public StreamedContent getCombineReport(Contract contract) throws Exception {
+    public StreamedContent getContractSummaryReport(Contract contract) throws Exception {
         this.contract = contract;
 
-        return getCombineReport();
+        return getContractSummaryReport();
     }
 
     public StreamedContent getJournalEntryReport(Contract contract) throws Exception {

@@ -15,6 +15,7 @@ import com.flowserve.system606.service.FinancialPeriodService;
 import com.flowserve.system606.service.ReportingUnitService;
 import java.io.Serializable;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.TreeSet;
 import javax.annotation.PostConstruct;
@@ -51,6 +52,7 @@ public class WebSession implements Serializable {
     private ReportingUnit currentReportingUnit;
     private MetricType metricType;
     private Set<ReportingUnit> preparableReportingUnits = new TreeSet<ReportingUnit>();
+    private Set<Long> expandedContractIds = new HashSet<Long>();
 
     // The currently logged in user.
     private User user;
@@ -59,7 +61,10 @@ public class WebSession implements Serializable {
     public void init() {
         currentPeriod = financialPeriodService.getCurrentFinancialPeriod();
         priorPeriod = financialPeriodService.getPriorFinancialPeriod();
-        user = appInitializeService.getAdminUser();  // For now, may be overridden later by login.  Remove this call.
+
+        if (user == null) {
+            user = appInitializeService.getAdminUser();
+        }
 
         preparableReportingUnits = new TreeSet<ReportingUnit>();
 
@@ -233,6 +238,10 @@ public class WebSession implements Serializable {
 
     public void setEditFinancialPeriodId(String editFinancialPeriodId) {
         this.editFinancialPeriodId = editFinancialPeriodId;
+    }
+
+    public Set<Long> getExpandedContractIds() {
+        return expandedContractIds;
     }
 
 }

@@ -14,8 +14,8 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "SL_ACCOUNTS")
-public class SubledgerAccount implements Serializable {
+@Table(name = "ACCOUNTS")
+public class Account implements Serializable {
 
     @Id
     private String id;
@@ -24,13 +24,24 @@ public class SubledgerAccount implements Serializable {
     @Column(name = "ACCT_DESC")
     private String description;
     @Column(name = "ACCT_TYPE")
-    private String accountType;
+    private AccountType accountType;
     @OneToOne
     @JoinColumn(name = "COMPANY_ID")
     private Company company;
     @OneToOne
-    @JoinColumn(name = "SL_ACCT_OFFSET_ID")
-    private SubledgerAccount offsetAccount;
+    @JoinColumn(name = "OFFSET_ACCOUNT_ID")
+    private Account offsetAccount;
+
+    public Account() {
+    }
+
+    public boolean isDebitAccount() {
+        return accountType == AccountType.DEBIT;
+    }
+
+    public boolean isCreditAccount() {
+        return accountType == AccountType.CREDIT;
+    }
 
     public String getId() {
         return id;
@@ -56,11 +67,11 @@ public class SubledgerAccount implements Serializable {
         this.description = description;
     }
 
-    public String getAccountType() {
+    public AccountType getAccountType() {
         return accountType;
     }
 
-    public void setAccountType(String accountType) {
+    public void setAccountType(AccountType accountType) {
         this.accountType = accountType;
     }
 
@@ -72,11 +83,11 @@ public class SubledgerAccount implements Serializable {
         this.company = company;
     }
 
-    public SubledgerAccount getOffsetAccount() {
+    public Account getOffsetAccount() {
         return offsetAccount;
     }
 
-    public void setOffsetAccount(SubledgerAccount offsetAccount) {
+    public void setOffsetAccount(Account offsetAccount) {
         this.offsetAccount = offsetAccount;
     }
 

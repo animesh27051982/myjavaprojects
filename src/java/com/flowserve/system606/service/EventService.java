@@ -109,8 +109,8 @@ public class EventService {
             eventType.setGroupPosition(Integer.parseInt(values[count++]));
             eventType.setEffectiveFrom(LocalDate.now());
             eventType.setActive(true);
-            eventType.setCreditAccount(adminService.findSubledgerAccountById(values[count++]));
-            eventType.setDebitAccount(adminService.findSubledgerAccountById(values[count++]));
+            eventType.setCreditAccount(adminService.findAccountById(values[count++]));
+            eventType.setDebitAccount(adminService.findAccountById(values[count++]));
             logger.info("Creating EventType: " + eventType.getName());
             adminService.persist(eventType);
         }

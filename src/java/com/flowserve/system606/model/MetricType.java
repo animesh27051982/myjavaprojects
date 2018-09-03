@@ -22,7 +22,7 @@ public class MetricType extends BaseEntity<Long> implements Comparable<MetricTyp
 
     private static final long serialVersionUID = -8382719960002472187L;
     private static final String DECIMAL_METRIC = "DecimalMetric";
-    private static final String CURRENCY_METRIC = "CurrencyMetric";
+    public static final String CURRENCY_METRIC = "CurrencyMetric";
     public static final String PACKAGE_PREFIX = "com.flowserve.system606.model.";
     private static final String OWNER_ENTITY_TYPE_CONTRACT = "Contract";
     private static final String OWNER_ENTITY_TYPE_POB = "POB";
@@ -68,14 +68,9 @@ public class MetricType extends BaseEntity<Long> implements Comparable<MetricTyp
     private boolean required;   // maybe redundant
     @Column(name = "IS_CONVERTIBLE")
     private boolean convertible;   // maybe redundant
-
     @OneToOne
-    @JoinColumn(name = "SL_ACCT_CR_ID")
-    private SubledgerAccount creditAccount;
-
-    @OneToOne
-    @JoinColumn(name = "SL_ACCT_DR_ID")
-    private SubledgerAccount debitAccount;
+    @JoinColumn(name = "ACCOUNT_ID")
+    private Account account;
 
     public MetricType() {
     }
@@ -238,28 +233,20 @@ public class MetricType extends BaseEntity<Long> implements Comparable<MetricTyp
         this.code = code;
     }
 
-    public SubledgerAccount getCreditAccount() {
-        return creditAccount;
-    }
-
-    public void setCreditAccount(SubledgerAccount creditAccount) {
-        this.creditAccount = creditAccount;
-    }
-
-    public SubledgerAccount getDebitAccount() {
-        return debitAccount;
-    }
-
-    public void setDebitAccount(SubledgerAccount debitAccount) {
-        this.debitAccount = debitAccount;
-    }
-
     public boolean isConvertible() {
         return convertible;
     }
 
     public void setConvertible(boolean convertible) {
         this.convertible = convertible;
+    }
+
+    public Account getAccount() {
+        return account;
+    }
+
+    public void setAccount(Account account) {
+        this.account = account;
     }
 
 }

@@ -15,6 +15,11 @@
             <span class="mega-menu-title" style="font-size: 20px;">Revenue Compliance System v0.08311</span>
         </a>
 
+        <a id="sidebar-profile-button" href="#" style="float: right; color: #ffffff; display: block; vertical-align: middle; padding: 10px 10px; text-align: center;">
+            <span class="sidebar-profile-name" style="display: inline-block; font-weight: 700; color: #ffffff;">#{webSession.getUsername()}</span>
+            <span class="sidebar-profile-role" style="display: block; color: #ffffff;">#{webSession.getUserTitle()}</span>
+        </a>
+
         <ui:fragment rendered="#{guestPreferences.profileMode == 'topbar'}">
             <a id="topbar-menu-button" href="#">
                 <p:graphicImage name="images/avatar.png" library="california-layout" />

@@ -84,6 +84,9 @@
                                 <p:tab title="Revenue">
                                     <p:treeTable tableStyle="width:auto" value="#{pobCalculationReview.rootTreeNode}" var="pob" selectionMode="single" selection="#{pobCalculationReview.selectedNode}">
 
+                                        <p:ajax event="expand" listener="#{viewSupport.onNodeExpand}"/>
+                                        <p:ajax event="collapse" listener="#{viewSupport.onNodeCollapse}"/>
+
                                         <p:columnGroup type="header">
                                             <p:row>
                                                 <p:column colspan="1" headerText="" />
@@ -284,6 +287,10 @@
 
                                 <p:tab title="Liquidated Damages">
                                     <p:treeTable tableStyle="width:auto" value="#{pobCalculationReview.rootTreeNode}" var="pob" selectionMode="single" selection="#{pobCalculationReview.selectedNode}">
+
+                                        <p:ajax event="expand" listener="#{viewSupport.onNodeExpand}"/>
+                                        <p:ajax event="collapse" listener="#{viewSupport.onNodeCollapse}"/>
+
                                         <p:columnGroup type="header">
                                             <p:row>
                                                 <p:column style="width: 300px; text-overflow: ellipsis;" colspan="1" headerText="" />
@@ -419,6 +426,9 @@
                                 <p:tab title="Backlog">
 
                                     <p:treeTable tableStyle="width:auto" value="#{pobCalculationReview.rootTreeNode}" var="pob" selectionMode="single" selection="#{pobCalculationReview.selectedNode}">
+
+                                        <p:ajax event="expand" listener="#{viewSupport.onNodeExpand}"/>
+                                        <p:ajax event="collapse" listener="#{viewSupport.onNodeCollapse}"/>
 
                                         <p:columnGroup type="header">
                                             <p:row>
@@ -638,6 +648,9 @@
                                 <p:tab title="Overview">
                                     <p:treeTable tableStyle="width:auto" value="#{pobCalculationReview.rootTreeNode}" var="pob" selectionMode="single" selection="#{pobCalculationReview.selectedNode}">
 
+                                        <p:ajax event="expand" listener="#{viewSupport.onNodeExpand}"/>
+                                        <p:ajax event="collapse" listener="#{viewSupport.onNodeCollapse}"/>
+
                                         <p:columnGroup type="header">
                                             <p:row>
                                                 <p:column style="width: 300px; text-overflow: ellipsis;" colspan="1" headerText="" />
@@ -740,9 +753,9 @@
 
                                 <p:tab title="Reports">
                                     <p:treeTable tableStyle="width:auto" value="#{pobCalculationReview.rootTreeNode}" var="pob" selectionMode="single" selection="#{pobCalculationReview.selectedNode}">
-                                        <f:facet name="header">
-                                            Performance Obligations
-                                        </f:facet>
+
+                                        <p:ajax event="expand" listener="#{viewSupport.onNodeExpand}"/>
+                                        <p:ajax event="collapse" listener="#{viewSupport.onNodeCollapse}"/>
 
                                         <p:column headerText="Reporting Unit - Contract - POB" sortBy="#{pob.name}">
                                             <h:outputText value="#{pob.name}" title="#{pob.description}"/>
@@ -750,11 +763,21 @@
 
                                         <p:column style="white-space:pre-line;" id="f1">
                                             <f:facet name="header">
-                                                <h:outputText value="Contract Estimate" />
-                                                <p:tooltip value="Contract Estimate" for="f1" position="top" showEffect="slide" hideEffect="explode" />
+                                                <h:outputText value="Contract Summary Contract Level" />
+                                                <p:tooltip value="Contract Summary Contract Level" for="f1" position="top" showEffect="slide" hideEffect="explode" />
                                             </f:facet>
                                             <p:commandButton value="Download" ajax="false" style="width:auto; font-size: 70%;" icon="ui-icon-arrowthick-1-s" rendered="#{of:isInstance('com.flowserve.system606.model.Contract', pob)}">
-                                                <p:fileDownload value="#{reportContractEstimate.getCombineReport(pob)}" />
+                                                <p:fileDownload value="#{reportContractEstimate.getContractSummaryReport(pob)}" />
+                                            </p:commandButton>
+                                        </p:column>
+
+                                        <p:column style="white-space:pre-line;" id="f12">
+                                            <f:facet name="header">
+                                                <h:outputText value="Contract Summary RU Level" />
+                                                <p:tooltip value="Contract Summary RU Level" for="f12" position="top" showEffect="slide" hideEffect="explode" />
+                                            </f:facet>
+                                            <p:commandButton value="Download" ajax="false" style="width:auto; font-size: 70%;" icon="ui-icon-arrowthick-1-s" rendered="#{of:isInstance('com.flowserve.system606.model.Contract', pob)}">
+                                                <p:fileDownload value="#{reportContractEstimate.getContractSummaryReport(pob)}" />
                                             </p:commandButton>
                                         </p:column>
 

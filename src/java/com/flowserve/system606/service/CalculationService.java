@@ -208,10 +208,10 @@ public class CalculationService {
 
     public void calculateAndSave(ReportingUnit reportingUnit, FinancialPeriod period) throws Exception {
 
-        if (reportingUnit.isParent()) {
-            Logger.getLogger(CalculationService.class.getName()).log(Level.INFO, "RU is parent, skipping calcs: " + reportingUnit.getCode());
-            return;
-        }
+//        if (reportingUnit.isParent()) {
+//            Logger.getLogger(CalculationService.class.getName()).log(Level.INFO, "RU is parent, skipping calcs: " + reportingUnit.getCode());
+//            return;
+//        }
         Logger.getLogger(CalculationService.class.getName()).log(Level.INFO, "Calculating RU: " + reportingUnit.getCode() + "...");
 
         FinancialPeriod calculationPeriod = period;
