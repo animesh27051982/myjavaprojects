@@ -49,6 +49,9 @@ public class PerformanceObligationGroup extends TransientMeasurable<String> impl
         this.performanceObligations = pobs;
     }
 
+    public PerformanceObligationGroup() {
+    }
+
     public String getId() {
         return id;
     }

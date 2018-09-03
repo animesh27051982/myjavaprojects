@@ -53,6 +53,7 @@ public class AppInitializeService {
             adminService.initAccounts();
             //adminService.initBilings();
             metricService.initMetricTypes();
+            adminService.initAccountsMapping();
             eventService.initEventTypes();
             adminService.initCountries();
             adminService.initBusinessUnit();
