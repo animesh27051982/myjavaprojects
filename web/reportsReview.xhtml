@@ -1,0 +1,134 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:of="http://omnifaces.org/functions"
+                template="/WEB-INF/template.xhtml">
+
+    <ui:define name="head">
+        <style type="text/css">
+
+        </style>
+    </ui:define>
+
+    <ui:define name="title">Reports Review</ui:define>
+
+    <ui:define name="viewname">Reports Review</ui:define>
+
+    <ui:define name="content">
+        <div style="min-height: calc(100vh - 235px);">
+            <h:form id="mainForm">
+                <p:growl id="messages" showDetail="true" />
+
+                <div class="ui-g">
+
+                    <div class="ui-g-12">
+                        <div class="card card-w-title">
+
+                            <p:panelGrid columns="4" columnClasses="ui-grid-col-6,ui-grid-col-6,ui-grid-col-6,ui-grid-col-6" layout="grid" styleClass="ui-panelgrid-blank form-group" style="float: right; border:0px none; background-color:transparent;">
+                                <h:outputLabel style="margin-left: 250px; vertical-align: middle; white-space: nowrap;" value="Switch RU: "/>
+                                <p:autoComplete
+                                    id="ru"
+                                    var="ru"
+                                    maxResults="10"
+                                    placeholder="start typing..."
+                                    required="#{false}"
+                                    forceSelection="#{true}"
+                                    onclick="this.value = ''"
+                                    value="#{webSession.currentReportingUnit}"
+                                    completeMethod="#{viewSupport.completeReportingUnit}"
+                                    itemLabel="#{ru.name}"
+                                    itemValue="#{ru}"
+                                    converter="reportingUnitConverter"
+                                    style="width: 300px; vertical-align: middle; "
+                                    >
+                                    <p:ajax event="itemSelect" listener="#{reportsReview.onReportingUnitSelect}"  process="@this" update=":mainForm" />
+                                </p:autoComplete>
+                                <h:outputLabel style="vertical-align: middle; white-space: nowrap;" value="Switch Period: "/>
+                                <p:selectOneMenu style="margin-top: 0px; vertical-align: middle; " id="period" value="#{webSession.currentPeriod}" converter="periodConverter">
+                                    <p:ajax event="change" update=":mainForm" process="@this" listener="#{reportsReview.switchPeriod(webSession.currentPeriod)}"/>
+                                    <f:selectItems var="period" value="#{viewSupport.allPeriods}" itemLabel="#{period.id}"/>
+                                </p:selectOneMenu>
+                            </p:panelGrid>
+                            <h4 style="margin: 1px;"><strong>#{webSession.currentPeriod.id} Calculation Review - #{reportsReview.reportingUnit.name} - #{reportsReview.reportingUnit.getWorkflowStatus(webSession.currentPeriod).description}</strong></h4>
+                            <p:outputPanel style="margin-top: 20px;">
+                                <h:outputText value="Search within list:" />
+                                <p:inputText id="globalFilterText" value="#{webSession.filterText}" style="width:150px; margin-left: 10px;">
+                                </p:inputText>
+                                <p:commandButton id="globalFilter" style="font-size: 80%; margin-left: 5px;" value="Search" actionListener="#{reportsReview.filterByContractText()}" update=":mainForm"/>
+                                <h:outputText value="Filter list by contract:" style="margin-left: 15px;"/>
+                                <p:selectCheckboxMenu id="contracts" showHeader="false" label="Contracts" value="#{webSession.selectedContracts}" converter="contractConverter" style="width:150px; margin-left: 5px;">
+                                    <p:ajax event="change" update=":mainForm" process="@this" listener="#{reportsReview.filterByContracts()}"/>
+                                    <f:selectItems var="contract" value="#{reportsReview.contracts}" itemLabel="#{contract.name}"/>
+                                </p:selectCheckboxMenu>
+                                <p:commandButton id="globalFilterClear2" style="font-size: 80%; margin-left: 20px;" value="Clear All Filters" actionListener="#{reportsReview.clearFilterByContractText()}" update=":mainForm"/>
+                            </p:outputPanel>
+                            <br></br>
+                            <p:tabView id="topLevelTabView" dynamic="true" style="margin-top: 15px;">
+                                <p:tab title="Reports">
+                            <p:treeTable tableStyle="width:auto" value="#{reportsReview.rootTreeNode}" var="pob" selectionMode="single" selection="#{reportsReview.selectedNode}">
+
+                                <p:ajax event="expand" listener="#{viewSupport.onNodeExpand}"/>
+                                <p:ajax event="collapse" listener="#{viewSupport.onNodeCollapse}"/>
+
+                                <p:column headerText="Reporting Unit - Contract - POB" sortBy="#{pob.name}">
+                                    <h:outputText value="#{pob.name}" title="#{pob.description}"/>
+                                </p:column>
+
+                                <p:column style="white-space:pre-line;" id="f1">
+                                    <f:facet name="header">
+                                        <h:outputText value="Contract Summary Contract Level" />
+                                        <p:tooltip value="Contract Summary Contract Level" for="f1" position="top" showEffect="slide" hideEffect="explode" />
+                                    </f:facet>
+                                    <p:commandButton value="Download" ajax="false" style="width:auto; font-size: 70%;" icon="ui-icon-arrowthick-1-s" rendered="#{of:isInstance('com.flowserve.system606.model.Contract', pob)}">
+                                        <p:fileDownload value="#{reportContractEstimate.getContractSummaryReport(pob)}" />
+                                    </p:commandButton>
+                                </p:column>
+
+
+                                <p:column style="white-space:pre-line;" id="f12">
+                                    <f:facet name="header">
+                                        <h:outputText value="Contract Summary RU Level" />
+                                        <p:tooltip value="Contract Summary RU Level" for="f12" position="top" showEffect="slide" hideEffect="explode" />
+                                    </f:facet>
+                                    <p:commandButton value="Download" ajax="false" style="width:auto; font-size: 70%;" icon="ui-icon-arrowthick-1-s" rendered="#{of:isInstance('com.flowserve.system606.model.Contract', pob)}">
+                                        <p:fileDownload value="#{reportContractEstimate.getRUSummaryReport(pob)}" />
+                                    </p:commandButton>
+                                </p:column>
+
+
+                                <p:column style="white-space:pre-line;" id="f3">
+                                    <f:facet name="header">
+                                        <h:outputText value="Financial Report" />
+                                        <p:tooltip value="Financial Report" for="f3" position="top" showEffect="slide" hideEffect="explode" />
+                                    </f:facet>
+                                    <p:commandButton value="Download" ajax="false" style="width:auto; font-size: 70%;" icon="ui-icon-arrowthick-1-s" rendered="#{of:isInstance('com.flowserve.system606.model.Contract', pob)}">
+                                        <p:fileDownload value="#{reportContractEstimate.getFinancialSummaryReport(pob)}" />
+                                    </p:commandButton>
+                                </p:column>
+
+
+
+                                <p:column style="white-space:pre-line;" id="je1">
+                                    <f:facet name="header">
+                                        <h:outputText value="Journal Entry Report" />
+                                        <p:tooltip value="Journal Entry Report" for="je1" position="top" showEffect="slide" hideEffect="explode" />
+                                    </f:facet>
+                                    <p:commandButton value="Download" ajax="false" style="width:auto; font-size: 70%;" icon="ui-icon-arrowthick-1-s" rendered="#{of:isInstance('com.flowserve.system606.model.ReportingUnit', pob)}">
+                                        <p:fileDownload value="#{reportContractEstimate.getJournalEntryReport(pob)}" />
+                                    </p:commandButton>
+                                </p:column>
+                            </p:treeTable>
+                        </p:tab>
+                    </p:tabView>
+                        </div>
+                    </div>
+                </div>
+            </h:form>
+        </div>
+    </ui:define>
+
+</ui:composition>
+
+
