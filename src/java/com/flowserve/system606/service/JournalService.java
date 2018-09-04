@@ -196,23 +196,26 @@ public class JournalService {
 
         ReportingUnitJournal reportingUnitJournal = generateJournal(reportingUnit, period);
 
-        BigDecimal revenueToRecognizePeriod = getRevenueRecognizePeriodLC(reportingUnit, period);
-
-        BigDecimal liquidatedDamageRecognizePeriodLC = getLiquidatedDamagesRecognizePeriodLC(reportingUnit, period);
-        BigDecimal costGoodsSoldPeriodLC = getCostGoodsSoldPeriodLC(reportingUnit, period);
+        //BigDecimal revenueToRecognizePeriod = getRevenueRecognizePeriodLC(reportingUnit, period);
+        //BigDecimal liquidatedDamageRecognizePeriodLC = getLiquidatedDamagesRecognizePeriodLC(reportingUnit, period);
+        //BigDecimal costGoodsSoldPeriodLC = getCostGoodsSoldPeriodLC(reportingUnit, period);
         BigDecimal lossReservePeriodADJLC = getLossReservePeriodADJLC(reportingUnit, period);
-        BigDecimal revenueInExcess = getContractRevenueInExcess(reportingUnit, period);
-        BigDecimal billingsInExcess = getContractBillingsInExcess(reportingUnit, period);
+        BigDecimal commExp = getThirdPartyCommissionsPeriod(reportingUnit, period);
         BigDecimal bilingsPeriodLC = getContractBillingsPeriodLC(reportingUnit, period);
-        BigDecimal commExp = getTPCIncured(reportingUnit, period);
 
-        Logger.getLogger(JournalService.class.getName()).log(Level.INFO, "revenueToRecognizePeriod: " + revenueToRecognizePeriod.toPlainString());
+        //BigDecimal revenueInExcess = getContractRevenueInExcess(reportingUnit, period);
+        //BigDecimal billingsInExcess = getContractBillingsInExcess(reportingUnit, period);
+        //Logger.getLogger(JournalService.class.getName()).log(Level.INFO, "revenueToRecognizePeriod: " + revenueToRecognizePeriod.toPlainString());
+        row = worksheet.getRow(13);
+        setCellValue(row, 5, lossReservePeriodADJLC);
+        row = worksheet.getRow(14);
+        setCellValue(row, 6, lossReservePeriodADJLC);
+        row = worksheet.getRow(15);
+        setCellValue(row, 8, lossReservePeriodADJLC);
 
-//        row = worksheet.getRow(10);
 //        setCellValue(row, 2, revenueToRecognizePeriod);
 //        setCellValue(row, 3, liquidatedDamageRecognizePeriodLC);
 //        setCellValue(row, 4, costGoodsSoldPeriodLC);
-//        setCellValue(row, 5, lossReservePeriodADJLC);
 //        setCellValue(row, 6, commExp);
 //        setCellValue(row, 7, BigDecimal.ZERO);//TODO FX_GAIN_LOSS
 //        setCellValue(row, 8, bilingsPeriodLC);
@@ -251,7 +254,7 @@ public class JournalService {
         BigDecimal lossReservePeriodADJLC = getLossReservePeriodADJLC(pobGroup, period);
         BigDecimal revenueInExcess = getContractRevenueInExcess(pobGroup, period);
         BigDecimal billingsInExcess = getContractBillingsInExcess(pobGroup, period);
-        BigDecimal commExp = getTPCIncured(pobGroup, period);
+        BigDecimal commExp = getThirdPartyCommissionsPeriod(pobGroup, period);
         // Percentage of completion Pobs.  Set total row for POC POBs
         row = worksheet.getRow(single);
         setCellValue(row, 2, revenueToRecognizePeriod);
@@ -323,9 +326,7 @@ public class JournalService {
         return calculationService.getCurrencyMetric("CONTRACT_BILLINGS_IN_EXCESS_LC", measureable, period).getLcValue();
     }
 
-    private BigDecimal getTPCIncured(Measurable measureable, FinancialPeriod period) throws Exception {
-        BigDecimal value = calculationService.getCurrencyMetric("THIRD_PARTY_COMMISSION_TO_RECOGNIZE_PERIOD_LC", measureable, period).getLcValue();
-        return value != null ? value : BigDecimal.ZERO;
+    private BigDecimal getThirdPartyCommissionsPeriod(Measurable measureable, FinancialPeriod period) throws Exception {
+        return calculationService.getCurrencyMetric("THIRD_PARTY_COMMISSION_TO_RECOGNIZE_PERIOD_LC", measureable, period).getLcValue();
     }
-
 }

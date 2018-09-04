@@ -122,7 +122,9 @@ public class CalculationService {
         Logger.getLogger(CalculationService.class.getName()).log(Level.INFO, "getAccumulatedCurrencyMetricAcrossPeriods() " + metricCode + " measurable: " + measurable.getClass().getName());
         CurrencyMetric metric = new CurrencyMetric();
         metric.setMetricType(metricService.getMetricTypeByCode(metricCode));
-        metric.setValue(new BigDecimal("0.0"));
+        metric.setCcValue(new BigDecimal("0.0"));
+        metric.setLcValue(new BigDecimal("0.0"));
+        metric.setRcValue(new BigDecimal("0.0"));
 
         if (isEmptyTransientMesaurable(measurable)) {
             return metric;
@@ -133,20 +135,36 @@ public class CalculationService {
             if (isRootMeasurable(measurable)) {
                 CurrencyMetric rootCurrencyMetric = getCurrencyMetric(metricCode, measurable, period);
                 if (rootCurrencyMetric != null) {
-                    BigDecimal rootValue = rootCurrencyMetric.getValue();
-                    if (rootValue != null) {
-                        metric.setValue(metric.getValue().add(rootValue));
+                    BigDecimal rootCcValue = rootCurrencyMetric.getCcValue();
+                    if (rootCcValue != null) {
+                        metric.setCcValue(metric.getCcValue().add(rootCcValue));
+                    }
+                    BigDecimal rootLcValue = rootCurrencyMetric.getLcValue();
+                    if (rootLcValue != null) {
+                        metric.setLcValue(metric.getLcValue().add(rootLcValue));
+                    }
+                    BigDecimal rootRcValue = rootCurrencyMetric.getRcValue();
+                    if (rootRcValue != null) {
+                        metric.setRcValue(metric.getRcValue().add(rootRcValue));
                     }
                 }
                 continue;
             }
 
             for (Measurable childMeasurable : measurable.getChildMeasurables()) {
-                BigDecimal childMetricValue = getAccumulatedCurrencyMetric(metricCode, childMeasurable, period).getValue();
-                metric.setValue(metric.getValue().add(childMetricValue));
+                CurrencyMetric childMetric = getAccumulatedCurrencyMetric(metricCode, childMeasurable, period);
+                if (childMetric.getCcValue() != null) {
+                    metric.setCcValue(metric.getCcValue().add(childMetric.getCcValue()));
+                }
+                if (childMetric.getLcValue() != null) {
+                    metric.setLcValue(metric.getLcValue().add(childMetric.getLcValue()));
+                }
+                if (childMetric.getRcValue() != null) {
+                    metric.setRcValue(metric.getRcValue().add(childMetric.getRcValue()));
+                }
             }
 
-            currencyService.convertCurrency(metric, measurable, period);
+            //currencyService.convertCurrency(metric, measurable, period);
         }
 
         Logger.getLogger(CalculationService.class.getName()).log(Level.INFO, "Final sum: " + metric.getValue().toPlainString());
