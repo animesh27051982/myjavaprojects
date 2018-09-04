@@ -21,7 +21,6 @@ import java.math.BigInteger;
 import java.sql.Date;
 import java.time.LocalDate;
 import java.util.List;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
@@ -638,18 +637,18 @@ public class ReportsService {
 
     }
 
-    public void generateRUSummaryReport(InputStream inputStream, FileOutputStream outputStream, Contract contract) throws Exception {
+    public void generateRUSummaryReport(InputStream inputStream, FileOutputStream outputStream, ReportingUnit reportingUnit) throws Exception {
         try (XSSFWorkbook workbook = new XSSFWorkbook(inputStream)) {
             workbook.removeSheetAt(workbook.getSheetIndex("Contract Summary-1"));
             workbook.removeSheetAt(workbook.getSheetIndex("Contract Summary-2"));
             XSSFSheet worksheet = workbook.getSheet("Reporting Unit Summary-1");
 
-            worksheet = writeRUEsimatesReport(worksheet, contract);
+            worksheet = writeRUEsimatesReport(worksheet, reportingUnit);
             ((XSSFSheet) worksheet).getCTWorksheet().getSheetViews().getSheetViewArray(0).setTopLeftCell("A1");
             ((XSSFSheet) worksheet).setActiveCell(new CellAddress("A2"));
 
             worksheet = workbook.getSheet("Reporting Unit Summary-2");
-            worksheet = writeRUReportByFinancialPeriod(worksheet, contract);
+            worksheet = writeRUReportByFinancialPeriod(worksheet, reportingUnit);
             workbook.write(outputStream);
         }
         inputStream.close();
@@ -657,11 +656,11 @@ public class ReportsService {
 
     }
 
-    public XSSFSheet writeRUEsimatesReport(XSSFSheet worksheet, Contract contract) throws Exception {
+    public XSSFSheet writeRUEsimatesReport(XSSFSheet worksheet, ReportingUnit ru) throws Exception {
         XSSFRow row;
         Cell cell = null;
         int rowid = 0;
-        ReportingUnit ru = contract.getReportingUnit();
+        //ReportingUnit ru = contract.getReportingUnit();
         XSSFRow rowContract = worksheet.getRow(1);
         cell = rowContract.getCell(0, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
         cell.setCellValue(ru.getName());
@@ -758,7 +757,6 @@ public class ReportsService {
         BigDecimal billToDate = new BigDecimal(BigInteger.ZERO);
         row = worksheet.getRow(single);
         setCellValue(row, 1, transactionPrice);
-        Logger.getLogger(ReportsService.class.getName()).log(Level.INFO, "message" + transactionPrice);
         setCellValue(row, 2, liquidatedDamage);
         setCellValue(row, 3, EAC);
         setCellValue(row, 4, estimatedGrossProfit);
@@ -829,11 +827,11 @@ public class ReportsService {
         }
     }
 
-    public XSSFSheet writeRUReportByFinancialPeriod(XSSFSheet worksheet, Contract contract) throws Exception {
+    public XSSFSheet writeRUReportByFinancialPeriod(XSSFSheet worksheet, ReportingUnit ru) throws Exception {
         XSSFRow row;
         Cell cell = null;
         int rowid = HEADER_ROW_COUNT;
-        ReportingUnit ru = contract.getReportingUnit();
+        //ReportingUnit ru = contract.getReportingUnit();
         XSSFRow ru_name = worksheet.getRow(1);
         cell = ru_name.getCell(0, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
         cell.setCellValue(ru.getName());
@@ -908,8 +906,56 @@ public class ReportsService {
         setCellValue(row, 19, cumulativeCostGoodsSoldLC);
         setCellValue(row, 21, EstimatedGrossProfitLC);
 
+        PerformanceObligationGroup pocPobs = new PerformanceObligationGroup("pocPobs", ru, RevenueMethod.PERC_OF_COMP, ru.getPobsByRevenueMethod(RevenueMethod.PERC_OF_COMP));
+        PerformanceObligationGroup pitPobs = new PerformanceObligationGroup("pitPobs", ru, RevenueMethod.POINT_IN_TIME, ru.getPobsByRevenueMethod(RevenueMethod.POINT_IN_TIME));
+        PerformanceObligationGroup slPobs = new PerformanceObligationGroup("slPobs", ru, RevenueMethod.STRAIGHT_LINE, ru.getPobsByRevenueMethod(RevenueMethod.STRAIGHT_LINE));
+
+        printRUFinancialPobsGroups(8, worksheet, pocPobs, period, qtdPeriods, ytdPeriods);
+        printRUFinancialPobsGroups(9, worksheet, pitPobs, period, qtdPeriods, ytdPeriods);
+        printRUFinancialPobsGroups(10, worksheet, slPobs, period, qtdPeriods, ytdPeriods);
         printRUFinancialContract(18, worksheet, ru, period, qtdPeriods, ytdPeriods);
         return worksheet;
+    }
+
+    public void printRUFinancialPobsGroups(int single, XSSFSheet worksheet, PerformanceObligationGroup pGroup, FinancialPeriod period, List<FinancialPeriod> qtdPeriods, List<FinancialPeriod> ytdPeriods) throws Exception {
+
+        XSSFRow row;
+        //for monthly report
+        BigDecimal revenueToRecognize = getRevenueRecognizeCTD(pGroup, period);
+        BigDecimal liquidatedDamage = getLiquidatedDamages(pGroup, period);
+        BigDecimal cumulativeCostGoodsSoldLC = getCumulativeCostGoodsSoldLC(pGroup, period);
+        BigDecimal EstimatedGrossProfitLC = getEstimatedGrossProfit(pGroup, period);
+
+        row = worksheet.getRow(single);
+        setCellValue(row, 1, revenueToRecognize);
+        setCellValue(row, 2, liquidatedDamage);
+        setCellValue(row, 3, cumulativeCostGoodsSoldLC);
+        setCellValue(row, 5, EstimatedGrossProfitLC);
+
+        //for quartly report
+        revenueToRecognize = getAccuRevenueToRecognizeLC(pGroup, qtdPeriods);
+        liquidatedDamage = getAccuLiquidatedDamageCC(pGroup, qtdPeriods);
+        cumulativeCostGoodsSoldLC = getAccuCumulativeCostGoodsSoldLC(pGroup, qtdPeriods);
+        EstimatedGrossProfitLC = getAccuEstimatedGrossProfitLC(pGroup, qtdPeriods);
+
+        row = worksheet.getRow(single);
+        setCellValue(row, 9, revenueToRecognize);
+        setCellValue(row, 10, liquidatedDamage);
+        setCellValue(row, 11, cumulativeCostGoodsSoldLC);
+        setCellValue(row, 13, EstimatedGrossProfitLC);
+
+        //for annually report
+        revenueToRecognize = getAccuRevenueToRecognizeLC(pGroup, ytdPeriods);
+        liquidatedDamage = getAccuLiquidatedDamageCC(pGroup, ytdPeriods);
+        cumulativeCostGoodsSoldLC = getAccuCumulativeCostGoodsSoldLC(pGroup, ytdPeriods);
+        EstimatedGrossProfitLC = getAccuEstimatedGrossProfitLC(pGroup, ytdPeriods);
+
+        row = worksheet.getRow(single);
+        setCellValue(row, 17, revenueToRecognize);
+        setCellValue(row, 18, liquidatedDamage);
+        setCellValue(row, 19, cumulativeCostGoodsSoldLC);
+        setCellValue(row, 21, EstimatedGrossProfitLC);
+
     }
 
     public void printRUFinancialContract(int insertRow, XSSFSheet worksheet, ReportingUnit ru, FinancialPeriod period, List<FinancialPeriod> qtdPeriods, List<FinancialPeriod> ytdPeriods) throws Exception {

@@ -131,7 +131,23 @@ public class ReportContractEstimate implements Serializable {
         return getContractSummaryReport();
     }
 
-    public StreamedContent getRUSummaryReport() throws Exception {
+//    public StreamedContent getRUSummaryReport() throws Exception {
+//        try {
+//
+//            inputStream = RceInput.class.getResourceAsStream("/resources/excel_input_templates/Outputs_Summary_v2.xlsx");
+//            outputStream = new FileOutputStream(new File("Outputs_Summary_v2.xlsx"));
+//
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//
+//        reportsService.generateRUSummaryReport(inputStream, outputStream, contract);
+//
+//        InputStream inputStreamFromOutputStream = new FileInputStream(new File("Outputs_Summary_v2.xlsx"));
+//        file = new DefaultStreamedContent(inputStreamFromOutputStream, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "Contract Summary RU Level.xlsx");
+//        return file;
+//    }
+    public StreamedContent getRUSummaryReport(ReportingUnit ru) throws Exception {
         try {
 
             inputStream = RceInput.class.getResourceAsStream("/resources/excel_input_templates/Outputs_Summary_v2.xlsx");
@@ -141,17 +157,11 @@ public class ReportContractEstimate implements Serializable {
             e.printStackTrace();
         }
 
-        reportsService.generateRUSummaryReport(inputStream, outputStream, contract);
+        reportsService.generateRUSummaryReport(inputStream, outputStream, ru);
 
         InputStream inputStreamFromOutputStream = new FileInputStream(new File("Outputs_Summary_v2.xlsx"));
         file = new DefaultStreamedContent(inputStreamFromOutputStream, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "Contract Summary RU Level.xlsx");
         return file;
-    }
-
-    public StreamedContent getRUSummaryReport(Contract contract) throws Exception {
-        this.contract = contract;
-
-        return getRUSummaryReport();
     }
 
     public StreamedContent getFinancialSummaryReport(Contract contract) throws Exception {
@@ -220,22 +230,21 @@ public class ReportContractEstimate implements Serializable {
         return file;
     }
 
-    public StreamedContent getRUSummaryReports(Contract contract) {
-        try {
-            String filename = "RU_Sum_Report_" + contract.getName() + ".xlsx";
-            inputStream = RceInput.class.getResourceAsStream("/resources/excel_input_templates/Outputs_Summary_v2.xlsx");
-            outputStream = new FileOutputStream(new File("/tmp/" + filename));
-            reportsService.generateRUSummaryReport(inputStream, outputStream, contract);
-            InputStream inputStreamFromOutputStream = new FileInputStream(new File("/tmp/" + filename));
-            file = new DefaultStreamedContent(inputStreamFromOutputStream, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", filename);
-        } catch (Exception e) {
-            Logger.getLogger(ReportContractEstimate.class.getName()).log(Level.INFO, "Error generating report: ", e);
-            FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error generating RU_summary report: " + e.getMessage(), e.getMessage());
-            FacesContext.getCurrentInstance().addMessage(null, msg);
-        }
-        return file;
-    }
-
+//    public StreamedContent getRUSummaryReports(Contract contract) {
+//        try {
+//            String filename = "RU_Sum_Report_" + contract.getName() + ".xlsx";
+//            inputStream = RceInput.class.getResourceAsStream("/resources/excel_input_templates/Outputs_Summary_v2.xlsx");
+//            outputStream = new FileOutputStream(new File("/tmp/" + filename));
+//            reportsService.generateRUSummaryReport(inputStream, outputStream, contract);
+//            InputStream inputStreamFromOutputStream = new FileInputStream(new File("/tmp/" + filename));
+//            file = new DefaultStreamedContent(inputStreamFromOutputStream, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", filename);
+//        } catch (Exception e) {
+//            Logger.getLogger(ReportContractEstimate.class.getName()).log(Level.INFO, "Error generating report: ", e);
+//            FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error generating RU_summary report: " + e.getMessage(), e.getMessage());
+//            FacesContext.getCurrentInstance().addMessage(null, msg);
+//        }
+//        return file;
+//    }
     public Contract getContract() {
         return contract;
     }

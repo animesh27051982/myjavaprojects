@@ -776,20 +776,10 @@
                                                 <h:outputText value="Contract Summary RU Level" />
                                                 <p:tooltip value="Contract Summary RU Level" for="f12" position="top" showEffect="slide" hideEffect="explode" />
                                             </f:facet>
-                                            <p:commandButton value="Download" ajax="false" style="width:auto; font-size: 70%;" icon="ui-icon-arrowthick-1-s" rendered="#{of:isInstance('com.flowserve.system606.model.Contract', pob)}">
+                                            <p:commandButton value="Download" ajax="false" style="width:auto; font-size: 70%;" icon="ui-icon-arrowthick-1-s" rendered="#{of:isInstance('com.flowserve.system606.model.ReportingUnit', pob)}">
                                                 <p:fileDownload value="#{reportContractEstimate.getRUSummaryReport(pob)}" />
                                             </p:commandButton>
                                         </p:column>
-
-                                        <!--                                        <p:column style="white-space:pre-line;" id="f2">
-                                                                                    <f:facet name="header">
-                                                                                        <h:outputText value="Contract Estimate by POb" />
-                                                                                        <p:tooltip value="Contract Estimate by POb" for="f2" position="top" showEffect="slide" hideEffect="explode" />
-                                                                                    </f:facet>
-                                                                                    <p:commandButton value="Download " ajax="false" style="width:auto; font-size: 70%;" icon="ui-icon-arrowthick-1-s" rendered="#{of:isInstance('com.flowserve.system606.model.Contract', pob)}">
-                                                                                        <p:fileDownload value="" />
-                                                                                    </p:commandButton>
-                                                                                </p:column>-->
 
                                         <p:column style="white-space:pre-line;" id="f3">
                                             <f:facet name="header">
@@ -800,16 +790,6 @@
                                                 <p:fileDownload value="#{reportContractEstimate.getFinancialSummaryReport(pob)}" />
                                             </p:commandButton>
                                         </p:column>
-
-                                        <!--                                        <p:column style="white-space:pre-line;"  id="f4">
-                                                                                    <f:facet name="header">
-                                                                                        <h:outputText value="Contract Estimate to Financial Period by Pob" />
-                                                                                        <p:tooltip value="Contract Estimate to Financial Period by Pob" for="f4" position="top" showEffect="slide" hideEffect="explode" />
-                                                                                    </f:facet>
-                                                                                    <p:commandButton value="Download" ajax="false" style="width:auto; font-size: 70%;" icon="ui-icon-arrowthick-1-s" rendered="#{of:isInstance('com.flowserve.system606.model.Contract', pob)}">
-                                                                                        <p:fileDownload value="" />
-                                                                                    </p:commandButton>
-                                                                                </p:column>-->
 
                                         <p:column style="white-space:pre-line;" id="je1">
                                             <f:facet name="header">
