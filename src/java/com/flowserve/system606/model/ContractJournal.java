@@ -55,6 +55,12 @@ public class ContractJournal {
         this.contract = contract;
     }
 
+    public ContractJournal(ReportingUnitJournal reportingUnitJournal, FinancialPeriod period, Contract contract) {
+        this.reportingUnitJournal = reportingUnitJournal;
+        this.period = period;
+        this.contract = contract;
+    }
+
     public void addJournalEntryHeader(JournalEntryHeader jeHeader) {
         journalEntryHeaders.add(jeHeader);
     }

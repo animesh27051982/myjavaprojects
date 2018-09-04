@@ -63,7 +63,6 @@ public class ReportsService {
     private static final int HEADER_ROW_COUNT = 10;
 
 //    public void generateContractEsimatesReport(InputStream inputStream, FileOutputStream outputStream, Contract contract) throws Exception {
-//        calculationService.executeBusinessRules(contract, webSession.getCurrentPeriod());
 //        try (XSSFWorkbook workbook = new XSSFWorkbook(inputStream)) {
 //            workbook.removeSheetAt(workbook.getSheetIndex("Contract Summary-2"));
 //            XSSFSheet worksheet = workbook.getSheet("Contract Summary-1");
@@ -92,8 +91,6 @@ public class ReportsService {
         row = worksheet.getRow(4);
         row.getCell(0).setCellValue(Date.valueOf(period.getEndDate()));
 
-        // Execute buisness rules on the contract to fill in any values we might need at the contract level (e.g. gross margin)
-        //calculationService.executeBusinessRules(contract, period);
         // Get the contract level values for the contract total row on the "Contract Summary Totals" row.
         BigDecimal transactionPrice = getTransactionPrice(contract, period);
         BigDecimal liquidatedDamage = getLiquidatedDamages(contract, period);
@@ -146,11 +143,8 @@ public class ReportsService {
 
         // Split the contract into groups.  We need totals per type of POB, so create 3 groups.  The PerformanceObligationGroup is just a shell Measurable non-entity class used for grouping.
         PerformanceObligationGroup pocPobs = new PerformanceObligationGroup("pocPobs", contract, contract.getPobsByRevenueMethod(RevenueMethod.PERC_OF_COMP));
-        calculationService.executeBusinessRules(pocPobs, period);
         PerformanceObligationGroup pitPobs = new PerformanceObligationGroup("pitPobs", contract, contract.getPobsByRevenueMethod(RevenueMethod.POINT_IN_TIME));
-        calculationService.executeBusinessRules(pitPobs, period);
         PerformanceObligationGroup slPobs = new PerformanceObligationGroup("slPobs", contract, contract.getPobsByRevenueMethod(RevenueMethod.STRAIGHT_LINE));
-        calculationService.executeBusinessRules(slPobs, period);
 
         printContractEsimatesPobsGroups(9, 18, worksheet, pocPobs, period);
         printContractEsimatesPobsGroups(10, 21, worksheet, pitPobs, period);
@@ -265,7 +259,6 @@ public class ReportsService {
     }
 
 //    public void generateReportByFinancialPeriod(InputStream inputStream, FileOutputStream outputStream, Contract contract) throws Exception {
-//        calculationService.executeBusinessRules(contract, webSession.getCurrentPeriod());
 //        try (XSSFWorkbook workbook = new XSSFWorkbook(inputStream)) {
 //            workbook.removeSheetAt(workbook.getSheetIndex("Contract Summary-1"));
 //            XSSFSheet worksheet = workbook.getSheet("Contract Summary-2");
@@ -362,11 +355,8 @@ public class ReportsService {
 
         // Split the contract into groups.  We need totals per type of POB, so create 3 groups.  The PerformanceObligationGroup is just a shell Measurable non-entity class used for grouping.
         PerformanceObligationGroup pocPobs = new PerformanceObligationGroup("pocPobs", contract, contract.getPobsByRevenueMethod(RevenueMethod.PERC_OF_COMP));
-        calculationService.executeBusinessRules(pocPobs, period);
         PerformanceObligationGroup pitPobs = new PerformanceObligationGroup("pitPobs", contract, contract.getPobsByRevenueMethod(RevenueMethod.POINT_IN_TIME));
-        calculationService.executeBusinessRules(pitPobs, period);
         PerformanceObligationGroup slPobs = new PerformanceObligationGroup("slPobs", contract, contract.getPobsByRevenueMethod(RevenueMethod.STRAIGHT_LINE));
-        calculationService.executeBusinessRules(slPobs, period);
 
         printFinancialPobsGroups(9, 18, worksheet, pocPobs, period, qtdPeriods, ytdPeriods);
         printFinancialPobsGroups(10, 21, worksheet, pitPobs, period, qtdPeriods, ytdPeriods);
@@ -485,106 +475,11 @@ public class ReportsService {
         return insertRow;
     }
 
-    public void generateJournalEntryReport(InputStream inputStream, FileOutputStream outputStream, Contract contract) throws Exception {
-        try (XSSFWorkbook workbook = new XSSFWorkbook(inputStream)) {
-            workbook.removeSheetAt(workbook.getSheetIndex("Journal Entry-1"));
-            XSSFSheet worksheet = workbook.getSheet("Journal Entry-2");
-
-            worksheet = writeJournalEntryReport(worksheet, contract);
-            ((XSSFSheet) worksheet).getCTWorksheet().getSheetViews().getSheetViewArray(0).setTopLeftCell("A1");
-            ((XSSFSheet) worksheet).setActiveCell(new CellAddress("A2"));
-            workbook.write(outputStream);
-        }
-        inputStream.close();
-        outputStream.close();
-
-    }
-
-    public XSSFSheet writeJournalEntryReport(XSSFSheet worksheet, Contract contract) throws Exception {
-        XSSFRow row;
-        Cell cell = null;
-        XSSFRow contract_name = worksheet.getRow(2);
-        cell = contract_name.getCell(0, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
-        cell.setCellValue(contract.getName());
-        FinancialPeriod period = webSession.getCurrentPeriod();
-        row = worksheet.getRow(5);
-        row.getCell(0).setCellValue(Date.valueOf(period.getEndDate()));
-
-        BigDecimal revenueToRecognizePeriod = getRevenueRecognizePeriodLC(contract, period);
-        BigDecimal liquidatedDamageRecognizePeriodLC = getLiquidatedDamagesRecognizePeriodLC(contract, period);
-        BigDecimal costGoodsSoldPeriodLC = getCostGoodsSoldPeriodLC(contract, period);
-        BigDecimal lossReservePeriodADJLC = getLossReservePeriodADJLC(contract, period);
-        BigDecimal revenueInExcess = getContractRevenueInExcess(contract, period);
-        BigDecimal billingsInExcess = getContractBillingsInExcess(contract, period);
-        BigDecimal bilingsPeriodLC = getContractBillingsPeriodLC(contract, period);
-        BigDecimal commExp = getTPCIncured(contract, period);
-        row = worksheet.getRow(14);
-        setCellValue(row, 2, revenueToRecognizePeriod);
-        setCellValue(row, 3, liquidatedDamageRecognizePeriodLC);
-        setCellValue(row, 4, costGoodsSoldPeriodLC);
-        setCellValue(row, 5, lossReservePeriodADJLC);
-        setCellValue(row, 6, commExp);
-        setCellValue(row, 7, BigDecimal.ZERO);//TODO FX_GAIN_LOSS
-        setCellValue(row, 8, bilingsPeriodLC);
-        setCellValue(row, 9, costGoodsSoldPeriodLC);
-        setCellValue(row, 10, lossReservePeriodADJLC);
-        setCellValue(row, 11, revenueInExcess);
-        setCellValue(row, 12, billingsInExcess);
-        setCellValue(row, 13, lossReservePeriodADJLC);
-        setCellValue(row, 14, commExp);
-
-        //For Contract Billings row
-        row = worksheet.getRow(13);
-        setCellValue(row, 8, bilingsPeriodLC);
-
-        // Split the contract into groups.  We need totals per type of POB, so create 3 groups.  The PerformanceObligationGroup is just a shell Measurable non-entity class used for grouping.
-        PerformanceObligationGroup pocPobs = new PerformanceObligationGroup("pocPobs", contract, contract.getPobsByRevenueMethod(RevenueMethod.PERC_OF_COMP));
-        calculationService.executeBusinessRules(pocPobs, period);
-        PerformanceObligationGroup pitPobs = new PerformanceObligationGroup("pitPobs", contract, contract.getPobsByRevenueMethod(RevenueMethod.POINT_IN_TIME));
-        calculationService.executeBusinessRules(pitPobs, period);
-        PerformanceObligationGroup slPobs = new PerformanceObligationGroup("slPobs", contract, contract.getPobsByRevenueMethod(RevenueMethod.STRAIGHT_LINE));
-        calculationService.executeBusinessRules(slPobs, period);
-
-        printJournalEntryPobsGroups(9, worksheet, pocPobs, period);
-        printJournalEntryPobsGroups(10, worksheet, pitPobs, period);
-        printJournalEntryPobsGroups(11, worksheet, slPobs, period);
-        return worksheet;
-    }
-
-    public void printJournalEntryPobsGroups(int single, XSSFSheet worksheet, PerformanceObligationGroup pGroup, FinancialPeriod period) throws Exception {
-
-        XSSFRow row;
-        BigDecimal revenueToRecognizePeriod = getRevenueRecognizePeriodLC(pGroup, period);
-        BigDecimal liquidatedDamageRecognizePeriodLC = getLiquidatedDamagesRecognizePeriodLC(pGroup, period);
-        BigDecimal costGoodsSoldPeriodLC = getCostGoodsSoldPeriodLC(pGroup, period);
-        BigDecimal lossReservePeriodADJLC = getLossReservePeriodADJLC(pGroup, period);
-        BigDecimal revenueInExcess = getContractRevenueInExcess(pGroup, period);
-        BigDecimal billingsInExcess = getContractBillingsInExcess(pGroup, period);
-        BigDecimal commExp = getTPCIncured(pGroup, period);
-        // Percentage of completion Pobs.  Set total row for POC POBs
-        row = worksheet.getRow(single);
-        setCellValue(row, 2, revenueToRecognizePeriod);
-        setCellValue(row, 3, liquidatedDamageRecognizePeriodLC);
-        setCellValue(row, 4, costGoodsSoldPeriodLC);
-        setCellValue(row, 5, lossReservePeriodADJLC);
-        setCellValue(row, 6, commExp);
-        setCellValue(row, 7, BigDecimal.ZERO);//TODO FX_GAIN_LOSS
-        setCellValue(row, 8, BigDecimal.ZERO);//TODO BILLINGS_PERIOD_CC
-        setCellValue(row, 9, costGoodsSoldPeriodLC);
-        setCellValue(row, 10, lossReservePeriodADJLC);
-        setCellValue(row, 11, revenueInExcess);
-        setCellValue(row, 12, billingsInExcess);
-        setCellValue(row, 13, lossReservePeriodADJLC);
-        setCellValue(row, 14, commExp);
-
-    }
-
     public void generateContractSummaryReport(InputStream inputStream, FileOutputStream outputStream, Contract contract) throws Exception {
         try (XSSFWorkbook workbook = new XSSFWorkbook(inputStream)) {
             workbook.removeSheetAt(workbook.getSheetIndex("Reporting Unit Summary-1"));
             workbook.removeSheetAt(workbook.getSheetIndex("Reporting Unit Summary-2"));
             XSSFSheet worksheet = workbook.getSheet("Contract Summary-1");
-            //calculationService.executeBusinessRules(contract, webSession.getCurrentPeriod());
             worksheet = writeContractEsimatesReport(worksheet, contract);
             ((XSSFSheet) worksheet).getCTWorksheet().getSheetViews().getSheetViewArray(0).setTopLeftCell("A1");
             ((XSSFSheet) worksheet).setActiveCell(new CellAddress("A2"));
@@ -656,11 +551,8 @@ public class ReportsService {
         XSSFRow row;
         int startRow = 7;
         PerformanceObligationGroup pocPobs = new PerformanceObligationGroup("pocPobs", contract, contract.getPobsByRevenueMethod(RevenueMethod.PERC_OF_COMP));
-        calculationService.executeBusinessRules(pocPobs, period);
         PerformanceObligationGroup pitPobs = new PerformanceObligationGroup("pitPobs", contract, contract.getPobsByRevenueMethod(RevenueMethod.POINT_IN_TIME));
-        calculationService.executeBusinessRules(pitPobs, period);
         PerformanceObligationGroup slPobs = new PerformanceObligationGroup("slPobs", contract, contract.getPobsByRevenueMethod(RevenueMethod.STRAIGHT_LINE));
-        calculationService.executeBusinessRules(slPobs, period);
 
         BigDecimal revenueToRecognize = getRevenueRecognizeCTD(pocPobs, period);
         row = worksheet.getRow(startRow++);
@@ -778,8 +670,6 @@ public class ReportsService {
         row = worksheet.getRow(3);
         row.getCell(0).setCellValue(Date.valueOf(period.getEndDate()));
 
-        // Execute buisness rules on the contract to fill in any values we might need at the contract level (e.g. gross margin)
-        //calculationService.executeBusinessRules(contract, period);
         // Get the contract level values for the contract total row on the "Contract Summary Totals" row.
         BigDecimal transactionPrice = getTransactionPrice(ru, period);
         BigDecimal liquidatedDamage = getLiquidatedDamages(ru, period);
@@ -830,23 +720,17 @@ public class ReportsService {
         setCellValue(row, 17, revenueInExcess);
         setCellValue(row, 18, billingsInExcess);
 
+        // KJG Modificstions START
         // Split the contract into groups.  We need totals per type of POB, so create 3 groups.  The PerformanceObligationGroup is just a shell Measurable non-entity class used for grouping.
-//        PerformanceObligationGroup pocPobs = new PerformanceObligationGroup();
-//        PerformanceObligationGroup pitPobs = new PerformanceObligationGroup();
-//        PerformanceObligationGroup slPobs = new PerformanceObligationGroup();
-//        Logger.getLogger(ReportsService.class.getName()).log(Level.INFO, "message"+pocPobs.getId());
-//        for (Contract con : ru.getContracts()) {
-//            pocPobs = new PerformanceObligationGroup("pocPobs", con, con.getPobsByRevenueMethod(RevenueMethod.PERC_OF_COMP));
-//            pitPobs = new PerformanceObligationGroup("pitPobs", con, con.getPobsByRevenueMethod(RevenueMethod.POINT_IN_TIME));
-//            slPobs = new PerformanceObligationGroup("slPobs", con, con.getPobsByRevenueMethod(RevenueMethod.STRAIGHT_LINE));
-//
-//        }
-//        calculationService.executeBusinessRules(pocPobs, period);
-//        calculationService.executeBusinessRules(pitPobs, period);
-//        calculationService.executeBusinessRules(slPobs, period);
-//        printRUEsimatesPobsGroups(8, worksheet, pocPobs, period);
-//        printRUEsimatesPobsGroups(9, worksheet, pitPobs, period);
-//        printRUEsimatesPobsGroups(10, worksheet, slPobs, period);
+        PerformanceObligationGroup pocPobs = new PerformanceObligationGroup("pocPobs", ru, RevenueMethod.PERC_OF_COMP, ru.getPobsByRevenueMethod(RevenueMethod.PERC_OF_COMP));
+        PerformanceObligationGroup pitPobs = new PerformanceObligationGroup("pitPobs", ru, RevenueMethod.POINT_IN_TIME, ru.getPobsByRevenueMethod(RevenueMethod.POINT_IN_TIME));
+        //PerformanceObligationGroup rtiPobs = new PerformanceObligationGroup("rtiPobs", ru, RevenueMethod.RIGHT_TO_INVOICE, ru.getPobsByRevenueMethod(RevenueMethod.RIGHT_TO_INVOICE));
+        PerformanceObligationGroup slPobs = new PerformanceObligationGroup("slPobs", ru, RevenueMethod.STRAIGHT_LINE, ru.getPobsByRevenueMethod(RevenueMethod.STRAIGHT_LINE));
+        // KJG Modificstions END
+
+        printRUEsimatesPobsGroups(8, worksheet, pocPobs, period);
+        printRUEsimatesPobsGroups(9, worksheet, pitPobs, period);
+        printRUEsimatesPobsGroups(10, worksheet, slPobs, period);
         printRUTotalContractLevel(18, worksheet, ru, period);
 
         return worksheet;

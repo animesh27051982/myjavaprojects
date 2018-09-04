@@ -770,15 +770,6 @@
                                             </p:commandButton>
                                         </p:column>
 
-                                        <p:column style="white-space:pre-line;" id="je1">
-                                            <f:facet name="header">
-                                                <h:outputText value="Journal Entry Report" />
-                                                <p:tooltip value="Journal Entry Report" for="je1" position="top" showEffect="slide" hideEffect="explode" />
-                                            </f:facet>
-                                            <p:commandButton value="Download" ajax="false" style="width:auto; font-size: 70%;" icon="ui-icon-arrowthick-1-s" rendered="#{of:isInstance('com.flowserve.system606.model.ReportingUnit', pob)}">
-                                                <p:fileDownload value="#{reportContractEstimate.generateJournal(pob)}" />
-                                            </p:commandButton>
-                                        </p:column>
 
                                         <p:column style="white-space:pre-line;" id="f12">
                                             <f:facet name="header">
@@ -820,12 +811,12 @@
                                                                                     </p:commandButton>
                                                                                 </p:column>-->
 
-                                        <p:column style="white-space:pre-line;" id="f5">
+                                        <p:column style="white-space:pre-line;" id="je1">
                                             <f:facet name="header">
                                                 <h:outputText value="Journal Entry Report" />
-                                                <p:tooltip value="Journal Entry Report" for="f5" position="top" showEffect="slide" hideEffect="explode" />
+                                                <p:tooltip value="Journal Entry Report" for="je1" position="top" showEffect="slide" hideEffect="explode" />
                                             </f:facet>
-                                            <p:commandButton value="Download" ajax="false" style="width:auto; font-size: 70%;" icon="ui-icon-arrowthick-1-s" rendered="#{of:isInstance('com.flowserve.system606.model.Contract', pob)}">
+                                            <p:commandButton value="Download" ajax="false" style="width:auto; font-size: 70%;" icon="ui-icon-arrowthick-1-s" rendered="#{of:isInstance('com.flowserve.system606.model.ReportingUnit', pob)}">
                                                 <p:fileDownload value="#{reportContractEstimate.getJournalEntryReport(pob)}" />
                                             </p:commandButton>
                                         </p:column>

@@ -17,7 +17,11 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
+import javax.faces.application.FacesMessage;
+import javax.faces.context.FacesContext;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -150,12 +154,6 @@ public class ReportContractEstimate implements Serializable {
         return getRUSummaryReport();
     }
 
-    public StreamedContent getJournalEntryReport(Contract contract) throws Exception {
-        this.contract = contract;
-
-        return getJournalEntryReport();
-    }
-
     public StreamedContent getFinancialSummaryReport(Contract contract) throws Exception {
         this.contract = contract;
 
@@ -172,20 +170,20 @@ public class ReportContractEstimate implements Serializable {
 //
 //        return getFile();
 //    }
-    public StreamedContent getJournalEntryReport() throws Exception {
+    public StreamedContent getJournalEntryReport(ReportingUnit reportingUnit) {
         try {
-
-            inputStream = RceInput.class.getResourceAsStream("/resources/excel_input_templates/Journal_Entry.xlsx");
-            outputStream = new FileOutputStream(new File("Journal Entry Report.xlsx"));
-
-        } catch (IOException e) {
-            e.printStackTrace();
+            String filename = "JE_Report_" + reportingUnit.getCode() + ".xlsx";
+            inputStream = RceInput.class.getResourceAsStream("/resources/excel_input_templates/Journal_Entry_RU_Template.xlsx");
+            outputStream = new FileOutputStream(new File("/tmp/" + filename));
+            journalService.generateJournalEntryReport(inputStream, outputStream, reportingUnit, webSession.getCurrentPeriod());
+            InputStream inputStreamFromOutputStream = new FileInputStream(new File("/tmp/" + filename));
+            file = new DefaultStreamedContent(inputStreamFromOutputStream, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", filename);
+        } catch (Exception e) {
+            Logger.getLogger(ReportContractEstimate.class.getName()).log(Level.INFO, "Error generating report: ", e);
+            FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error generating journal entry report: " + e.getMessage(), e.getMessage());
+            FacesContext.getCurrentInstance().addMessage(null, msg);
         }
 
-        reportsService.generateJournalEntryReport(inputStream, outputStream, contract);
-
-        InputStream inputStreamFromOutputStream = new FileInputStream(new File("Journal Entry Report.xlsx"));
-        file = new DefaultStreamedContent(inputStreamFromOutputStream, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "Journal Entry.xlsx");
         return file;
     }
 

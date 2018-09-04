@@ -49,6 +49,9 @@ public class JournalEntryHeader {
     @Column(name = "REVENUE_METHOD")
     private RevenueMethod revenueMethod;
     @OneToOne
+    @JoinColumn(name = "ACCOUNT_ID")
+    private Account account;
+    @OneToOne
     @JoinColumn(name = "CONTRACT_JOURNAL_ID")
     private ContractJournal contractJournal;
     @OneToMany(cascade = {CascadeType.ALL}, fetch = FetchType.LAZY, mappedBy = "journalEntryHeader", orphanRemoval = true)
@@ -57,8 +60,10 @@ public class JournalEntryHeader {
     public JournalEntryHeader() {
     }
 
-    public JournalEntryHeader(MetricType metricType, Currency currency, LocalDate transactionDate, JournalEntryType journalEntryType) {
+    public JournalEntryHeader(ContractJournal contractJournal, MetricType metricType, Account account, Currency currency, LocalDate transactionDate, JournalEntryType journalEntryType) {
+        this.contractJournal = contractJournal;
         this.metricType = metricType;
+        this.account = account;
         this.currency = currency;
         this.transactionDate = transactionDate;
         this.journalEntryType = journalEntryType;
@@ -126,5 +131,13 @@ public class JournalEntryHeader {
 
     public void setContractJournal(ContractJournal contractJournal) {
         this.contractJournal = contractJournal;
+    }
+
+    public Account getAccount() {
+        return account;
+    }
+
+    public void setAccount(Account account) {
+        this.account = account;
     }
 }

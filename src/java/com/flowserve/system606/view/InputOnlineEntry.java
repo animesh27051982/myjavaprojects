@@ -24,7 +24,6 @@ import com.flowserve.system606.web.WebSession;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -313,20 +312,19 @@ public class InputOnlineEntry implements Serializable {
         contract.setLastUpdateDate(LocalDateTime.now());
     }
 
-    public StreamedContent getFile() throws Exception {
+    public StreamedContent getFile() {
         try {
-            //reportingUnits = createReportingUnitTree();
             inputStream = PobInput.class.getResourceAsStream("/resources/excel_input_templates/POCI_Template_FINAL.xlsx");
             outputStream = new FileOutputStream(new File("POCI_Template_FINAL.xlsx"));
-
-        } catch (IOException e) {
-            e.printStackTrace();
+            templateService.processTemplateDownload(inputStream, outputStream, reportingUnit);
+            InputStream inputStreamFromOutputStream = new FileInputStream(new File("POCI_Template_FINAL.xlsx"));
+            file = new DefaultStreamedContent(inputStreamFromOutputStream, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "POCI_Template_FINAL.xlsx");
+        } catch (Exception e) {
+            Logger.getLogger(ReportContractEstimate.class.getName()).log(Level.INFO, "Error generating file: ", e);
+            FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error generating file" + e.getMessage(), e.getMessage());
+            FacesContext.getCurrentInstance().addMessage(null, msg);
         }
 
-        templateService.processTemplateDownload(inputStream, outputStream, reportingUnit);
-
-        InputStream inputStreamFromOutputStream = new FileInputStream(new File("POCI_Template_FINAL.xlsx"));
-        file = new DefaultStreamedContent(inputStreamFromOutputStream, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "POCI_Template_FINAL.xlsx");
         return file;
     }
 

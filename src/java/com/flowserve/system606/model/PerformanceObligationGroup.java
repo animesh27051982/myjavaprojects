@@ -1,6 +1,7 @@
 package com.flowserve.system606.model;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Currency;
 import java.util.List;
 
@@ -32,6 +33,12 @@ public class PerformanceObligationGroup extends TransientMeasurable<String> impl
         this.company = contract.getReportingUnit().getCompany();
     }
 
+    public PerformanceObligationGroup(String id, ReportingUnit reportingUnit) {
+        this.id = id;
+        this.localCurrency = reportingUnit.getLocalCurrency();
+        this.company = reportingUnit.getCompany();
+    }
+
     public PerformanceObligationGroup(String id, Contract contract, List<PerformanceObligation> pobs) {
         this.id = id;
         this.localCurrency = contract.getLocalCurrency();
@@ -45,6 +52,14 @@ public class PerformanceObligationGroup extends TransientMeasurable<String> impl
         this.localCurrency = contract.getLocalCurrency();
         this.contractCurrency = contract.getContractCurrency();
         this.company = contract.getReportingUnit().getCompany();
+        this.revenueMethod = revenueMethod;
+        this.performanceObligations = pobs;
+    }
+
+    public PerformanceObligationGroup(String id, ReportingUnit reportingUnit, RevenueMethod revenueMethod, List<PerformanceObligation> pobs) {
+        this.id = id;
+        this.localCurrency = reportingUnit.getLocalCurrency();
+        this.company = reportingUnit.getCompany();
         this.revenueMethod = revenueMethod;
         this.performanceObligations = pobs;
     }
@@ -94,6 +109,10 @@ public class PerformanceObligationGroup extends TransientMeasurable<String> impl
 
     public void addPerformanceObligation(PerformanceObligation pob) {
         performanceObligations.add(pob);
+    }
+
+    public void addPerformanceObligations(Collection<PerformanceObligation> pobs) {
+        performanceObligations.addAll(pobs);
     }
 
     public List<PerformanceObligation> getPerformanceObligations() {

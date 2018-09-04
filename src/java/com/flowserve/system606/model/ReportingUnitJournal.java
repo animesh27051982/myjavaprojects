@@ -42,6 +42,14 @@ public class ReportingUnitJournal {
     @OneToMany(cascade = {CascadeType.ALL}, fetch = FetchType.LAZY, mappedBy = "reportingUnitJournal", orphanRemoval = true)
     List<ContractJournal> contractJournals = new ArrayList<ContractJournal>();
 
+    public ReportingUnitJournal() {
+    }
+
+    public ReportingUnitJournal(ReportingUnit ru, FinancialPeriod period) {
+        this.reportingUnit = ru;
+        this.period = period;
+    }
+
     public void addContractJournal(ContractJournal contractJournal) {
         contractJournals.add(contractJournal);
     }

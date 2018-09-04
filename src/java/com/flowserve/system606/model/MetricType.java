@@ -9,8 +9,6 @@ import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
@@ -68,9 +66,6 @@ public class MetricType extends BaseEntity<Long> implements Comparable<MetricTyp
     private boolean required;   // maybe redundant
     @Column(name = "IS_CONVERTIBLE")
     private boolean convertible;   // maybe redundant
-    @OneToOne
-    @JoinColumn(name = "ACCOUNT_ID")
-    private Account account;
 
     public MetricType() {
     }
@@ -240,13 +235,4 @@ public class MetricType extends BaseEntity<Long> implements Comparable<MetricTyp
     public void setConvertible(boolean convertible) {
         this.convertible = convertible;
     }
-
-    public Account getAccount() {
-        return account;
-    }
-
-    public void setAccount(Account account) {
-        this.account = account;
-    }
-
 }

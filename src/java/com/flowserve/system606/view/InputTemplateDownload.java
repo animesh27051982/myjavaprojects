@@ -12,12 +12,15 @@ import com.flowserve.system606.web.WebSession;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
+import javax.faces.application.FacesMessage;
+import javax.faces.context.FacesContext;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -48,31 +51,22 @@ public class InputTemplateDownload implements Serializable {
         reportingUnit = webSession.getCurrentReportingUnit();
     }
 
-    public StreamedContent getFile() throws Exception {
+    public StreamedContent getFile() {
         try {
-            //reportingUnits = createReportingUnitTree();
             inputStream = PobInput.class.getResourceAsStream("/resources/excel_input_templates/POCI_Template_New.xlsx");
             outputStream = new FileOutputStream(new File("POCI_Template_New.xlsx"));
-
-        } catch (IOException e) {
-            e.printStackTrace();
+            templateService.processTemplateDownload(inputStream, outputStream, reportingUnit);
+            InputStream inputStreamFromOutputStream = new FileInputStream(new File("POCI_Template_New.xlsx"));
+            file = new DefaultStreamedContent(inputStreamFromOutputStream, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "POCI_Template_New.xlsx");
+        } catch (Exception e) {
+            Logger.getLogger(ReportContractEstimate.class.getName()).log(Level.INFO, "Error generating file: ", e);
+            FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error generating file: ", e.getMessage());
+            FacesContext.getCurrentInstance().addMessage(null, msg);
         }
 
-        templateService.processTemplateDownload(inputStream, outputStream, reportingUnit);
-
-        InputStream inputStreamFromOutputStream = new FileInputStream(new File("POCI_Template_New.xlsx"));
-        file = new DefaultStreamedContent(inputStreamFromOutputStream, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "POCI_Template_New.xlsx");
         return file;
     }
 
-//    public List<ReportingUnit> getSelectedReportingUnits() {
-//        return selectedReportingUnits;
-//    }
-//
-//    public void setSelectedReportingUnits(List<ReportingUnit> selectedReportingUnits) {
-//        this.selectedReportingUnits = selectedReportingUnits;
-//    }
-//
     public List<ReportingUnit> getReportingUnits() {
         List<ReportingUnit> reportingUnits = new ArrayList<ReportingUnit>();
         reportingUnits.add(reportingUnit);

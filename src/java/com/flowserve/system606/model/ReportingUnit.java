@@ -128,6 +128,18 @@ public class ReportingUnit extends TransientMeasurable<Long> implements Measurab
         return null;
     }
 
+    public List<PerformanceObligation> getPobsByRevenueMethod(RevenueMethod revenueMethod) {
+        List<PerformanceObligation> pobs = new ArrayList<PerformanceObligation>();
+
+        for (PerformanceObligation pob : this.getPerformanceObligations()) {
+            if (revenueMethod.equals(pob.getRevenueMethod())) {
+                pobs.add(pob);
+            }
+        }
+
+        return pobs;
+    }
+
     public void setPeriodPendingReview(FinancialPeriod period) {
         periodApprovalRequestMap.get(period).setWorkflowStatus(WorkflowStatus.PENDING_REVIEW);
     }
@@ -161,7 +173,7 @@ public class ReportingUnit extends TransientMeasurable<Long> implements Measurab
     }
 
     public Currency getContractCurrency() {
-        return localCurrency;
+        return null;
     }
 
     public Currency getReportingCurrency() {
