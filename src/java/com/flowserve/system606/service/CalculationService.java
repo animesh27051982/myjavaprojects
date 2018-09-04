@@ -412,7 +412,7 @@ public class CalculationService {
         if (measurable.getContractCurrency() == null) {
             //Logger.getLogger(CalculationService.class.getName()).log(Level.INFO, "Calculating non-CC accumulation.");
             CurrencyMetric metric = getAccumulatedNonContractCurrencyMetric(metricType, measurable, period);
-            Logger.getLogger(CalculationService.class.getName()).log(Level.INFO, "non-CC metric value: " + metric.getLcValue().toPlainString());
+            Logger.getLogger(CalculationService.class.getName()).log(Level.INFO, "non-CC metric value " + metricCode + ": " + metric.getLcValue().toPlainString());
             return metric;
         }
 
