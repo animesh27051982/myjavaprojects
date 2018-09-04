@@ -129,4 +129,10 @@ public class ReportsReview implements Serializable {
         }
     }
 
+    public void clearFilterByContractText() {
+        webSession.setFilterText(null);
+        webSession.setSelectedContracts(null);
+        rootTreeNode = viewSupport.generateNodeTree(reportingUnit);
+    }
+
 }
