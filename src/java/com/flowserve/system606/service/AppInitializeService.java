@@ -63,11 +63,12 @@ public class AppInitializeService {
             adminService.initCompaniesInRUs();
             adminService.initPreparersReviewerForRU();
 //            adminService.initPreparersReviewerForCOE(); Not needed now
-            adminService.initReportingUnitWorkflowStatus();
+
             calculationService.initBusinessRules();
 
             financialPeriodService.openPeriod(financialPeriodService.getCurrentFinancialPeriod());
 
+            adminService.initReportingUnitWorkflowStatus();
             //calculationService.initBusinessRulesEngine();
             // Uncomment for local file based POB loading current month only.
             //contractService.initContracts();

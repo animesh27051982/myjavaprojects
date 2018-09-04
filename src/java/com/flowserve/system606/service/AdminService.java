@@ -530,10 +530,21 @@ public class AdminService {
     public void initReportingUnitWorkflowStatus() throws Exception {
         Logger.getLogger(AdminService.class.getName()).log(Level.INFO, "initReportingUnitWorkflowStatus()");
         for (FinancialPeriod period : financialPeriodService.findAllPeriods()) {
-            if (period.isNeverOpened()) {
+            if (period.isClosed()) {
                 for (ReportingUnit ru : findAllReportingUnits()) {
                     if (ru.isActive() && !ru.isParent() && ru.getPeriodApprovalRequest(period) == null) {
-                        Logger.getLogger(ReportingUnit.class.getName()).log(Level.FINER, "Initializing RU Period ApprovalRequest: " + ru.getName());
+                        ApprovalRequest ar = new ApprovalRequest();
+                        ar.setReportingUnit(ru);
+                        ar.setFinancialPeriod(period);
+                        ar.setWorkflowStatus(WorkflowStatus.APPROVED);
+                        ru.putPeriodApprovalRequest(period, ar);
+                        update(ru);
+                    }
+                }
+            }
+            if (period.isOpen()) {
+                for (ReportingUnit ru : findAllReportingUnits()) {
+                    if (ru.isActive() && !ru.isParent() && ru.getPeriodApprovalRequest(period) == null) {
                         ApprovalRequest ar = new ApprovalRequest();
                         ar.setReportingUnit(ru);
                         ar.setFinancialPeriod(period);

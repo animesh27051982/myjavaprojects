@@ -209,9 +209,9 @@ public class JournalService {
         row = worksheet.getRow(13);
         setCellValue(row, 5, lossReservePeriodADJLC);
         row = worksheet.getRow(14);
-        setCellValue(row, 6, lossReservePeriodADJLC);
+        setCellValue(row, 6, commExp);
         row = worksheet.getRow(15);
-        setCellValue(row, 8, lossReservePeriodADJLC);
+        setCellValue(row, 8, bilingsPeriodLC);
 
 //        setCellValue(row, 2, revenueToRecognizePeriod);
 //        setCellValue(row, 3, liquidatedDamageRecognizePeriodLC);
