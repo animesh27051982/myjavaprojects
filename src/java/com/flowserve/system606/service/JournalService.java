@@ -115,6 +115,11 @@ public class JournalService {
         em.remove(reportingUnitJournal);
     }
 
+    public List<Account> findAllAccounts() {
+        Query query = em.createQuery("SELECT a FROM Account a");
+        return (List<Account>) query.getResultList();
+    }
+
     public List<AccountMapping> findAllAccountMappings() {
         Query query = em.createQuery("SELECT am FROM AccountMapping am");
         return (List<AccountMapping>) query.getResultList();
