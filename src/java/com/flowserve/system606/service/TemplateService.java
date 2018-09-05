@@ -7,6 +7,7 @@ package com.flowserve.system606.service;
 
 import com.flowserve.system606.model.Contract;
 import com.flowserve.system606.model.CurrencyEvent;
+import com.flowserve.system606.model.Event;
 import com.flowserve.system606.model.EventType;
 import com.flowserve.system606.model.FinancialPeriod;
 import com.flowserve.system606.model.Measurable;
@@ -103,6 +104,7 @@ public class TemplateService {
         List<Contract> contracts = reportingUnit.getContracts();
         for (Contract contract : contracts) {
             List<PerformanceObligation> pobs = contract.getPerformanceObligations();
+            int pobCount = 1;
             for (PerformanceObligation pob : pobs) {
                 row = worksheet.getRow(rowid);
                 if (row == null) {
@@ -152,16 +154,10 @@ public class TemplateService {
                 setDateCellValue(row, 19, dDate);
                 value = calculationService.getCurrencyMetric("PARTIAL_SHIPMENT_COSTS_LC", pob, period).getLcValue();
                 setCellValue(row, 20, value);
-//                cell = row.getCell(19, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
-//                CellStyle currentStyle = cell.getCellStyle();
-//                 LocalDate dDate = calculationService.getDateMetric("DELIVERY_DATE", pob, period).getValue();
-//                 if (dDate != null) {
-//                    cell.setCellValue(dDate.toString());
-//                    cell.setCellStyle(currentStyle);
-//                }
-
-                value = calculationService.getCurrencyMetric("THIRD_PARTY_COMMISSION_CTD_LC", contract, period).getLcValue();
-                setCellValue(row, 31, value);
+                if (pobCount == 1) {
+                    value = calculationService.getCurrencyMetric("THIRD_PARTY_COMMISSION_CTD_LC", contract, period).getLcValue();
+                    setCellValue(row, 31, value);
+                }
                 String val = calculationService.getStringMetric("SALES_DESTINATION", pob, period).getValue();
                 setStringCellValue(row, 32, val);
                 val = calculationService.getStringMetric("OEAM_DISAGG", pob, period).getValue();
@@ -170,32 +166,61 @@ public class TemplateService {
                 setDateCellValue(row, 34, dDate);
                 dDate = calculationService.getDateMetric("SL_END_DATE", pob, period).getValue();
                 setDateCellValue(row, 35, dDate);
-                rowid++;
-//                value = calculationService.getDecimalMetric("PERCENT_COMPLETE", pob, period).getValue();
-//                setCellValue(row, 15, value);
-//                value = calculationService.getCurrencyMetric("THIRD_PARTY_COMMISSION_CTD_LC", pob.getContract(), period).getLcValue();
-//                setCellValue(row, 16, value);
-//                value = calculationService.getCurrencyMetric("THIRD_PARTY_COMMISSION_TO_RECOGNIZE_LC", pob.getContract(), period).getLcValue();
-//                setCellValue(row, 17, value);
-//                value = calculationService.getCurrencyMetric("THIRD_PARTY_COMMISSION_CTD_LC", pob.getContract(), webSession.getPriorPeriod()).getLcValue();
-//                setCellValue(row, 18, value);
-//                value = calculationService.getCurrencyMetric("THIRD_PARTY_COMMISSION_TO_RECOGNIZE_LC", pob.getContract(), webSession.getPriorPeriod()).getLcValue();
-//                setCellValue(row, 19, value);
 
-//                    row.getCell(3).setCellValue(contract.getName());  // TODO - Need customer name?
-//                    row.getCell(4).setCellValue(contract.getSalesOrderNumber());
-//                    row.getCell(5).setCellValue(pob.getName());
-//                    row.getCell(6).setCellValue(pob.getId());
-//
-//
-//                    for (MetricType metricType : metricTypes) {
-//                        cell = row.getCell(CellReference.convertColStringToIndex(metricType.getExcelCol()));
-//                        if ("CurrencyMetric".equals(metricType.getMetricClass())) {
-//                            if (currencyMetricIsNotNull(metricType, pob, period)) {
-//                                cell.setCellValue(calculationService.getCurrencyMetric(metricType.getCode(), pob, period).getValue().doubleValue());
-//                            }
-//                        }
-//                    }
+                EventType billingEventType = eventService.getEventTypeByCode("BILLING_EVENT_CC");
+                List<Event> bEv = calculationService.getAllEventsByPeriodAndEventType(contract, billingEventType, period);
+                if (bEv.size() <= 2 && pobCount == 1) {
+                    int cnt = 1;
+                    for (Event bv : bEv) {
+                        CurrencyEvent b = (CurrencyEvent) bv;
+                        //BigDecimal billValue = BigDecimal.ZERO;
+                        if (cnt == 1) {
+                            String invoiceNum = b.getNumber();
+                            if (invoiceNum != null) {
+                                cell = row.getCell(22, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
+                                cell.setCellValue(invoiceNum);
+                            }
+                            if (b.getEventDate() != null) {
+                                String date = b.getEventDate().toString();
+
+                                cell = row.getCell(23, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
+                                cell.setCellValue(date);
+                            }
+
+                            BigDecimal billValue = b.getCcValue();
+                            setCellValue(row, 24, billValue);
+                            billValue = b.getLcValue();
+                            setCellValue(row, 25, billValue);
+
+                        } else if (cnt == 2) {
+                            String invoiceNum = b.getNumber();
+                            if (invoiceNum != null) {
+                                cell = row.getCell(26, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
+                                cell.setCellValue(invoiceNum);
+                            }
+                            if (b.getEventDate() != null) {
+                                String date = b.getEventDate().toString();
+                                cell = row.getCell(27, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
+                                cell.setCellValue(date);
+                            }
+
+                            BigDecimal billValue = b.getCcValue();
+                            setCellValue(row, 28, billValue);
+                            billValue = b.getLcValue();
+                            setCellValue(row, 29, billValue);
+
+                        }
+
+                        cnt++;
+                    }
+                } else if (bEv.size() > 2) {
+                    XSSFRow rowWarn = worksheet.getRow(0);
+                    cell = rowWarn.getCell(CellReference.convertColStringToIndex("W"));
+                    cell.setCellValue("Billing Inputs (More than 2 Billinngs, use Billings UI)");
+                }
+
+                rowid++;
+                pobCount++;
             }
         }
         ((XSSFSheet) worksheet).getCTWorksheet().getSheetViews().getSheetViewArray(0).setTopLeftCell("A1");
