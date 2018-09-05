@@ -11,9 +11,9 @@
         </style>
     </ui:define>
 
-    <ui:define name="title">Account Mapping</ui:define>
+    <ui:define name="title">Account Mapping List</ui:define>
 
-    <ui:define name="viewname">Account Mapping</ui:define>
+    <ui:define name="viewname">Account Mapping List</ui:define>
 
     <ui:define name="content">
         <div style="min-height: calc(100vh - 235px);">
@@ -24,7 +24,7 @@
 
                     <div class="ui-g-12">
                         <div class="card card-w-title">
-                            <h1>Account Mapping</h1>
+                            <h1>Account Mapping List</h1>
 
                             <p:dataTable id="accMaptable" var="ac" value="#{accountMappingList.list}"  paginator="true" rows="30" tableStyle="table-layout:auto">
 
@@ -32,7 +32,7 @@
                                     <h:outputText value="#{ac.id}" />
                                 </p:column>
                              
-                                <p:column headerText="Name" >
+                                <p:column headerText="Account ID" >
                                     <h:outputText value="#{ac.account.id}" />
                                 </p:column>
                                 
@@ -46,10 +46,6 @@
                                 
                                 <p:column headerText="Metric Type" >
                                     <h:outputText value="#{ac.metricType.code}" />
-                                </p:column>
-                                
-                                 <p:column headerText="Account ID" >
-                                     <h:outputText value="#{ac.account.id}" />
                                 </p:column>
                                 
                                 <p:column headerText="Revenue Method" >
