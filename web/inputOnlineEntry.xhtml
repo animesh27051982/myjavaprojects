@@ -654,7 +654,7 @@
                                         </p:column>
                                         <p:column style="white-space:pre-line;">
                                             <h:outputText id="billPeriodlc" value="#{viewSupport.getCurrencyMetric('CONTRACT_BILLINGS_PERIOD_CC', billEvent).lcValue}"
-                                                          rendered="#{of:isInstance('com.flowserve.system606.model.Contract', billEvent)}" >
+                                                          rendered="#{of:isInstance('com.flowserve.system606.model.Contract', billEvent) or of:isInstance('com.flowserve.system606.model.ReportingUnit', billEvent)}" >
                                                 <f:convertNumber type="currency" currencySymbol=""/>
                                             </h:outputText>
                                             <p:cellEditor id="billLc" rendered="#{of:isInstance('com.flowserve.system606.model.CurrencyEvent', billEvent)}">
@@ -673,7 +673,7 @@
                                         </p:column>
                                         <p:column style="white-space:pre-line;">
                                             <h:outputText id="billCTD" value="#{viewSupport.getCurrencyMetric('CONTRACT_BILLINGS_CTD_CC', billEvent).lcValue}"
-                                                          rendered="#{of:isInstance('com.flowserve.system606.model.Contract', billEvent)}" >
+                                                          rendered="#{of:isInstance('com.flowserve.system606.model.Contract', billEvent) or of:isInstance('com.flowserve.system606.model.ReportingUnit', billEvent)}" >
                                                 <f:convertNumber type="currency" currencySymbol=""/>
                                             </h:outputText>
                                         </p:column>

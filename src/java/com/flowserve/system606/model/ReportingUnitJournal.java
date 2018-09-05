@@ -76,6 +76,31 @@ public class ReportingUnitJournal {
         return summaryLine;
     }
 
+    public JournalEntryLine getReportingUnitSummaryJournalOffsetEntryLine(Account account) {
+        if (account == null || account.getOffsetAccount() == null) {
+            return null;
+        }
+        JournalEntryLine summaryLine = new JournalEntryLine();
+        summaryLine.setAccount(account.getOffsetAccount());
+        summaryLine.setAmount(BigDecimal.ZERO);
+
+        for (ContractJournal contractJournal : contractJournals) {
+            for (JournalEntryHeader header : contractJournal.getJournalEntryHeaders()) {
+                if (header.getAccount().equals(account)) {
+                    for (JournalEntryLine existingLine : header.getJournalEntryLines()) {
+                        if (existingLine.getAccount().equals(account.getOffsetAccount())) {
+                            if (existingLine.getAmount() != null) {
+                                summaryLine.setAmount(summaryLine.getAmount().add(existingLine.getAmount()));
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        return summaryLine;
+    }
+
     public JournalEntryLine getReportingUnitSummaryJournalEntryLine(Account account, RevenueMethod revenueMethod) {
         if (account == null || revenueMethod == null) {
             return null;
@@ -90,6 +115,61 @@ public class ReportingUnitJournal {
                 if (header.containsAccount(account) && revenueMethod.equals(header.getRevenueMethod())) {
                     for (JournalEntryLine existingLine : header.getJournalEntryLines()) {
                         if (existingLine.getAccount().equals(account) && existingLine.getRevenueMethod().equals(revenueMethod)) {
+                            if (existingLine.getAmount() != null) {
+                                summaryLine.setAmount(summaryLine.getAmount().add(existingLine.getAmount()));
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        return summaryLine;
+    }
+
+    /**
+     * Get the specific offset lines for a specific account, across all entries.
+     */
+    public JournalEntryLine getReportingUnitSummaryJournalOffsetEntryLine(Account baseAccount, RevenueMethod revenueMethod) {
+        if (baseAccount == null || baseAccount.getOffsetAccount() == null || revenueMethod == null) {
+            return null;
+        }
+        JournalEntryLine summaryLine = new JournalEntryLine();
+        summaryLine.setAccount(baseAccount.getOffsetAccount());
+        summaryLine.setRevenueMethod(revenueMethod);
+        summaryLine.setAmount(BigDecimal.ZERO);
+
+        for (ContractJournal contractJournal : contractJournals) {
+            for (JournalEntryHeader header : contractJournal.getJournalEntryHeaders()) {
+                if (header.getAccount().equals(baseAccount) && revenueMethod.equals(header.getRevenueMethod())) {
+                    for (JournalEntryLine existingLine : header.getJournalEntryLines()) {
+                        if (existingLine.getAccount().equals(baseAccount.getOffsetAccount()) && existingLine.getRevenueMethod().equals(revenueMethod)) {
+                            if (existingLine.getAmount() != null) {
+                                summaryLine.setAmount(summaryLine.getAmount().add(existingLine.getAmount()));
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        return summaryLine;
+    }
+
+    public JournalEntryLine getReportingUnitSummaryJournalEntryLine(Account account, RevenueMethod revenueMethod1, RevenueMethod revenueMethod2) {
+        if (account == null || revenueMethod1 == null || revenueMethod2 == null) {
+            return null;
+        }
+        JournalEntryLine summaryLine = new JournalEntryLine();
+        summaryLine.setAccount(account);
+        //summaryLine.setRevenueMethod(revenueMethod);
+        summaryLine.setAmount(BigDecimal.ZERO);
+
+        for (ContractJournal contractJournal : contractJournals) {
+            for (JournalEntryHeader header : contractJournal.getJournalEntryHeaders()) {
+                if (header.containsAccount(account) && (revenueMethod1.equals(header.getRevenueMethod()) || revenueMethod2.equals(header.getRevenueMethod()))) {
+                    for (JournalEntryLine existingLine : header.getJournalEntryLines()) {
+                        if (existingLine.getAccount().equals(account) && (existingLine.getRevenueMethod().equals(revenueMethod1) || existingLine.getRevenueMethod().equals(revenueMethod2))) {
                             if (existingLine.getAmount() != null) {
                                 summaryLine.setAmount(summaryLine.getAmount().add(existingLine.getAmount()));
                             }

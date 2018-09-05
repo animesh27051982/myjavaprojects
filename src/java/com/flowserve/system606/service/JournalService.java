@@ -81,9 +81,9 @@ public class JournalService {
             List<PerformanceObligationGroup> pobGroupsByRevenueMethods = new ArrayList<PerformanceObligationGroup>();
 
             pobGroupsByRevenueMethods.add(new PerformanceObligationGroup("pocPobs", contract, RevenueMethod.PERC_OF_COMP, contract.getPobsByRevenueMethod(RevenueMethod.PERC_OF_COMP)));
-            //pobGroupsByRevenueMethods.add(new PerformanceObligationGroup("pitPobs", contract, RevenueMethod.POINT_IN_TIME, contract.getPobsByRevenueMethod(RevenueMethod.POINT_IN_TIME)));
-            //pobGroupsByRevenueMethods.add(new PerformanceObligationGroup("rtiPobs", contract, RevenueMethod.RIGHT_TO_INVOICE, contract.getPobsByRevenueMethod(RevenueMethod.RIGHT_TO_INVOICE)));
-            //pobGroupsByRevenueMethods.add(new PerformanceObligationGroup("slPobs", contract, RevenueMethod.STRAIGHT_LINE, contract.getPobsByRevenueMethod(RevenueMethod.STRAIGHT_LINE)));
+            pobGroupsByRevenueMethods.add(new PerformanceObligationGroup("pitPobs", contract, RevenueMethod.POINT_IN_TIME, contract.getPobsByRevenueMethod(RevenueMethod.POINT_IN_TIME)));
+            pobGroupsByRevenueMethods.add(new PerformanceObligationGroup("rtiPobs", contract, RevenueMethod.RIGHT_TO_INVOICE, contract.getPobsByRevenueMethod(RevenueMethod.RIGHT_TO_INVOICE)));
+            pobGroupsByRevenueMethods.add(new PerformanceObligationGroup("slPobs", contract, RevenueMethod.STRAIGHT_LINE, contract.getPobsByRevenueMethod(RevenueMethod.STRAIGHT_LINE)));
 
             for (AccountMapping accountMappingPOB : findAllAccountMappingsByOwnerEntityType(MetricType.OWNER_ENTITY_TYPE_POB)) {
                 //Logger.getLogger(JournalService.class.getName()).log(Level.INFO, "checkpoint 5");
@@ -154,7 +154,7 @@ public class JournalService {
             if (offsetAccount != null) {
                 //Logger.getLogger(JournalService.class.getName()).log(Level.INFO, "Generating JE Line for Offset Account: " + offsetAccount.getName());
                 JournalEntryLine offsetLine = new JournalEntryLine(journalEntryHeader, offsetAccount, journalEntryHeader.getCurrency(), journalEntryHeader.getRevenueMethod());
-                if (account.isCredit() && offsetAccount.isCredit() && metric.getLcValue() != null) {
+                if (accountsAreSameType(account, offsetAccount) && metric.getLcValue() != null) {
                     setJournalEntryLineAmounts(metric.getLcValue().negate(), offsetLine);
                 } else {
                     setJournalEntryLineAmounts(metric.getLcValue(), offsetLine);
@@ -162,6 +162,10 @@ public class JournalService {
                 journalEntryHeader.addJournalEntryLine(offsetLine);
             }
         }
+    }
+
+    private boolean accountsAreSameType(Account account, Account offsetAccount) {
+        return ((account.isCredit() && offsetAccount.isCredit()) || (account.isDebit() && offsetAccount.isDebit()));
     }
 
     private void setJournalEntryLineAmounts(BigDecimal amount, JournalEntryLine line) {
@@ -223,21 +227,6 @@ public class JournalService {
         row = worksheet.getRow(15);
         setCellValue(row, 8, bilingsPeriodLC);
 
-//        setCellValue(row, 2, revenueToRecognizePeriod);
-//        setCellValue(row, 3, liquidatedDamageRecognizePeriodLC);
-//        setCellValue(row, 4, costGoodsSoldPeriodLC);
-//        setCellValue(row, 6, commExp);
-//        setCellValue(row, 7, BigDecimal.ZERO);//TODO FX_GAIN_LOSS
-//        setCellValue(row, 8, bilingsPeriodLC);
-//        setCellValue(row, 9, costGoodsSoldPeriodLC);
-//        setCellValue(row, 10, lossReservePeriodADJLC);
-//        setCellValue(row, 11, revenueInExcess);
-//        setCellValue(row, 12, billingsInExcess);
-//        setCellValue(row, 13, lossReservePeriodADJLC);
-//        setCellValue(row, 14, commExp);
-        //For Contract Billings row
-        //row = worksheet.getRow(13);
-        //setCellValue(row, 8, bilingsPeriodLC);
         // Split the RU into groups.  We need totals per type of POB, so create 3 groups.  The PerformanceObligationGroup is just a shell Measurable non-entity class used for grouping.
         PerformanceObligationGroup pocPobs = new PerformanceObligationGroup("pocPobs", reportingUnit, RevenueMethod.PERC_OF_COMP, reportingUnit.getPobsByRevenueMethod(RevenueMethod.PERC_OF_COMP));
         PerformanceObligationGroup pitPobs = new PerformanceObligationGroup("pitPobs", reportingUnit, RevenueMethod.POINT_IN_TIME, reportingUnit.getPobsByRevenueMethod(RevenueMethod.POINT_IN_TIME));
@@ -300,10 +289,131 @@ public class JournalService {
         setCellValue(row, debitCol, tpcLiab.getDebitAmount());
         setCellValue(row, creditCol, tpcLiab.getCreditAmount());
 
+        row = worksheet.getRow(65);
+        JournalEntryLine salesOutside = reportingUnitJournal.getReportingUnitSummaryJournalEntryLine(findAccountById("SALESOC"), RevenueMethod.STRAIGHT_LINE, RevenueMethod.RIGHT_TO_INVOICE);
+        setCellValue(row, debitCol, salesOutside.getDebitAmount());
+        setCellValue(row, creditCol, salesOutside.getCreditAmount());
+
+        row = worksheet.getRow(66);
+        JournalEntryLine salesOutsideLD = reportingUnitJournal.getReportingUnitSummaryJournalEntryLine(findAccountById("SALESLDPENALTY"), RevenueMethod.STRAIGHT_LINE, RevenueMethod.RIGHT_TO_INVOICE);
+        setCellValue(row, debitCol, salesOutsideLD.getDebitAmount());
+        setCellValue(row, creditCol, salesOutsideLD.getCreditAmount());
+
+        row = worksheet.getRow(67);
+        JournalEntryLine cosOsSLRTI = reportingUnitJournal.getReportingUnitSummaryJournalEntryLine(findAccountById("COSOC"), RevenueMethod.STRAIGHT_LINE, RevenueMethod.RIGHT_TO_INVOICE);
+        setCellValue(row, debitCol, cosOsSLRTI.getDebitAmount());
+        setCellValue(row, creditCol, cosOsSLRTI.getCreditAmount());
+
+        row = worksheet.getRow(68);
+        JournalEntryLine invWipOs = reportingUnitJournal.getReportingUnitSummaryJournalEntryLine(findAccountById("INV.WIP"), RevenueMethod.STRAIGHT_LINE, RevenueMethod.RIGHT_TO_INVOICE);
+        setCellValue(row, debitCol, invWipOs.getDebitAmount());
+        setCellValue(row, creditCol, invWipOs.getCreditAmount());
+
+        row = worksheet.getRow(69);
+        JournalEntryLine contrLiabSLRTI = reportingUnitJournal.getReportingUnitSummaryJournalEntryLine(findAccountById("STCONTLIAB"), RevenueMethod.STRAIGHT_LINE, RevenueMethod.RIGHT_TO_INVOICE);
+        setCellValue(row, debitCol, contrLiabSLRTI.getDebitAmount());
+        setCellValue(row, creditCol, contrLiabSLRTI.getCreditAmount());
+
+        row = worksheet.getRow(73);
+        JournalEntryLine tradeRecContract = reportingUnitJournal.getReportingUnitSummaryJournalEntryLine(findAccountById("RECNET"));
+        setCellValue(row, debitCol, tradeRecContract.getDebitAmount());
+        setCellValue(row, creditCol, tradeRecContract.getCreditAmount());
+
+        row = worksheet.getRow(74);
+        JournalEntryLine liabContract = reportingUnitJournal.getReportingUnitSummaryJournalOffsetEntryLine(findAccountById("RECNET"));
+        setCellValue(row, debitCol, liabContract.getDebitAmount());
+        setCellValue(row, creditCol, liabContract.getCreditAmount());
+
+        row = worksheet.getRow(77);
+        JournalEntryLine salesocLinePIT = reportingUnitJournal.getReportingUnitSummaryJournalEntryLine(findAccountById("SALESOC"), RevenueMethod.POINT_IN_TIME);
+        setCellValue(row, debitCol, salesocLinePIT.getDebitAmount());
+        setCellValue(row, creditCol, salesocLinePIT.getCreditAmount());
+
+        row = worksheet.getRow(78);
+        JournalEntryLine salesLDPenaltyPIT = reportingUnitJournal.getReportingUnitSummaryJournalEntryLine(findAccountById("SALESLDPENALTY"), RevenueMethod.POINT_IN_TIME);
+        setCellValue(row, debitCol, salesLDPenaltyPIT.getDebitAmount());
+        setCellValue(row, creditCol, salesLDPenaltyPIT.getCreditAmount());
+
+        row = worksheet.getRow(79);
+        JournalEntryLine cosocPIT = reportingUnitJournal.getReportingUnitSummaryJournalEntryLine(findAccountById("COSOC"), RevenueMethod.POINT_IN_TIME);
+        setCellValue(row, debitCol, cosocPIT.getDebitAmount());
+        setCellValue(row, creditCol, cosocPIT.getCreditAmount());
+
+        row = worksheet.getRow(80);
+        JournalEntryLine invWipPIT = reportingUnitJournal.getReportingUnitSummaryJournalEntryLine(findAccountById("INV.WIP"), RevenueMethod.POINT_IN_TIME);
+        setCellValue(row, debitCol, invWipPIT.getDebitAmount());
+        setCellValue(row, creditCol, invWipPIT.getCreditAmount());
+
+        row = worksheet.getRow(81);
+        JournalEntryLine contrLiabPIT = reportingUnitJournal.getReportingUnitSummaryJournalEntryLine(findAccountById("STCONTLIAB"), RevenueMethod.POINT_IN_TIME);
+        setCellValue(row, debitCol, contrLiabPIT.getDebitAmount());
+        setCellValue(row, creditCol, contrLiabPIT.getCreditAmount());
+
+        int rowNumber = 100;
+        row = worksheet.getRow(rowNumber);
+        for (Contract contract : reportingUnit.getContracts()) {
+            row = worksheet.getRow(++rowNumber);
+            printJournalEntryContracts(rowNumber, worksheet, contract, period);
+        }
         return worksheet;
     }
 
-    public void printJournalEntryPobsGroups(int single, XSSFSheet worksheet, PerformanceObligationGroup pobGroup, FinancialPeriod period) throws Exception {
+    public void printJournalEntryContracts(int rowNumber, XSSFSheet worksheet, Contract contract, FinancialPeriod period) throws Exception {
+
+        XSSFRow row;
+        BigDecimal revenueToRecognizePeriod = getRevenueRecognizePeriodLC(contract, period);
+        BigDecimal liquidatedDamageRecognizePeriodLC = getLiquidatedDamagesRecognizePeriodLC(contract, period);
+        BigDecimal costGoodsSoldPeriodLC = getCostGoodsSoldPeriodLC(contract, period);
+        BigDecimal lossReservePeriodADJLC = getLossReservePeriodADJLC(contract, period);
+        BigDecimal commExp = getThirdPartyCommissionsPeriod(contract, period);
+        BigDecimal bilingsPeriodLC = getContractBillingsPeriodLC(contract, period);
+        BigDecimal revenueInExcess = getContractRevenueInExcess(contract, period);
+        BigDecimal billingsInExcess = getContractBillingsInExcess(contract, period);
+
+        row = worksheet.getRow(rowNumber);
+        setCellStringValue(row, 0, contract.getName());
+        setCellValue(row, 2, revenueToRecognizePeriod);
+        setCellValue(row, 3, liquidatedDamageRecognizePeriodLC);
+        setCellValue(row, 4, costGoodsSoldPeriodLC);
+        setCellValue(row, 5, lossReservePeriodADJLC);
+        setCellValue(row, 6, commExp);
+        setCellValue(row, 7, BigDecimal.ZERO);//TODO FX_GAIN_LOSS
+        setCellValue(row, 8, bilingsPeriodLC);
+        setCellValue(row, 9, costGoodsSoldPeriodLC.negate());
+
+        /**
+         *
+         *
+         *
+         *
+         *
+         *
+         *
+         *
+         * KJG - Need to limit to non-POC pobs only.
+         *
+         */
+        setCellValue(row, 10, lossReservePeriodADJLC);
+        setCellValue(row, 11, revenueInExcess);
+        setCellValue(row, 12, billingsInExcess);
+
+        /**
+         *
+         *
+         *
+         *
+         *
+         *
+         *
+         *
+         *
+         * KJG - Need to limit to POC pobs only.
+         *
+         */
+        setCellValue(row, 13, lossReservePeriodADJLC);
+    }
+
+    public void printJournalEntryPobsGroups(int rowNumber, XSSFSheet worksheet, PerformanceObligationGroup pobGroup, FinancialPeriod period) throws Exception {
 
         XSSFRow row;
         BigDecimal revenueToRecognizePeriod = getRevenueRecognizePeriodLC(pobGroup, period);
@@ -312,14 +422,11 @@ public class JournalService {
         BigDecimal lossReservePeriodADJLC = getLossReservePeriodADJLC(pobGroup, period);
         BigDecimal revenueInExcess = getContractRevenueInExcess(pobGroup, period);
         BigDecimal billingsInExcess = getContractBillingsInExcess(pobGroup, period);
-        //BigDecimal commExp = getThirdPartyCommissionsPeriod(pobGroup, period);
-        // Percentage of completion Pobs.  Set total row for POC POBs
-        row = worksheet.getRow(single);
+        row = worksheet.getRow(rowNumber);
         setCellValue(row, 2, revenueToRecognizePeriod);
         setCellValue(row, 3, liquidatedDamageRecognizePeriodLC);
         setCellValue(row, 4, costGoodsSoldPeriodLC);
         setCellValue(row, 5, lossReservePeriodADJLC);
-        //setCellValue(row, 6, commExp);
         setCellValue(row, 7, BigDecimal.ZERO);//TODO FX_GAIN_LOSS
         setCellValue(row, 8, BigDecimal.ZERO);//TODO BILLINGS_PERIOD_CC
         setCellValue(row, 9, costGoodsSoldPeriodLC.negate());
@@ -331,8 +438,6 @@ public class JournalService {
         if ("pocPobs".equals(pobGroup.getId())) {
             setCellValue(row, 13, lossReservePeriodADJLC);
         }
-        //setCellValue(row, 14, commExp.negate());
-
     }
 
     private void setCellValue(XSSFRow row, int cellNum, BigDecimal value) {
@@ -345,6 +450,17 @@ public class JournalService {
         CreationHelper ch = row.getSheet().getWorkbook().getCreationHelper();
         cell.setCellValue(value.doubleValue());
         currentStyle.setDataFormat(ch.createDataFormat().getFormat("_(* #,##0_);_(* (#,##0);_(* \"-\"??_);_(@_)"));
+        cell.setCellStyle(currentStyle);
+    }
+
+    private void setCellStringValue(XSSFRow row, int cellNum, String value) {
+        if (value == null) {
+            return;
+        }
+        Cell cell = row.getCell(cellNum, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
+        CellStyle currentStyle = cell.getCellStyle();
+        CreationHelper ch = row.getSheet().getWorkbook().getCreationHelper();
+        cell.setCellValue(value);
         cell.setCellStyle(currentStyle);
     }
 
