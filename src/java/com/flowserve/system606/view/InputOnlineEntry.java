@@ -316,9 +316,10 @@ public class InputOnlineEntry implements Serializable {
         try {
             String filename = "POCI_Template_RU-" + reportingUnit.getCode() + ".xlsx";
             inputStream = PobInput.class.getResourceAsStream("/resources/excel_input_templates/POCI_Template_FINAL.xlsx");
-            outputStream = new FileOutputStream(new File(filename));
+            File tempFile = File.createTempFile(filename, ".xlsx");
+            outputStream = new FileOutputStream(tempFile);
             templateService.processTemplateDownload(inputStream, outputStream, reportingUnit);
-            InputStream inputStreamFromOutputStream = new FileInputStream(new File(filename));
+            InputStream inputStreamFromOutputStream = new FileInputStream(tempFile);
             file = new DefaultStreamedContent(inputStreamFromOutputStream, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", filename);
         } catch (Exception e) {
             Logger.getLogger(ReportContractEstimate.class.getName()).log(Level.INFO, "Error generating file: ", e);
