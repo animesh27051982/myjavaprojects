@@ -630,12 +630,12 @@
                                             </h:outputText>
                                         </p:column>
                                         <p:column style="white-space:pre-line;">
-                                            <h:outputText value="#{viewSupport.getCurrencyMetricPriorPeriod('LOSS_RESERVE_CTD_LC', pob).lcValue}" rendered="#{of:isInstance('com.flowserve.system606.model.Contract', pob)}" >
+                                            <h:outputText value="#{viewSupport.getCurrencyMetricPriorPeriod('LOSS_RESERVE_CTD_LC', pob).lcValue}" rendered="#{of:isInstance('com.flowserve.system606.model.Contract', pob) or of:isInstance('com.flowserve.system606.model.ReportingUnit', pob)}" >
                                                 <f:convertNumber type="currency" currencySymbol=""/>
                                             </h:outputText>
                                         </p:column>
                                         <p:column style="white-space:pre-line;">
-                                            <h:outputText value="#{viewSupport.getCurrencyMetric('LOSS_RESERVE_PERIOD_ADJ_LC', pob).lcValue}" rendered="#{of:isInstance('com.flowserve.system606.model.Contract', pob)}" >
+                                            <h:outputText value="#{viewSupport.getCurrencyMetric('LOSS_RESERVE_PERIOD_ADJ_LC', pob).lcValue}" rendered="#{of:isInstance('com.flowserve.system606.model.Contract', pob) or of:isInstance('com.flowserve.system606.model.ReportingUnit', pob)}" >
                                                 <f:convertNumber type="currency" currencySymbol=""/>
                                             </h:outputText>
                                         </p:column>
@@ -770,7 +770,6 @@
                                             </p:commandButton>
                                         </p:column>
 
-
                                         <p:column style="white-space:pre-line;" id="f12">
                                             <f:facet name="header">
                                                 <h:outputText value="Contract Summary RU Level" />
@@ -800,7 +799,6 @@
                                                 <p:fileDownload value="#{reportContractEstimate.getJournalEntryReport(pob)}" />
                                             </p:commandButton>
                                         </p:column>
-
 
                                     </p:treeTable>
                                 </p:tab>

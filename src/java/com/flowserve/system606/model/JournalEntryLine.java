@@ -34,10 +34,8 @@ public class JournalEntryLine {
     @OneToOne
     @JoinColumn(name = "ACCOUNT_ID")
     private Account account;
-    @Column(name = "DEBIT_AMOUNT")
-    private BigDecimal debitAmount;
-    @Column(name = "CREDIT_AMOUNT")
-    private BigDecimal creditAmount;
+    @Column(name = "AMOUNT")
+    private BigDecimal amount;
     @Column(name = "CURRENCY")
     private Currency currency;
     @Column(name = "REVENUE_METHOD")
@@ -49,25 +47,11 @@ public class JournalEntryLine {
     public JournalEntryLine() {
     }
 
-    public JournalEntryLine(JournalEntryHeader header, Account account, BigDecimal debitAmount, BigDecimal creditAmount, Currency currency) {
-        this.journalEntryHeader = header;
-        this.account = account;
-        this.debitAmount = debitAmount;
-        this.creditAmount = creditAmount;
-        this.currency = currency;
-    }
-
     public JournalEntryLine(JournalEntryHeader header, Account account, Currency currency, RevenueMethod revenueMethod) {
         this.journalEntryHeader = header;
         this.account = account;
         this.currency = currency;
         this.revenueMethod = revenueMethod;
-    }
-
-    public JournalEntryLine(JournalEntryHeader header, Account account, Currency currency) {
-        this.journalEntryHeader = header;
-        this.account = account;
-        this.currency = currency;
     }
 
     public Long getId() {
@@ -84,22 +68,6 @@ public class JournalEntryLine {
 
     public void setCurrency(Currency currency) {
         this.currency = currency;
-    }
-
-    public BigDecimal getDebitAmount() {
-        return debitAmount;
-    }
-
-    public void setDebitAmount(BigDecimal debitAmount) {
-        this.debitAmount = debitAmount;
-    }
-
-    public BigDecimal getCreditAmount() {
-        return creditAmount;
-    }
-
-    public void setCreditAmount(BigDecimal creditAmount) {
-        this.creditAmount = creditAmount;
     }
 
     public Account getAccount() {
@@ -126,4 +94,43 @@ public class JournalEntryLine {
         this.journalEntryHeader = journalEntryHeader;
     }
 
+    public BigDecimal getAmount() {
+        return amount;
+    }
+
+    public void setAmount(BigDecimal amount) {
+        this.amount = amount;
+    }
+
+    public BigDecimal getDebitAmount() {
+        if (amount == null || amount.equals(BigDecimal.ZERO)) {
+            return BigDecimal.ZERO;
+        }
+
+        if (account.isDebit() && amount.compareTo(BigDecimal.ZERO) > 0) {
+            return amount;
+        }
+
+        if (account.isCredit() && amount.compareTo(BigDecimal.ZERO) < 0) {
+            return amount.abs();
+        }
+
+        return BigDecimal.ZERO;
+    }
+
+    public BigDecimal getCreditAmount() {
+        if (amount == null || amount.equals(BigDecimal.ZERO)) {
+            return BigDecimal.ZERO;
+        }
+
+        if (account.isCredit() && amount.compareTo(BigDecimal.ZERO) > 0) {
+            return amount;
+        }
+
+        if (account.isDebit() && amount.compareTo(BigDecimal.ZERO) < 0) {
+            return amount.abs();
+        }
+
+        return BigDecimal.ZERO;
+    }
 }

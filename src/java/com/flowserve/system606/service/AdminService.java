@@ -532,7 +532,7 @@ public class AdminService {
         for (FinancialPeriod period : financialPeriodService.findAllPeriods()) {
             if (period.isClosed()) {
                 for (ReportingUnit ru : findAllReportingUnits()) {
-                    if (ru.isActive() && !ru.isParent() && ru.getPeriodApprovalRequest(period) == null) {
+                    if (ru.isActive() && ru.getPeriodApprovalRequest(period) == null) {
                         ApprovalRequest ar = new ApprovalRequest();
                         ar.setReportingUnit(ru);
                         ar.setFinancialPeriod(period);
@@ -544,7 +544,7 @@ public class AdminService {
             }
             if (period.isOpen()) {
                 for (ReportingUnit ru : findAllReportingUnits()) {
-                    if (ru.isActive() && !ru.isParent() && ru.getPeriodApprovalRequest(period) == null) {
+                    if (ru.isActive() && ru.getPeriodApprovalRequest(period) == null) {
                         ApprovalRequest ar = new ApprovalRequest();
                         ar.setReportingUnit(ru);
                         ar.setFinancialPeriod(period);

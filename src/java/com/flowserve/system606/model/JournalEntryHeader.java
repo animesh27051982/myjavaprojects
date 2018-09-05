@@ -77,6 +77,17 @@ public class JournalEntryHeader {
         journalEntryLines.addAll(journalEntryLines);
     }
 
+    public boolean containsAccount(Account account) {
+        if (this.account != null && this.account.equals(account)) {
+            return true;
+        }
+        if (this.account != null && this.account.getOffsetAccount() != null && this.account.getOffsetAccount().equals(account)) {
+            return true;
+        }
+
+        return false;
+    }
+
     public Long getId() {
         return id;
     }
@@ -139,5 +150,9 @@ public class JournalEntryHeader {
 
     public void setAccount(Account account) {
         this.account = account;
+    }
+
+    public List<JournalEntryLine> getJournalEntryLines() {
+        return journalEntryLines;
     }
 }

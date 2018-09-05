@@ -380,8 +380,6 @@
                                                 </p:column>
                                             </p:row>
                                         </p:columnGroup>
-                                        <p:ajax event="cellEdit" listener="#{inputOnlineEntry.onCellEdit}" />
-
                                         <p:column sortBy="#{pob.name}">
                                             <h:outputText value="#{pob.name}" title="#{pob.description}"/>
                                         </p:column>
@@ -490,6 +488,7 @@
                                                 <f:facet name="input">
                                                     <p:inputText value="#{viewSupport.getCurrencyMetric('PARTIAL_SHIPMENT_COSTS_LC', pob).lcValue}" disabled="#{not viewSupport.editable}">
                                                         <f:validateDoubleRange/>
+                                                        <p:ajax event="change" process="@this" listener="#{inputOnlineEntry.calculateOutputs(pob)}"/>
                                                     </p:inputText>
                                                 </f:facet>
                                             </p:cellEditor>
@@ -620,6 +619,10 @@
                                             <h:outputText value="#{billEvent.contractCurrency.currencyCode}" rendered="#{of:isInstance('com.flowserve.system606.model.Contract', billEvent)}"/>
                                         </p:column>
                                         <p:column style="white-space:pre-line;">
+                                            <h:outputText id="billPeriodcc" value="#{viewSupport.getCurrencyMetric('CONTRACT_BILLINGS_PERIOD_CC', billEvent).ccValue}"
+                                                          rendered="#{of:isInstance('com.flowserve.system606.model.Contract', billEvent)}" >
+                                                <f:convertNumber type="currency" currencySymbol=""/>
+                                            </h:outputText>
                                             <p:cellEditor rendered="#{of:isInstance('com.flowserve.system606.model.CurrencyEvent', billEvent)}">
                                                 <f:facet name="output">
                                                     <p:inputText value="#{billEvent.ccValue}" styleClass="#{empty billEvent.ccValue ? 'ui-state-error' : ''}" readonly="true">
@@ -650,6 +653,10 @@
                                             <h:outputText value="#{billEvent.localCurrency.currencyCode}" rendered="#{of:isInstance('com.flowserve.system606.model.Contract', billEvent)}"/>
                                         </p:column>
                                         <p:column style="white-space:pre-line;">
+                                            <h:outputText id="billPeriodlc" value="#{viewSupport.getCurrencyMetric('CONTRACT_BILLINGS_PERIOD_CC', billEvent).lcValue}"
+                                                          rendered="#{of:isInstance('com.flowserve.system606.model.Contract', billEvent)}" >
+                                                <f:convertNumber type="currency" currencySymbol=""/>
+                                            </h:outputText>
                                             <p:cellEditor id="billLc" rendered="#{of:isInstance('com.flowserve.system606.model.CurrencyEvent', billEvent)}">
                                                 <f:facet name="output">
                                                     <p:inputText value="#{billEvent.lcValue}" styleClass="#{empty billEvent.lcValue ? 'ui-state-error' : ''}" readonly="true">
@@ -659,7 +666,7 @@
                                                 </f:facet>
                                                 <f:facet name="input">
                                                     <p:inputText value="#{billEvent.lcValue}" disabled="#{not viewSupport.editable}">
-                                                        <p:ajax event="change" process="@this"/>
+                                                        <p:ajax event="change" process="@this" listener="#{inputOnlineEntry.calculateEventOutputs(billEvent)}"/>
                                                     </p:inputText>
                                                 </f:facet>
                                             </p:cellEditor>
@@ -761,12 +768,9 @@
                                                 </p:column>
                                             </p:row>
                                         </p:columnGroup>
-                                        <p:ajax event="cellEdit" listener="#{inputOnlineEntry.onCellEdit}" />
-
                                         <p:column sortBy="#{pob.name}">
                                             <h:outputText value="#{pob.name}" title="#{pob.description}"/>
                                         </p:column>
-
                                         <p:column style="white-space:pre-line;">
                                             <p:cellEditor rendered="#{of:isInstance('com.flowserve.system606.model.Contract', pob)}">
                                                 <f:facet name="output">
@@ -779,6 +783,7 @@
                                                 <f:facet name="input">
                                                     <p:inputText value="#{viewSupport.getCurrencyMetric('THIRD_PARTY_COMMISSION_CTD_LC', pob).lcValue}" disabled="#{not viewSupport.editable}">
                                                         <f:validateDoubleRange/>
+                                                        <p:ajax event="change" process="@this" listener="#{inputOnlineEntry.calculateOutputs(pob)}"/>
                                                     </p:inputText>
                                                 </f:facet>
                                             </p:cellEditor>
@@ -815,7 +820,8 @@
                                                 <f:facet name="input">
                                                     <p:calendar value="#{viewSupport.getDateMetric('SL_START_DATE', pob).value}" converter="localDateConverter" pattern="MM/dd/yyyy"
                                                                 navigator="true" mode="popup" disabled="#{not viewSupport.editable}">
-                                                        <p:ajax event="dateSelect" />
+                                                        <p:ajax event="dateSelect" process="@this" listener="#{inputOnlineEntry.calculateOutputs(pob)}"/>
+
                                                     </p:calendar>
                                                 </f:facet>
                                             </p:cellEditor>
@@ -834,7 +840,7 @@
                                                 <f:facet name="input">
                                                     <p:calendar value="#{viewSupport.getDateMetric('SL_END_DATE', pob).value}" converter="localDateConverter" pattern="MM/dd/yyyy"
                                                                 navigator="true" mode="popup" disabled="#{not viewSupport.editable}">
-                                                        <p:ajax event="dateSelect" />
+                                                        <p:ajax event="dateSelect" process="@this" listener="#{inputOnlineEntry.calculateOutputs(pob)}"/>
                                                     </p:calendar>
                                                 </f:facet>
                                             </p:cellEditor>

@@ -88,6 +88,7 @@ public class ReportContractEstimate implements Serializable {
 //        return file;
 //    }
     public void generateJournal(ReportingUnit reortingUnit) throws Exception {
+
         journalService.generateJournal(reortingUnit, webSession.getCurrentPeriod());
     }
 

@@ -109,7 +109,6 @@ public class CurrencyService {
             if (currencyMetric.getLcValue() == null) {
                 return;
             }
-
             if (BigDecimal.ZERO.equals(currencyMetric.getLcValue())) {
                 currencyMetric.setCcValue(BigDecimal.ZERO);
                 currencyMetric.setRcValue(BigDecimal.ZERO);

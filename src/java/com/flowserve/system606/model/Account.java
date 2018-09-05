@@ -15,7 +15,7 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name = "ACCOUNTS")
-public class Account implements Serializable {
+public class Account extends BaseEntity<String> implements Serializable {
 
     @Id
     private String id;
@@ -91,4 +91,11 @@ public class Account implements Serializable {
         this.offsetAccount = offsetAccount;
     }
 
+    public boolean isDebit() {
+        return this.accountType.equals(AccountType.DEBIT);
+    }
+
+    public boolean isCredit() {
+        return this.accountType.equals(AccountType.CREDIT);
+    }
 }

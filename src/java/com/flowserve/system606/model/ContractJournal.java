@@ -113,4 +113,8 @@ public class ContractJournal {
         this.reportingUnitJournal = reportingUnitJournal;
     }
 
+    public List<JournalEntryHeader> getJournalEntryHeaders() {
+        return journalEntryHeaders;
+    }
+
 }
