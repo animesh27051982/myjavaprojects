@@ -593,7 +593,10 @@
                                         <p:column style="white-space:pre-line;">
                                             <p:cellEditor rendered="#{of:isInstance('com.flowserve.system606.model.CurrencyEvent', billEvent)}">
                                                 <f:facet name="output">
-                                                    <p:inputText value="#{billEvent.number}" styleClass="#{empty billEvent.number ? 'ui-state-error' : ''}" readonly="true"/>
+                                                    <p:inputText value="#{billEvent.number}"
+                                                                 pt:data-tooltip="#{inputOnlineEntry.getBillingMessage(billEvent, billEvent.number)}"
+                                                                 styleClass="#{empty billEvent.number ? 'ui-state-error' : ''}"
+                                                                 style="#{inputOnlineEntry.getBillingTextStyle(billEvent, billEvent.number)}" readonly="true"/>
                                                 </f:facet>
                                                 <f:facet name="input">
                                                     <p:inputText value="#{billEvent.number}" disabled="#{not viewSupport.editable}" >
@@ -632,7 +635,7 @@
                                                 </f:facet>
                                                 <f:facet name="input">
                                                     <p:inputText value="#{billEvent.ccValue}" disabled="#{not viewSupport.editable}">
-                                                        <p:ajax event="change" process="@this" update="billLc" listener="#{inputOnlineEntry.calculateEventOutputs(billEvent)}"/>
+                                                        <p:ajax event="change" process="@this" update=":form:topLevelTabView:treeTableId" listener="#{inputOnlineEntry.calculateEventOutputs(billEvent)}"/>
                                                     </p:inputText>
                                                 </f:facet>
                                             </p:cellEditor>
@@ -666,7 +669,7 @@
                                                 </f:facet>
                                                 <f:facet name="input">
                                                     <p:inputText value="#{billEvent.lcValue}" disabled="#{not viewSupport.editable}">
-                                                        <p:ajax event="change" process="@this" listener="#{inputOnlineEntry.calculateEventOutputs(billEvent)}"/>
+                                                        <p:ajax event="change" process="@this" update=":form:topLevelTabView:treeTableId" listener="#{inputOnlineEntry.calculateEventOutputs(billEvent)}"/>
                                                     </p:inputText>
                                                 </f:facet>
                                             </p:cellEditor>
