@@ -319,7 +319,7 @@ public class ViewSupport implements Serializable {
 
     public String getTextStyle(Measurable measurable) {
         if (measurable instanceof ReportingUnit || measurable instanceof Contract) {
-            return "color: grey; font-style: italic;";
+            return "font-style: italic;";
         }
 
         return "";

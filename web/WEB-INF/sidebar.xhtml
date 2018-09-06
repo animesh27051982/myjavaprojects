@@ -134,18 +134,13 @@
 
                 <h:form id="menuform">
                     <pc:menu widgetVar="me">
-                        <p:submenu id="om_customization" label="Menu Modes" icon="fa fa-fw fa-bars">
-                            <p:menuitem id="custom3" value="Static" icon="fa fa-fw fa-bars" actionListener="#{guestPreferences.setMenuLayout('static')}" ajax="false"/>
-                            <p:menuitem id="custom4" value="Overlay" icon="fa fa-fw fa-bars" actionListener="#{guestPreferences.setMenuLayout('overlay')}" ajax="false"/>
+                        <p:submenu label="Navigation" icon="fa fa-fw fa-gg">
+                            <p:menuitem id="pob_input" value="Dashboard" icon="fa fa-fw fa-home" outcome="/dashboard"/>
+                            <p:menuitem value="Inputs" icon="fa fa-fw fa-sign-in" outcome="/inputOnlineEntry"/>
+                            <p:menuitem value="Calculations" icon="fa fa-fw fa-sign-in" outcome="/pobCalculationReview"/>
+                            <p:menuitem value="Reports" icon="fa fa-fw fa-sign-in" outcome="/reportsReview"/>
                         </p:submenu>
-                        <p:menuitem id="pob_input" value="Dashboard" icon="fa fa-fw fa-home" outcome="/dashboard"/>
-                        <p:submenu label="Reports" icon="fa fa-fw fa-gg">
-                            <p:menuitem value="Contract Level" icon="fa fa-fw fa-sign-in" outcome="/contractList"/>
-                            <p:menuitem value="Reporting Unit Level" icon="fa fa-fw fa-sign-in" outcome="/reportReportingUnitList"/>
-                            <p:menuitem value="Platform Level" icon="fa fa-fw fa-sign-in" outcome="/reportBusinessUnitList"/>
-                            <p:menuitem value="Company Level" icon="fa fa-fw fa-sign-in" outcome="/reportCompanyList"/>
 
-                        </p:submenu>
                         <p:submenu label="Administration" icon="fa fa-fw fa-gg">
                             <p:menuitem value="Users" icon="fa fa-fw fa-sign-in" outcome="/userSearch"/>
                             <p:menuitem value="Business Units" icon="fa fa-fw fa-sign-in" outcome="/businessUnitList"/>
