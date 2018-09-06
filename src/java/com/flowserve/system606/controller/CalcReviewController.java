@@ -38,4 +38,8 @@ public class CalcReviewController implements Serializable {
         //calculationService.calculateAndSave(reportingUnits, webSession.getCurrentPeriod());
         return "pobCalculationReview";
     }
+
+    public String reviewReports() throws Exception {
+        return "reportsReview";
+    }
 }

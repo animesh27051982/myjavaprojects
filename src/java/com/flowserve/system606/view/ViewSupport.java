@@ -503,10 +503,10 @@ public class ViewSupport implements Serializable {
     }
 
     public WorkflowStatus getPeriodWorkflowStatus(Contract contract) {
-        if (contract.getPeriodApprovalRequest(webSession.getCurrentPeriod()) == null) {
-            return null;
-        }
-        return contract.getPeriodApprovalRequest(webSession.getCurrentPeriod()).getWorkflowStatus();
+//        if (contract.getPeriodApprovalRequest(webSession.getCurrentPeriod()) == null) {
+//            return null;
+//        }
+        return contract.getReportingUnit().getPeriodApprovalRequest(webSession.getCurrentPeriod()).getWorkflowStatus();
     }
 
     public void setUsers(List<User> users) {

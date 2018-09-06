@@ -38,14 +38,14 @@
                     <div class="ui-g-12 ui-lg-12 ui-md-12">
                         <p:focus />
                         <h:outputText value="Username" />
-                        <p:inputText id="username" value="#{login.username}"/>
+                        <p:inputText id="username" value="#{tempLogin.username}"/>
                     </div>
                     <div class="ui-g-12 ui-lg-12 ui-md-12">
                         <h:outputText value="Password" />
-                        <p:password id="password" value="#{login.password}" feedback="false"/>
+                        <p:password id="password" value="#{tempLogin.password}" feedback="false"/>
                     </div>
                     <div class="ui-g-12 ui-lg-12 ui-md-12 button-container">
-                        <p:commandButton value="Sign in" ajax="false" actionListener="#{login.login}"/>
+                        <p:commandButton value="Sign in" ajax="false" action="#{tempLogin.login}"/>
                     </div>
                 </div>
             </div>

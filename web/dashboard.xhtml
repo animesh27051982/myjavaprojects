@@ -101,8 +101,9 @@
                                 </p:column>
                                 <p:column headerText="Actions">
                                     <span style="white-space: nowrap;">
-                                        <p:commandButton value="Inputs" icon="ui-icon-arrowthick-1-e" ajax="false" actionListener="#{webSession.setCurrentReportingUnit(ru)}" action="#{inputController.proceedToOnlineEntry()}"/>
-                                        <p:commandButton value="Calculations" style="margin-left: 10px;" icon="ui-icon-arrowthick-1-e" ajax="false" actionListener="#{webSession.setCurrentReportingUnit(ru)}" action="#{calcReviewController.reviewCalculations()}"/>
+                                        <p:commandButton value="Inputs" style="margin-left: 10px; font-size: 90%;" icon="ui-icon-arrowthick-1-e" ajax="false" actionListener="#{webSession.setCurrentReportingUnit(ru)}" action="#{inputController.proceedToOnlineEntry()}"/>
+                                        <p:commandButton value="Calculations" style="margin-left: 10px; font-size: 90%;" icon="ui-icon-arrowthick-1-e" ajax="false" actionListener="#{webSession.setCurrentReportingUnit(ru)}" action="#{calcReviewController.reviewCalculations()}"/>
+                                        <p:commandButton value="Reports" style="margin-left: 10px; font-size: 90%;" icon="ui-icon-arrowthick-1-e" ajax="false" actionListener="#{webSession.setCurrentReportingUnit(ru)}" action="#{calcReviewController.reviewReports()}"/>
                                     </span>
                                 </p:column>
                             </p:dataTable>

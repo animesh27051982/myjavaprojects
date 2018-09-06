@@ -119,7 +119,7 @@ public class CalculationService {
     }
 
     public CurrencyMetric getAccumulatedCurrencyMetricAcrossPeriods(String metricCode, Measurable measurable, List<FinancialPeriod> periods) throws Exception {
-        Logger.getLogger(CalculationService.class.getName()).log(Level.INFO, "getAccumulatedCurrencyMetricAcrossPeriods() " + metricCode + " measurable: " + measurable.getClass().getName());
+        //Logger.getLogger(CalculationService.class.getName()).log(Level.INFO, "getAccumulatedCurrencyMetricAcrossPeriods() " + metricCode + " measurable: " + measurable.getClass().getName());
         CurrencyMetric metric = new CurrencyMetric();
         metric.setMetricType(metricService.getMetricTypeByCode(metricCode));
         metric.setCcValue(new BigDecimal("0.0"));
@@ -131,7 +131,7 @@ public class CalculationService {
         }
 
         for (FinancialPeriod period : periods) {
-            Logger.getLogger(CalculationService.class.getName()).log(Level.INFO, "getAccumulatedCurrencyMetricAcrossPeriods: " + metricCode + " " + period.getId());
+            //Logger.getLogger(CalculationService.class.getName()).log(Level.INFO, "getAccumulatedCurrencyMetricAcrossPeriods: " + metricCode + " " + period.getId());
 
             if (isMetricStoredAtMeasurable(metric.getMetricType(), measurable)) {
                 CurrencyMetric rootCurrencyMetric = (CurrencyMetric) getMetric(metricCode, measurable, period);
@@ -188,8 +188,7 @@ public class CalculationService {
             }
         }
 
-        Logger.getLogger(CalculationService.class.getName()).log(Level.INFO, "Final sum: " + metric.getValue().toPlainString());
-
+        //Logger.getLogger(CalculationService.class.getName()).log(Level.INFO, "Final sum: " + metric.getValue().toPlainString());
         return metric;
     }
 

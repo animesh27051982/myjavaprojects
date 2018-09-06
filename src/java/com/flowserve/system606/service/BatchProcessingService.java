@@ -191,7 +191,7 @@ public class BatchProcessingService {
                                 ReportingUnit ru = pob.getContract().getReportingUnit();
                                 if (ru == null) {
                                     importMessages.add("RU is null for POB ID: " + lastId);
-                                    logger.log(Level.INFO, "RU is null ");
+                                    logger.log(Level.INFO, "RU is null for POB ID: " + lastId);
                                     continue;
                                 }
                                 if (ru.getLocalCurrency() == null) {
@@ -287,15 +287,15 @@ public class BatchProcessingService {
                         if (contract != null) {
                             ReportingUnit reportingUnit = contract.getReportingUnit();
                             if (reportingUnit == null) {
-                                //String msg = "No local currency found for RU: " + ru.getCode();
-                                //importMSG.add(msg);
-                                logger.log(Level.SEVERE, "RU is null ");
+                                String msg = "RU is null for contract id: " + contractId;
+                                importMessages.add(msg);
+                                logger.log(Level.SEVERE, msg);
                                 continue;
                             }
                             if (reportingUnit.getLocalCurrency() == null) {
                                 String msg = "No local currency found for RU: " + reportingUnit.getCode();
                                 importMessages.add(msg);
-                                logger.log(Level.INFO, "RU local currency is null for RU: " + reportingUnit.getCode());
+                                logger.log(Level.INFO, msg);
                                 continue;
                             }
 //                            if (thirdParyComm.compareTo(BigDecimal.ZERO) > 0) {
