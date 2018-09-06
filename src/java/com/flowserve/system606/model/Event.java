@@ -1,5 +1,6 @@
 package com.flowserve.system606.model;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import javax.persistence.Column;
@@ -22,7 +23,7 @@ import static javax.persistence.TemporalType.TIMESTAMP;
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "VALUE_TYPE")
 @Table(name = "EVENTS")
-public abstract class Event<T> extends BaseEntity<Long> {
+public abstract class Event<T> extends BaseEntity<Long> implements Comparable<Event>, Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "EVENT_SEQ")
@@ -61,6 +62,10 @@ public abstract class Event<T> extends BaseEntity<Long> {
     private Contract contract;
 
     public Event() {
+    }
+
+    public int compare(Event e1, Event e2) {
+        return e1.eventDate.compareTo(e2.eventDate);
     }
 
     public abstract T getValue();

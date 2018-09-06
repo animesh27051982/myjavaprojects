@@ -177,6 +177,30 @@ public class InputOnlineEntry implements Serializable {
         billingEvent.setName("Billing " + billingNumber);
     }
 
+    public String getBillingTextStyle(Event billingEvent, String billingNumber) {
+        List<Event> listEvent = billingEvent.getEventList().getEventList();
+        for (Event e : listEvent) {
+            if (e.getNumber() != null && billingNumber != null) {
+                if (e.getNumber().equalsIgnoreCase(billingNumber) && e.getId() != billingEvent.getId()) {
+                    return "color: red; font-style: italic;";
+                }
+            }
+        }
+        return "";
+    }
+
+    public String getBillingMessage(Event billingEvent, String billingNumber) {
+        List<Event> listEvent = billingEvent.getEventList().getEventList();
+        for (Event e : listEvent) {
+            if (e.getNumber() != null && billingNumber != null) {
+                if (e.getNumber().equalsIgnoreCase(billingNumber) && e.getId() != billingEvent.getId()) {
+                    return "Duplicate Invoice Number not Allowed";
+                }
+            }
+        }
+        return "";
+    }
+
     public void removeBillingEvent(CurrencyEvent billingEvent) throws Exception {
         Contract contract = billingEvent.getContract();
         calculationService.removeEvent(contract, webSession.getCurrentPeriod(), billingEvent);

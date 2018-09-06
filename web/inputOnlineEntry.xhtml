@@ -146,14 +146,14 @@
                                                 <p:column  colspan="1" id="con" style="white-space:pre-line;">
                                                     <f:facet name="header">
                                                         <h:outputText  value="RU / Contract / POB" />
-                                                        <p:tooltip  for="con" value="RU / Contract / POB" trackMouse="true"/>
+                                                        <p:tooltip  for="con" value="RU / Contract / POB" showEffect="clip" hideEffect="clip" />
                                                     </f:facet>
                                                 </p:column>
 
                                                 <p:column colspan="1" style="white-space:pre-line;" id="rmethod">
                                                     <f:facet name="header">
                                                         <h:outputText  value="Revenue Recognition Method" />
-                                                        <p:tooltip  for="rmethod" value="#{viewSupport.getMetricTypeDescription('REVENUE_RECOGNITION_METHOD')}"  showEffect="explode" hideEffect="explode" position="top"/>
+                                                        <p:tooltip  for="rmethod" value="#{viewSupport.getMetricTypeDescription('REVENUE_RECOGNITION_METHOD')}"  showEffect="clip" hideEffect="clip" position="top"/>
                                                     </f:facet>
                                                 </p:column>
 
@@ -166,43 +166,43 @@
                                                 <p:column colspan="1" style="white-space:pre-line;"  id="tpc">
                                                     <f:facet name="header">
                                                         <h:outputText  value="#{viewSupport.getMetricTypeName('TRANSACTION_PRICE_CC')}" />
-                                                        <p:tooltip  for="tpc" value="#{viewSupport.getMetricTypeDescription('TRANSACTION_PRICE_CC')}"  showEffect="shake" hideEffect="explode" position="top"/>
+                                                        <p:tooltip  for="tpc" value="#{viewSupport.getMetricTypeDescription('TRANSACTION_PRICE_CC')}"  showEffect="clip" hideEffect="clip" position="top"/>
                                                     </f:facet>
                                                 </p:column>
                                                 <p:column colspan="1" style="white-space:pre-line;" id="ldcc">
                                                     <f:facet name="header">
                                                         <h:outputText  value="#{viewSupport.getMetricTypeName('LIQUIDATED_DAMAGES_CTD_CC')}" />
-                                                        <p:tooltip  for="ldcc" value="#{viewSupport.getMetricTypeDescription('LIQUIDATED_DAMAGES_CTD_CC')}"  showEffect="blind" hideEffect="drop" position="top"/>
+                                                        <p:tooltip  for="ldcc" value="#{viewSupport.getMetricTypeDescription('LIQUIDATED_DAMAGES_CTD_CC')}"  showEffect="clip" hideEffect="clip" position="top"/>
                                                     </f:facet>
                                                 </p:column>
                                                 <p:column colspan="1" style="white-space:pre-line;" id="fx">
                                                     <f:facet name="header">
                                                         <h:outputText  value="Fx Rate" />
-                                                        <p:tooltip  for="fx" value="Fx Rate"  showEffect="blind" hideEffect="clip" position="top"/>
+                                                        <p:tooltip  for="fx" value="Fx Rate"  showEffect="clip" hideEffect="clip" position="top"/>
                                                     </f:facet>
                                                 </p:column>
                                                 <p:column colspan="1" style="white-space:pre-line;" id="curr" >
                                                     <f:facet name="header">
                                                         <h:outputText  value="Currency" />
-                                                        <p:tooltip  for="curr" value="Currency"  showEffect="blind" hideEffect="explode" position="top"/>
+                                                        <p:tooltip  for="curr" value="Currency"  showEffect="clip" hideEffect="clip" position="top"/>
                                                     </f:facet>
                                                 </p:column>
                                                 <p:column colspan="1" style="white-space:pre-line;" id="eaclc" >
                                                     <f:facet name="header">
                                                         <h:outputText  value="#{viewSupport.getMetricTypeName('ESTIMATED_COST_AT_COMPLETION_LC')}" />
-                                                        <p:tooltip  for="eaclc" value="#{viewSupport.getMetricTypeDescription('ESTIMATED_COST_AT_COMPLETION_LC')}"  showEffect="explode" hideEffect="puff" position="top"/>
+                                                        <p:tooltip  for="eaclc" value="#{viewSupport.getMetricTypeDescription('ESTIMATED_COST_AT_COMPLETION_LC')}"  showEffect="clip" hideEffect="clip" position="top"/>
                                                     </f:facet>
                                                 </p:column>
                                                 <p:column colspan="1" style="white-space:pre-line;" id="eacpp">
                                                     <f:facet name="header">
                                                         <h:outputText  value="#{viewSupport.getMetricTypeName('ESTIMATED_COST_AT_COMPLETION_LC')} Prior Period" />
-                                                        <p:tooltip  for="eacpp" value="ESTIMATED_COST_AT_COMPLETION_LC Prior Period"  showEffect="slide" hideEffect="explode" position="top"/>
+                                                        <p:tooltip  for="eacpp" value="ESTIMATED_COST_AT_COMPLETION_LC Prior Period"  showEffect="clip" hideEffect="clip" position="top"/>
                                                     </f:facet>
                                                 </p:column>
                                                 <p:column colspan="1" style="white-space:pre-line;" id="chnEAC" >
                                                     <f:facet name="header">
                                                         <h:outputText  value="#{viewSupport.getMetricTypeName('CHANGE_IN_EAC_LC')}" />
-                                                        <p:tooltip  for="chnEAC"  rendererType="auto" value="#{viewSupport.getMetricTypeDescription('CHANGE_IN_EAC_LC')}"  showEffect="explode" hideEffect="blind" position="top"/>
+                                                        <p:tooltip  for="chnEAC"  rendererType="auto" value="#{viewSupport.getMetricTypeDescription('CHANGE_IN_EAC_LC')}"  showEffect="clip" hideEffect="clip" position="top"/>
                                                     </f:facet>
                                                 </p:column>
                                             </p:row>
@@ -222,7 +222,7 @@
                                         </p:column>
 
                                         <p:column style="white-space:pre-line;">
-                                            <p:cellEditor >
+                                            <p:cellEditor rendered="#{not of:isInstance('com.flowserve.system606.model.ReportingUnit', pob)}" >
                                                 <f:facet name="output">
                                                     <p:inputText id="tpCurrent"
                                                                  pt:data-tooltip="#{viewSupport.getMessage('TRANSACTION_PRICE_CC', pob)}"
@@ -245,7 +245,7 @@
                                         </p:column>
 
                                         <p:column style="white-space:pre-line;">
-                                            <p:cellEditor>
+                                            <p:cellEditor rendered="#{not of:isInstance('com.flowserve.system606.model.ReportingUnit', pob)}">
                                                 <f:facet name="output">
                                                     <p:inputText id="ldCurrent"
                                                                  pt:data-tooltip="#{viewSupport.getMessage('LIQUIDATED_DAMAGES_CTD_CC', pob)}"
@@ -333,49 +333,49 @@
                                                 <p:column colspan="1" style="white-space:pre-line;" id="billcon"  >
                                                     <f:facet name="header">
                                                         <h:outputText  value="RU / Contract / POB" />
-                                                        <p:tooltip  for="billcon" value="RU / Contract / POB"  showEffect="slide" hideEffect="explode" position="top"/>
+                                                        <p:tooltip  for="billcon" value="RU / Contract / POB"  showEffect="clip" hideEffect="clip" position="top"/>
                                                     </f:facet>
                                                 </p:column>
                                                 <p:column colspan="1" style="white-space:pre-line;" id="curn" >
                                                     <f:facet name="header">
                                                         <h:outputText  value="Currency" />
-                                                        <p:tooltip  for="curn" value="Currency"  showEffect="slide" hideEffect="explode" position="top"/>
+                                                        <p:tooltip  for="curn" value="Currency"  showEffect="clip" hideEffect="clip" position="top"/>
                                                     </f:facet>
                                                 </p:column>
                                                 <p:column colspan="1" style="white-space:pre-line;"  id="cost_lc" >
                                                     <f:facet name="header">
                                                         <h:outputText  value="#{viewSupport.getMetricTypeName('LOCAL_COSTS_CTD_LC')}" />
-                                                        <p:tooltip  for="cost_lc" value="#{viewSupport.getMetricTypeDescription('LOCAL_COSTS_CTD_LC')}"  showEffect="slide" hideEffect="explode" position="top"/>
+                                                        <p:tooltip  for="cost_lc" value="#{viewSupport.getMetricTypeDescription('LOCAL_COSTS_CTD_LC')}"  showEffect="clip" hideEffect="clip" position="top"/>
                                                     </f:facet>
                                                 </p:column>
                                                 <p:column colspan="1" style="white-space:pre-line;" id="tp_cost" >
                                                     <f:facet name="header">
                                                         <h:outputText  value="#{viewSupport.getMetricTypeName('THIRD_PARTY_COSTS_CTD_LC')}" />
-                                                        <p:tooltip  for="tp_cost" value="#{viewSupport.getMetricTypeDescription('THIRD_PARTY_COSTS_CTD_LC')}"  showEffect="slide" hideEffect="explode" position="top"/>
+                                                        <p:tooltip  for="tp_cost" value="#{viewSupport.getMetricTypeDescription('THIRD_PARTY_COSTS_CTD_LC')}"  showEffect="clip" hideEffect="clip" position="top"/>
                                                     </f:facet>
                                                 </p:column>
                                                 <p:column colspan="1" style="white-space:pre-line;"  id="comp_costs">
                                                     <f:facet name="header">
                                                         <h:outputText  value="#{viewSupport.getMetricTypeName('INTERCOMPANY_COSTS_CTD_LC')}" />
-                                                        <p:tooltip  for="comp_costs" value="#{viewSupport.getMetricTypeDescription('INTERCOMPANY_COSTS_CTD_LC')}"  showEffect="slide" hideEffect="explode" position="top"/>
+                                                        <p:tooltip  for="comp_costs" value="#{viewSupport.getMetricTypeDescription('INTERCOMPANY_COSTS_CTD_LC')}"  showEffect="clip" hideEffect="clip" position="top"/>
                                                     </f:facet>
                                                 </p:column>
                                                 <p:column colspan="1" style="white-space:pre-line;" id="cost_inc" >
                                                     <f:facet name="header">
                                                         <h:outputText  value="#{viewSupport.getMetricTypeName('COSTS_INCURRED_CTD_LC')}" />
-                                                        <p:tooltip  for="cost_inc" value="#{viewSupport.getMetricTypeDescription('COSTS_INCURRED_CTD_LC')}"  showEffect="slide" hideEffect="explode" position="top"/>
+                                                        <p:tooltip  for="cost_inc" value="#{viewSupport.getMetricTypeDescription('COSTS_INCURRED_CTD_LC')}"  showEffect="clip" hideEffect="clip" position="top"/>
                                                     </f:facet>
                                                 </p:column>
                                                 <p:column colspan="1" style="white-space:pre-line;" id="ddate">
                                                     <f:facet name="header">
                                                         <h:outputText  value="#{viewSupport.getMetricTypeName('DELIVERY_DATE')}" />
-                                                        <p:tooltip  for="ddate" value="#{viewSupport.getMetricTypeDescription('DELIVERY_DATE')}"  showEffect="slide" hideEffect="explode" position="top"/>
+                                                        <p:tooltip  for="ddate" value="#{viewSupport.getMetricTypeDescription('DELIVERY_DATE')}"  showEffect="clip" hideEffect="clip" position="top"/>
                                                     </f:facet>
                                                 </p:column>
                                                 <p:column colspan="1" style="white-space:pre-line;"  id="ps_costs">
                                                     <f:facet name="header">
                                                         <h:outputText  value="#{viewSupport.getMetricTypeName('PARTIAL_SHIPMENT_COSTS_LC')}" />
-                                                        <p:tooltip  for="ps_costs" value="#{viewSupport.getMetricTypeDescription('PARTIAL_SHIPMENT_COSTS_LC')}"  showEffect="slide" hideEffect="explode" position="top"/>
+                                                        <p:tooltip  for="ps_costs" value="#{viewSupport.getMetricTypeDescription('PARTIAL_SHIPMENT_COSTS_LC')}"  showEffect="clip" hideEffect="clip" position="top"/>
                                                     </f:facet>
                                                 </p:column>
                                             </p:row>
@@ -514,19 +514,19 @@
                                                 <p:column colspan="1" style="white-space:pre-line;" id="bill_con" >
                                                     <f:facet name="header">
                                                         <h:outputText  value="RU / Contract / POB" />
-                                                        <p:tooltip  for="bill_con" value="RU / Contract / POB"  showEffect="slide" hideEffect="explode" position="top"/>
+                                                        <p:tooltip  for="bill_con" value="RU / Contract / POB"  showEffect="clip" hideEffect="clip" position="top"/>
                                                     </f:facet>
                                                 </p:column>
                                                 <p:column colspan="1" style="white-space:pre-line;" id="invoice" >
                                                     <f:facet name="header">
                                                         <h:outputText  value="Invoice Number" />
-                                                        <p:tooltip  for="invoice" value="Invoice Number"  showEffect="slide" hideEffect="explode" position="top"/>
+                                                        <p:tooltip  for="invoice" value="Invoice Number"  showEffect="clip" hideEffect="clip" position="top"/>
                                                     </f:facet>
                                                 </p:column>
                                                 <p:column colspan="1" style="white-space:pre-line;" id="invoice_date">
                                                     <f:facet name="header">
                                                         <h:outputText  value="Invoice Date" />
-                                                        <p:tooltip  for="invoice_date" value="Invoice Date"  showEffect="slide" hideEffect="explode" position="top"/>
+                                                        <p:tooltip  for="invoice_date" value="Invoice Date"  showEffect="clip" hideEffect="clip" position="top"/>
                                                     </f:facet>
                                                 </p:column>
                                                 <p:column colspan="1" style="white-space:pre-line;" headerText="Currency" id="cur1" >
@@ -538,19 +538,19 @@
                                                 <p:column colspan="1" style="white-space:pre-line;" id="bill_cur" >
                                                     <f:facet name="header">
                                                         <h:outputText  value="Billing Contract Currency" />
-                                                        <p:tooltip  for="bill_cur" value="Billing Contract Curreency"  showEffect="slide" hideEffect="explode" position="top"/>
+                                                        <p:tooltip  for="bill_cur" value="Billing Contract Curreency"  showEffect="clip" hideEffect="clip" position="top"/>
                                                     </f:facet>
                                                 </p:column>
                                                 <p:column colspan="1" style="white-space:pre-line;" id="cc_bill" >
                                                     <f:facet name="header">
                                                         <h:outputText  value="Cumulative Billings CC" />
-                                                        <p:tooltip  for="cc_bill" value="Cumulative Billings"  showEffect="slide" hideEffect="explode" position="top"/>
+                                                        <p:tooltip  for="cc_bill" value="Cumulative Billings"  showEffect="clip" hideEffect="clip" position="top"/>
                                                     </f:facet>
                                                 </p:column>
                                                 <p:column colspan="1" style="white-space:pre-line;" id="fx">
                                                     <f:facet name="header">
                                                         <h:outputText  value="Fx Rate" />
-                                                        <p:tooltip  for="fx" value="Fx Rate"  showEffect="blind" hideEffect="clip" position="top"/>
+                                                        <p:tooltip  for="fx" value="Fx Rate"  showEffect="clip" hideEffect="clip" position="top"/>
                                                     </f:facet>
                                                 </p:column>
                                                 <p:column colspan="1" style="white-space:pre-line;" headerText="Currency" id="cur2" >
@@ -562,25 +562,25 @@
                                                 <p:column colspan="1" style="white-space:pre-line;" id="bill_loc_cur" >
                                                     <f:facet name="header">
                                                         <h:outputText  value="Billing Local Currency" />
-                                                        <p:tooltip  for="bill_loc_cur" value="Billing Local Currency"  showEffect="slide" hideEffect="explode" position="top"/>
+                                                        <p:tooltip  for="bill_loc_cur" value="Billing Local Currency"  showEffect="clip" hideEffect="clip" position="top"/>
                                                     </f:facet>
                                                 </p:column>
                                                 <p:column colspan="1" style="white-space:pre-line;" id="lc_bill" >
                                                     <f:facet name="header">
                                                         <h:outputText  value="Cumulative Billings LC" />
-                                                        <p:tooltip  for="lc_bill" value="Cumulative Billings"  showEffect="slide" hideEffect="explode" position="top"/>
+                                                        <p:tooltip  for="lc_bill" value="Cumulative Billings"  showEffect="clip" hideEffect="clip" position="top"/>
                                                     </f:facet>
                                                 </p:column>
                                                 <p:column colspan="1" style="white-space:pre-line;" id="opt" >
                                                     <f:facet name="header">
                                                         <h:outputText  value="Options" />
-                                                        <p:tooltip  for="opt" value="Options"  showEffect="slide" hideEffect="explode" position="top"/>
+                                                        <p:tooltip  for="opt" value="Options"  showEffect="clip" hideEffect="clip" position="top"/>
                                                     </f:facet>
                                                 </p:column>
                                                 <p:column colspan="1" style="white-space:pre-line;" id="view_bill" >
                                                     <f:facet name="header">
                                                         <h:outputText  value="Billing History" />
-                                                        <p:tooltip  for="view_bill" value="Billing History"  showEffect="slide" hideEffect="explode" position="top"/>
+                                                        <p:tooltip  for="view_bill" value="Billing History"  showEffect="clip" hideEffect="clip" position="top"/>
                                                     </f:facet>
                                                 </p:column>
                                             </p:row>
@@ -593,7 +593,10 @@
                                         <p:column style="white-space:pre-line;">
                                             <p:cellEditor rendered="#{of:isInstance('com.flowserve.system606.model.CurrencyEvent', billEvent)}">
                                                 <f:facet name="output">
-                                                    <p:inputText value="#{billEvent.number}" styleClass="#{empty billEvent.number ? 'ui-state-error' : ''}" readonly="true"/>
+                                                    <p:inputText value="#{billEvent.number}"
+                                                                 pt:data-tooltip="#{inputOnlineEntry.getBillingMessage(billEvent, billEvent.number)}"
+                                                                 styleClass="#{empty billEvent.number ? 'ui-state-error' : ''}"
+                                                                 style="#{inputOnlineEntry.getBillingTextStyle(billEvent, billEvent.number)}" readonly="true"/>
                                                 </f:facet>
                                                 <f:facet name="input">
                                                     <p:inputText value="#{billEvent.number}" disabled="#{not viewSupport.editable}" >
@@ -632,7 +635,7 @@
                                                 </f:facet>
                                                 <f:facet name="input">
                                                     <p:inputText value="#{billEvent.ccValue}" disabled="#{not viewSupport.editable}">
-                                                        <p:ajax event="change" process="@this" update="billLc" listener="#{inputOnlineEntry.calculateEventOutputs(billEvent)}"/>
+                                                        <p:ajax event="change" process="@this" update=":form:topLevelTabView:treeTableId" listener="#{inputOnlineEntry.calculateEventOutputs(billEvent)}"/>
                                                     </p:inputText>
                                                 </f:facet>
                                             </p:cellEditor>
@@ -666,7 +669,7 @@
                                                 </f:facet>
                                                 <f:facet name="input">
                                                     <p:inputText value="#{billEvent.lcValue}" disabled="#{not viewSupport.editable}">
-                                                        <p:ajax event="change" process="@this" listener="#{inputOnlineEntry.calculateEventOutputs(billEvent)}"/>
+                                                        <p:ajax event="change" process="@this" update=":form:topLevelTabView:treeTableId" listener="#{inputOnlineEntry.calculateEventOutputs(billEvent)}"/>
                                                     </p:inputText>
                                                 </f:facet>
                                             </p:cellEditor>
@@ -733,37 +736,37 @@
                                                 <p:column colspan="1" style="white-space:pre-line;"  id="tpi_con">
                                                     <f:facet name="header">
                                                         <h:outputText  value="RU / Contract / POB" />
-                                                        <p:tooltip  for="tpi_con" value="RU / Contract / POB"  showEffect="slide" hideEffect="explode" position="top"/>
+                                                        <p:tooltip  for="tpi_con" value="RU / Contract / POB"  showEffect="clip" hideEffect="clip" position="top"/>
                                                     </f:facet>
                                                 </p:column>
                                                 <p:column colspan="1" style="white-space:pre-line;"  id="thirdPartyCTD">
                                                     <f:facet name="header">
                                                         <h:outputText  value="#{viewSupport.getMetricTypeName('THIRD_PARTY_COMMISSION_CTD_LC')}" />
-                                                        <p:tooltip  for="thirdPartyCTD" value="#{viewSupport.getMetricTypeDescription('THIRD_PARTY_COMMISSION_CTD_LC')}"  showEffect="slide" hideEffect="explode" position="top"/>
+                                                        <p:tooltip  for="thirdPartyCTD" value="#{viewSupport.getMetricTypeDescription('THIRD_PARTY_COMMISSION_CTD_LC')}"  showEffect="clip" hideEffect="clip" position="top"/>
                                                     </f:facet>
                                                 </p:column>
                                                 <p:column colspan="1" style="white-space:pre-line;" id="saleDesTool" >
                                                     <f:facet name="header">
                                                         <h:outputText  value="#{viewSupport.getMetricTypeName('SALES_DESTINATION')}" />
-                                                        <p:tooltip  for="saleDesTool" value="#{viewSupport.getMetricTypeDescription('SALES_DESTINATION')}"  showEffect="slide" hideEffect="explode" position="top"/>
+                                                        <p:tooltip  for="saleDesTool" value="#{viewSupport.getMetricTypeDescription('SALES_DESTINATION')}"  showEffect="clip" hideEffect="clip" position="top"/>
                                                     </f:facet>
                                                 </p:column>
                                                 <p:column colspan="1" style="white-space:pre-line;" id="oeamTool">
                                                     <f:facet name="header">
                                                         <h:outputText  value="#{viewSupport.getMetricTypeName('OEAM_DISAGG')}" />
-                                                        <p:tooltip  for="oeamTool" value="#{viewSupport.getMetricTypeDescription('OEAM_DISAGG')}"  showEffect="slide" hideEffect="explode" position="top"/>
+                                                        <p:tooltip  for="oeamTool" value="#{viewSupport.getMetricTypeDescription('OEAM_DISAGG')}"  showEffect="clip" hideEffect="clip" position="top"/>
                                                     </f:facet>
                                                 </p:column>
                                                 <p:column colspan="1" style="white-space:pre-line;" id="startDateTool" >
                                                     <f:facet name="header">
                                                         <h:outputText  value="#{viewSupport.getMetricTypeName('SL_START_DATE')}" />
-                                                        <p:tooltip  for="startDateTool" value="#{viewSupport.getMetricTypeDescription('SL_START_DATE')}"  showEffect="slide" hideEffect="explode" position="top"/>
+                                                        <p:tooltip  for="startDateTool" value="#{viewSupport.getMetricTypeDescription('SL_START_DATE')}"  showEffect="clip" hideEffect="clip" position="top"/>
                                                     </f:facet>
                                                 </p:column>
                                                 <p:column colspan="1" style="white-space:pre-line;" id="endDateTool" >
                                                     <f:facet name="header">
                                                         <h:outputText  value="#{viewSupport.getMetricTypeName('SL_END_DATE')}" />
-                                                        <p:tooltip  for="endDateTool" value="#{viewSupport.getMetricTypeDescription('SL_END_DATE')}"  showEffect="slide" hideEffect="explode" position="top"/>
+                                                        <p:tooltip  for="endDateTool" value="#{viewSupport.getMetricTypeDescription('SL_END_DATE')}"  showEffect="clip" hideEffect="clip" position="top"/>
                                                     </f:facet>
                                                 </p:column>
                                             </p:row>
@@ -863,25 +866,25 @@
                                                 <p:column colspan="1" style="white-space:pre-line;" id="st_con" >
                                                     <f:facet name="header">
                                                         <h:outputText  value="RU / Contract / POB" />
-                                                        <p:tooltip  for="st_con" value="RU / Contract / POB"  showEffect="slide" hideEffect="explode" position="top"/>
+                                                        <p:tooltip  for="st_con" value="RU / Contract / POB"  showEffect="clip" hideEffect="clip" position="top"/>
                                                     </f:facet>
                                                 </p:column>
                                                 <p:column colspan="1" style="white-space:pre-line;" id="st_updated_by" >
                                                     <f:facet name="header">
                                                         <h:outputText  value="Last Updated By" />
-                                                        <p:tooltip  for="st_updated_by" value="Last Updated By"  showEffect="slide" hideEffect="explode" position="top"/>
+                                                        <p:tooltip  for="st_updated_by" value="Last Updated By"  showEffect="clip" hideEffect="clip" position="top"/>
                                                     </f:facet>
                                                 </p:column>
                                                 <p:column colspan="1" style="white-space:pre-line;" id="st_updated_date">
                                                     <f:facet name="header">
                                                         <h:outputText  value="Last Updated Date" />
-                                                        <p:tooltip  for="st_updated_date" value="Last Updated Date"  showEffect="slide" hideEffect="explode" position="top"/>
+                                                        <p:tooltip  for="st_updated_date" value="Last Updated Date"  showEffect="clip" hideEffect="clip" position="top"/>
                                                     </f:facet>
                                                 </p:column>
                                                 <p:column colspan="1" style="white-space:pre-line;" id="st_status">
                                                     <f:facet name="header">
                                                         <h:outputText  value="Status" />
-                                                        <p:tooltip  for="st_status" value="Status"  showEffect="slide" hideEffect="explode" position="top"/>
+                                                        <p:tooltip  for="st_status" value="Status"  showEffect="clip" hideEffect="clip" position="top"/>
                                                     </f:facet>
                                                 </p:column>
                                             </p:row>

@@ -35,6 +35,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Currency;
 import java.util.List;
 import java.util.logging.Level;
@@ -244,8 +245,12 @@ public class ViewSupport implements Serializable {
 
     public List<Event> getAllBillingEvents(Contract contract) {
         EventType billingEventType = eventService.getEventTypeByCode("BILLING_EVENT_CC");
+        List<Event> list = calculationService.getAllEventsByEventType(contract, billingEventType);
 
-        return calculationService.getAllEventsByEventType(contract, billingEventType);
+        Collections.sort(list, (Event m1, Event m2) -> m1.getEventDate().compareTo(m2.getEventDate()));
+        Collections.reverse(list);
+
+        return list;
     }
 
     public void filterNodeTree(TreeNode root, String contractFilterText) {
