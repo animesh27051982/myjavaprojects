@@ -750,7 +750,7 @@
                                     </p:treeTable>
                                 </p:tab>
 
-                                <p:tab title="Reports">
+<!--                                <p:tab title="Reports">
                                     <p:treeTable tableStyle="width:auto" value="#{pobCalculationReview.rootTreeNode}" var="pob" selectionMode="single" selection="#{pobCalculationReview.selectedNode}">
 
                                         <p:ajax event="expand" listener="#{viewSupport.onNodeExpand}"/>
@@ -801,7 +801,7 @@
                                         </p:column>
 
                                     </p:treeTable>
-                                </p:tab>
+                                </p:tab>-->
 
                                 <p:tab title="Workflow">
                                     <p:treeTable tableStyle="width:auto" id="workflowTree" value="#{pobCalculationReview.rootTreeNode}" var="pob" selectionMode="single" selection="#{pobCalculationReview.selectedNode}">
@@ -853,8 +853,7 @@
                         <p:toolbar>
                             <f:facet name="left">
                                 <p:commandButton value="Recalc All From NOV-17" icon="ui-icon-check" update=":form:topLevelTabView" ajax="false" actionListener="#{pobCalculationReview.calculateAndSaveSinceNov17}" action="#{calcReviewController.reviewCalculations()}"/>
-                                <p:commandButton value="Download Journal Entry" ajax="false" style="width:auto;" icon="ui-icon-arrowthick-1-s">
-                                </p:commandButton>
+                                <p:commandButton value="Download Reports" ajax="false" style="width:auto;" icon="ui-icon-arrowthick-1-s" action="reportsReview.xhtml"/>
                             </f:facet>
                             <f:facet name="right">
                                 <p:commandButton value="Back to Dashboard" icon="ui-icon-arrowthick-1-w" ajax="false" action="#{inputController.inputDashboard}"/>
