@@ -246,9 +246,8 @@ public class ViewSupport implements Serializable {
         EventType billingEventType = eventService.getEventTypeByCode("BILLING_EVENT_CC");
         List<Event> list = calculationService.getAllEventsByEventType(contract, billingEventType);
 
-        Collections.sort(list, (Event m1, Event m2) -> m1.getEventDate().compareTo(m2.getEventDate()));
-        Collections.reverse(list);
-
+//        Collections.sort(list, (Event m1, Event m2) -> m1.getEventDate().compareTo(m2.getEventDate()));
+//        Collections.reverse(list);
         return list;
     }
 
