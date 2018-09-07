@@ -68,4 +68,23 @@ public class CalculateInitialDataSet implements Serializable {
         return "calculateInitialDataSet";
     }
 
+    public String calcAllReportingUnitsNov17() throws Exception {
+        FinancialPeriod startPeriod = financialPeriodService.findById("NOV-17");
+
+        // Full load of all RUs.  Comment this out and use specific RUs for local testing.
+        Logger.getLogger(CalculateInitialDataSet.class.getName()).log(Level.INFO, "Calculating all RUs...");
+
+        for (ReportingUnit reportingUnit : adminService.findAllReportingUnits()) {
+            try {
+                logger.log(Level.INFO, "Calculating RU: " + reportingUnit.getCode() + " POB Count: " + reportingUnit.getPerformanceObligations().size());
+                calculationService.calculateAndSave(reportingUnit, startPeriod);
+                logger.log(Level.INFO, "Completed RU: " + reportingUnit.getCode());
+            } catch (Exception e) {
+            }
+        }
+        logger.log(Level.INFO, "calculateAllFinancials() completed.");
+
+        return "calculateInitialDataSet";
+    }
+
 }

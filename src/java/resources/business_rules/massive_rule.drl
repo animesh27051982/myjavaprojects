@@ -574,7 +574,8 @@ rule "Contract Level Estimated Gross Profit and Margin"
         estimatedGrossMargin : Metric(metricType.code == "ESTIMATED_GROSS_MARGIN")
     then
         modify (estimatedGrossProfit) { lcValue = (transactionPrice.lcValue - estimatedCostAtCompletion.lcValue)};
-        modify (estimatedGrossMargin) { value = (estimatedGrossProfit.lcValue == 0B ? 0B : estimatedGrossProfit.lcValue / transactionPrice.lcValue)};
+        modify (estimatedGrossMargin) { value = ((transactionPrice.lcValue == 0B || estimatedGrossProfit.lcValue == 0B) ? 0B :
+                                        estimatedGrossProfit.lcValue / transactionPrice.lcValue)};
 end
 
 rule "POB Group Level Estimated Gross Profit and Margin"
