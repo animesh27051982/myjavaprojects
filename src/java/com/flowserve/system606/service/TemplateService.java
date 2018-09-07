@@ -41,6 +41,11 @@ import javax.persistence.PersistenceContext;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.CellType;
+import org.apache.poi.ss.usermodel.ClientAnchor;
+import org.apache.poi.ss.usermodel.Comment;
+import org.apache.poi.ss.usermodel.CreationHelper;
+import org.apache.poi.ss.usermodel.Drawing;
+import org.apache.poi.ss.usermodel.RichTextString;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.util.CellAddress;
 import org.apache.poi.ss.util.CellReference;
@@ -169,7 +174,7 @@ public class TemplateService {
 
                 EventType billingEventType = eventService.getEventTypeByCode("BILLING_EVENT_CC");
                 List<Event> bEv = calculationService.getAllEventsByPeriodAndEventType(contract, billingEventType, period);
-                if (bEv.size() <= 2 && pobCount == 1) {
+                if (pobCount == 1) {
                     int cnt = 1;
                     for (Event bv : bEv) {
                         CurrencyEvent b = (CurrencyEvent) bv;
@@ -213,12 +218,14 @@ public class TemplateService {
 
                         cnt++;
                     }
-                } else if (bEv.size() > 2) {
-                    XSSFRow rowWarn = worksheet.getRow(0);
-                    cell = rowWarn.getCell(CellReference.convertColStringToIndex("W"));
-                    cell.setCellValue("Billing Inputs (More than 2 Billinngs, use Billings UI)");
                 }
 
+                if (bEv.size() > 2) {
+                    cell = row.getCell(CellReference.convertColStringToIndex("W"));
+                    setCellComment(cell, "More than 2 Billinngs, use Billings UI");
+                    cell = row.getCell(CellReference.convertColStringToIndex("AA"));
+                    setCellComment(cell, "More than 2 Billinngs, use Billings UI");
+                }
                 rowid++;
                 pobCount++;
             }
@@ -229,6 +236,30 @@ public class TemplateService {
         workbook.close();
         inputStream.close();
         outputStream.close();
+    }
+
+    protected void setCellComment(Cell cell, String message) {
+        Drawing drawing = cell.getSheet().createDrawingPatriarch();
+        CreationHelper factory = cell.getSheet().getWorkbook()
+                .getCreationHelper();
+        // When the comment box is visible, have it show in a 1x3 space
+        ClientAnchor anchor = factory.createClientAnchor();
+        anchor.setCol1(cell.getColumnIndex());
+        anchor.setCol2(cell.getColumnIndex() + 2);
+        anchor.setRow1(cell.getRowIndex());
+        anchor.setRow2(cell.getRowIndex() + 2);
+        anchor.setDx1(100);
+        anchor.setDx2(100);
+        anchor.setDy1(100);
+        anchor.setDy2(100);
+
+        // Create the comment and set the text+author
+        Comment comment = drawing.createCellComment(anchor);
+        RichTextString str = factory.createRichTextString(message);
+        comment.setString(str);
+        comment.setAuthor("POCI_Template_RU");
+        // Assign the comment to the cell
+        cell.setCellComment(comment);
     }
 
     public void processTemplateUpload(InputStream fis, String filename) throws Exception {  // Need an application exception type defined.

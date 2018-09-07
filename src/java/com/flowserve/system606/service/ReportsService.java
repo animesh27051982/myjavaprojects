@@ -553,63 +553,69 @@ public class ReportsService {
         PerformanceObligationGroup pitPobs = new PerformanceObligationGroup("pitPobs", contract, contract.getPobsByRevenueMethod(RevenueMethod.POINT_IN_TIME));
         PerformanceObligationGroup slPobs = new PerformanceObligationGroup("slPobs", contract, contract.getPobsByRevenueMethod(RevenueMethod.STRAIGHT_LINE));
 
-        BigDecimal revenueToRecognize = getRevenueRecognizeCTD(pocPobs, period);
+        BigDecimal revenueToRecognize = getRevenueRecognizePeriodLC(pocPobs, period);
         row = worksheet.getRow(startRow++);
         setCellValue(row, colNum, revenueToRecognize);
-        revenueToRecognize = getRevenueRecognizeCTD(pitPobs, period);
+        revenueToRecognize = getRevenueRecognizePeriodLC(pitPobs, period);
         row = worksheet.getRow(startRow++);
         setCellValue(row, colNum, revenueToRecognize);
-        revenueToRecognize = getRevenueRecognizeCTD(slPobs, period);
+        revenueToRecognize = getRevenueRecognizePeriodLC(slPobs, period);
         row = worksheet.getRow(startRow++);
         setCellValue(row, colNum, revenueToRecognize);
 
         startRow = startRow + 2;
-        BigDecimal liquidatedDamage = getLiquidatedDamages(pocPobs, period);
+        BigDecimal liquidatedDamagePeriod = getLiquidatedDamagesPeriod(pocPobs, period);
         row = worksheet.getRow(startRow++);
-        setCellValue(row, colNum, liquidatedDamage);
-        liquidatedDamage = getLiquidatedDamages(pitPobs, period);
+        setCellValue(row, colNum, liquidatedDamagePeriod);
+        liquidatedDamagePeriod = getLiquidatedDamagesPeriod(pitPobs, period);
         row = worksheet.getRow(startRow++);
         //getting NPE
-        //setCellValue(row, colNum, liquidatedDamage);
-        liquidatedDamage = getLiquidatedDamages(slPobs, period);
+        setCellValue(row, colNum, liquidatedDamagePeriod);
+        liquidatedDamagePeriod = getLiquidatedDamagesPeriod(slPobs, period);
         row = worksheet.getRow(startRow++);
-        setCellValue(row, colNum, liquidatedDamage);
+        setCellValue(row, colNum, liquidatedDamagePeriod);
 
         startRow = startRow + 2;
-        BigDecimal cumulativeCostGoodsSoldLC = getCumulativeCostGoodsSoldLC(pocPobs, period);
+        BigDecimal netRevenue = getRevenueRecognizeCTD(pocPobs, period);
         row = worksheet.getRow(startRow++);
-        setCellValue(row, colNum, cumulativeCostGoodsSoldLC);
-        cumulativeCostGoodsSoldLC = getCumulativeCostGoodsSoldLC(pitPobs, period);
+        setCellValue(row, colNum, netRevenue);
+        netRevenue = getRevenueRecognizeCTD(pitPobs, period);
         row = worksheet.getRow(startRow++);
-        setCellValue(row, colNum, cumulativeCostGoodsSoldLC);
-        cumulativeCostGoodsSoldLC = getCumulativeCostGoodsSoldLC(slPobs, period);
+        setCellValue(row, colNum, netRevenue);
+        netRevenue = getRevenueRecognizeCTD(slPobs, period);
         row = worksheet.getRow(startRow++);
-        setCellValue(row, colNum, cumulativeCostGoodsSoldLC);
+        setCellValue(row, colNum, netRevenue);
 
         startRow = startRow + 2;
-        BigDecimal costsIncurredCOGS = new BigDecimal(BigInteger.ZERO);//dummay data for now TODO Need to get values for all 3 pob group with real
+        BigDecimal costsIncurredCOGS = getCostGoodsSoldPeriodLC(pocPobs, period);
         row = worksheet.getRow(startRow++);
         setCellValue(row, colNum, costsIncurredCOGS);
+        costsIncurredCOGS = getCostGoodsSoldPeriodLC(pitPobs, period);
         row = worksheet.getRow(startRow++);
         setCellValue(row, colNum, costsIncurredCOGS);
+        costsIncurredCOGS = getCostGoodsSoldPeriodLC(slPobs, period);
         row = worksheet.getRow(startRow++);
         setCellValue(row, colNum, costsIncurredCOGS);
 
         startRow = startRow + 2;
-        BigDecimal reserveLCM_COGS = new BigDecimal(BigInteger.ZERO); //dummay data for now TODO Need to get values for all 3 pob group with real
+        BigDecimal reserveLCM_COGS = getLossReservePeriodADJLC(pocPobs, period);
         row = worksheet.getRow(startRow++);
         setCellValue(row, colNum, reserveLCM_COGS);
+        reserveLCM_COGS = getLossReservePeriodADJLC(pitPobs, period);
         row = worksheet.getRow(startRow++);
         setCellValue(row, colNum, reserveLCM_COGS);
+        reserveLCM_COGS = getLossReservePeriodADJLC(slPobs, period);
         row = worksheet.getRow(startRow++);
         setCellValue(row, colNum, reserveLCM_COGS);
 
         startRow = startRow + 2;
-        BigDecimal totalCOGS = new BigDecimal(BigInteger.ZERO); //dummay data for now TODO Need to get values for all 3 pob group with real
+        BigDecimal totalCOGS = getCumulativeCostGoodsSoldLC(pocPobs, period);
         row = worksheet.getRow(startRow++);
         setCellValue(row, colNum, totalCOGS);
+        totalCOGS = getCumulativeCostGoodsSoldLC(pitPobs, period);
         row = worksheet.getRow(startRow++);
         setCellValue(row, colNum, totalCOGS);
+        totalCOGS = getCumulativeCostGoodsSoldLC(slPobs, period);
         row = worksheet.getRow(startRow++);
         setCellValue(row, colNum, totalCOGS);
 
@@ -635,6 +641,16 @@ public class ReportsService {
         row = worksheet.getRow(startRow++);
         setPercentCellValue(row, colNum, grossMarginCTD);
 
+        startRow = startRow + 2;
+        BigDecimal tcp = getTPCIncured(contract, period);
+        row = worksheet.getRow(startRow++);
+        setCellValue(row, colNum, tcp);
+        BigDecimal acceleratedTPC = getAcceleratedTPC(contract, period);
+        row = worksheet.getRow(startRow++);
+        setCellValue(row, colNum, acceleratedTPC);
+        BigDecimal thirdPartyCommRegLC = getCThirdPartyCommRegLC(contract, period);
+        row = worksheet.getRow(startRow++);
+        setCellValue(row, colNum, thirdPartyCommRegLC);
     }
 
     public void generateRUSummaryReport(InputStream inputStream, FileOutputStream outputStream, ReportingUnit reportingUnit) throws Exception {
