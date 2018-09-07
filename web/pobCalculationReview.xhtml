@@ -81,14 +81,14 @@
 
                             <p:tabView id="topLevelTabView" dynamic="true" style="margin-top: 15px;">
                                 <p:tab title="Revenue">
-                                    <p:treeTable tableStyle="width:auto" value="#{pobCalculationReview.rootTreeNode}" var="pob" selectionMode="single" selection="#{pobCalculationReview.selectedNode}">
+                                    <p:treeTable  value="#{pobCalculationReview.rootTreeNode}" var="pob" selectionMode="single" selection="#{pobCalculationReview.selectedNode}">
 
                                         <p:ajax event="expand" listener="#{viewSupport.onNodeExpand}"/>
                                         <p:ajax event="collapse" listener="#{viewSupport.onNodeCollapse}"/>
 
                                         <p:columnGroup type="header">
                                             <p:row>
-                                                <p:column colspan="1" headerText="" />
+                                                <p:column colspan="1" headerText="" style="width: 250px;"/>
                                                 <p:column colspan="4" style="background-color: #5aa3d4; color: #ffffff; white-space:pre-line;" headerText="Local Currency" />
                                                 <p:column colspan="1" headerText="" />
                                                 <p:column colspan="5" style="background-color: #43C86F; color: #ffffff; white-space:pre-line;" headerText="Contract Currency" />
@@ -757,7 +757,7 @@
                                         <p:ajax event="collapse" listener="#{viewSupport.onNodeCollapse}"/>
 
                                         <p:column headerText="Reporting Unit - Contract - POB" sortBy="#{pob.name}">
-                                            <h:outputText value="#{pob.name}" title="#{pob.description}"/> 
+                                            <h:outputText value="#{pob.name}" title="#{pob.description}"/>
                                         </p:column>
 
                                         <p:column style="white-space:pre-line;" id="f1">

@@ -1188,7 +1188,7 @@ public class ReportsService {
     }
 
     private BigDecimal getAcceleratedTPC(Measurable measureable, FinancialPeriod period) throws Exception {
-        BigDecimal value = calculationService.getCurrencyMetric("LOSS_RESERVE_INCL_TPC_PERIOD_LC", measureable, period).getLcValue();
+        BigDecimal value = calculationService.getCurrencyMetric("TPC_TO_ACCEL_PERIOD_LC", measureable, period).getLcValue();
         return value != null ? value : new BigDecimal(BigInteger.ZERO);
     }
 
@@ -1225,11 +1225,11 @@ public class ReportsService {
     }
 
     private BigDecimal getContractBillingsInExcess(Measurable measureable, FinancialPeriod period) throws Exception {
-        return calculationService.getCurrencyMetric("CONTRACT_BILLINGS_IN_EXCESS_LC", measureable, period).getLcValue();
+        return calculationService.getCurrencyMetric("CONTRACT_LIABILITY_LC", measureable, period).getLcValue();
     }
 
     private BigDecimal getContractRevenueInExcess(Measurable measureable, FinancialPeriod period) throws Exception {
-        return calculationService.getCurrencyMetric("CONTRACT_REVENUE_IN_EXCESS_LC", measureable, period).getLcValue();
+        return calculationService.getCurrencyMetric("CONTRACT_ASSET_LC", measureable, period).getLcValue();
     }
 
     private BigDecimal getContractBillingsCTDLC(Measurable measureable, FinancialPeriod period) throws Exception {
@@ -1251,7 +1251,7 @@ public class ReportsService {
     }
 
     private BigDecimal getCumulativeCostGoodsSoldLC(Measurable measureable, FinancialPeriod period) throws Exception {
-        return calculationService.getCurrencyMetric("CUMULATIVE_COST_OF_GOODS_SOLD_LC", measureable, period).getLcValue();
+        return calculationService.getCurrencyMetric("COST_OF_GOODS_SOLD_CTD_LC", measureable, period).getLcValue();
     }
 
     private BigDecimal getRevenueRecognizePeriodLC(Measurable measureable, FinancialPeriod period) throws Exception {
@@ -1279,7 +1279,7 @@ public class ReportsService {
     }
 
     private BigDecimal getAccuAcceleratedTPC(Measurable measureable, List<FinancialPeriod> qtdPeriods) throws Exception {
-        return calculationService.getAccumulatedCurrencyMetricAcrossPeriods("LOSS_RESERVE_INCL_TPC_PERIOD_LC", measureable, qtdPeriods).getLcValue();
+        return calculationService.getAccumulatedCurrencyMetricAcrossPeriods("TPC_TO_ACCEL_PERIOD_LC", measureable, qtdPeriods).getLcValue();
     }
 
     private BigDecimal getAccuRevenueToRecognizeLC(Measurable measureable, List<FinancialPeriod> qtdPeriods) throws Exception {
@@ -1291,7 +1291,7 @@ public class ReportsService {
     }
 
     private BigDecimal getAccuCumulativeCostGoodsSoldLC(Measurable measureable, List<FinancialPeriod> qtdPeriods) throws Exception {
-        return calculationService.getAccumulatedCurrencyMetricAcrossPeriods("CUMULATIVE_COST_OF_GOODS_SOLD_LC", measureable, qtdPeriods).getLcValue();
+        return calculationService.getAccumulatedCurrencyMetricAcrossPeriods("COST_OF_GOODS_SOLD_CTD_LC", measureable, qtdPeriods).getLcValue();
     }
 
     private BigDecimal getAccuEstimatedGrossProfitLC(Measurable measureable, List<FinancialPeriod> qtdPeriods) throws Exception {

@@ -155,7 +155,7 @@ public class BatchProcessingService {
 
         resultSet = statement.executeQuery(
                 "SELECT Period,`POb NAME (TAB NAME)`,`Transaction Price/Changes to Trans Price (excl LDs)`,`Estimated at Completion (EAC)/ Changes to EAC (excl TPCs)`,"
-                + "`Cumulative Costs Incurred`,`Liquidated Damages (LDs)/Changes to LDs`, `Contract Sales Destination`, `POB Identifiers (DRM)`, `SL POb Revenue Start Date`, `SL  POb Revenue End Date` FROM `tbl_POCI_POb Changes` ORDER BY Period");
+                + "`Cumulative Costs Incurred`,`Liquidated Damages (LDs)/Changes to LDs`, `Contract Sales Destination`, `POB Identifiers (DRM)`, `SL POb Revenue Start Date`, `SL  POb Revenue End Date` FROM `tbl_POCI_POb Inputs` ORDER BY Period");
 
         logger.log(Level.INFO, "Period\tPOCC File Name\tC Page Number\tReporting Unit Number");
         logger.log(Level.INFO, "==\t================\t===\t=======");

@@ -493,6 +493,16 @@ public class AdminService {
 
     public void initReportingUnits() throws Exception {
 
+        if (findReportingUnitByCode("9999") == null) {
+            ReportingUnit ru = new ReportingUnit();
+            ru.setActive(true);
+            ru.setCode("9999");
+            ru.setCompany(findCompanyById("FLS"));
+            ru.setDescription("CEO");
+            ru.setLocalCurrency(Currency.getInstance("USD"));
+            persist(ru);
+        }
+
         if (findReportingUnitByCode("1105") == null) {
             Logger.getLogger(AdminService.class.getName()).log(Level.INFO, "Initializing Reporting Units");
             BufferedReader reader = new BufferedReader(new InputStreamReader(AppInitializeService.class.getResourceAsStream("/resources/app_data_init_files/reporting_units.txt"), "UTF-8"));

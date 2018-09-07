@@ -481,7 +481,7 @@ public class JournalService {
     }
 
     private BigDecimal getContractRevenueInExcess(Measurable measureable, FinancialPeriod period) throws Exception {
-        return calculationService.getCurrencyMetric("CONTRACT_REVENUE_IN_EXCESS_LC", measureable, period).getLcValue();
+        return calculationService.getCurrencyMetric("CONTRACT_ASSET_LC", measureable, period).getLcValue();
     }
 
     private BigDecimal getContractBillingsCTDLC(Measurable measureable, FinancialPeriod period) throws Exception {
@@ -493,7 +493,7 @@ public class JournalService {
     }
 
     private BigDecimal getContractBillingsInExcess(Measurable measureable, FinancialPeriod period) throws Exception {
-        return calculationService.getCurrencyMetric("CONTRACT_BILLINGS_IN_EXCESS_LC", measureable, period).getLcValue();
+        return calculationService.getCurrencyMetric("CONTRACT_LIABILITY_LC", measureable, period).getLcValue();
     }
 
     private BigDecimal getThirdPartyCommissionsPeriod(Measurable measureable, FinancialPeriod period) throws Exception {

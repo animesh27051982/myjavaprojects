@@ -161,12 +161,12 @@ rule "Contract Revenue Earned to Date"
         modify (contractRevenueToRecognizeCTD) { lcValue = (transactionPrice.lcValue * contractPercentComplete.value)};
 end
 
-rule "Contract Billings In Excess"
+rule "Contract Billings In Excess - Metric Renamed to CONTRACT_LIABILITY_LC"
     when
         contract : Contract()
         contractRevenueToRecognizeCTD : CurrencyMetric(metricType.code == "REVENUE_TO_RECOGNIZE_CTD_LC", lcValue != null)
         contractBillingsCTDLC : CurrencyMetric(metricType.code == "CONTRACT_BILLINGS_CTD_CC", lcValue != null)
-        contractBillingsInExcess : CurrencyMetric(metricType.code == "CONTRACT_BILLINGS_IN_EXCESS_LC")
+        contractBillingsInExcess : CurrencyMetric(metricType.code == "CONTRACT_LIABILITY_LC")
     then
         modify (contractBillingsInExcess) { lcValue = (contractBillingsCTDLC.lcValue <= contractRevenueToRecognizeCTD.lcValue ? 0B : contractBillingsCTDLC.lcValue - contractRevenueToRecognizeCTD.lcValue)};
 end
@@ -248,13 +248,13 @@ rule "Contract Billings CTD RC"
         modify (contractBillingsCTDRC) {rcValue = contractBillingsPeriodRC.rcValue + (contractBillingsCTDCCPriorPeriod.rcValue == null ? 0B: contractBillingsCTDCCPriorPeriod.rcValue)};
 end
 
-
-rule "Contract Revenue In Excess. This is named Costs in Excess on XLS : Need to investigate / confirm"
+//This is named Costs in Excess on XLS : Need to investigate / confirm
+rule "Contract Revenue In Excess. Metric renamed to CONTRACT_ASSET_LC"
     when
         contract : Contract()
         contractRevenueToRecognizeCTD : CurrencyMetric(metricType.code == "REVENUE_TO_RECOGNIZE_CTD_LC", lcValue != null)
         contractBillingsCTDLC : CurrencyMetric(metricType.code == "CONTRACT_BILLINGS_CTD_CC", lcValue != null)
-        contractRevenueInExcess : CurrencyMetric(metricType.code == "CONTRACT_REVENUE_IN_EXCESS_LC")
+        contractRevenueInExcess : CurrencyMetric(metricType.code == "CONTRACT_ASSET_LC")
     then
         modify (contractRevenueInExcess) { lcValue = (contractBillingsCTDLC.lcValue >= contractRevenueToRecognizeCTD.lcValue ? 0B : contractRevenueToRecognizeCTD.lcValue - contractBillingsCTDLC.lcValue)};
 end
@@ -373,7 +373,7 @@ rule "Revenue to Recognize CTD CC Straight Line"
         modify (revenueToRecognizeCTD) { ccValue = (transactionPrice.ccValue * period.getStraightLineRevenueAllocationFactor(slStartDate.value, slEndDate.value)) };
         modify (revenueToRecognizeCTD) { ccValue = (revenueToRecognizeCTD.ccValue == 0B) ? revenueToRecognizeCTDPriorPeriod.ccValue : revenueToRecognizeCTD.ccValue };
         modify (revenueToRecognizeCTD) { ccValue = (revenueToRecognizeCTD.ccValue == null) ? 0B : revenueToRecognizeCTD.ccValue };
-        logger.info("SL Rev Calc: Revenue Alloc Factor: " + period.getStraightLineRevenueAllocationFactor(slStartDate.value, slEndDate.value));
+        //logger.info("SL Rev Calc: Revenue Alloc Factor: " + period.getStraightLineRevenueAllocationFactor(slStartDate.value, slEndDate.value));
 end
 
 rule "Revenue to Recognize CTD LC Straight Line"
@@ -686,21 +686,21 @@ rule "Contract Projected Gain (Loss) in Backlog incl TPC"
         modify (projectedGainLossInclTPCBacklogLC) { lcValue = (projectGainLossBacklogLC.lcValue - lossReserveCTDLC.lcValue - thirdPartyCommissionCTDLC.lcValue + thirdPartyCommissonToRecCTDLC.lcValue)};
 end
 
-rule "Loss Reserve Including TPC CTD : Accelerated Third Party Commissions CTD"
+rule "Accelerated Third Party Commissions CTD"
     when
         contract : Contract()
         projectedGainLossInclTPCBacklog : CurrencyMetric(metricType.code == "PROJECT_GAIN_LOSS_INCL_TPC_BACKLOG_LC", lcValue != null)
-        lossReserveInclTPCCTD : CurrencyMetric(metricType.code == "LOSS_RESERVE_INCL_TPC_CTD_LC")
+        lossReserveInclTPCCTD : CurrencyMetric(metricType.code == "TPC_TO_ACCEL_CTD_LC")
     then
         modify (lossReserveInclTPCCTD) { lcValue = (projectedGainLossInclTPCBacklog.lcValue >= 0B ? 0B : -projectedGainLossInclTPCBacklog.lcValue) };
 end
 
-rule "Loss Reserve Adjustment Including TPC Current Period : Accelerated Third Party Commissions Current Period"
+rule "TPC Accelerated Current Period : Accelerated Third Party Commissions Current Period"
     when
         contract : Contract()
-        lossReserveInclTPCCTD : CurrencyMetric(metricType.code == "LOSS_RESERVE_INCL_TPC_CTD_LC", lcValue != null)
-        priorPeriodLossReserveInclTPC : CurrencyMetricPriorPeriod(metricType.code == "LOSS_RESERVE_INCL_TPC_CTD_LC")
-        lossReserveAdjustmentInclTPC : CurrencyMetric(metricType.code == "LOSS_RESERVE_INCL_TPC_PERIOD_LC")
+        lossReserveInclTPCCTD : CurrencyMetric(metricType.code == "TPC_TO_ACCEL_CTD_LC", lcValue != null)
+        priorPeriodLossReserveInclTPC : CurrencyMetricPriorPeriod(metricType.code == "TPC_TO_ACCEL_CTD_LC")
+        lossReserveAdjustmentInclTPC : CurrencyMetric(metricType.code == "TPC_TO_ACCEL_PERIOD_LC")
     then
         modify (lossReserveAdjustmentInclTPC) { lcValue = (priorPeriodLossReserveInclTPC.lcValue == null ? lossReserveInclTPCCTD.lcValue : lossReserveInclTPCCTD.lcValue - priorPeriodLossReserveInclTPC.lcValue) };
 end

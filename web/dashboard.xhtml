@@ -80,11 +80,11 @@
                             </p:panelGrid>
                             <h1>#{webSession.currentPeriod.id} Reporting Units</h1>
 
-                            <p:dataTable value="#{dashboard.reportingUnits}" var="ru" >
+                            <p:dataTable tableStyle="width: fixed" value="#{dashboard.reportingUnits}" var="ru" >
                                 <f:facet name="header">
                                     Reporting Units
                                 </f:facet>
-                                <p:column style="width: 350px;" headerText="Reporting Unit" sortBy="#{ru.name}">
+                                <p:column style="width: 25%;" headerText="Reporting Unit" sortBy="#{ru.name}">
                                     <h:outputText value="#{ru.name}" />
                                 </p:column>
                                 <p:column headerText="Platform">
@@ -99,7 +99,7 @@
                                 <p:column headerText="POB Input Required Count">
                                     <h:outputText value="#{ru.pobInputRequiredCount}" />
                                 </p:column>
-                                <p:column headerText="Actions">
+                                <p:column headerText="Actions" style="width: 20%;">
                                     <span style="white-space: nowrap;">
                                         <p:commandButton value="Inputs" style="margin-left: 10px; font-size: 90%;" icon="ui-icon-arrowthick-1-e" ajax="false" actionListener="#{webSession.setCurrentReportingUnit(ru)}" action="#{inputController.proceedToOnlineEntry()}"/>
                                         <p:commandButton value="Calculations" style="margin-left: 10px; font-size: 90%;" icon="ui-icon-arrowthick-1-e" ajax="false" actionListener="#{webSession.setCurrentReportingUnit(ru)}" action="#{calcReviewController.reviewCalculations()}"/>
