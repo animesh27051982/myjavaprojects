@@ -85,7 +85,7 @@ public class Contract extends BaseEntity<Long> implements MetricStore, EventStor
     @JoinColumn(name = "SALES_DESTINATION_COUNTRY_ID")
     private Country salesDestinationCountry;
     @Transient
-    private boolean valid;
+    private boolean valid = true;
 
     @OneToMany(fetch = FetchType.LAZY, cascade = {CascadeType.ALL}, mappedBy = "contract")
     @OrderBy("id ASC")

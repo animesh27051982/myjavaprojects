@@ -58,7 +58,7 @@ public class BatchProcessingService {
     @Inject
     private FinancialPeriodService financialPeriodService;
     @Inject
-    PerformanceObligationService performanceObligationService;
+    private PerformanceObligationService performanceObligationService;
     @Inject
     private ContractService contractService;
     @Inject
@@ -112,7 +112,7 @@ public class BatchProcessingService {
 
     //@Asynchronous
     public void processUploadedCalculationData(String msAccDB, String fileName) {
-        logger.log(Level.INFO, "Processing POCI/O Data: " + msAccDB);
+        logger.log(Level.INFO, "Processing POB input data: " + msAccDB);
 
         Connection connection = null;
         Statement statement = null;
@@ -122,15 +122,15 @@ public class BatchProcessingService {
             String dbURL = "jdbc:ucanaccess://" + msAccDB;
             connection = DriverManager.getConnection(dbURL);
             statement = connection.createStatement();
-            logger.info("Processing POCI Core finance data");
+            logger.info("Processing POB input data..");
             processPOCIData(connection, statement, fileName);
-            logger.info("Processing POCI billing data");
+            logger.info("Processing contract billing data..");
             processBillingInfoFromPOCI(connection, statement, fileName);
-            logger.info("Processing POCI Third Party Commission data.");
+            logger.info("Processing contract third party commission data..");
             processPOCIThirdPartyCommissions(connection, statement, fileName);
             adminService.jpaEvictAllCache();
         } catch (Exception e) {
-            logger.log(Level.INFO, "Error processing POCI/O data: ", e);
+            logger.log(Level.INFO, "Error processing POB input data: ", e);
         } finally {
             try {
                 if (null != connection) {
@@ -142,7 +142,7 @@ public class BatchProcessingService {
             }
         }
 
-        logger.log(Level.INFO, "POCI/O import completed.");
+        logger.log(Level.INFO, "POB input data import completed.");
     }
 
     void processPOCIData(Connection connection, Statement statement, String fileName) throws SQLException, Exception {
@@ -155,7 +155,8 @@ public class BatchProcessingService {
 
         resultSet = statement.executeQuery(
                 "SELECT Period,`POb NAME (TAB NAME)`,`Transaction Price/Changes to Trans Price (excl LDs)`,`Estimated at Completion (EAC)/ Changes to EAC (excl TPCs)`,"
-                + "`Cumulative Costs Incurred`,`Liquidated Damages (LDs)/Changes to LDs`, `Contract Sales Destination`, `POB Identifiers (DRM)`, `SL POb Revenue Start Date`, `SL  POb Revenue End Date` FROM `tbl_POCI_POb Inputs` ORDER BY Period");
+                + "`Cumulative Costs Incurred`,`Liquidated Damages (LDs)/Changes to LDs`, `Contract Sales Destination`, `POB Identifiers (DRM)`, `SL POb Revenue Start Date`, "
+                + "`SL  POb Revenue End Date` FROM `tbl_POCI_POb Inputs` ORDER BY Period");
 
         logger.log(Level.INFO, "Period\tPOCC File Name\tC Page Number\tReporting Unit Number");
         logger.log(Level.INFO, "==\t================\t===\t=======");
@@ -217,6 +218,14 @@ public class BatchProcessingService {
                                     calculationService.getDateMetric("SL_END_DATE", pob, period).setValue(slEnd.toLocalDate());
                                 }
 
+                                if (period.equals(financialPeriodService.getCurrentFinancialPeriod())) {
+                                    if (tp == null || eac == null) {
+                                        pob.setValid(false);
+                                    } else {
+                                        pob.setValid(true);
+                                    }
+                                }
+
                                 rusToSave.add(pob.getContract().getReportingUnit());
                             } else {
                                 importMessages.add("POB not found : " + id);
@@ -234,11 +243,8 @@ public class BatchProcessingService {
                     throw new IllegalStateException("Financial Period not available :" + exPeriod);
                 }
 
-                if ((count % 100) == 0) {
-                    logger.log(Level.INFO, "Processed " + count + " POB Input Sets.");
-                    timeInterval = System.currentTimeMillis();
-                }
                 if ((count % 1000) == 0) {
+                    logger.log(Level.INFO, "Processed " + count + " POB Input Sets.");
                     logger.log(Level.INFO, "Flushing data to database...");
                     em.flush();
                     em.clear();
@@ -422,7 +428,7 @@ public class BatchProcessingService {
     }
 
     public void processUploadedContractPobData(String msAccDB, String fileName) throws Exception {
-        Logger.getLogger(AppInitializeService.class.getName()).log(Level.INFO, "Processing initContract: " + msAccDB);
+        Logger.getLogger(AppInitializeService.class.getName()).log(Level.INFO, "Processing contract and POB structural data: " + msAccDB);
 
         Connection connection = null;
         Statement statement = null;

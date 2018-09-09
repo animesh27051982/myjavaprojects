@@ -83,6 +83,10 @@ public class Dashboard implements Serializable {
             }
         }
 
+        if (webSession.getCurrentReportingUnit() != null) {
+            relevantReportingUnits.add(webSession.getCurrentReportingUnit());
+        }
+
         try {
             List<Holiday> holidays = adminService.findHolidayList();
             Company company = adminService.findCompanyById("FLS");

@@ -209,7 +209,7 @@
                                         </p:columnGroup>
 
                                         <p:column sortBy="#{pob.name}">
-                                            <h:outputText value="#{pob.name}" title="#{pob.description}"/>
+                                            <h:outputText value="#{pob.name}" title="#{pob.description}" style="#{viewSupport.getStyle(pob)}}"/>
                                         </p:column>
 
                                         <p:column style="white-space:pre-line;">

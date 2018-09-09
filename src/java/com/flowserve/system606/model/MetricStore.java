@@ -13,4 +13,6 @@ public interface MetricStore {
 
     public Long getId();
 
+    public boolean isValid();
+
 }

@@ -119,7 +119,7 @@ public class ReportingUnitService {
     public void initializeDraft(ReportingUnit reportingUnit, FinancialPeriod period, User user) throws Exception {
         Logger.getLogger(ReportingUnitService.class.getName()).log(Level.INFO, "initializeDraft()");
         if (period.isOpen()) {
-            Logger.getLogger(ReportingUnitService.class.getName()).log(Level.INFO, "initializeDraft() it's open.");
+            //Logger.getLogger(ReportingUnitService.class.getName()).log(Level.INFO, "initializeDraft() it's open.");
             WorkflowAction action = new WorkflowAction(WorkflowActionType.INITIALIZE, user);
             adminService.persist(action);
             reportingUnit.addWorkflowAction(period, action);

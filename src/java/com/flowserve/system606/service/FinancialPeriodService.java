@@ -479,7 +479,7 @@ public class FinancialPeriodService {
             period.setStatus(PeriodStatus.OPENED);
             for (ReportingUnit ru : adminService.findAllReportingUnits()) {
                 if (ru.isActive()) {
-                    Logger.getLogger(ReportingUnit.class.getName()).log(Level.INFO, "Opening RU Period: " + ru.getName());
+                    //Logger.getLogger(ReportingUnit.class.getName()).log(Level.INFO, "Opening RU Period: " + ru.getName());
                     if (ru.getWorkflowContext(period) == null) {
                         WorkflowContext workflowContext = new WorkflowContext();
                         adminService.persist(workflowContext);

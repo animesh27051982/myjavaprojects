@@ -16,6 +16,7 @@ import com.flowserve.system606.model.Event;
 import com.flowserve.system606.model.EventType;
 import com.flowserve.system606.model.FinancialPeriod;
 import com.flowserve.system606.model.Measurable;
+import com.flowserve.system606.model.MetricStore;
 import com.flowserve.system606.model.PerformanceObligation;
 import com.flowserve.system606.model.ReportingUnit;
 import com.flowserve.system606.model.StringMetric;
@@ -231,8 +232,23 @@ public class ViewSupport implements Serializable {
         return null;
     }
 
+    public String getStyle(Measurable measurable) {
+        String style = "";
+
+        if (measurable instanceof MetricStore) {
+            if (!((MetricStore) measurable).isValid()) {
+                return "color: red;";
+            }
+        }
+
+        return style;
+    }
+
     public TreeNode generateNodeTree(List<ReportingUnit> reportingUnits) {
+
         TreeNode root = new DefaultTreeNode(new BusinessUnit(), null);
+
+        long start = System.currentTimeMillis();
 
         for (ReportingUnit reportingUnit : reportingUnits) {
             TreeNode reportingUnitNode = new DefaultTreeNode(reportingUnit, root);
@@ -242,16 +258,17 @@ public class ViewSupport implements Serializable {
                 contractNode.setExpanded(webSession.getExpandedContractIds().contains(contract.getId()));
                 for (PerformanceObligation pob : contract.getPerformanceObligations()) {
                     new DefaultTreeNode(pob, contractNode);
-//                    try {
-//                        if (!calculationService.isValid(pob, webSession.getCurrentPeriod())) {
-//                            contract.setValid(false);
-//                        }
-//                    } catch (Exception e) {
-//                        Logger.getLogger(ViewSupport.class.getName()).log(Level.INFO, "message", e);
-//                    }
+                    if (!pob.isValid()) {
+                        pob.getContract().setValid(false);
+                    }
                 }
             }
         }
+
+        long end = System.currentTimeMillis();
+        long interval = end - start;
+
+        Logger.getLogger(ViewSupport.class.getName()).log(Level.INFO, "generateNodeTree ms: " + interval);
 
         return root;
     }

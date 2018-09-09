@@ -51,6 +51,8 @@ public class PerformanceObligation extends BaseEntity<Long> implements MetricSto
     private Contract contract;
     @Column(name = "IS_ACTIVE")
     private boolean active;
+    @Column(name = "IS_VALID")
+    private boolean valid = true;
     @OneToOne
     @JoinColumn(name = "CREATED_BY_ID")
     private User createdBy;
@@ -229,5 +231,13 @@ public class PerformanceObligation extends BaseEntity<Long> implements MetricSto
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public boolean isValid() {
+        return valid;
+    }
+
+    public void setValid(boolean valid) {
+        this.valid = valid;
     }
 }

@@ -475,7 +475,7 @@ public class CurrencyService {
     public void processLegacyExchangeRates(String msAccDB) throws Exception {  // Need an application exception type defined.
         final int SCALE = 14;
         final int ROUNDING_METHOD = BigDecimal.ROUND_HALF_UP;
-        Logger.getLogger(CurrencyService.class.getName()).log(Level.INFO, "Processing POCI Data: " + msAccDB);
+        Logger.getLogger(CurrencyService.class.getName()).log(Level.INFO, "Processing Exchange Rates: " + msAccDB);
 
         Connection connection = null;
         Statement statement = null;
