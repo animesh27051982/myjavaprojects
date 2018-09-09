@@ -20,6 +20,7 @@ import com.flowserve.system606.model.PerformanceObligation;
 import com.flowserve.system606.model.ReportingUnit;
 import com.flowserve.system606.model.StringMetric;
 import com.flowserve.system606.model.User;
+import com.flowserve.system606.model.WorkflowAction;
 import com.flowserve.system606.model.WorkflowStatus;
 import com.flowserve.system606.service.AdminService;
 import com.flowserve.system606.service.CalculationService;
@@ -28,15 +29,19 @@ import com.flowserve.system606.service.CurrencyService;
 import com.flowserve.system606.service.EventService;
 import com.flowserve.system606.service.FinancialPeriodService;
 import com.flowserve.system606.service.MetricService;
+import com.flowserve.system606.service.ReportingUnitService;
 import com.flowserve.system606.web.WebSession;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Currency;
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
@@ -80,15 +85,20 @@ public class ViewSupport implements Serializable {
     private CurrencyService currencyService;
     @Inject
     private ContractService contractService;
+    @Inject
+    private ReportingUnitService reportingUnitService;
 
     private List<FinancialPeriod> allPeriods = new ArrayList<FinancialPeriod>();
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy");
+
+    private Set<ReportingUnit> preparableReportingUnits = new TreeSet<ReportingUnit>();
 
     public ViewSupport() {
     }
 
     @PostConstruct
     public void init() {
+        preparableReportingUnits.addAll(reportingUnitService.getPreparableReportingUnits(webSession.getUser()));
         allPeriods = financialPeriodService.findAllPeriods();
         businessUnit = webSession.getEditBusinessUnit();
         reportingUnit = webSession.getEditReportingUnit();
@@ -106,6 +116,10 @@ public class ViewSupport implements Serializable {
 
         return users;
 
+    }
+
+    public String getRole(ReportingUnit reportingUnit) {
+        return reportingUnit.getRole(webSession.getCurrentPeriod(), webSession.getUser());
     }
 
     public List<Company> completeCompany(String searchString) {
@@ -187,6 +201,36 @@ public class ViewSupport implements Serializable {
         return generateNodeTree(rus);
     }
 
+    public String getLastWorkflowActionName(ReportingUnit reportingUnit) {
+        String name = "";
+        WorkflowAction lastAction = reportingUnit.getLastWorkflowAction(webSession.getCurrentPeriod());
+        if (lastAction != null) {
+            name = lastAction.getWorkflowActionType().getName();
+        }
+
+        return name;
+    }
+
+    public String getLastWorkflowActionUsername(ReportingUnit reportingUnit) {
+        String name = "";
+        WorkflowAction lastAction = reportingUnit.getLastWorkflowAction(webSession.getCurrentPeriod());
+        if (lastAction != null) {
+            name = lastAction.getUser().getName();
+        }
+
+        return name;
+    }
+
+    public LocalDateTime getLastWorkflowActionDate(ReportingUnit reportingUnit) {
+
+        WorkflowAction lastAction = reportingUnit.getLastWorkflowAction(webSession.getCurrentPeriod());
+        if (lastAction != null) {
+            return lastAction.getActionDate();
+        }
+
+        return null;
+    }
+
     public TreeNode generateNodeTree(List<ReportingUnit> reportingUnits) {
         TreeNode root = new DefaultTreeNode(new BusinessUnit(), null);
 
@@ -198,8 +242,28 @@ public class ViewSupport implements Serializable {
                 contractNode.setExpanded(webSession.getExpandedContractIds().contains(contract.getId()));
                 for (PerformanceObligation pob : contract.getPerformanceObligations()) {
                     new DefaultTreeNode(pob, contractNode);
+//                    try {
+//                        if (!calculationService.isValid(pob, webSession.getCurrentPeriod())) {
+//                            contract.setValid(false);
+//                        }
+//                    } catch (Exception e) {
+//                        Logger.getLogger(ViewSupport.class.getName()).log(Level.INFO, "message", e);
+//                    }
                 }
             }
+        }
+
+        return root;
+    }
+
+    public TreeNode generateNodeTreeWorkflow(ReportingUnit reportingUnit, FinancialPeriod period) {
+        TreeNode root = new DefaultTreeNode(new BusinessUnit(), null);
+
+        TreeNode reportingUnitNode = new DefaultTreeNode(reportingUnit, root);
+        reportingUnitNode.setExpanded(true);
+        for (WorkflowAction workflowAction : reportingUnit.getWorkflowContext(period).getWorkflowHistory()) {
+            TreeNode actionNode = new DefaultTreeNode(workflowAction, reportingUnitNode);
+            actionNode.setExpanded(true);
         }
 
         return root;
@@ -294,9 +358,6 @@ public class ViewSupport implements Serializable {
             pob.getParent().getChildren().remove(pob);
         }
 
-//        for (TreeNode contract : contractsToRemove) {
-//            contract.getParent().getChildren().remove(contract);
-//        }
         List<TreeNode> reportingUnitsToRemove = new ArrayList<TreeNode>();
         List<TreeNode> contractsToRemove = new ArrayList<TreeNode>();
 
@@ -371,9 +432,6 @@ public class ViewSupport implements Serializable {
             bill.getParent().getChildren().remove(bill);
         }
 
-//        for (TreeNode contract : contractsToRemove) {
-//            contract.getParent().getChildren().remove(contract);
-//        }
         List<TreeNode> reportingUnitsToRemove = new ArrayList<TreeNode>();
         List<TreeNode> contractsToRemove = new ArrayList<TreeNode>();
 
@@ -386,7 +444,6 @@ public class ViewSupport implements Serializable {
                     contractsToRemove.add(contract);
                 }
             }
-
         }
 
         for (TreeNode ru : reportingUnitsToRemove) {
@@ -505,11 +562,11 @@ public class ViewSupport implements Serializable {
         return currencyService.getLCtoRCExchangeRate(contract, webSession.getCurrentPeriod());
     }
 
-    public WorkflowStatus getPeriodWorkflowStatus(Contract contract) {
-//        if (contract.getPeriodApprovalRequest(webSession.getCurrentPeriod()) == null) {
-//            return null;
-//        }
-        return contract.getReportingUnit().getPeriodApprovalRequest(webSession.getCurrentPeriod()).getWorkflowStatus();
+//    public WorkflowStatus getPeriodWorkflowStatus(Contract contract) {
+//        return contract.getReportingUnit().getPeriodApprovalRequest(webSession.getCurrentPeriod()).getWorkflowStatus();
+//    }
+    public WorkflowStatus getPeriodWorkflowStatus(ReportingUnit reportingUnit) {
+        return reportingUnit.getWorkflowContext(webSession.getCurrentPeriod()).getWorkflowStatus();
     }
 
     public void setUsers(List<User> users) {
@@ -526,7 +583,7 @@ public class ViewSupport implements Serializable {
         User user = webSession.getUser();
         if (user.isGlobalViewer() || ru.getViewers().contains(user)) {
             return false;
-        } else if (period.isOpen() && ru.isDraft(period) && (user.isAdmin() || webSession.getPreparableReportingUnits().contains(ru))) {
+        } else if (period.isOpen() && ru.isDraft(period) && (user.isAdmin() || preparableReportingUnits.contains(ru))) {
             return true;
         } else if (period.isUserFreeze() && user.isAdmin()) {
             return true;

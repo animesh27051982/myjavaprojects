@@ -38,7 +38,7 @@ public class FinancialPeriodEdit implements Serializable {
     public String openPeriod() {
         FacesContext context = FacesContext.getCurrentInstance();
         try {
-            financialPeriodService.openPeriod(financialPeriod);
+            financialPeriodService.openPeriod(financialPeriod, webSession.getUser());
             context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, financialPeriod.getId() + " period opened.", ""));
         } catch (Exception e) {
             Logger.getLogger(FinancialPeriodEdit.class.getName()).log(Level.INFO, "Error opening period: ", e);

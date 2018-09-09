@@ -30,6 +30,7 @@ import javax.persistence.OrderBy;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import static javax.persistence.TemporalType.TIMESTAMP;
+import javax.persistence.Transient;
 
 @Entity
 @Table(name = "CONTRACTS")
@@ -83,6 +84,8 @@ public class Contract extends BaseEntity<Long> implements MetricStore, EventStor
     @OneToOne
     @JoinColumn(name = "SALES_DESTINATION_COUNTRY_ID")
     private Country salesDestinationCountry;
+    @Transient
+    private boolean valid;
 
     @OneToMany(fetch = FetchType.LAZY, cascade = {CascadeType.ALL}, mappedBy = "contract")
     @OrderBy("id ASC")
@@ -101,7 +104,7 @@ public class Contract extends BaseEntity<Long> implements MetricStore, EventStor
     @OneToMany(fetch = FetchType.LAZY, cascade = {CascadeType.ALL}, orphanRemoval = true)
     @JoinTable(name = "CONTRACT_APPROVAL_REQUEST", joinColumns = @JoinColumn(name = "CONTRACT_ID"), inverseJoinColumns = @JoinColumn(name = "APPROVAL_REQUEST_ID"))
     @MapKeyJoinColumn(name = "PERIOD_ID")
-    private Map<FinancialPeriod, ApprovalRequest> periodApprovalRequestMap = new HashMap<FinancialPeriod, ApprovalRequest>();
+    private Map<FinancialPeriod, WorkflowContext> periodApprovalRequestMap = new HashMap<FinancialPeriod, WorkflowContext>();
 
     public Contract() {
     }
@@ -171,11 +174,11 @@ public class Contract extends BaseEntity<Long> implements MetricStore, EventStor
         return events;
     }
 
-    public ApprovalRequest getPeriodApprovalRequest(FinancialPeriod period) {
+    public WorkflowContext getPeriodApprovalRequest(FinancialPeriod period) {
         return periodApprovalRequestMap.get(period);
     }
 
-    public void putPeriodApprovalRequest(FinancialPeriod period, ApprovalRequest approvalRequest) {
+    public void putPeriodApprovalRequest(FinancialPeriod period, WorkflowContext approvalRequest) {
         periodApprovalRequestMap.put(period, approvalRequest);
     }
 
@@ -393,5 +396,13 @@ public class Contract extends BaseEntity<Long> implements MetricStore, EventStor
 
     public void setLongDescription(String longDescription) {
         this.longDescription = longDescription;
+    }
+
+    public boolean isValid() {
+        return valid;
+    }
+
+    public void setValid(boolean valid) {
+        this.valid = valid;
     }
 }

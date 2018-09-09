@@ -1,7 +1,7 @@
 package com.flowserve.system606.model;
 
 import java.io.Serializable;
-import java.util.Date;
+import java.time.LocalDateTime;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -27,7 +27,7 @@ public class WorkflowAction implements Serializable {
     private WorkflowActionType workflowActionType;
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "ACTION_DATE")
-    private Date actionDate;
+    private LocalDateTime actionDate;
     @Column(name = "REJECT_REASON")
     private String rejectionReason;
     @Column(name = "COMMENTS", length = 3000)
@@ -37,12 +37,17 @@ public class WorkflowAction implements Serializable {
     private User user;
 
     public WorkflowAction() {
-        this.actionDate = new Date();
+        this.actionDate = LocalDateTime.now();
     }
 
-    public WorkflowAction(WorkflowActionType type) {
+    public WorkflowAction(WorkflowActionType type, User user) {
         this.workflowActionType = type;
-        this.actionDate = new Date();
+        this.user = user;
+        this.actionDate = LocalDateTime.now();
+    }
+
+    public String getName() {
+        return workflowActionType.getName();
     }
 
     public boolean isApproveAction() {
@@ -104,11 +109,11 @@ public class WorkflowAction implements Serializable {
         this.user = user;
     }
 
-    public Date getActionDate() {
+    public LocalDateTime getActionDate() {
         return actionDate;
     }
 
-    public void setActionDate(Date actionDate) {
+    public void setActionDate(LocalDateTime actionDate) {
         this.actionDate = actionDate;
     }
 

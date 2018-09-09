@@ -334,7 +334,7 @@ public class ContractService {
     }
 
     public void submitForReview(FinancialPeriod period, Contract contract, User user) throws Exception {
-        contract.getPeriodApprovalRequest(period).setWorkflowStatus(WorkflowStatus.PENDING_REVIEW);
+        contract.getPeriodApprovalRequest(period).setWorkflowStatus(WorkflowStatus.PREPARED);
         contract.setLastUpdateDate(LocalDateTime.now());
         contract.setLastUpdatedBy(user);
 

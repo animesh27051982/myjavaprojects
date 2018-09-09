@@ -89,7 +89,7 @@ public class ReportingUnit extends TransientMeasurable<Long> implements Measurab
     @OneToMany(fetch = FetchType.LAZY, cascade = {CascadeType.ALL}, orphanRemoval = true)
     @JoinTable(name = "RU_APPROVAL_REQUEST", joinColumns = @JoinColumn(name = "REPORTING_UNIT_ID"), inverseJoinColumns = @JoinColumn(name = "APPROVAL_REQUEST_ID"))
     @MapKeyJoinColumn(name = "PERIOD_ID")
-    private Map<FinancialPeriod, ApprovalRequest> periodApprovalRequestMap = new HashMap<FinancialPeriod, ApprovalRequest>();
+    private Map<FinancialPeriod, WorkflowContext> periodWorkflowContextMap = new HashMap<FinancialPeriod, WorkflowContext>();
 
     public ReportingUnit() {
     }
@@ -99,30 +99,111 @@ public class ReportingUnit extends TransientMeasurable<Long> implements Measurab
         return this.code.compareTo(obj.getCode());
     }
 
+    public String getRole(FinancialPeriod period, User user) {
+        if (this.approvers.contains(user)) {
+            return "Approver";
+        }
+
+        if (this.reviewers.contains(user)) {
+            return "Reviewer";
+        }
+
+        if (this.preparers.contains(user)) {
+            return "Preparer";
+        }
+
+        if (this.viewers.contains(user)) {
+            return "Viewer";
+        }
+
+        return "";
+    }
+
     public boolean isDraft(FinancialPeriod period) {
-        if (periodApprovalRequestMap.get(period) == null) {
+        if (periodWorkflowContextMap.get(period) == null) {
             return false;
         }
-        return WorkflowStatus.DRAFT.equals(periodApprovalRequestMap.get(period).getWorkflowStatus());
+        return WorkflowStatus.DRAFT.equals(periodWorkflowContextMap.get(period).getWorkflowStatus());
     }
 
-    public boolean isPendingReview(FinancialPeriod period) {
-        if (periodApprovalRequestMap.get(period) == null) {
+    public boolean isPrepared(FinancialPeriod period) {
+        if (periodWorkflowContextMap.get(period) == null) {
             return false;
         }
-        return WorkflowStatus.PENDING_REVIEW.equals(periodApprovalRequestMap.get(period).getWorkflowStatus());
+        return WorkflowStatus.PREPARED.equals(periodWorkflowContextMap.get(period).getWorkflowStatus());
     }
 
-    public boolean isPendingApproval(FinancialPeriod period) {
-        if (periodApprovalRequestMap.get(period) == null) {
+    public boolean isReviewed(FinancialPeriod period) {
+        if (periodWorkflowContextMap.get(period) == null) {
             return false;
         }
-        return WorkflowStatus.PENDING_APPROVAL.equals(periodApprovalRequestMap.get(period).getWorkflowStatus());
+        return WorkflowStatus.REVIEWED.equals(periodWorkflowContextMap.get(period).getWorkflowStatus());
+    }
+
+    public boolean isApproved(FinancialPeriod period) {
+        if (periodWorkflowContextMap.get(period) == null) {
+            return false;
+        }
+        return WorkflowStatus.APPROVED.equals(periodWorkflowContextMap.get(period).getWorkflowStatus());
+    }
+
+    public boolean isPreparable(FinancialPeriod period, User user) {
+        if (periodWorkflowContextMap.get(period) == null) {
+            return false;
+        }
+        if (WorkflowStatus.DRAFT.equals(periodWorkflowContextMap.get(period).getWorkflowStatus())) {
+            if (this.preparers.contains(user)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public boolean isReviewable(FinancialPeriod period, User user) {
+        if (periodWorkflowContextMap.get(period) == null) {
+            return false;
+        }
+
+        if (WorkflowStatus.PREPARED.equals(periodWorkflowContextMap.get(period).getWorkflowStatus())) {
+            if (this.reviewers.contains(user)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public boolean isApprovable(FinancialPeriod period, User user) {
+        if (periodWorkflowContextMap.get(period) == null) {
+            return false;
+        }
+
+        if (WorkflowStatus.REVIEWED.equals(periodWorkflowContextMap.get(period).getWorkflowStatus())) {
+            if (this.approvers.contains(user)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public WorkflowAction getLastWorkflowAction(FinancialPeriod period) {
+        if (periodWorkflowContextMap.get(period) != null) {
+            List<WorkflowAction> actionHistory = periodWorkflowContextMap.get(period).getWorkflowHistory();
+            if (actionHistory != null) {
+                if (actionHistory.size() >= 1) {
+                    return actionHistory.get(actionHistory.size() - 1);
+                }
+            }
+        }
+
+        return null;
     }
 
     public WorkflowStatus getWorkflowStatus(FinancialPeriod period) {
-        if (periodApprovalRequestMap.get(period) != null) {
-            return periodApprovalRequestMap.get(period).getWorkflowStatus();
+        if (periodWorkflowContextMap.get(period) != null) {
+            return periodWorkflowContextMap.get(period).getWorkflowStatus();
         }
 
         return null;
@@ -140,24 +221,36 @@ public class ReportingUnit extends TransientMeasurable<Long> implements Measurab
         return pobs;
     }
 
-    public void setPeriodPendingReview(FinancialPeriod period) {
-        periodApprovalRequestMap.get(period).setWorkflowStatus(WorkflowStatus.PENDING_REVIEW);
+    public void setPrepared(FinancialPeriod period) {
+        periodWorkflowContextMap.get(period).setWorkflowStatus(WorkflowStatus.PREPARED);
     }
 
-    public void setPeriodPendingApproval(FinancialPeriod period) {
-        periodApprovalRequestMap.get(period).setWorkflowStatus(WorkflowStatus.PENDING_APPROVAL);
+    public void setReviewed(FinancialPeriod period) {
+        periodWorkflowContextMap.get(period).setWorkflowStatus(WorkflowStatus.REVIEWED);
     }
 
-    public void setPeriodApproved(FinancialPeriod period) {
-        periodApprovalRequestMap.get(period).setWorkflowStatus(WorkflowStatus.APPROVED);
+    public void setRejected(FinancialPeriod period) {
+        periodWorkflowContextMap.get(period).setWorkflowStatus(WorkflowStatus.REJECTED);
     }
 
-    public ApprovalRequest getPeriodApprovalRequest(FinancialPeriod period) {
-        return periodApprovalRequestMap.get(period);
+    public void setApproved(FinancialPeriod period) {
+        periodWorkflowContextMap.get(period).setWorkflowStatus(WorkflowStatus.APPROVED);
     }
 
-    public void putPeriodApprovalRequest(FinancialPeriod period, ApprovalRequest approvalRequest) {
-        periodApprovalRequestMap.put(period, approvalRequest);
+    public void setDraft(FinancialPeriod period) {
+        periodWorkflowContextMap.get(period).setWorkflowStatus(WorkflowStatus.DRAFT);
+    }
+
+    public void addWorkflowAction(FinancialPeriod period, WorkflowAction action) {
+        periodWorkflowContextMap.get(period).getWorkflowHistory().add(action);
+    }
+
+    public WorkflowContext getWorkflowContext(FinancialPeriod period) {
+        return periodWorkflowContextMap.get(period);
+    }
+
+    public void putPeriodWorkflowContext(FinancialPeriod period, WorkflowContext workflowContext) {
+        periodWorkflowContextMap.put(period, workflowContext);
     }
 
     public String getName() {

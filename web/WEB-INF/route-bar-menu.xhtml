@@ -8,6 +8,7 @@
 
     <ul class="route-bar-menu">
 
+        <!--
         <li class="search-item">
             <i class="fa fa-search" />
             <input type="text" placeholder="Search..."/>
@@ -17,14 +18,24 @@
                 <i class="fa fa-globe" />
             </a>
         </li>
+        -->
         <li>
-            <a href="#" data-tooltip="Calendar">
-                <i class="fa fa-calendar" />
-            </a>
+            <h:form id="calForm">
+                <p:outputPanel id="calendarPanel" >
+                    <a href="#" data-tooltip="Calendar">
+                        <i class="fa fa-calendar" />
+                    </a>
+                </p:outputPanel>
+
+                <p:overlayPanel id="moviePanel" for="calendarPanel" hideEffect="fade" dynamic="false" style="width: 50%;">
+                    <p:schedule id="schedule" value="#{dashboard.eventModel}"/>
+                </p:overlayPanel>
+
+            </h:form>
         </li>
         <li>
             <a href="#" data-tooltip="Help">
-                <i class="fa fa-life-saver" />
+                <i class="fa fa-question-circle" />
             </a>
         </li>
     </ul>

@@ -223,21 +223,6 @@ public class PerformanceObligation extends BaseEntity<Long> implements MetricSto
         return this.getContract().getContractCurrency();
     }
 
-//    public LocalDateTime getTransientLastUpdateDate() {
-//        return transientLastUpdateDate;
-//    }
-//
-//    public void setTransientLastUpdateDate(LocalDateTime transientLastUpdateDate) {
-//        this.transientLastUpdateDate = transientLastUpdateDate;
-//    }
-//
-//    public User getTransientLastUpdateBy() {
-//        return transientLastUpdateBy;
-//    }
-//
-//    public void setTransientLastUpdateBy(User transientLastUpdateBy) {
-//        this.transientLastUpdateBy = transientLastUpdateBy;
-//    }
     public String getDescription() {
         return description;
     }

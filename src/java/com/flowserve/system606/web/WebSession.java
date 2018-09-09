@@ -14,10 +14,8 @@ import com.flowserve.system606.service.AppInitializeService;
 import com.flowserve.system606.service.FinancialPeriodService;
 import com.flowserve.system606.service.ReportingUnitService;
 import java.io.Serializable;
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.TreeSet;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.SessionScoped;
 import javax.inject.Inject;
@@ -51,7 +49,7 @@ public class WebSession implements Serializable {
     private Contract[] selectedContracts;
     private ReportingUnit currentReportingUnit;
     private MetricType metricType;
-    private Set<ReportingUnit> preparableReportingUnits = new TreeSet<ReportingUnit>();
+    //private Set<ReportingUnit> preparableReportingUnits = new TreeSet<ReportingUnit>();
     private Set<Long> expandedContractIds = new HashSet<Long>();
 
     // The currently logged in user.
@@ -66,22 +64,6 @@ public class WebSession implements Serializable {
             user = appInitializeService.getAdminUser();
         }
 
-        preparableReportingUnits = new TreeSet<ReportingUnit>();
-
-        if (user.isAdmin()) {
-            if (currentReportingUnit != null) {
-                preparableReportingUnits.add(currentReportingUnit);
-            }
-        } else {
-            for (ReportingUnit ru : reportingUnitService.getPreparableReportingUnits(user)) {
-                if (ru.isParent()) {
-                    preparableReportingUnits.add(ru);
-                    preparableReportingUnits.addAll(ru.getChildReportingUnits());
-                } else {
-                    preparableReportingUnits.add(ru);
-                }
-            }
-        }
     }
 
     public boolean isAdmin() {
@@ -211,10 +193,6 @@ public class WebSession implements Serializable {
 
     public void setUser(User user) {
         this.user = user;
-    }
-
-    public Collection<ReportingUnit> getPreparableReportingUnits() {
-        return preparableReportingUnits;
     }
 
     public ReportingUnit getCurrentReportingUnit() {

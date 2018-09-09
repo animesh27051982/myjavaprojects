@@ -12,9 +12,9 @@
         </style>
     </ui:define>
 
-    <ui:define name="title">Reports Review</ui:define>
+    <ui:define name="title">RCS Reports Review</ui:define>
 
-    <ui:define name="viewname">Reports Review</ui:define>
+    <ui:define name="viewname">RCS Reports Review</ui:define>
 
     <ui:define name="content">
         <div style="min-height: calc(100vh - 235px);">
@@ -67,7 +67,7 @@
                             <br></br>
                             <p:tabView id="topLevelTabView" dynamic="true" style="margin-top: 15px;">
                                 <p:tab title="Reports">
-                                    <p:treeTable tableStyle="width:auto" value="#{reportsReview.rootTreeNode}" var="pob" selectionMode="single" selection="#{reportsReview.selectedNode}">
+                                    <p:treeTable value="#{reportsReview.rootTreeNode}" var="pob" >
 
                                         <p:ajax event="expand" listener="#{viewSupport.onNodeExpand}"/>
                                         <p:ajax event="collapse" listener="#{viewSupport.onNodeCollapse}"/>
@@ -121,17 +121,61 @@
                                         </p:column>
                                     </p:treeTable>
                                 </p:tab>
+
+                                <p:tab title="Workflow History">
+                                    <p:treeTable id="workflowTree" value="#{reportsReview.treeNodeWorkflow}" var="action">
+                                        <f:facet name="header">
+                                            Reporting Unit
+                                        </f:facet>
+
+                                        <p:column headerText="Reporting Unit" sortBy="#{action.name}">
+                                            <h:outputText value="#{action.name}" rendered="#{of:isInstance('com.flowserve.system606.model.ReportingUnit', action)}"/>
+                                        </p:column>
+
+                                        <p:column style="white-space:pre-line;">
+                                            <f:facet name="header">
+                                                <h:outputText value="Current Status" />
+                                            </f:facet>
+                                            <h:outputText value="#{reportsReview.reportingUnit.getWorkflowStatus(webSession.currentPeriod).description}" rendered="#{of:isInstance('com.flowserve.system606.model.ReportingUnit', action)}"/>
+                                        </p:column>
+
+                                        <p:column style="white-space:pre-line;">
+                                            <f:facet name="header">
+                                                <h:outputText value="Action" />
+                                            </f:facet>
+                                            <h:outputText value="#{action.name}" rendered="#{of:isInstance('com.flowserve.system606.model.WorkflowAction', action)}"/>
+                                        </p:column>
+
+                                        <p:column style="white-space:pre-line;">
+                                            <f:facet name="header">
+                                                <h:outputText value="User" />
+                                            </f:facet>
+                                            <h:outputText value="#{action.user.name}" rendered="#{of:isInstance('com.flowserve.system606.model.WorkflowAction', action)}"/>
+                                        </p:column>
+
+                                        <p:column style="white-space:pre-line;">
+                                            <f:facet name="header">
+                                                <h:outputText value="Action Date" />
+                                            </f:facet>
+                                            <h:outputText value="#{action.actionDate}" rendered="#{of:isInstance('com.flowserve.system606.model.WorkflowAction', action)}">
+                                                <f:convertDateTime pattern="dd-MMM-yyyy hh:mm a" type="localDateTime" />
+                                            </h:outputText>
+                                        </p:column>
+                                    </p:treeTable>
+                                </p:tab>
                             </p:tabView>
-                             <p:toolbar>
-                           
-                            <f:facet name="right">
-                                <p:commandButton value="Return to Online Entry" icon="ui-icon-arrowthick-1-w" ajax="false" action="inputOnlineEntry.xhtml"/>
-                                <p:commandButton value="Back to Calculation Review" icon="ui-icon-arrowthick-1-w" ajax="false"  action="pobCalculationReview.xhtml"/>
-                            </f:facet>
-                        </p:toolbar>
-                            
+
+                            <p:toolbar>
+                                <f:facet name="right">
+                                    <p:commandButton value="Back to Dashboard" icon="ui-icon-arrowthick-1-w" ajax="false" action="#{inputController.inputDashboard}"/>
+                                    <p:commandButton value="Back to Inputs" icon="ui-icon-arrowthick-1-w" ajax="false" action="#{inputController.returnToOnlineEntry()}"/>
+                                    <p:commandButton value="Back to Calculation Review" icon="ui-icon-arrowthick-1-w" ajax="false"  action="pobCalculationReview.xhtml"/>
+                                    <p:commandButton value="Submit for Review" icon="ui-icon-check" ajax="false" action="#{inputController.submitForReview(pobCalculationReview.reportingUnit)}" rendered="#{pobCalculationReview.draft}" disabled="#{not pobCalculationReview.submittableForReview}"/>
+                                    <p:commandButton value="Submit for Approval" icon="ui-icon-check" ajax="false" action="#{inputController.submitForApproval(pobCalculationReview.reportingUnit)}" rendered="#{pobCalculationReview.submittableForApproval}"/>
+                                    <p:commandButton value="Approve" icon="ui-icon-check" ajax="false" action="#{inputController.approve(pobCalculationReview.reportingUnit)}" rendered="#{pobCalculationReview.approvable}"/>
+                                </f:facet>
+                            </p:toolbar>
                         </div>
-                       
                     </div>
                 </div>
             </h:form>

@@ -8,6 +8,7 @@ package com.flowserve.system606.view;
 import com.flowserve.system606.model.Company;
 import com.flowserve.system606.model.Holiday;
 import com.flowserve.system606.model.ReportingUnit;
+import com.flowserve.system606.model.WorkflowStatus;
 import com.flowserve.system606.service.AdminService;
 import com.flowserve.system606.service.FinancialPeriodService;
 import com.flowserve.system606.service.ReportingUnitService;
@@ -40,7 +41,6 @@ import org.primefaces.model.TreeNode;
 public class Dashboard implements Serializable {
 
     private static final Logger logger = Logger.getLogger(Dashboard.class.getName());
-
     private TreeNode rootTreeNode;
     @Inject
     private AdminService adminService;
@@ -52,16 +52,35 @@ public class Dashboard implements Serializable {
     private ViewSupport viewSupport;
     @Inject
     private FinancialPeriodService financialPeriodService;
-    private Set<ReportingUnit> reportingUnits = new TreeSet<ReportingUnit>();
+    private Set<ReportingUnit> preparableReportingUnits = new TreeSet<ReportingUnit>();
+    private Set<ReportingUnit> reviewableReportingUnits = new TreeSet<ReportingUnit>();
+    private Set<ReportingUnit> approvableReportingUnits = new TreeSet<ReportingUnit>();
+    private Set<ReportingUnit> relevantReportingUnits = new TreeSet<ReportingUnit>();
     private ScheduleModel eventModel;
 
     @PostConstruct
     public void init() {
-        reportingUnits.clear();
-        // TODO - These could be stale if redeploy.  Reload every time instead of session.
-        reportingUnits.addAll(webSession.getPreparableReportingUnits());
-        if (webSession.getCurrentReportingUnit() != null) {
-            reportingUnits.add(webSession.getCurrentReportingUnit());
+        for (ReportingUnit ru : reportingUnitService.getViewableReportingUnits(webSession.getUser())) {
+            relevantReportingUnits.add(ru);
+        }
+        for (ReportingUnit ru : reportingUnitService.getPreparableReportingUnits(webSession.getUser())) {
+            relevantReportingUnits.add(ru);
+            if (ru.isPreparable(webSession.getCurrentPeriod(), webSession.getUser())) {
+                preparableReportingUnits.add(ru);
+            }
+        }
+        for (ReportingUnit ru : reportingUnitService.getReviewableReportingUnits(webSession.getUser())) {
+            relevantReportingUnits.add(ru);
+            if (ru.isReviewable(webSession.getCurrentPeriod(), webSession.getUser())) {
+                reviewableReportingUnits.add(ru);
+
+            }
+        }
+        for (ReportingUnit ru : reportingUnitService.getApprovableReportingUnits(webSession.getUser())) {
+            relevantReportingUnits.add(ru);
+            if (ru.isApprovable(webSession.getCurrentPeriod(), webSession.getUser())) {
+                reviewableReportingUnits.add(ru);
+            }
         }
 
         try {
@@ -88,8 +107,12 @@ public class Dashboard implements Serializable {
         return eventModel;
     }
 
-    public Set<ReportingUnit> getReportingUnits() {
-        return reportingUnits;
+    public Set<ReportingUnit> getPreparableReportingUnits() {
+        return preparableReportingUnits;
+    }
+
+    public Set<ReportingUnit> getRelevantReportingUnits() {
+        return relevantReportingUnits;
     }
 
     public void onReportingUnitSelect(SelectEvent event) {
@@ -105,8 +128,12 @@ public class Dashboard implements Serializable {
         init();
     }
 
-    public int getReportingUnitCount() {
-        return reportingUnits.size();
+    public WorkflowStatus getWorkflowStatus(ReportingUnit reportingUnit) {
+        return reportingUnit.getWorkflowStatus(webSession.getCurrentPeriod());
+    }
+
+    public int getPreparableReportingUnitCount() {
+        return preparableReportingUnits.size();
     }
 
     public int getContractCount(ReportingUnit reportingUnit) {
@@ -120,5 +147,13 @@ public class Dashboard implements Serializable {
     public long getPobInputRequiredCount(ReportingUnit reportingUnit) {
         return reportingUnit.getPobInputRequiredCount();
 
+    }
+
+    public Set<ReportingUnit> getReviewableReportingUnits() {
+        return reviewableReportingUnits;
+    }
+
+    public Set<ReportingUnit> getApprovableReportingUnits() {
+        return approvableReportingUnits;
     }
 }

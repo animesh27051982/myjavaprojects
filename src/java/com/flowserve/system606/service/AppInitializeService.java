@@ -5,6 +5,7 @@
  */
 package com.flowserve.system606.service;
 
+import com.flowserve.system606.model.Company;
 import com.flowserve.system606.model.User;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -45,7 +46,7 @@ public class AppInitializeService {
         try {
             adminUser = adminService.initUsers();
             adminService.initCompanies();
-            financialPeriodService.initFinancialPeriods();
+            financialPeriodService.initFinancialPeriods(adminUser);
             // TODO - KJG - The legacy file does not contain Oct 17 data but prior period lookups try to find it, so just use dummy rates for now.
             //currencyService.initCurrencyConverter(financialPeriodService.findById("SEP-17"));
             //currencyService.initCurrencyConverter(financialPeriodService.findById("OCT-17"));
@@ -66,9 +67,15 @@ public class AppInitializeService {
 
             calculationService.initBusinessRules();
 
-            financialPeriodService.openPeriod(financialPeriodService.getCurrentFinancialPeriod());
+            financialPeriodService.openPeriod(financialPeriodService.findById("JUN-18"), adminUser);
+            financialPeriodService.openPeriod(financialPeriodService.findById("JUL-18"), adminUser);
 
-            adminService.initReportingUnitWorkflowStatus();
+            Company fls = adminService.findCompanyById("FLS");
+            fls.setCurrentPeriod(financialPeriodService.findById("JUL-18"));
+            fls.setPriorPeriod(financialPeriodService.findById("JUN-18"));
+
+            //financialPeriodService.openPeriod(financialPeriodService.getCurrentFinancialPeriod(), adminUser);
+            adminService.initReportingUnitWorkflowContext();
             //calculationService.initBusinessRulesEngine();
             // Uncomment for local file based POB loading current month only.
             //contractService.initContracts();

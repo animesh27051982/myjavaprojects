@@ -50,7 +50,7 @@ public class InputController implements Serializable {
     }
 
     public String submitForReview(ReportingUnit reportingUnit) throws Exception {
-        reportingUnitService.submitForReview(reportingUnit, webSession.getCurrentPeriod());
+        reportingUnitService.submitForReview(reportingUnit, webSession.getCurrentPeriod(), webSession.getUser());
 
         FacesMessage msg = new FacesMessage("Succesful", "Reporting unit submitted for review.");
         FacesContext.getCurrentInstance().addMessage(null, msg);
@@ -59,7 +59,7 @@ public class InputController implements Serializable {
     }
 
     public String submitForApproval(ReportingUnit reportingUnit) throws Exception {
-        reportingUnitService.submitForApproval(reportingUnit, webSession.getCurrentPeriod());
+        reportingUnitService.submitForApproval(reportingUnit, webSession.getCurrentPeriod(), webSession.getUser());
 
         FacesMessage msg = new FacesMessage("Succesful", "Reporting unit submitted for approval.");
         FacesContext.getCurrentInstance().addMessage(null, msg);
@@ -68,7 +68,7 @@ public class InputController implements Serializable {
     }
 
     public String approve(ReportingUnit reportingUnit) throws Exception {
-        reportingUnitService.approve(reportingUnit, webSession.getCurrentPeriod());
+        reportingUnitService.approve(reportingUnit, webSession.getCurrentPeriod(), webSession.getUser());
 
         FacesMessage msg = new FacesMessage("Succesful", "Reporting unit appoved.");
         FacesContext.getCurrentInstance().addMessage(null, msg);

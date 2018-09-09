@@ -5,26 +5,26 @@ package com.flowserve.system606.model;
  * @author kgraves
  */
 public enum WorkflowStatus {
-    DRAFT("D", "Draft", "", ""),
-    PENDING_REVIEW("PR", "Pending Review", "", ""),
-    PENDING_APPROVAL("PA", "Pending Approval", "", ""),
-    REJECTED("R", "Rejected", "", ""),
-    APPROVED("A", "Approved", "", "");
+    DRAFT("Draft", "Draft", "fa fa-dot-circle-o", "color: grey; margin-right: 3px;"),
+    PREPARED("Prepared", "Pending Review", "fa fa-dot-circle-o", "color: yellow; margin-right: 3px;"),
+    REVIEWED("Reviewed", "Pending Approval", "fa fa-dot-circle-o", "color: yellow; margin-right: 3px;"),
+    REJECTED("Rejected", "Rejected", "fa fa-dot-circle-o", "color: red; margin-right: 3px;"),
+    APPROVED("Approved", "Approved", "fa fa-dot-circle-o", "color: green; margin-right: 3px;");
 
-    private String shortName;
+    private String name;
     private String description;
     private String icon;
-    private String color;
+    private String style;
 
-    private WorkflowStatus(String shortName, String description, String icon, String color) {
-        this.shortName = shortName;
+    private WorkflowStatus(String name, String description, String icon, String style) {
+        this.name = name;
         this.description = description;
         this.icon = icon;
-        this.color = color;
+        this.style = style;
     }
 
-    public String getShortName() {
-        return shortName;
+    public String getName() {
+        return name;
     }
 
     public String getIcon() {
@@ -35,25 +35,7 @@ public enum WorkflowStatus {
         return description;
     }
 
-    public static WorkflowStatus fromShortName(String shortName) {
-        switch (shortName) {
-            case "D":
-                return WorkflowStatus.DRAFT;
-
-            case "PR":
-                return WorkflowStatus.PENDING_REVIEW;
-
-            case "PA":
-                return WorkflowStatus.PENDING_APPROVAL;
-
-            case "R":
-                return WorkflowStatus.REJECTED;
-
-            case "A":
-                return WorkflowStatus.APPROVED;
-
-            default:
-                throw new IllegalArgumentException("ShortName [" + shortName + "] not supported.");
-        }
+    public String getStyle() {
+        return style;
     }
 }

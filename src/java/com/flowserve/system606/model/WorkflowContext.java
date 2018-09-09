@@ -14,48 +14,40 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
-import javax.persistence.OrderBy;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
 @Entity
-@Table(name = "APPROVAL_REQUESTS")
-public class ApprovalRequest implements Serializable {
+@Table(name = "WORKFLOW_CONTEXTS")
+public class WorkflowContext implements Serializable {
 
     @Transient
-    private static final long serialVersionUID = 8812918539712898232L;
+    private static final long serialVersionUID = 8112918539712898232L;
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "APPROVAL_REQUEST_SEQ")
-    @SequenceGenerator(name = "APPROVAL_REQUEST_SEQ", sequenceName = "APPROVAL_REQUEST_SEQ", allocationSize = 10)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "WORKFLOW_CONTEXT_SEQ")
+    @SequenceGenerator(name = "WORKFLOW_CONTEXT_SEQ", sequenceName = "WORKFLOW_CONTEXT_SEQ", allocationSize = 10)
     @Column(name = "APPROVAL_REQUEST_ID")
     private Long id;
-
     @Column(name = "WORKFLOW_STATUS")
     private WorkflowStatus workflowStatus;
-
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "REPORTING_UNIT_ID")
     private ReportingUnit reportingUnit;
-
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "USER_ID")
     private User user;
-
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "GROUP_ID")
     private ApprovalGroup approvalGroup;
-
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.REMOVE)
-    @JoinTable(name = "APPROVAL_WORKHISTORY", joinColumns = @JoinColumn(name = "APPROVAL_REQUEST_ID"), inverseJoinColumns = @JoinColumn(name = "WORKFLOW_ACTION_ID"))
-    @OrderBy("actionDate ASC")
+    @JoinTable(name = "APPROVAL_WORKHISTORY", joinColumns = @JoinColumn(name = "WORKFLOW_CONTEXT_ID"), inverseJoinColumns = @JoinColumn(name = "WORKFLOW_ACTION_ID"))
     private List<WorkflowAction> workflowHistory = new ArrayList<WorkflowAction>();
-
     @JoinColumn(name = "PERIOD_ID")
     private FinancialPeriod financialPeriod;
 
-    public ApprovalRequest() {
+    public WorkflowContext() {
     }
 
     public Long getId() {

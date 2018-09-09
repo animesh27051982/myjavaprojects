@@ -52,6 +52,7 @@ public class ReportsReview implements Serializable {
     private JournalService journalService;
 
     private TreeNode rootTreeNode;
+    private TreeNode treeNodeWorkflow;
     ReportingUnit reportingUnit;
     private TreeNode selectedNode;
     private List<Contract> contracts;
@@ -67,6 +68,8 @@ public class ReportsReview implements Serializable {
     public void init() {
         reportingUnit = adminService.findReportingUnitById(webSession.getCurrentReportingUnit().getId());
         rootTreeNode = viewSupport.generateNodeTree(reportingUnit);
+        treeNodeWorkflow = viewSupport.generateNodeTreeWorkflow(reportingUnit, webSession.getCurrentPeriod());
+
         initContracts();
         if (webSession.getSelectedContracts() != null && webSession.getSelectedContracts().length > 0) {
             filterByContracts();
@@ -80,8 +83,8 @@ public class ReportsReview implements Serializable {
         return rootTreeNode;
     }
 
-    public void setRootTreeNode(TreeNode rootTreeNode) {
-        this.rootTreeNode = rootTreeNode;
+    public TreeNode getTreeNodeWorkflow() {
+        return treeNodeWorkflow;
     }
 
     public ReportingUnit getReportingUnit() {

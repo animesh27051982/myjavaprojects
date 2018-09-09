@@ -12,6 +12,7 @@ import com.flowserve.system606.model.ReportingUnit;
 import com.flowserve.system606.service.AdminService;
 import com.flowserve.system606.service.CalculationService;
 import com.flowserve.system606.service.FinancialPeriodService;
+import com.flowserve.system606.service.ReportingUnitService;
 import com.flowserve.system606.web.WebSession;
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -41,6 +42,8 @@ public class PobCalculationReview implements Serializable {
     private TreeNode rootTreeNode;
     @Inject
     private CalculationService calculationService;
+    @Inject
+    private ReportingUnitService reportingUnitService;
     @Inject
     private AdminService adminService;
     private BigDecimal eacValue;
@@ -190,38 +193,32 @@ public class PobCalculationReview implements Serializable {
         return reportingUnit.isDraft(webSession.getCurrentPeriod());
     }
 
-    public boolean isPendingReview() {
-        return reportingUnit.isPendingReview(webSession.getCurrentPeriod());
+    public boolean isPrepared() {
+        return reportingUnit.isPrepared(webSession.getCurrentPeriod());
     }
 
-    public boolean isPendingApproval() {
-        return reportingUnit.isPendingApproval(webSession.getCurrentPeriod());
+    public boolean isReviewed() {
+        return reportingUnit.isReviewed(webSession.getCurrentPeriod());
     }
 
     public boolean isSubmittableForReview() throws Exception {
-        if (!isDraft()) {
+        if (!calculationService.isCalculationDataValid(reportingUnit, webSession.getCurrentPeriod())) {
             return false;
         }
 
-        return calculationService.isSubmittableForReview(reportingUnit, webSession.getCurrentPeriod());
+        return reportingUnit.isPreparable(webSession.getCurrentPeriod(), webSession.getUser());
+    }
+
+    public boolean isReviewable() throws Exception {
+        return reportingUnit.isReviewable(webSession.getCurrentPeriod(), webSession.getUser());
     }
 
     public boolean isSubmittableForApproval() throws Exception {
-        if (!isPendingReview()) {
-            return false;
-        }
-
-        // TODO - Check user for reviewer role on the RU.
-        return true;
+        return reportingUnit.isReviewable(webSession.getCurrentPeriod(), webSession.getUser());
     }
 
     public boolean isApprovable() throws Exception {
-        if (!isPendingApproval()) {
-            return false;
-        }
-
-        // TODO - Check user for reviewer role on the RU.
-        return true;
+        return reportingUnit.isApprovable(webSession.getCurrentPeriod(), webSession.getUser());
     }
 
     public ReportingUnit getReportingUnit() {

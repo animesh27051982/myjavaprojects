@@ -1,12 +1,13 @@
 package com.flowserve.system606.service;
 
-import com.flowserve.system606.model.ApprovalRequest;
 import com.flowserve.system606.model.Company;
 import com.flowserve.system606.model.Contract;
 import com.flowserve.system606.model.FinancialPeriod;
 import com.flowserve.system606.model.Holiday;
 import com.flowserve.system606.model.PeriodStatus;
 import com.flowserve.system606.model.ReportingUnit;
+import com.flowserve.system606.model.User;
+import com.flowserve.system606.model.WorkflowContext;
 import com.flowserve.system606.model.WorkflowStatus;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
@@ -81,7 +82,7 @@ public class FinancialPeriodService {
         return findById(alphaNumbericPeriod);
     }
 
-    public void initFinancialPeriods() throws Exception {
+    public void initFinancialPeriods(User user) throws Exception {
         logger.info("Initializing FinancialPeriods");
         String[] shortMonth = {"JAN", "FEB",
             "MAR", "APR", "MAY", "JUN", "JUL",
@@ -100,7 +101,7 @@ public class FinancialPeriodService {
                         continue;  // KJG Tempoararily only create up to JUN-18
                     }
                     LocalDate lastOfMonth = date.with(TemporalAdjusters.lastDayOfMonth());
-                    FinancialPeriod thisPeriod = new FinancialPeriod(exPeriod, exPeriod, LocalDate.of(totalYear[i], Month.of(j), 1), lastOfMonth, totalYear[i], j, PeriodStatus.CLOSED);
+                    FinancialPeriod thisPeriod = new FinancialPeriod(exPeriod, exPeriod, LocalDate.of(totalYear[i], Month.of(j), 1), lastOfMonth, totalYear[i], j, PeriodStatus.NEVER_OPENED);
                     thisPeriod.setCreationDate(LocalDateTime.now());
                     thisPeriod.setLastUpdateDate(LocalDateTime.now());
                     logger.info("Creating period: " + thisPeriod.getId());
@@ -115,14 +116,6 @@ public class FinancialPeriodService {
                 }
             }
         }
-
-        logger.info("Finding company");
-        Company fls = adminService.findCompanyById("FLS");
-
-        openPeriod(findById("JUN-18"));
-        openPeriod(findById("JUL-18"));
-        fls.setCurrentPeriod(findById("JUL-18"));
-        fls.setPriorPeriod(findById("JUN-18"));
 
         logger.info("Finished initializing FinancialPeriods.");
     }
@@ -480,27 +473,29 @@ public class FinancialPeriodService {
         return finacialPeriod;
     }
 
-    public void openPeriod(FinancialPeriod period) throws Exception {
+    public void openPeriod(FinancialPeriod period, User user) throws Exception {
 
         if (period.isNeverOpened()) {
             period.setStatus(PeriodStatus.OPENED);
             for (ReportingUnit ru : adminService.findAllReportingUnits()) {
-                if (ru.isActive() && !ru.isParent() && ru.getPeriodApprovalRequest(period) == null) {
+                if (ru.isActive()) {
                     Logger.getLogger(ReportingUnit.class.getName()).log(Level.INFO, "Opening RU Period: " + ru.getName());
-                    ApprovalRequest ruApprovalRequest = new ApprovalRequest();
-                    ruApprovalRequest.setWorkflowStatus(WorkflowStatus.DRAFT);
-                    adminService.persist(ruApprovalRequest);
-                    ru.putPeriodApprovalRequest(period, ruApprovalRequest);
-                    adminService.update(ru);
-                    for (Contract contract : ru.getContracts()) {
-                        if (contract.isActive() && contract.getPeriodApprovalRequest(period) == null) {
-                            ApprovalRequest contractApprovalRequest = new ApprovalRequest();
-                            contractApprovalRequest.setWorkflowStatus(WorkflowStatus.DRAFT);
-                            adminService.persist(contractApprovalRequest);
-                            contract.putPeriodApprovalRequest(period, contractApprovalRequest);
-                            calculationService.update(contract);
-                        }
+                    if (ru.getWorkflowContext(period) == null) {
+                        WorkflowContext workflowContext = new WorkflowContext();
+                        adminService.persist(workflowContext);
+                        ru.putPeriodWorkflowContext(period, workflowContext);
+                        reportingUnitService.initializeDraft(ru, period, user);
                     }
+
+//                    for (Contract contract : ru.getContracts()) {
+//                        if (contract.isActive() && contract.getPeriodApprovalRequest(period) == null) {
+//                            WorkflowContext contractApprovalRequest = new WorkflowContext();
+//                            contractApprovalRequest.setWorkflowStatus(WorkflowStatus.DRAFT);
+//                            adminService.persist(contractApprovalRequest);
+//                            contract.putPeriodApprovalRequest(period, contractApprovalRequest);
+//                            calculationService.update(contract);
+//                        }
+//                    }
                 }
             }
         }
@@ -533,7 +528,7 @@ public class FinancialPeriodService {
     }
 
     public void initWorkflowContext(FinancialPeriod period, Contract contract) throws Exception {
-        ApprovalRequest contractApprovalRequest = new ApprovalRequest();
+        WorkflowContext contractApprovalRequest = new WorkflowContext();
         contractApprovalRequest.setWorkflowStatus(WorkflowStatus.DRAFT);
         adminService.persist(contractApprovalRequest);
         contract.putPeriodApprovalRequest(period, contractApprovalRequest);

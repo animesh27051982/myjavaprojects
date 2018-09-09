@@ -803,64 +803,16 @@
                                                                     </p:treeTable>
                                                                 </p:tab>-->
 
-                                <p:tab title="Workflow">
-                                    <p:treeTable tableStyle="width:auto" id="workflowTree" value="#{pobCalculationReview.rootTreeNode}" var="pob" selectionMode="single" selection="#{pobCalculationReview.selectedNode}">
-                                        <f:facet name="header">
-                                            Performance Obligations
-                                        </f:facet>
-
-                                        <p:column headerText="Reporting Unit - Contract - POB" sortBy="#{pob.name}">
-                                            <h:outputText value="#{pob.name}" title="#{pob.description}"/>
-                                        </p:column>
-
-                                        <p:column style="white-space:pre-line;" id="wf1">
-                                            <f:facet name="header">
-                                                <h:outputText value="Last Updated By" />
-                                                <p:tooltip value="Last Updated By" for="wf1" position="top" hideEffect="clip" showEffect="clip" />
-                                            </f:facet>
-                                            <h:outputText value="#{pob.lastUpdatedBy.name}" rendered="#{of:isInstance('com.flowserve.system606.model.MetricStore', pob)}"/>
-                                        </p:column>
-
-                                        <p:column style="white-space:pre-line;" id="wf2">
-                                            <f:facet name="header">
-                                                <h:outputText value="Last Update Date" />
-                                                <p:tooltip value="Last Updated Date" for="wf2" position="top" hideEffect="clip" showEffect="clip" />
-                                            </f:facet>
-                                            <h:outputText value="#{pob.lastUpdateDate}" rendered="#{of:isInstance('com.flowserve.system606.model.MetricStore', pob)}">
-                                                <f:convertDateTime pattern="dd-MMM-yyyy hh:mm a" type="localDateTime" />
-                                            </h:outputText>
-                                        </p:column>
-
-                                        <p:column style="white-space:pre-line;" id="wf3">
-                                            <f:facet name="header">
-                                                <h:outputText value="Workflow Status" />
-                                                <p:tooltip value="Workflow Status" for="wf3" position="top" hideEffect="clip" showEffect="clip" />
-                                            </f:facet>
-                                            <h:outputText value="#{viewSupport.getPeriodWorkflowStatus(pob).description}"  rendered="#{of:isInstance('com.flowserve.system606.model.Contract', pob)}"/>
-                                        </p:column>
-
-                                        <p:column style="white-space:pre-line;" id="wf4">
-                                            <f:facet name="header">
-                                                <h:outputText value="Worflow Actions" />
-                                                <p:tooltip value="Workflow Actions" for="wf4" position="top" hideEffect="clip" showEffect="clip" />
-                                            </f:facet>
-                                            <p:commandButton value="Submit For Review" ajax="true" style="font-size: 80%;" update="workflowTree" actionListener="#{viewSupport.submitForReview(pob)}" rendered="#{of:isInstance('com.flowserve.system606.model.Contract', pob)}"/>
-                                        </p:column>
-                                    </p:treeTable>
-                                </p:tab>
                             </p:tabView>
                         </div>
                         <p:toolbar>
                             <f:facet name="left">
                                 <p:commandButton value="Recalc All From NOV-17" icon="ui-icon-check" update=":form:topLevelTabView" ajax="false" actionListener="#{pobCalculationReview.calculateAndSaveSinceNov17}" action="#{calcReviewController.reviewCalculations()}"/>
-                                <p:commandButton value="Reports" ajax="false" style="width:auto;" icon="ui-icon-arrowthick-1-s" action="reportsReview.xhtml"/>
                             </f:facet>
                             <f:facet name="right">
                                 <p:commandButton value="Back to Dashboard" icon="ui-icon-arrowthick-1-w" ajax="false" action="#{inputController.inputDashboard}"/>
-                                <p:commandButton value="Back to Online Entry" icon="ui-icon-arrowthick-1-w" ajax="false" action="#{inputController.returnToOnlineEntry()}"/>
-                                <p:commandButton value="Submit for Review" icon="ui-icon-check" ajax="false" action="#{inputController.submitForReview(pobCalculationReview.reportingUnit)}" rendered="#{pobCalculationReview.draft}" disabled="#{not pobCalculationReview.submittableForReview}"/>
-                                <p:commandButton value="Submit for Final Approval" icon="ui-icon-check" ajax="false" action="#{inputController.submitForApproval(pobCalculationReview.reportingUnit)}" rendered="#{pobCalculationReview.submittableForApproval}"/>
-                                <p:commandButton value="Approve" icon="ui-icon-check" ajax="false" action="#{inputController.approve(pobCalculationReview.reportingUnit)}" rendered="#{pobCalculationReview.approvable}"/>
+                                <p:commandButton value="Back to Inputs" icon="ui-icon-arrowthick-1-w" ajax="false" action="#{inputController.returnToOnlineEntry()}"/>
+                                <p:commandButton value="Reports Review" ajax="false" icon="ui-icon-arrowthick-1-e" action="reportsReview.xhtml"/>
                             </f:facet>
                         </p:toolbar>
                     </div>

@@ -286,15 +286,12 @@ public class CalculationService {
         return true;
     }
 
-    private boolean isValid(PerformanceObligation pob, FinancialPeriod period) throws Exception {
-        if (getCurrencyMetric("TRANSACTION_PRICE_CC", pob, period).getCcValue() != null) {
-            return true;
-        }
-        return false;
+    public boolean isValid(PerformanceObligation pob, FinancialPeriod period) throws Exception {
+        return getCurrencyMetric("TRANSACTION_PRICE_CC", pob, period).getCcValue() != null;
     }
 
-    public boolean isSubmittableForReview(ReportingUnit ru, FinancialPeriod period) throws Exception {
-        if (ru.getPerformanceObligations().size() == 0) {
+    public boolean isCalculationDataValid(ReportingUnit ru, FinancialPeriod period) throws Exception {
+        if (ru.getPerformanceObligations().isEmpty()) {
             return false;
         }
         for (PerformanceObligation pob : ru.getPerformanceObligations()) {
@@ -428,16 +425,6 @@ public class CalculationService {
     private CurrencyMetric getAccumulatedCurrencyMetric(String metricCode, Measurable measurable, FinancialPeriod period) throws Exception {
         MetricType metricType = metricService.getMetricTypeByCode(metricCode);
 
-//        if (measurable.getContractCurrency() == null) {
-//            if ("CONTRACT_BILLINGS_PERIOD_CC".equals(metricCode)) {
-//                Logger.getLogger(CalculationService.class.getName()).log(Level.INFO, "Calculating non-CC accumulation.");
-//            }
-//            CurrencyMetric metric = getAccumulatedNonContractCurrencyMetric(metricType, measurable, period);
-//            if ("CONTRACT_BILLINGS_PERIOD_CC".equals(metricCode)) {
-//                Logger.getLogger(CalculationService.class.getName()).log(Level.INFO, "non-CC metric value " + metricCode + ": " + metric.getLcValue().toPlainString());
-//            }
-//            return metric;
-//        }
         if (metricType.isConvertible() && measurable.getContractCurrency() != null && measurable.getLocalCurrency() != null) {
             return getAccumulatedConvertibleCurrencyMetric(metricType, measurable, period);
         } else {
@@ -445,54 +432,6 @@ public class CalculationService {
         }
     }
 
-    /**
-     * Contract currency is not valid for RU level accumulation, etc. Calculate local and reporting currency only. CC set to zero.
-     */
-//    private CurrencyMetric getAccumulatedNonContractCurrencyMetric(MetricType metricType, Measurable measurable, FinancialPeriod period) throws Exception {
-//
-//        BigDecimal lcValueSum = BigDecimal.ZERO;
-//        BigDecimal rcValueSum = BigDecimal.ZERO;
-//
-//        CurrencyMetric metric = new CurrencyMetric();
-//        metric.setFinancialPeriod(period);
-//        metric.setMetricType(metricType);
-//        metric.setValue(BigDecimal.ZERO);
-//        metric.setCcValue(BigDecimal.ZERO);
-//        metric.setLcValue(lcValueSum);
-//        metric.setRcValue(rcValueSum);
-//
-//        if (isEmptyTransientMesaurable(measurable)) {
-//            return metric;
-//        }
-//
-//        if (isRootMeasurable(measurable)) {
-//            CurrencyMetric rootCurrencyMetric = getCurrencyMetric(metricType.getCode(), measurable, period);
-//            if (rootCurrencyMetric != null) {
-//                BigDecimal lcValue = rootCurrencyMetric.getLcValue();
-//                if (lcValue != null) {
-//                    lcValueSum = lcValueSum.add(lcValue);
-//                }
-//                BigDecimal rcValue = rootCurrencyMetric.getRcValue();
-//                if (rcValue != null) {
-//                    rcValueSum = rcValueSum.add(rcValue);
-//                }
-//            }
-//            metric.setLcValue(lcValueSum);
-//            metric.setRcValue(rcValueSum);
-//
-//            return metric;
-//        }
-//
-//        for (Measurable childMeasurable : measurable.getChildMeasurables()) {
-//            lcValueSum = lcValueSum.add(getAccumulatedNonContractCurrencyMetric(metricType, childMeasurable, period).getLcValue());
-//            rcValueSum = rcValueSum.add(getAccumulatedNonContractCurrencyMetric(metricType, childMeasurable, period).getRcValue());
-//        }
-//
-//        metric.setLcValue(lcValueSum);
-//        metric.setRcValue(rcValueSum);
-//
-//        return metric;
-//    }
     private CurrencyMetric getAccumulatedNonConvertibleCurrencyMetric(MetricType metricType, Measurable measurable, FinancialPeriod period) throws Exception {
         BigDecimal ccValueSum = BigDecimal.ZERO;
         BigDecimal lcValueSum = BigDecimal.ZERO;
@@ -538,64 +477,6 @@ public class CalculationService {
             return metric;
         }
 
-//        if (measurable instanceof MetricStore) {
-//            CurrencyMetric rootCurrencyMetric = (CurrencyMetric) getMetric(metricType.getCode(), measurable, period);
-//            if (rootCurrencyMetric != null || measurable instanceof PerformanceObligation) {
-//                if (rootCurrencyMetric == null) {
-//                    Logger.getLogger(CalculationService.class.getName()).log(Level.INFO, "rootCurrencyMetric is null.  Need to check why metric values are null at this level: " + measurable.getClass().toString() + ": " + metricType.getCode());
-//                    return metric;
-//                }
-//                if (measurable.getContractCurrency() != null) {
-//                    BigDecimal ccValue = rootCurrencyMetric.getCcValue();
-//                    if (ccValue != null) {
-//                        ccValueSum = ccValueSum.add(ccValue);
-//                        metric.setCcValue(ccValueSum);
-//                    }
-//                }
-//                if (measurable.getLocalCurrency() != null) {
-//                    BigDecimal lcValue = rootCurrencyMetric.getLcValue();
-//                    if (lcValue != null) {
-//                        lcValueSum = lcValueSum.add(lcValue);
-//                        metric.setLcValue(lcValueSum);
-//
-//                    }
-//                }
-//                BigDecimal rcValue = rootCurrencyMetric.getRcValue();
-//                if (rcValue != null) {
-//                    rcValueSum = rcValueSum.add(rcValue);
-//                    metric.setRcValue(rcValueSum);
-//                }
-//
-//                return metric;
-//            }
-//        }
-//        if (isPerformanceObligation(measurable)) {
-//            CurrencyMetric rootCurrencyMetric = getCurrencyMetric(metricType.getCode(), measurable, period);
-//            if (rootCurrencyMetric != null) {
-//                if (measurable.getContractCurrency() != null) {
-//                    BigDecimal ccValue = rootCurrencyMetric.getCcValue();
-//                    if (ccValue != null) {
-//                        ccValueSum = ccValueSum.add(ccValue);
-//                        metric.setCcValue(ccValueSum);
-//                    }
-//                }
-//                if (measurable.getLocalCurrency() != null) {
-//                    BigDecimal lcValue = rootCurrencyMetric.getLcValue();
-//                    if (lcValue != null) {
-//                        lcValueSum = lcValueSum.add(lcValue);
-//                        metric.setLcValue(lcValueSum);
-//
-//                    }
-//                }
-//                BigDecimal rcValue = rootCurrencyMetric.getRcValue();
-//                if (rcValue != null) {
-//                    rcValueSum = rcValueSum.add(rcValue);
-//                    metric.setRcValue(rcValueSum);
-//                }
-//            }
-//
-//            return metric;
-//        }
         for (Measurable childMeasurable : measurable.getChildMeasurables()) {
             if (measurable.getContractCurrency() != null) {
                 ccValueSum = ccValueSum.add(getAccumulatedNonConvertibleCurrencyMetric(metricType, childMeasurable, period).getCcValue());
@@ -656,33 +537,6 @@ public class CalculationService {
             return metric;
         }
 
-//        if (measurable instanceof MetricStore) {
-//            CurrencyMetric rootCurrencyMetric = (CurrencyMetric) getMetric(metricType.getCode(), measurable, period);
-//            if (rootCurrencyMetric != null || measurable instanceof PerformanceObligation) {
-//                if (rootCurrencyMetric == null) {
-//                    return metric;
-//                }
-//                BigDecimal value = rootCurrencyMetric.getValue();
-//                if (value != null) {
-//                    valueSum = valueSum.add(value);
-//                }
-//                metric.setValue(valueSum);
-//
-//                return metric;
-//            }
-//        }
-//        if (isPerformanceObligation(measurable)) {
-//            CurrencyMetric rootCurrencyMetric = getCurrencyMetric(metricType.getCode(), measurable, period);
-//            if (rootCurrencyMetric != null) {
-//                BigDecimal value = rootCurrencyMetric.getValue();
-//                if (value != null) {
-//                    valueSum = valueSum.add(value);
-//                }
-//            }
-//            metric.setValue(valueSum);
-//
-//            return metric;
-//        }
         for (Measurable childMeasurable : measurable.getChildMeasurables()) {
             valueSum = valueSum.add(getAccumulatedConvertibleCurrencyMetric(metricType, childMeasurable, period).getValue());
         }
@@ -691,10 +545,6 @@ public class CalculationService {
         currencyService.convertCurrency(metric, measurable, period);
 
         return metric;
-    }
-
-    private boolean isPerformanceObligation(Measurable measurable) {
-        return measurable instanceof PerformanceObligation;
     }
 
     private boolean isEmptyTransientMesaurable(Measurable measurable) {

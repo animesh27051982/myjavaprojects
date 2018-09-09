@@ -474,7 +474,7 @@ public class BatchProcessingService {
         dataImport = new DataImportFile();
         int count = 0;
 
-        resultSet = statement.executeQuery("SELECT ID, Name, Stage, Folders, `Name of POb`, `If OT, identify the revenue recognition method`, `C-Page ID` FROM tbl_POb");
+        resultSet = statement.executeQuery("SELECT ID, Name, Stage, Folders, `Name of POb`, `If OT identify the revenue recognition method`, `C-Page ID` FROM tbl_POb");
 
         try {
             ut.begin();
@@ -552,7 +552,7 @@ public class BatchProcessingService {
         int count = 0;
         String line = null;
 
-        resultSet = statement.executeQuery("SELECT ID, Name, `BPC Reporting Unit`, `Sales Order #`, `Contract Currency`, `Customer Name`, `Contract Description` FROM tbl_Contracts");
+        resultSet = statement.executeQuery("SELECT ID, Name, `BPC Reporting Unit`, `Sales Order #`, `Contract Currency`, `Customer Name`, `Contract Description` FROM tbl_POC_Contracts");
         ut.begin();
         while (resultSet.next()) {
 

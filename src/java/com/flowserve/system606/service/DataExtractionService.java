@@ -53,7 +53,7 @@ public class DataExtractionService {
             connection = DriverManager.getConnection(dbURL);
 
             PreparedStatement pst = connection.prepareStatement("INSERT INTO POB_Output "
-                    + "(PERIOD_ID, RU_CODE, CONTRACT_ID, POB_NAME, REVENUE_RECOGNITION_METHOD, TRANSACTION_PRICE_CC,LIQUIDATED_DAMAGES_CTD_CC,"
+                    + "(PERIOD_ID, RU_CODE, CONTRACT_ID, POB_ID, POB_NAME, REVENUE_RECOGNITION_METHOD, TRANSACTION_PRICE_CC,LIQUIDATED_DAMAGES_CTD_CC,"
                     + "ESTIMATED_COST_AT_COMPLETION_LC,LOCAL_COSTS_CTD_LC,THIRD_PARTY_COSTS_CTD_LC,INTERCOMPANY_COSTS_CTD_LC,DELIVERY_DATE,"
                     + "PARTIAL_SHIPMENT_COSTS_LC,ESTIMATED_GROSS_PROFIT_LC,"
                     + "ESTIMATED_GROSS_MARGIN,PERCENT_COMPLETE,COST_OF_GOODS_SOLD_CTD_LC,COST_OF_GOODS_SOLD_PERIOD_LC,"
@@ -65,7 +65,7 @@ public class DataExtractionService {
                     + "TRANSACTION_PRICE_NET_LD_LC,REMAINING_ESTIMATE_COMPLETE_LC,PROJECTED_GAIN_LOSS_LC,"
                     + "PROJECTED_GAIN_LOSS_BACKLOG_LC,CTD_STANDARD_COSTS_COGS_LC,LOSS_CONTRACT_ADJ_LC,SALES_DESTINATION,"
                     + "OEAM_DISAGG,SL_START_DATE,SL_END_DATE,COSTS_INCURRED_CTD_LC) "
-                    + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?,?,?,?,?, ?, ?,?,?,?,?,?)");
+                    + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?,?,?,?,?, ?, ?,?,?,?,?,?)");
 
             PreparedStatement contractST = connection.prepareStatement("INSERT INTO Contract_Ouput "
                     + "(PERIOD_ID, RU_CODE, CONTRACT_ID, THIRD_PARTY_COMMISSION_CTD_LC,THIRD_PARTY_COMMISSION_TO_RECOGNIZE_LC,"
@@ -85,62 +85,64 @@ public class DataExtractionService {
 
             FinancialPeriod period = financialPeriodService.findById("NOV-17");
             do {
-                for (String code : reportingUnits) {
-                    ReportingUnit reportingUnit = adminService.findReportingUnitByCode(code);
+                for (ReportingUnit reportingUnit : adminService.findAllReportingUnits()) {
+                    Logger.getLogger(DataExtractionService.class.getName()).log(Level.INFO, "Extracting period: " + period.getId() + " RU: " + reportingUnit.getCode());
                     for (Contract contract : reportingUnit.getContracts()) {
+
                         for (PerformanceObligation pob : contract.getPerformanceObligations()) {
                             //Logger.getLogger(WebSession.class.getName()).log(Level.FINER, "Adding to tree POB ID: " + pob.getId());
                             pst.setString(1, period.getId());
                             pst.setString(2, reportingUnit.getCode());
                             pst.setString(3, String.valueOf(contract.getId()));
-                            pst.setString(4, pob.getName());
+                            pst.setString(4, String.valueOf(pob.getId()));
+                            pst.setString(5, pob.getName());
                             if (pob.getRevenueMethod() != null) {
-                                pst.setString(5, pob.getRevenueMethod().getShortName());
+                                pst.setString(6, pob.getRevenueMethod().getShortName());
                             } else {
-                                pst.setString(5, null);
+                                pst.setString(6, null);
                             }
-                            pst.setBigDecimal(6, zeroIfNull(calculationService.getCurrencyMetric("TRANSACTION_PRICE_CC", pob, period).getCcValue()));
-                            pst.setBigDecimal(7, zeroIfNull(calculationService.getCurrencyMetric("LIQUIDATED_DAMAGES_CTD_CC", pob, period).getCcValue()));
-                            pst.setBigDecimal(8, zeroIfNull(calculationService.getCurrencyMetric("ESTIMATED_COST_AT_COMPLETION_LC", pob, period).getLcValue()));
-                            pst.setBigDecimal(9, zeroIfNull(calculationService.getCurrencyMetric("LOCAL_COSTS_CTD_LC", pob, period).getLcValue()));
-                            pst.setBigDecimal(10, zeroIfNull(calculationService.getCurrencyMetric("THIRD_PARTY_COSTS_CTD_LC", pob, period).getLcValue()));
-                            pst.setBigDecimal(11, zeroIfNull(calculationService.getCurrencyMetric("INTERCOMPANY_COSTS_CTD_LC", pob, period).getLcValue()));
-                            pst.setDate(12, sqlDateConverter(calculationService.getDateMetric("DELIVERY_DATE", pob, period).getValue()));
-                            pst.setBigDecimal(13, zeroIfNull(calculationService.getCurrencyMetric("PARTIAL_SHIPMENT_COSTS_LC", pob, period).getLcValue()));
+                            pst.setBigDecimal(7, zeroIfNull(calculationService.getCurrencyMetric("TRANSACTION_PRICE_CC", pob, period).getCcValue()));
+                            pst.setBigDecimal(8, zeroIfNull(calculationService.getCurrencyMetric("LIQUIDATED_DAMAGES_CTD_CC", pob, period).getCcValue()));
+                            pst.setBigDecimal(9, zeroIfNull(calculationService.getCurrencyMetric("ESTIMATED_COST_AT_COMPLETION_LC", pob, period).getLcValue()));
+                            pst.setBigDecimal(10, zeroIfNull(calculationService.getCurrencyMetric("LOCAL_COSTS_CTD_LC", pob, period).getLcValue()));
+                            pst.setBigDecimal(11, zeroIfNull(calculationService.getCurrencyMetric("THIRD_PARTY_COSTS_CTD_LC", pob, period).getLcValue()));
+                            pst.setBigDecimal(12, zeroIfNull(calculationService.getCurrencyMetric("INTERCOMPANY_COSTS_CTD_LC", pob, period).getLcValue()));
+                            pst.setDate(13, sqlDateConverter(calculationService.getDateMetric("DELIVERY_DATE", pob, period).getValue()));
+                            pst.setBigDecimal(14, zeroIfNull(calculationService.getCurrencyMetric("PARTIAL_SHIPMENT_COSTS_LC", pob, period).getLcValue()));
 
-                            pst.setBigDecimal(14, zeroIfNull(calculationService.getCurrencyMetric("ESTIMATED_GROSS_PROFIT_LC", pob, period).getLcValue()));
-                            pst.setBigDecimal(15, zeroIfNull(calculationService.getDecimalMetric("ESTIMATED_GROSS_MARGIN", pob, period).getValue()));
-                            pst.setBigDecimal(16, zeroIfNull(calculationService.getDecimalMetric("PERCENT_COMPLETE", pob, period).getValue()));
-                            pst.setBigDecimal(17, zeroIfNull(calculationService.getCurrencyMetric("COST_OF_GOODS_SOLD_CTD_LC", pob, period).getLcValue()));
-                            pst.setBigDecimal(18, zeroIfNull(calculationService.getCurrencyMetric("COST_OF_GOODS_SOLD_PERIOD_LC", pob, period).getLcValue()));
-                            pst.setBigDecimal(19, zeroIfNull(calculationService.getCurrencyMetric("COST_GOODS_SOLD_BACKLOG_LC", pob, period).getLcValue()));
-                            pst.setBigDecimal(20, zeroIfNull(calculationService.getCurrencyMetric("CHANGE_IN_EAC_LC", pob, period).getLcValue()));
-                            pst.setBigDecimal(21, zeroIfNull(calculationService.getCurrencyMetric("REVENUE_TO_RECOGNIZE_CTD_CC", pob, period).getCcValue()));
-                            pst.setBigDecimal(22, zeroIfNull(calculationService.getCurrencyMetric("REVENUE_TO_RECOGNIZE_CTD_CC", pob, period).getLcValue()));
-                            pst.setBigDecimal(23, zeroIfNull(calculationService.getCurrencyMetric("REVENUE_TO_RECOGNIZE_PERIOD_CC", pob, period).getCcValue()));
-                            pst.setBigDecimal(24, zeroIfNull(calculationService.getCurrencyMetric("REVENUE_TO_RECOGNIZE_PERIOD_CC", pob, period).getLcValue()));
-                            pst.setBigDecimal(25, zeroIfNull(calculationService.getCurrencyMetric("LIQUIDATED_DAMAGES_TO_RECOGNIZE_CTD_CC", pob, period).getCcValue()));
-                            pst.setBigDecimal(26, zeroIfNull(calculationService.getCurrencyMetric("LIQUIDATED_DAMAGES_TO_RECOGNIZE_CTD_CC", pob, period).getLcValue()));
-                            pst.setBigDecimal(27, zeroIfNull(calculationService.getCurrencyMetric("LIQUIDATED_DAMAGES_TO_RECOGNIZE_PERIOD_CC", pob, period).getCcValue()));
-                            pst.setBigDecimal(28, zeroIfNull(calculationService.getCurrencyMetric("LIQUIDATED_DAMAGES_TO_RECOGNIZE_PERIOD_CC", pob, period).getLcValue()));
-                            pst.setBigDecimal(29, zeroIfNull(calculationService.getCurrencyMetric("LIQUIDATED_DAMAGES_BACKLOG_CC", pob, period).getCcValue()));
-                            pst.setBigDecimal(30, zeroIfNull(calculationService.getCurrencyMetric("LIQUIDATED_DAMAGES_BACKLOG_CC", pob, period).getLcValue()));
-                            pst.setBigDecimal(31, zeroIfNull(calculationService.getCurrencyMetric("NET_PERIOD_SALES_CC", pob, period).getCcValue()));
-                            pst.setBigDecimal(32, zeroIfNull(calculationService.getCurrencyMetric("NET_PERIOD_SALES_CC", pob, period).getLcValue()));
-                            pst.setBigDecimal(33, zeroIfNull(calculationService.getCurrencyMetric("TRANSACTION_PRICE_BACKLOG_CC", pob, period).getCcValue()));
-                            pst.setBigDecimal(34, zeroIfNull(calculationService.getCurrencyMetric("TRANSACTION_PRICE_BACKLOG_CC", pob, period).getLcValue()));
-                            pst.setBigDecimal(35, zeroIfNull(calculationService.getCurrencyMetric("TRANSACTION_PRICE_NET_LD_LC", pob, period).getLcValue()));
-                            pst.setBigDecimal(36, zeroIfNull(calculationService.getCurrencyMetric("REMAINING_ESTIMATE_COMPLETE_LC", pob, period).getLcValue()));
-                            pst.setBigDecimal(37, zeroIfNull(calculationService.getCurrencyMetric("PROJECTED_GAIN_LOSS_LC", pob, period).getLcValue()));
-                            pst.setBigDecimal(38, zeroIfNull(calculationService.getCurrencyMetric("PROJECTED_GAIN_LOSS_BACKLOG_LC", pob, period).getLcValue()));
+                            pst.setBigDecimal(15, zeroIfNull(calculationService.getCurrencyMetric("ESTIMATED_GROSS_PROFIT_LC", pob, period).getLcValue()));
+                            pst.setBigDecimal(16, zeroIfNull(calculationService.getDecimalMetric("ESTIMATED_GROSS_MARGIN", pob, period).getValue()));
+                            pst.setBigDecimal(17, zeroIfNull(calculationService.getDecimalMetric("PERCENT_COMPLETE", pob, period).getValue()));
+                            pst.setBigDecimal(18, zeroIfNull(calculationService.getCurrencyMetric("COST_OF_GOODS_SOLD_CTD_LC", pob, period).getLcValue()));
+                            pst.setBigDecimal(19, zeroIfNull(calculationService.getCurrencyMetric("COST_OF_GOODS_SOLD_PERIOD_LC", pob, period).getLcValue()));
+                            pst.setBigDecimal(20, zeroIfNull(calculationService.getCurrencyMetric("COST_GOODS_SOLD_BACKLOG_LC", pob, period).getLcValue()));
+                            pst.setBigDecimal(21, zeroIfNull(calculationService.getCurrencyMetric("CHANGE_IN_EAC_LC", pob, period).getLcValue()));
+                            pst.setBigDecimal(22, zeroIfNull(calculationService.getCurrencyMetric("REVENUE_TO_RECOGNIZE_CTD_CC", pob, period).getCcValue()));
+                            pst.setBigDecimal(23, zeroIfNull(calculationService.getCurrencyMetric("REVENUE_TO_RECOGNIZE_CTD_CC", pob, period).getLcValue()));
+                            pst.setBigDecimal(24, zeroIfNull(calculationService.getCurrencyMetric("REVENUE_TO_RECOGNIZE_PERIOD_CC", pob, period).getCcValue()));
+                            pst.setBigDecimal(25, zeroIfNull(calculationService.getCurrencyMetric("REVENUE_TO_RECOGNIZE_PERIOD_CC", pob, period).getLcValue()));
+                            pst.setBigDecimal(26, zeroIfNull(calculationService.getCurrencyMetric("LIQUIDATED_DAMAGES_TO_RECOGNIZE_CTD_CC", pob, period).getCcValue()));
+                            pst.setBigDecimal(27, zeroIfNull(calculationService.getCurrencyMetric("LIQUIDATED_DAMAGES_TO_RECOGNIZE_CTD_CC", pob, period).getLcValue()));
+                            pst.setBigDecimal(28, zeroIfNull(calculationService.getCurrencyMetric("LIQUIDATED_DAMAGES_TO_RECOGNIZE_PERIOD_CC", pob, period).getCcValue()));
+                            pst.setBigDecimal(29, zeroIfNull(calculationService.getCurrencyMetric("LIQUIDATED_DAMAGES_TO_RECOGNIZE_PERIOD_CC", pob, period).getLcValue()));
+                            pst.setBigDecimal(30, zeroIfNull(calculationService.getCurrencyMetric("LIQUIDATED_DAMAGES_BACKLOG_CC", pob, period).getCcValue()));
+                            pst.setBigDecimal(31, zeroIfNull(calculationService.getCurrencyMetric("LIQUIDATED_DAMAGES_BACKLOG_CC", pob, period).getLcValue()));
+                            pst.setBigDecimal(32, zeroIfNull(calculationService.getCurrencyMetric("NET_PERIOD_SALES_CC", pob, period).getCcValue()));
+                            pst.setBigDecimal(33, zeroIfNull(calculationService.getCurrencyMetric("NET_PERIOD_SALES_CC", pob, period).getLcValue()));
+                            pst.setBigDecimal(34, zeroIfNull(calculationService.getCurrencyMetric("TRANSACTION_PRICE_BACKLOG_CC", pob, period).getCcValue()));
+                            pst.setBigDecimal(35, zeroIfNull(calculationService.getCurrencyMetric("TRANSACTION_PRICE_BACKLOG_CC", pob, period).getLcValue()));
+                            pst.setBigDecimal(36, zeroIfNull(calculationService.getCurrencyMetric("TRANSACTION_PRICE_NET_LD_LC", pob, period).getLcValue()));
+                            pst.setBigDecimal(37, zeroIfNull(calculationService.getCurrencyMetric("REMAINING_ESTIMATE_COMPLETE_LC", pob, period).getLcValue()));
+                            pst.setBigDecimal(38, zeroIfNull(calculationService.getCurrencyMetric("PROJECTED_GAIN_LOSS_LC", pob, period).getLcValue()));
+                            pst.setBigDecimal(39, zeroIfNull(calculationService.getCurrencyMetric("PROJECTED_GAIN_LOSS_BACKLOG_LC", pob, period).getLcValue()));
                             //pst.setBigDecimal(33, zeroIfNull(calculationService.getCurrencyMetric("CTD_STANDARD_COSTS_COGS_LC", pob, hasPeriod).getLcValue()));
-                            pst.setBigDecimal(39, zeroIfNull(null));  // KJG The metric type above does not exist.  Figure out what we were using it for.
-                            pst.setBigDecimal(40, zeroIfNull(calculationService.getCurrencyMetric("LOSS_CONTRACT_ADJ_LC", pob, period).getLcValue()));
-                            pst.setString(41, String.valueOf(calculationService.getStringMetric("SALES_DESTINATION", pob, period).getValue()));
-                            pst.setString(42, String.valueOf(calculationService.getStringMetric("OEAM_DISAGG", pob, period).getValue()));
-                            pst.setDate(43, sqlDateConverter(calculationService.getDateMetric("SL_START_DATE", pob, period).getValue()));
-                            pst.setDate(44, sqlDateConverter(calculationService.getDateMetric("SL_END_DATE", pob, period).getValue()));
-                            pst.setBigDecimal(45, zeroIfNull(calculationService.getCurrencyMetric("COSTS_INCURRED_CTD_LC", pob, period).getLcValue()));
+                            pst.setBigDecimal(40, zeroIfNull(null));  // KJG The metric type above does not exist.  Figure out what we were using it for.
+                            pst.setBigDecimal(41, zeroIfNull(calculationService.getCurrencyMetric("LOSS_CONTRACT_ADJ_LC", pob, period).getLcValue()));
+                            pst.setString(42, String.valueOf(calculationService.getStringMetric("SALES_DESTINATION", pob, period).getValue()));
+                            pst.setString(43, String.valueOf(calculationService.getStringMetric("OEAM_DISAGG", pob, period).getValue()));
+                            pst.setDate(44, sqlDateConverter(calculationService.getDateMetric("SL_START_DATE", pob, period).getValue()));
+                            pst.setDate(45, sqlDateConverter(calculationService.getDateMetric("SL_END_DATE", pob, period).getValue()));
+                            pst.setBigDecimal(46, zeroIfNull(calculationService.getCurrencyMetric("COSTS_INCURRED_CTD_LC", pob, period).getLcValue()));
                             pst.executeUpdate();
                         }
                         contractST.setString(1, period.getId());
@@ -182,9 +184,10 @@ public class DataExtractionService {
                 }
             } while ((period = financialPeriodService.calculateNextPeriodUntilCurrent(period)) != null);
 
+            Logger.getLogger(DataExtractionService.class.getName()).log(Level.INFO, "Extracting billing...");
             EventType billingEventType = eventService.getEventTypeByCode("BILLING_EVENT_CC");
-            for (String code : reportingUnits) {
-                ReportingUnit reportingUnit = adminService.findReportingUnitByCode(code);
+            for (ReportingUnit reportingUnit : adminService.findAllReportingUnits()) {
+                Logger.getLogger(DataExtractionService.class.getName()).log(Level.INFO, "Extracting billings RU: " + reportingUnit.getCode());
                 for (Contract contract : reportingUnit.getContracts()) {
                     for (Event event : contract.getAllEventsByEventType(billingEventType)) {
                         CurrencyEvent billingEvent = (CurrencyEvent) event;
@@ -206,7 +209,7 @@ public class DataExtractionService {
             Logger.getLogger(ReportsService.class.getName()).log(Level.INFO, "Error exporting Access DB: ", sqlex);
         }
 
-        Logger.getLogger(ReportsService.class.getName()).log(Level.INFO, "Complete.");
+        Logger.getLogger(ReportsService.class.getName()).log(Level.INFO, "Extraction complete.");
     }
 
     public void generateContractPobStructural(String inputFile) throws Exception {

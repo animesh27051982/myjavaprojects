@@ -64,6 +64,7 @@ public class CalculateInitialDataSet implements Serializable {
                 calculationService.calculateAndSave(reportingUnit, startPeriod);
                 logger.log(Level.INFO, "Completed RU: " + reportingUnit.getCode());
             } catch (Exception e) {
+                Logger.getLogger(CalculateInitialDataSet.class.getName()).log(Level.INFO, "Error calculating", e);
             }
         }
         Instant end = Instant.now();
@@ -76,6 +77,7 @@ public class CalculateInitialDataSet implements Serializable {
     }
 
     public String calcAllReportingUnitsNov17() throws Exception {
+        Instant start = Instant.now();
         FinancialPeriod startPeriod = financialPeriodService.findById("NOV-17");
 
         // Full load of all RUs.  Comment this out and use specific RUs for local testing.
@@ -87,9 +89,16 @@ public class CalculateInitialDataSet implements Serializable {
                 calculationService.calculateAndSave(reportingUnit, startPeriod);
                 logger.log(Level.INFO, "Completed RU: " + reportingUnit.getCode());
             } catch (Exception e) {
+                Logger.getLogger(CalculateInitialDataSet.class.getName()).log(Level.INFO, "Error calculating", e);
             }
         }
         logger.log(Level.INFO, "calculateAllFinancials() completed.");
+
+        Instant end = Instant.now();
+        Duration interval = Duration.between(start, end);
+        int min = (int) (interval.getSeconds() / 60);
+        int sec = (int) (interval.getSeconds() - (min * 60));
+        logger.log(Level.INFO, "calculateAllFinancials() completed in MIN : " + min + " SEC : " + sec);
 
         return "calculateInitialDataSet";
     }

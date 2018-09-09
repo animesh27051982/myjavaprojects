@@ -8,7 +8,6 @@ package com.flowserve.system606.service;
 import com.flowserve.system606.model.Account;
 import com.flowserve.system606.model.AccountMapping;
 import com.flowserve.system606.model.AccountType;
-import com.flowserve.system606.model.ApprovalRequest;
 import com.flowserve.system606.model.BusinessRule;
 import com.flowserve.system606.model.BusinessUnit;
 import com.flowserve.system606.model.Company;
@@ -24,6 +23,8 @@ import com.flowserve.system606.model.ReportingUnit;
 import com.flowserve.system606.model.RevenueMethod;
 import com.flowserve.system606.model.SubledgerLine;
 import com.flowserve.system606.model.User;
+import com.flowserve.system606.model.WorkflowAction;
+import com.flowserve.system606.model.WorkflowContext;
 import com.flowserve.system606.model.WorkflowStatus;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -117,6 +118,10 @@ public class AdminService {
 
     public void persist(Object object) {
         em.persist(object);
+    }
+
+    public void persist(WorkflowAction action) {
+        em.persist(action);
     }
 
     public void flushAndClear() {
@@ -287,7 +292,7 @@ public class AdminService {
         return null;
     }
 
-    public void persist(ApprovalRequest ar) throws Exception {
+    public void persist(WorkflowContext ar) throws Exception {
         em.persist(ar);
     }
 
@@ -537,29 +542,29 @@ public class AdminService {
         }
     }
 
-    public void initReportingUnitWorkflowStatus() throws Exception {
+    public void initReportingUnitWorkflowContext() throws Exception {
         Logger.getLogger(AdminService.class.getName()).log(Level.INFO, "initReportingUnitWorkflowStatus()");
         for (FinancialPeriod period : financialPeriodService.findAllPeriods()) {
             if (period.isClosed()) {
                 for (ReportingUnit ru : findAllReportingUnits()) {
-                    if (ru.isActive() && ru.getPeriodApprovalRequest(period) == null) {
-                        ApprovalRequest ar = new ApprovalRequest();
+                    if (ru.isActive() && ru.getWorkflowContext(period) == null) {
+                        WorkflowContext ar = new WorkflowContext();
                         ar.setReportingUnit(ru);
                         ar.setFinancialPeriod(period);
                         ar.setWorkflowStatus(WorkflowStatus.APPROVED);
-                        ru.putPeriodApprovalRequest(period, ar);
+                        ru.putPeriodWorkflowContext(period, ar);
                         update(ru);
                     }
                 }
             }
             if (period.isOpen()) {
                 for (ReportingUnit ru : findAllReportingUnits()) {
-                    if (ru.isActive() && ru.getPeriodApprovalRequest(period) == null) {
-                        ApprovalRequest ar = new ApprovalRequest();
+                    if (ru.isActive() && ru.getWorkflowContext(period) == null) {
+                        WorkflowContext ar = new WorkflowContext();
                         ar.setReportingUnit(ru);
                         ar.setFinancialPeriod(period);
                         ar.setWorkflowStatus(WorkflowStatus.DRAFT);
-                        ru.putPeriodApprovalRequest(period, ar);
+                        ru.putPeriodWorkflowContext(period, ar);
                         update(ru);
                     }
                 }
