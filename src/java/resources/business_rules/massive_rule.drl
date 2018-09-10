@@ -324,28 +324,27 @@ rule "Revenue to Recognize CTD CC RevRec Method is PIT And Delivery Date Exists"
     when
         pob : PerformanceObligation(revenueMethod == RevenueMethod.POINT_IN_TIME)
         period : FinancialPeriod()
-        currencyService : CurrencyService()  // Necessary due to mid rule-execution need for currency conversion.
         deliveryDate : DateMetric(metricType.code == "DELIVERY_DATE", value != null )
         transactionPrice : CurrencyMetric(metricType.code == "TRANSACTION_PRICE_CC", ccValue != null)
-        revenueToRecognizeCTD : CurrencyMetric(metricType.code == "REVENUE_TO_RECOGNIZE_CTD_CC", ccValue == null || ccValue == 0B)  // If we have already recognized rev, don't do it again.
+        revenueToRecognizeCTD : CurrencyMetric(metricType.code == "REVENUE_TO_RECOGNIZE_CTD_CC", ccValue == null || ccValue == 0B)
+        // If we have already recognized rev, don't do it again.  We need more here... might not cover it...  test.  check prior period value?  Does delivery date need to auto-roll-forward?
     then
         modify (revenueToRecognizeCTD) { ccValue = (deliveryDate.value.compareTo(period.endDate) <= 0 ? transactionPrice.ccValue : 0B)};
-        currencyService.convertCurrency(revenueToRecognizeCTD, pob, period);  // We can convert right in-line since this is a single point-in-time transaction.
+        modify (revenueToRecognizeCTD) { lcValue = (deliveryDate.value.compareTo(period.endDate) <= 0 ? transactionPrice.lcValue : 0B)};
+        modify (revenueToRecognizeCTD) { rcValue = (deliveryDate.value.compareTo(period.endDate) <= 0 ? transactionPrice.rcValue : 0B)};
 end
 
 rule "Revenue to Recognize CTD CC RevRec Method is PIT And Delivery Date Does Not Exist"
     when
         pob : PerformanceObligation(revenueMethod == RevenueMethod.POINT_IN_TIME)
-        period : FinancialPeriod()
-        currencyService : CurrencyService()  // Necessary due to mid rule-execution need for currency conversion.
         deliveryDate : DateMetric(metricType.code == "DELIVERY_DATE", value == null )
         revenueToRecognizeCTDPriorPeriod : CurrencyMetricPriorPeriod(metricType.code == "REVENUE_TO_RECOGNIZE_CTD_CC")
         revenueToRecognizeCTD : CurrencyMetric(metricType.code == "REVENUE_TO_RECOGNIZE_CTD_CC")
     then
         modify (revenueToRecognizeCTD) { ccValue = (revenueToRecognizeCTDPriorPeriod.ccValue == null ? 0B : revenueToRecognizeCTDPriorPeriod.ccValue) };
-        currencyService.convertCurrency(revenueToRecognizeCTD, pob, period);  // We can convert right in-line since this is a single point-in-time transaction.
+        modify (revenueToRecognizeCTD) { ccValue = (revenueToRecognizeCTDPriorPeriod.lcValue == null ? 0B : revenueToRecognizeCTDPriorPeriod.lcValue) };
+        modify (revenueToRecognizeCTD) { ccValue = (revenueToRecognizeCTDPriorPeriod.rcValue == null ? 0B : revenueToRecognizeCTDPriorPeriod.rcValue) };
 end
-
 
 /**
 * REVENUE_TO_RECOGNIZE_CTD_CC - Straight Line - Currency Convertible

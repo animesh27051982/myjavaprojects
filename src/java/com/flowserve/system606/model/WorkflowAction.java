@@ -9,20 +9,22 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 @Entity
 @Table(name = "WORKFLOW_ACTIONS")
-public class WorkflowAction implements Serializable {
+public class WorkflowAction extends BaseEntity<Long> implements Serializable {
 
-    private static final long serialVersionUID = 1549995541215367981L;
+    private static final long serialVersionUID = 1543395541215367981L;
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "WF_ACTION_SEQ")
+    @SequenceGenerator(name = "WF_ACTION_SEQ", sequenceName = "WF_ACTION_SEQ", allocationSize = 10)
     @Column(name = "WORKFLOW_ACTION_ID")
-    private String id;
+    private Long id;
     @Column(name = "WORKFLOW_ACTION_TYPE")
     private WorkflowActionType workflowActionType;
     @Temporal(TemporalType.TIMESTAMP)
@@ -74,11 +76,11 @@ public class WorkflowAction implements Serializable {
         return WorkflowActionType.REMOVE.equals(this.workflowActionType);
     }
 
-    public String getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -124,25 +126,4 @@ public class WorkflowAction implements Serializable {
     public void setRejectionReason(String rejectionReason) {
         this.rejectionReason = rejectionReason;
     }
-
-    @Override
-    public String toString() {
-        return id;
-    }
-
-    @Override
-    public int hashCode() {
-        return id.hashCode();
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (obj instanceof WorkflowAction) {
-            if (((WorkflowAction) obj).id.equals(this.id)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
 }

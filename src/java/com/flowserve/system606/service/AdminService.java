@@ -341,6 +341,10 @@ public class AdminService {
         em.persist(u);
     }
 
+    public User update(User u) throws Exception {
+        return em.merge(u);
+    }
+
     public void update(Country country) throws Exception {
         em.merge(country);
     }
@@ -457,7 +461,26 @@ public class AdminService {
             Logger.getLogger(AdminService.class.getName()).log(Level.INFO, "Finished initializing users.");
         }
 
+        setUserAsAdmin("50042974"); // wells
+        setUserAsAdmin("50043609"); // pots
+        setUserAsAdmin("50052748"); //mason
+        setUserAsAdmin("kgraves");
+        setUserAsAdmin("bvelasco");
+        setUserAsAdmin("50041124");  // moeliing
+        setUserAsAdmin("50047215");  // Vince
+
         return ad;
+    }
+
+    private void setUserAsAdmin(String flsId) throws Exception {
+        List<User> users = findUserByFlsId(flsId);
+        if (users.size() > 0) {
+            User user = users.get(0);
+            if (!user.isAdmin()) {
+                user.setAdmin(true);
+                update(user);
+            }
+        }
     }
 
     private String stripTitle(String title) {
