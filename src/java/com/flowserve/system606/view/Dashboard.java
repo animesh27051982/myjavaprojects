@@ -60,6 +60,8 @@ public class Dashboard implements Serializable {
 
     @PostConstruct
     public void init() {
+        relevantReportingUnits.clear();
+
         for (ReportingUnit ru : reportingUnitService.getViewableReportingUnits(webSession.getUser())) {
             relevantReportingUnits.add(ru);
         }
@@ -120,8 +122,6 @@ public class Dashboard implements Serializable {
     }
 
     public void onReportingUnitSelect(SelectEvent event) {
-        Logger.getLogger(Dashboard.class.getName()).log(Level.INFO, "RU Select Dashboard");
-
         webSession.setFilterText(null);
         init();
     }

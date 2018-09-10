@@ -9,6 +9,7 @@ import com.flowserve.system606.model.Contract;
 import com.flowserve.system606.model.FinancialPeriod;
 import com.flowserve.system606.model.PerformanceObligation;
 import com.flowserve.system606.model.ReportingUnit;
+import com.flowserve.system606.model.WorkflowStatus;
 import com.flowserve.system606.service.AdminService;
 import com.flowserve.system606.service.CalculationService;
 import com.flowserve.system606.service.FinancialPeriodService;
@@ -98,6 +99,10 @@ public class PobCalculationReview implements Serializable {
         }
 
         return false;
+    }
+
+    public WorkflowStatus getWorkflowStatus() {
+        return reportingUnit.getWorkflowStatus(webSession.getCurrentPeriod());
     }
 
     public void onReportingUnitSelect(SelectEvent event) {

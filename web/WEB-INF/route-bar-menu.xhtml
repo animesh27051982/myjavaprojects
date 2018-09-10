@@ -27,7 +27,7 @@
                     </a>
                 </p:outputPanel>
 
-                <p:overlayPanel id="moviePanel" for="calendarPanel" hideEffect="fade" dynamic="false" style="width: 50%;">
+                <p:overlayPanel id="moviePanel" for="calendarPanel" hideEffect="fade" dynamic="true" style="width: 50%;" appendToBody="true" my="right top" at="left bottom">
                     <p:schedule id="schedule" value="#{dashboard.eventModel}"/>
                 </p:overlayPanel>
 

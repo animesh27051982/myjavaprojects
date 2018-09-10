@@ -8,6 +8,8 @@ package com.flowserve.system606.view;
 import com.flowserve.system606.model.Contract;
 import com.flowserve.system606.model.FinancialPeriod;
 import com.flowserve.system606.model.ReportingUnit;
+import com.flowserve.system606.model.WorkflowAction;
+import com.flowserve.system606.model.WorkflowStatus;
 import com.flowserve.system606.service.AdminService;
 import com.flowserve.system606.service.JournalService;
 import com.flowserve.system606.service.ReportsService;
@@ -52,7 +54,7 @@ public class ReportsReview implements Serializable {
     private JournalService journalService;
 
     private TreeNode rootTreeNode;
-    private TreeNode treeNodeWorkflow;
+    private List<WorkflowAction> workflowActions;
     ReportingUnit reportingUnit;
     private TreeNode selectedNode;
     private List<Contract> contracts;
@@ -68,7 +70,7 @@ public class ReportsReview implements Serializable {
     public void init() {
         reportingUnit = adminService.findReportingUnitById(webSession.getCurrentReportingUnit().getId());
         rootTreeNode = viewSupport.generateNodeTree(reportingUnit);
-        treeNodeWorkflow = viewSupport.generateNodeTreeWorkflow(reportingUnit, webSession.getCurrentPeriod());
+        workflowActions = reportingUnit.getWorkflowContext(webSession.getCurrentPeriod()).getWorkflowHistory();
 
         initContracts();
         if (webSession.getSelectedContracts() != null && webSession.getSelectedContracts().length > 0) {
@@ -81,10 +83,6 @@ public class ReportsReview implements Serializable {
 
     public TreeNode getRootTreeNode() {
         return rootTreeNode;
-    }
-
-    public TreeNode getTreeNodeWorkflow() {
-        return treeNodeWorkflow;
     }
 
     public ReportingUnit getReportingUnit() {
@@ -150,6 +148,10 @@ public class ReportsReview implements Serializable {
         } else {
             viewSupport.filterNodeTree(rootTreeNode, webSession.getFilterText());
         }
+    }
+
+    public WorkflowStatus getWorkflowStatus() {
+        return reportingUnit.getWorkflowStatus(webSession.getCurrentPeriod());
     }
 
     public void clearFilterByContractText() {
@@ -225,6 +227,10 @@ public class ReportsReview implements Serializable {
         }
 
         return file;
+    }
+
+    public List<WorkflowAction> getWorkflowActions() {
+        return workflowActions;
     }
 
 }

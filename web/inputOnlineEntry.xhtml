@@ -57,70 +57,114 @@
                     <div class="card card-w-title">
                         <p:growl id="messages" showDetail="true" life="10000" />
 
-                        <!--<p:panelGrid columns="4" columnClasses="ui-grid-col-6,ui-grid-col-6,ui-grid-col-6,ui-grid-col-6" layout="grid" styleClass="ui-panelgrid-blank form-group" style="float: right; border:0px none; background-color:transparent; white-space: nowrap;">-->
-                        <p:outputPanel style="width:600px;float: right;">
-                            <p:fileUpload  fileUploadListener="#{inputOnlineEntry.handleTemplateUpload}" auto="true" label="Upload Excel Template" mode="advanced"
-                                           multiple="false" update="messages" sizeLimit="10000000" allowTypes="/(\.|\/)(xlsx)$/" style="float: right; margin-left: 20px;" rendered="#{viewSupport.editable}"/>
-                            <p:commandButton value="Download Excel Template" ajax="false" style="marign-left: 20px; width: auto; float: right" icon="ui-icon-arrowthick-1-s"
-                                             onclick="PrimeFaces.monitorDownload(showStatus, hideStatus)">
-                                <p:fileDownload value="#{inputOnlineEntry.file}" />
-                            </p:commandButton>
-                            <p:dialog modal="true" widgetVar="statusDialog" header="Preparing Download..." draggable="false" closable="false">
-                                <p:graphicImage value="/images/pbar-ani.gif" style="height: 30px; width: 300px;"/>
-                            </p:dialog>
-                        </p:outputPanel>
-                        <!--</p:panelGrid>-->
+                        <p:outputPanel style="float: right; text-align: right;">
+                            <p:panelGrid styleClass="ui-panelgrid-blank form-group" style="border: 0px none; margin-top: 10px; background-color:transparent;">
+                                <p:row>
+                                    <p:column style="vertical-align: top;">
+                                        <p:commandButton value="Download Excel Template" ajax="false" style="width: auto; vertical-align: top;" icon="ui-icon-arrowthick-1-s"
+                                                         onclick="PrimeFaces.monitorDownload(showStatus, hideStatus)">
+                                            <p:fileDownload value="#{inputOnlineEntry.file}" />
+                                        </p:commandButton>
 
-                        <h4 style="margin: 1px;"><strong>#{webSession.currentPeriod.id} Performance Obligation Inputs - #{inputOnlineEntry.reportingUnit.name} - #{inputOnlineEntry.reportingUnit.getWorkflowStatus(webSession.currentPeriod).description}</strong></h4>
+                                    </p:column>
+                                    <p:column>
+                                        <p:fileUpload  fileUploadListener="#{inputOnlineEntry.handleTemplateUpload}" auto="true" label="Upload Excel Template" mode="advanced"
+                                                       multiple="false" update="messages" sizeLimit="10000000" allowTypes="/(\.|\/)(xlsx)$/" style="width: auto;" rendered="#{viewSupport.editable}"/>
 
-                        <p:outputPanel style="margin-top: 15px; width: 50%;">
-                            <h:outputLabel style="text-align: left; vertical-align: middle; white-space: nowrap; margin-right: 5px;" value="Switch RU: "/>
-                            <p:autoComplete
-                                id="ru"
-                                var="ru"
-                                maxResults="10"
-                                minQueryLength="2"
-                                size="50"
-                                required="#{false}"
-                                forceSelection="#{true}"
-                                onclick="this.value = ''"
-                                placeholder="start typing.."
-                                value="#{webSession.currentReportingUnit}"
-                                completeMethod="#{viewSupport.completeReportingUnit}"
-                                itemLabel="#{ru.name}"
-                                itemValue="#{ru}"
-                                converter="reportingUnitConverter">
-                                <p:ajax event="itemSelect" listener="#{inputOnlineEntry.onReportingUnitSelect}" update=":form" />
-                            </p:autoComplete>
-                            <h:outputLabel style="margin-left: 5px; text-align: right; vertical-align: middle; white-space: nowrap;" value="Switch Period: "/>
-                            <p:selectOneMenu style="text-align: right; vertical-align: middle; white-space: nowrap;" id="period" value="#{webSession.currentPeriod}" converter="periodConverter">
-                                <p:ajax event="change" update=":form" process="@this" listener="#{inputOnlineEntry.switchPeriod(webSession.currentPeriod)}"/>
-                                <f:selectItems var="period" value="#{viewSupport.allPeriods}" itemLabel="#{period.id}"/>
-                            </p:selectOneMenu>
-                            <p:ajaxStatus style="display: inline-block;">
-                                <f:facet name="start">
-                                    <h:graphicImage value="images/loader.gif" style="width: 20px; vertical-align: middle;"/>
-                                </f:facet>
-                                <f:facet name="complete">
-                                    <h:outputText value=""/>
-                                </f:facet>
-                            </p:ajaxStatus>
+                                    </p:column>
+                                </p:row>
+                                <p:row>
+                                    <p:column>
+
+                                    </p:column>
+                                    <p:column>
+                                        <p:commandButton value="Save Inputs" icon="ui-icon-disk" ajax="true" update="form"
+                                                         actionListener="#{inputOnlineEntry.saveInputs()}" rendered="#{viewSupport.editable}"
+                                                         style="float: right; width: 180px;"/>
+
+                                    </p:column>
+                                </p:row>
+
+                            </p:panelGrid>
                         </p:outputPanel>
+                        <p:dialog modal="true" widgetVar="statusDialog" header="Preparing Download..." draggable="false" closable="false">
+                            <p:graphicImage value="/images/pbar-ani.gif" style="height: 30px; width: 300px;"/>
+                        </p:dialog>
+
+                        <h4 style="margin: 1px;"><strong>#{webSession.currentPeriod.id} Performance Obligation Inputs - #{inputOnlineEntry.reportingUnit.name} - <i class="#{inputOnlineEntry.workflowStatus.icon}" style="#{inputOnlineEntry.workflowStatus.style}"></i> #{inputOnlineEntry.workflowStatus.description}</strong></h4>
+
+                        <p:panelGrid styleClass="ui-panelgrid-blank form-group" style="border: 0px none; margin-top: 10px; background-color:transparent;">
+                            <p:row>
+                                <p:column>
+                                    <h:outputLabel style="text-align: left; vertical-align: middle; white-space: nowrap; margin-right: 5px;" value="Switch RU: "/>
+                                </p:column>
+                                <p:column>
+                                    <p:autoComplete
+                                        id="ru"
+                                        var="ru"
+                                        maxResults="10"
+                                        minQueryLength="2"
+                                        size="40"
+                                        required="#{false}"
+                                        forceSelection="#{true}"
+                                        onclick="this.value = ''"
+                                        placeholder="start typing.."
+                                        value="#{webSession.currentReportingUnit}"
+                                        completeMethod="#{viewSupport.completeReportingUnit}"
+                                        itemLabel="#{ru.name}"
+                                        itemValue="#{ru}"
+                                        converter="reportingUnitConverter">
+                                        <p:ajax event="itemSelect" listener="#{inputOnlineEntry.onReportingUnitSelect}" update=":form" />
+                                    </p:autoComplete>
+                                </p:column>
+                                <p:column>
+                                    <h:outputLabel style="margin-left: 5px; text-align: right; vertical-align: middle; white-space: nowrap;" value="Switch Period: "/>
+                                </p:column>
+                                <p:column>
+                                    <p:selectOneMenu style="text-align: right; vertical-align: middle; white-space: nowrap;" id="period" value="#{webSession.currentPeriod}" converter="periodConverter">
+                                        <p:ajax event="change" update=":form" process="@this" listener="#{inputOnlineEntry.switchPeriod(webSession.currentPeriod)}"/>
+                                        <f:selectItems var="period" value="#{viewSupport.allPeriods}" itemLabel="#{period.id}"/>
+                                    </p:selectOneMenu>
+                                </p:column>
+                                <p:column>
+                                    <p:ajaxStatus style="display: inline-block;">
+                                        <f:facet name="start">
+                                            <h:graphicImage value="images/loader.gif" style="width: 20px; vertical-align: middle;"/>
+                                        </f:facet>
+                                        <f:facet name="complete">
+                                            <h:outputText value=""/>
+                                        </f:facet>
+                                    </p:ajaxStatus>
+                                </p:column>
+                            </p:row>
+
+                            <p:row>
+                                <p:column>
+                                    <h:outputText value="Search within list:" />
+
+                                </p:column>
+                                <p:column>
+                                    <p:inputText id="globalFilterText" value="#{webSession.filterText}" style="width:150px;"/>
+                                    <p:commandButton id="globalFilter" style="font-size: 80%; margin-left: 10px;" value="Search" actionListener="#{inputOnlineEntry.filterByContractText()}" update=":form:topLevelTabView"/>
+                                </p:column>
+                                <p:column>
+                                    <h:outputText value="Filter list by contract:"/>
+                                </p:column>
+                                <p:column>
+                                    <p:selectCheckboxMenu id="contracts" showHeader="false" label="Contracts" value="#{webSession.selectedContracts}" converter="contractConverter" style="width:150px;">
+                                        <p:ajax event="change" update=":form:topLevelTabView" process="@this" listener="#{inputOnlineEntry.filterByContracts()}"/>
+                                        <f:selectItems var="contract" value="#{inputOnlineEntry.contracts}" itemLabel="#{contract.name}"/>
+                                    </p:selectCheckboxMenu>
+                                    <p:commandButton id="globalFilterClear2" style="font-size: 80%; margin-left: 10px;" value="Clear All Filters" actionListener="#{inputOnlineEntry.clearFilterByContractText()}" update=":form:topLevelTabView, :form:globalFilterText, :form:contracts"/>
+
+                                </p:column>
+                                <p:column>
+
+                                </p:column>
+                            </p:row>
+                        </p:panelGrid>
 
                         <p:outputPanel style="margin-top: 15px;">
-                            <h:outputText value="Search within list:" />
-                            <p:inputText id="globalFilterText" value="#{webSession.filterText}" style="width:150px; margin-left: 10px;">
-                            </p:inputText>
-                            <p:commandButton id="globalFilter" style="font-size: 80%; margin-left: 5px;" value="Search" actionListener="#{inputOnlineEntry.filterByContractText()}" update=":form:topLevelTabView"/>
-                            <h:outputText value="Filter list by contract:" style="margin-left: 15px;"/>
-                            <p:selectCheckboxMenu id="contracts" showHeader="false" label="Contracts" value="#{webSession.selectedContracts}" converter="contractConverter" style="width:150px; margin-left: 5px;">
-                                <p:ajax event="change" update=":form:topLevelTabView" process="@this" listener="#{inputOnlineEntry.filterByContracts()}"/>
-                                <f:selectItems var="contract" value="#{inputOnlineEntry.contracts}" itemLabel="#{contract.name}"/>
-                            </p:selectCheckboxMenu>
-                            <p:commandButton id="globalFilterClear2" style="font-size: 80%; margin-left: 20px;" value="Clear All Filters" actionListener="#{inputOnlineEntry.clearFilterByContractText()}" update=":form:topLevelTabView, :form:globalFilterText, :form:contracts"/>
-                            <p:commandButton value="Save Inputs" icon="ui-icon-disk" ajax="true" update="form"
-                                             actionListener="#{inputOnlineEntry.saveInputs()}" rendered="#{viewSupport.editable}"
-                                             style="float: right;width: 160px;"/>
 
                         </p:outputPanel>
 
@@ -860,7 +904,7 @@
                                         <p:columnGroup type="header">
                                             <p:row>
                                                 <p:column colspan="1" headerText="" />
-                                                <p:column colspan="3" style="background-color: #0071bc; color: #ffffff; white-space:pre-line;"  headerText="Status Data" />
+                                                <p:column colspan="2" style="background-color: #0071bc; color: #ffffff; white-space:pre-line;"  headerText="Status Data" />
                                             </p:row>
                                             <p:row>
                                                 <p:column colspan="1" style="white-space:pre-line;" id="st_con" >
@@ -881,31 +925,18 @@
                                                         <p:tooltip  for="st_updated_date" value="Last Updated Date"  showEffect="clip" hideEffect="clip" position="top"/>
                                                     </f:facet>
                                                 </p:column>
-                                                <p:column colspan="1" style="white-space:pre-line;" id="st_status">
-                                                    <f:facet name="header">
-                                                        <h:outputText  value="Status" />
-                                                        <p:tooltip  for="st_status" value="Status"  showEffect="clip" hideEffect="clip" position="top"/>
-                                                    </f:facet>
-                                                </p:column>
                                             </p:row>
                                         </p:columnGroup>
-
                                         <p:column>
                                             <h:outputText value="#{pob.name}" title="#{pob.description}"/>
                                         </p:column>
-
                                         <p:column style="white-space:pre-line;">
                                             <h:outputText value="#{pob.lastUpdatedBy.name}" rendered="#{of:isInstance('com.flowserve.system606.model.MetricStore', pob)}" />
                                         </p:column>
-
                                         <p:column style="white-space:pre-line;">
                                             <h:outputText value="#{pob.lastUpdateDate}" rendered="#{of:isInstance('com.flowserve.system606.model.MetricStore', pob)}" >
                                                 <f:convertDateTime pattern="dd-MMM-yyyy hh:mm a" type="localDateTime" />
                                             </h:outputText>
-                                        </p:column>
-
-                                        <p:column style="white-space:pre-line;">
-                                            <h:outputText value="#{viewSupport.getPeriodWorkflowStatus(pob).description}"  rendered="#{of:isInstance('com.flowserve.system606.model.Contract', pob)}" />
                                         </p:column>
                                     </p:treeTable>
                                 </p:tab>

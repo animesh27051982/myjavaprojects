@@ -10,9 +10,6 @@
             .main-content {
                 padding: 0;
             }
-            body .ui-datatable .ui-datatable-footer, body .ui-datatable .ui-datatable-header {
-                padding: 4px 8px;
-            }
         </style>
     </ui:define>
 
@@ -54,32 +51,44 @@
                     <div class="ui-g-12">
                         <div class="card card-w-title">
                             <p:messages id="messages" showDetail="true" />
-                            <p:panelGrid columns="4" columnClasses="ui-grid-col-2,ui-grid-col-4,ui-grid-col-2,ui-grid-col-4" layout="grid" styleClass="ui-panelgrid-blank form-group" style="float: right; border:0px none; background-color:transparent;">
-                                <h:outputLabel style="vertical-align: sub; white-space: nowrap;" value="Switch RU: "/>
-                                <p:autoComplete
-                                    id="ru"
-                                    var="ru"
-                                    style="width: 100%;"
-                                    maxResults="10"
-                                    minQueryLength="2"
-                                    size="50"
-                                    required="#{false}"
-                                    forceSelection="#{true}"
-                                    onclick="this.value = ''"
-                                    placeholder="start typing.."
-                                    value="#{webSession.currentReportingUnit}"
-                                    completeMethod="#{viewSupport.completeReportingUnit}"
-                                    itemLabel="#{ru.name}"
-                                    itemValue="#{ru}"
-                                    converter="reportingUnitConverter">
-                                    <p:ajax event="itemSelect" listener="#{dashboard.onReportingUnitSelect}" update=":form" />
-                                </p:autoComplete>
-                                <h:outputLabel style="margin-left: 20px; vertical-align: sub; white-space: nowrap;" value="Switch Period: "/>
-                                <p:selectOneMenu style="margin-left: 30px; margin-top: 0px;" id="period" value="#{webSession.currentPeriod}" converter="periodConverter">
-                                    <p:ajax event="change" update=":form" process="@this" listener="#{webSession.switchPeriod(webSession.currentPeriod)}"/>
-                                    <f:selectItems var="period" value="#{viewSupport.allPeriods}" itemLabel="#{period.id}"/>
-                                </p:selectOneMenu>
+                            <p:panelGrid styleClass="ui-panelgrid-blank form-group" style="float: right; border:0px none; background-color:transparent;">
+                                <p:row>
+                                    <p:column>
+                                        <h:outputLabel style="vertical-align: sub; white-space: nowrap;" value="Switch RU: " rendered="#{webSession.user.admin or webSession.user.globalViewer}"/>
+                                    </p:column>
+                                    <p:column>
+                                        <p:autoComplete
+                                            id="ru"
+                                            var="ru"
+                                            style="width: 100%;"
+                                            maxResults="10"
+                                            minQueryLength="2"
+                                            size="50"
+                                            required="#{false}"
+                                            forceSelection="#{true}"
+                                            onclick="this.value = ''"
+                                            placeholder="start typing.."
+                                            value="#{webSession.currentReportingUnit}"
+                                            completeMethod="#{viewSupport.completeReportingUnit}"
+                                            itemLabel="#{ru.name}"
+                                            itemValue="#{ru}"
+                                            converter="reportingUnitConverter"
+                                            rendered="#{webSession.user.admin or webSession.user.globalViewer}">
+                                            <p:ajax event="itemSelect" listener="#{dashboard.onReportingUnitSelect}" update=":form" />
+                                        </p:autoComplete>
+                                    </p:column>
+                                    <p:column>
+                                        <h:outputLabel style="margin-left: 20px; text-align: right; vertical-align: sub; white-space: nowrap;" value="Switch Period: "/>
+                                    </p:column>
+                                    <p:column>
+                                        <p:selectOneMenu style="margin-left: 30px; margin-top: 0px; text-align: right;" id="period" value="#{webSession.currentPeriod}" converter="periodConverter">
+                                            <p:ajax event="change" update=":form" process="@this" listener="#{webSession.switchPeriod(webSession.currentPeriod)}"/>
+                                            <f:selectItems var="period" value="#{viewSupport.allPeriods}" itemLabel="#{period.id}"/>
+                                        </p:selectOneMenu>
+                                    </p:column>
+                                </p:row>
                             </p:panelGrid>
+
                             <h1>#{webSession.currentPeriod.id} Reporting Units</h1>
 
                             <p:dataTable tableStyle="width: auto" style="margin-top: 10px;" value="#{dashboard.relevantReportingUnits}" var="ru" >
@@ -124,7 +133,6 @@
                                     </span>
                                 </p:column>
                             </p:dataTable>
-
                         </div>
                     </div>
                 </div>

@@ -177,14 +177,26 @@ public class JournalService {
     }
 
     public void generateJournalEntryReport(InputStream inputStream, FileOutputStream outputStream, ReportingUnit reportingUnit, FinancialPeriod period) throws Exception {
-
-        removeExistingJournals(reportingUnit, period);
-
         XSSFWorkbook workbook = new XSSFWorkbook(inputStream);
         XSSFSheet worksheet = workbook.getSheet("JournalEntryRU");
 
         Logger.getLogger(JournalService.class.getName()).log(Level.INFO, "Generating JE worksheet.");
-        worksheet = writeJournalEntryReport(worksheet, reportingUnit, period);
+
+        ReportingUnitJournal reportingUnitJournal;
+
+        if (!reportingUnit.isApproved(period)) {
+            removeExistingJournals(reportingUnit, period);
+            reportingUnitJournal = generateJournal(reportingUnit, period);
+        } else {
+            List<ReportingUnitJournal> journals = findAllReportingUnitJournals(reportingUnit, period);
+            if (journals.size() != 1) {
+                throw new IllegalStateException("More than one journal exists for RU: " + reportingUnit.getCode() + " which should never occur for RCS phase one.  Please investigate.");
+            }
+            reportingUnitJournal = journals.get(0);
+        }
+
+        worksheet = writeJournalEntryReportWorkbook(reportingUnitJournal, worksheet, reportingUnit, period);
+
         Logger.getLogger(JournalService.class.getName()).log(Level.INFO, "Finished generating JE worksheet.");
 
         ((XSSFSheet) worksheet).getCTWorksheet().getSheetViews().getSheetViewArray(0).setTopLeftCell("A1");
@@ -197,7 +209,7 @@ public class JournalService {
         outputStream.close();
     }
 
-    public XSSFSheet writeJournalEntryReport(XSSFSheet worksheet, ReportingUnit reportingUnit, FinancialPeriod period) throws Exception {
+    public XSSFSheet writeJournalEntryReportWorkbook(ReportingUnitJournal reportingUnitJournal, XSSFSheet worksheet, ReportingUnit reportingUnit, FinancialPeriod period) throws Exception {
         XSSFRow row;
         Cell cell = null;
         XSSFRow ru_name = worksheet.getRow(2);
@@ -205,8 +217,6 @@ public class JournalService {
         cell.setCellValue(reportingUnit.getName());
         row = worksheet.getRow(6);
         row.getCell(0).setCellValue(Date.valueOf(period.getEndDate()));
-
-        ReportingUnitJournal reportingUnitJournal = generateJournal(reportingUnit, period);
 
         //BigDecimal revenueToRecognizePeriod = getRevenueRecognizePeriodLC(reportingUnit, period);
         //BigDecimal liquidatedDamageRecognizePeriodLC = getLiquidatedDamagesRecognizePeriodLC(reportingUnit, period);

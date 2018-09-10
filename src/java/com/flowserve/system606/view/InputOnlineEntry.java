@@ -13,6 +13,7 @@ import com.flowserve.system606.model.FinancialPeriod;
 import com.flowserve.system606.model.Measurable;
 import com.flowserve.system606.model.PerformanceObligation;
 import com.flowserve.system606.model.ReportingUnit;
+import com.flowserve.system606.model.WorkflowStatus;
 import com.flowserve.system606.service.AdminService;
 import com.flowserve.system606.service.CalculationService;
 import com.flowserve.system606.service.ContractService;
@@ -128,6 +129,10 @@ public class InputOnlineEntry implements Serializable {
         Logger.getLogger(InputOnlineEntry.class.getName()).log(Level.INFO, "RU Selected");
         webSession.setFilterText(null);
         init();
+    }
+
+    public WorkflowStatus getWorkflowStatus() {
+        return reportingUnit.getWorkflowStatus(webSession.getCurrentPeriod());
     }
 
     public void initContracts(ReportingUnit reportingUnit) {

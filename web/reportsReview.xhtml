@@ -25,46 +25,65 @@
 
                     <div class="ui-g-12">
                         <div class="card card-w-title">
+                            <h4 style="margin: 1px;"><strong>#{webSession.currentPeriod.id} Reports and Workflow - #{reportsReview.reportingUnit.name} - <i class="#{reportsReview.workflowStatus.icon}" style="#{reportsReview.workflowStatus.style}"></i> #{reportsReview.workflowStatus.description}</strong></h4>
 
-                            <p:panelGrid columns="4" columnClasses="ui-grid-col-6,ui-grid-col-6,ui-grid-col-6,ui-grid-col-6" layout="grid" styleClass="ui-panelgrid-blank form-group" style="float: right; border:0px none; background-color:transparent;">
-                                <h:outputLabel style="margin-left: 250px; vertical-align: middle; white-space: nowrap;" value="Switch RU: "/>
-                                <p:autoComplete
-                                    id="ru"
-                                    var="ru"
-                                    maxResults="10"
-                                    placeholder="start typing..."
-                                    required="#{false}"
-                                    forceSelection="#{true}"
-                                    onclick="this.value = ''"
-                                    value="#{webSession.currentReportingUnit}"
-                                    completeMethod="#{viewSupport.completeReportingUnit}"
-                                    itemLabel="#{ru.name}"
-                                    itemValue="#{ru}"
-                                    converter="reportingUnitConverter"
-                                    style="width: 300px; vertical-align: middle; "
-                                    >
-                                    <p:ajax event="itemSelect" listener="#{reportsReview.onReportingUnitSelect}"  process="@this" update=":mainForm" />
-                                </p:autoComplete>
-                                <h:outputLabel style="vertical-align: middle; white-space: nowrap;" value="Switch Period: "/>
-                                <p:selectOneMenu style="margin-top: 0px; vertical-align: middle; " id="period" value="#{webSession.currentPeriod}" converter="periodConverter">
-                                    <p:ajax event="change" update=":mainForm" process="@this" listener="#{reportsReview.switchPeriod(webSession.currentPeriod)}"/>
-                                    <f:selectItems var="period" value="#{viewSupport.allPeriods}" itemLabel="#{period.id}"/>
-                                </p:selectOneMenu>
+                            <p:panelGrid styleClass="ui-panelgrid-blank form-group" style="border: 0px none; margin-top: 10px; background-color:transparent;">
+                                <p:row>
+                                    <p:column>
+                                        <h:outputLabel style="vertical-align: middle; white-space: nowrap;" value="Switch RU: "/>
+                                    </p:column>
+                                    <p:column>
+                                        <p:autoComplete
+                                            id="ru"
+                                            var="ru"
+                                            maxResults="10"
+                                            placeholder="start typing..."
+                                            required="#{false}"
+                                            forceSelection="#{true}"
+                                            onclick="this.value = ''"
+                                            value="#{webSession.currentReportingUnit}"
+                                            completeMethod="#{viewSupport.completeReportingUnit}"
+                                            itemLabel="#{ru.name}"
+                                            itemValue="#{ru}"
+                                            converter="reportingUnitConverter"
+                                            style="width: 300px; vertical-align: middle; "
+                                            >
+                                            <p:ajax event="itemSelect" listener="#{reportsReview.onReportingUnitSelect}"  process="@this" update=":mainForm" />
+                                        </p:autoComplete>
+                                    </p:column>
+                                    <p:column>
+                                        <h:outputLabel style="vertical-align: middle; white-space: nowrap;" value="Switch Period: "/>
+                                    </p:column>
+                                    <p:column>
+                                        <p:selectOneMenu style="margin-top: 0px; vertical-align: middle; " id="period" value="#{webSession.currentPeriod}" converter="periodConverter">
+                                            <p:ajax event="change" update=":mainForm" process="@this" listener="#{reportsReview.switchPeriod(webSession.currentPeriod)}"/>
+                                            <f:selectItems var="period" value="#{viewSupport.allPeriods}" itemLabel="#{period.id}"/>
+                                        </p:selectOneMenu>
+                                    </p:column>
+                                </p:row>
+                                <p:row>
+                                    <p:column>
+                                        <h:outputText value="Search within list:" />
+                                    </p:column>
+                                    <p:column>
+                                        <p:inputText id="globalFilterText" value="#{webSession.filterText}" style="width:150px;"/>
+                                        <p:commandButton id="globalFilter" style="font-size: 80%; margin-left: 10px;" value="Search" actionListener="#{reportsReview.filterByContractText()}" update=":mainForm"/>
+                                    </p:column>
+                                    <p:column>
+                                        <h:outputText value="Filter list by contract:"/>
+                                    </p:column>
+                                    <p:column>
+                                        <p:selectCheckboxMenu id="contracts" showHeader="false" label="Contracts" value="#{webSession.selectedContracts}" converter="contractConverter" style="width:150px;">
+                                            <p:ajax event="change" update=":mainForm" process="@this" listener="#{reportsReview.filterByContracts()}"/>
+                                            <f:selectItems var="contract" value="#{reportsReview.contracts}" itemLabel="#{contract.name}"/>
+                                        </p:selectCheckboxMenu>
+                                        <p:commandButton id="globalFilterClear2" style="font-size: 80%; margin-left: 10px;" value="Clear All Filters" actionListener="#{reportsReview.clearFilterByContractText()}" update=":mainForm"/>
+                                    </p:column>
+                                </p:row>
                             </p:panelGrid>
-                            <h4 style="margin: 1px;"><strong>#{webSession.currentPeriod.id} Calculation Review - #{reportsReview.reportingUnit.name} - #{reportsReview.reportingUnit.getWorkflowStatus(webSession.currentPeriod).description}</strong></h4>
-                            <p:outputPanel style="margin-top: 20px;">
-                                <h:outputText value="Search within list:" />
-                                <p:inputText id="globalFilterText" value="#{webSession.filterText}" style="width:150px; margin-left: 10px;">
-                                </p:inputText>
-                                <p:commandButton id="globalFilter" style="font-size: 80%; margin-left: 5px;" value="Search" actionListener="#{reportsReview.filterByContractText()}" update=":mainForm"/>
-                                <h:outputText value="Filter list by contract:" style="margin-left: 15px;"/>
-                                <p:selectCheckboxMenu id="contracts" showHeader="false" label="Contracts" value="#{webSession.selectedContracts}" converter="contractConverter" style="width:150px; margin-left: 5px;">
-                                    <p:ajax event="change" update=":mainForm" process="@this" listener="#{reportsReview.filterByContracts()}"/>
-                                    <f:selectItems var="contract" value="#{reportsReview.contracts}" itemLabel="#{contract.name}"/>
-                                </p:selectCheckboxMenu>
-                                <p:commandButton id="globalFilterClear2" style="font-size: 80%; margin-left: 20px;" value="Clear All Filters" actionListener="#{reportsReview.clearFilterByContractText()}" update=":mainForm"/>
-                            </p:outputPanel>
+
                             <br></br>
+
                             <p:tabView id="topLevelTabView" dynamic="true" style="margin-top: 15px;">
                                 <p:tab title="Reports">
                                     <p:treeTable value="#{reportsReview.rootTreeNode}" var="pob" >
@@ -75,7 +94,6 @@
                                         <p:column headerText="Reporting Unit - Contract - POB" sortBy="#{pob.name}">
                                             <h:outputText value="#{pob.name}" title="#{pob.description}"/>
                                         </p:column>
-
                                         <p:column style="white-space:pre-line;" id="f1">
                                             <f:facet name="header">
                                                 <h:outputText value="Contract Summary Contract Level" />
@@ -85,8 +103,6 @@
                                                 <p:fileDownload value="#{reportsReview.getContractSummaryReport(pob)}" />
                                             </p:commandButton>
                                         </p:column>
-
-
                                         <p:column style="white-space:pre-line;" id="f12">
                                             <f:facet name="header">
                                                 <h:outputText value="Contract Summary RU Level" />
@@ -96,8 +112,6 @@
                                                 <p:fileDownload value="#{reportsReview.getRUSummaryReport(pob)}" />
                                             </p:commandButton>
                                         </p:column>
-
-
                                         <p:column style="white-space:pre-line;" id="f3">
                                             <f:facet name="header">
                                                 <h:outputText value="Financial Report" />
@@ -107,9 +121,6 @@
                                                 <p:fileDownload value="#{reportsReview.getFinancialSummaryReport(pob)}" />
                                             </p:commandButton>
                                         </p:column>
-
-
-
                                         <p:column style="white-space:pre-line;" id="je1">
                                             <f:facet name="header">
                                                 <h:outputText value="Journal Entry Report" />
@@ -123,32 +134,21 @@
                                 </p:tab>
 
                                 <p:tab title="Workflow History">
-                                    <p:treeTable id="workflowTree" value="#{reportsReview.treeNodeWorkflow}" var="action">
+                                    <p:dataTable tableStyle="width:fixed" id="workflowTree" value="#{reportsReview.workflowActions}" var="action">
                                         <f:facet name="header">
-                                            Reporting Unit
+                                            #{reportsReview.reportingUnit.name}  Current Status: #{reportsReview.reportingUnit.getWorkflowStatus(webSession.currentPeriod).description}
                                         </f:facet>
 
-                                        <p:column headerText="Reporting Unit" sortBy="#{action.name}">
-                                            <h:outputText value="#{action.name}" rendered="#{of:isInstance('com.flowserve.system606.model.ReportingUnit', action)}"/>
-                                        </p:column>
-
                                         <p:column style="white-space:pre-line;">
                                             <f:facet name="header">
-                                                <h:outputText value="Current Status" />
-                                            </f:facet>
-                                            <h:outputText value="#{reportsReview.reportingUnit.getWorkflowStatus(webSession.currentPeriod).description}" rendered="#{of:isInstance('com.flowserve.system606.model.ReportingUnit', action)}"/>
-                                        </p:column>
-
-                                        <p:column style="white-space:pre-line;">
-                                            <f:facet name="header">
-                                                <h:outputText value="Action" />
+                                                <h:outputText value="Workflow Action" />
                                             </f:facet>
                                             <h:outputText value="#{action.name}" rendered="#{of:isInstance('com.flowserve.system606.model.WorkflowAction', action)}"/>
                                         </p:column>
 
                                         <p:column style="white-space:pre-line;">
                                             <f:facet name="header">
-                                                <h:outputText value="User" />
+                                                <h:outputText value="Action User" />
                                             </f:facet>
                                             <h:outputText value="#{action.user.name}" rendered="#{of:isInstance('com.flowserve.system606.model.WorkflowAction', action)}"/>
                                         </p:column>
@@ -161,7 +161,14 @@
                                                 <f:convertDateTime pattern="dd-MMM-yyyy hh:mm a" type="localDateTime" />
                                             </h:outputText>
                                         </p:column>
-                                    </p:treeTable>
+
+                                        <p:column style="white-space:pre-line;">
+                                            <f:facet name="header">
+                                                <h:outputText value="Comments" />
+                                            </f:facet>
+                                            <h:outputText value="#{action.comments}" rendered="#{of:isInstance('com.flowserve.system606.model.WorkflowAction', action)}"/>
+                                        </p:column>
+                                    </p:dataTable>
                                 </p:tab>
                             </p:tabView>
 
