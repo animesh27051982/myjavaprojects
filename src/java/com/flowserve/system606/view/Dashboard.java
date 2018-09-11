@@ -5,39 +5,23 @@
  */
 package com.flowserve.system606.view;
 
-import com.flowserve.system606.model.Company;
-import com.flowserve.system606.model.Holiday;
 import com.flowserve.system606.model.ReportingUnit;
 import com.flowserve.system606.model.WorkflowStatus;
-import com.flowserve.system606.service.AdminService;
-import com.flowserve.system606.service.FinancialPeriodService;
 import com.flowserve.system606.service.ReportingUnitService;
 import com.flowserve.system606.web.WebSession;
 import java.io.Serializable;
-import java.time.LocalDate;
-import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
-import java.util.Date;
 import java.util.List;
 import java.util.Set;
-import java.util.SortedSet;
 import java.util.TreeSet;
-import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.stream.Collectors;
 import javax.annotation.PostConstruct;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import org.apache.commons.collections4.ListUtils;
-import org.jboss.weld.util.collections.Sets;
 import org.primefaces.event.SelectEvent;
-import org.primefaces.model.DefaultScheduleEvent;
-import org.primefaces.model.DefaultScheduleModel;
-import org.primefaces.model.ScheduleModel;
-import org.primefaces.model.TreeNode;
 
 /**
  *
@@ -91,16 +75,15 @@ public class Dashboard implements Serializable {
                 rus.add(ru);
             }
         }
-        // List<ReportingUnit> sortruc = ruc.stream().collect(Collectors.toList());
-        Collections.sort(ruc, (ReportingUnit o1, ReportingUnit o2) -> o1.getCode().compareTo(o2.getCode()));
-
-        // List<ReportingUnit> sortrus = rus.stream().collect(Collectors.toList());
-        Collections.sort(rus, (ReportingUnit o1, ReportingUnit o2) -> o1.getCode().compareTo(o2.getCode()));
-
+//        List<ReportingUnit> sortruc = ruc.stream().collect(Collectors.toList());
+//        List<ReportingUnit> sortrus = rus.stream().collect(Collectors.toList());
 //        ruc = new TreeSet<ReportingUnit>(sortruc);
 //        rus = new TreeSet<ReportingUnit>(sortrus);
+//        Set<ReportingUnit> combinedSet = Sets.union(ruc, rus);
+        Collections.sort(ruc, (ReportingUnit o1, ReportingUnit o2) -> o1.getCode().compareTo(o2.getCode()));
+        Collections.sort(rus, (ReportingUnit o1, ReportingUnit o2) -> o1.getCode().compareTo(o2.getCode()));
         List<ReportingUnit> combinedSet = ListUtils.union(ruc, rus);
-        //Set<ReportingUnit> combinedSet = Sets.union(ruc, rus);
+
         return combinedSet;
     }
 

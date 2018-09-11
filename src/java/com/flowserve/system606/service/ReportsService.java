@@ -518,11 +518,9 @@ public class ReportsService {
             workbook.removeSheetAt(workbook.getSheetIndex("Disclosures-7"));
             XSSFSheet worksheet = workbook.getSheet("Financial Summary-1");
 
-            worksheet = writeFinancialSummary1(worksheet, contract);
+            worksheet = writeFinancialSummary(worksheet, contract);
             ((XSSFSheet) worksheet).getCTWorksheet().getSheetViews().getSheetViewArray(0).setTopLeftCell("A1");
             ((XSSFSheet) worksheet).setActiveCell(new CellAddress("A2"));
-//            worksheet = workbook.getSheet("Financial Summary-3");
-//            worksheet = writeFinancialSummary2(worksheet, contract);
 
             workbook.write(outputStream);
         }
@@ -531,7 +529,7 @@ public class ReportsService {
 
     }
 
-    public XSSFSheet writeFinancialSummary1(XSSFSheet worksheet, Contract contract) throws Exception {
+    public XSSFSheet writeFinancialSummary(XSSFSheet worksheet, Contract contract) throws Exception {
         Cell cell = null;
         XSSFRow rowTitle = worksheet.getRow(1);
         cell = rowTitle.getCell(0, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
@@ -649,6 +647,163 @@ public class ReportsService {
         row = worksheet.getRow(startRow++);
         setCellValue(row, colNum, acceleratedTPC);
         BigDecimal thirdPartyCommRegLC = getCThirdPartyCommRegLC(contract, period);
+        row = worksheet.getRow(startRow++);
+        setCellValue(row, colNum, thirdPartyCommRegLC);
+    }
+
+    public void generateRUReportFinancialSummary(InputStream inputStream, FileOutputStream outputStream, ReportingUnit ru) throws Exception {
+        try (XSSFWorkbook workbook = new XSSFWorkbook(inputStream)) {
+            workbook.removeSheetAt(workbook.getSheetIndex("Contract Summary"));
+            workbook.removeSheetAt(workbook.getSheetIndex("Contract Summary-1"));
+            workbook.removeSheetAt(workbook.getSheetIndex("Contract Summary-2"));
+            workbook.removeSheetAt(workbook.getSheetIndex("Contract Summary-3"));
+            workbook.removeSheetAt(workbook.getSheetIndex("Contract Summary-4"));
+            workbook.removeSheetAt(workbook.getSheetIndex("Contract Summary-5"));
+            workbook.removeSheetAt(workbook.getSheetIndex("Journal Entry"));
+            workbook.removeSheetAt(workbook.getSheetIndex("Journal Entry-1"));
+            workbook.removeSheetAt(workbook.getSheetIndex("Journal Entry-2"));
+            workbook.removeSheetAt(workbook.getSheetIndex("Financial Summary"));
+            workbook.removeSheetAt(workbook.getSheetIndex("Financial Summary-2"));
+            workbook.removeSheetAt(workbook.getSheetIndex("Financial Summary-3"));
+            workbook.removeSheetAt(workbook.getSheetIndex("Disclosures"));
+            workbook.removeSheetAt(workbook.getSheetIndex("Disclosures-1"));
+            workbook.removeSheetAt(workbook.getSheetIndex("Disclosures-2"));
+            workbook.removeSheetAt(workbook.getSheetIndex("Disclosures-3"));
+            workbook.removeSheetAt(workbook.getSheetIndex("Disclosures-4"));
+            workbook.removeSheetAt(workbook.getSheetIndex("Disclosures-5"));
+            workbook.removeSheetAt(workbook.getSheetIndex("Disclosures-6"));
+            workbook.removeSheetAt(workbook.getSheetIndex("Disclosures-7"));
+            XSSFSheet worksheet = workbook.getSheet("Financial Summary-1");
+
+            worksheet = writeRUFinancialSummary(worksheet, ru);
+            ((XSSFSheet) worksheet).getCTWorksheet().getSheetViews().getSheetViewArray(0).setTopLeftCell("A1");
+            ((XSSFSheet) worksheet).setActiveCell(new CellAddress("A2"));
+
+            workbook.write(outputStream);
+        }
+        inputStream.close();
+        outputStream.close();
+
+    }
+
+    public XSSFSheet writeRUFinancialSummary(XSSFSheet worksheet, ReportingUnit ru) throws Exception {
+        Cell cell = null;
+        XSSFRow rowTitle = worksheet.getRow(1);
+        cell = rowTitle.getCell(0, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
+        cell.setCellValue(ru.getName());
+
+        List<FinancialPeriod> ytdPeriods = financialPeriodService.getYTDFinancialPeriods(viewSupport.getCurrentPeriod());
+        for (int i = 0; i < ytdPeriods.size(); i++) {
+            int colNum = i + 1;
+            printRUSummaryByPobs(colNum, worksheet, ru, ytdPeriods.get(i));
+        }
+        return worksheet;
+    }
+
+    public void printRUSummaryByPobs(int colNum, XSSFSheet worksheet, ReportingUnit ru, FinancialPeriod period) throws Exception {
+
+        XSSFRow row;
+        int startRow = 7;
+        PerformanceObligationGroup pocPobs = new PerformanceObligationGroup("pocPobs", ru, RevenueMethod.PERC_OF_COMP, ru.getPobsByRevenueMethod(RevenueMethod.PERC_OF_COMP));
+        PerformanceObligationGroup pitPobs = new PerformanceObligationGroup("pitPobs", ru, RevenueMethod.POINT_IN_TIME, ru.getPobsByRevenueMethod(RevenueMethod.POINT_IN_TIME));
+        PerformanceObligationGroup slPobs = new PerformanceObligationGroup("slPobs", ru, RevenueMethod.STRAIGHT_LINE, ru.getPobsByRevenueMethod(RevenueMethod.STRAIGHT_LINE));
+
+        BigDecimal revenueToRecognize = getRevenueRecognizePeriodLC(pocPobs, period);
+        row = worksheet.getRow(startRow++);
+        setCellValue(row, colNum, revenueToRecognize);
+        revenueToRecognize = getRevenueRecognizePeriodLC(pitPobs, period);
+        row = worksheet.getRow(startRow++);
+        setCellValue(row, colNum, revenueToRecognize);
+        revenueToRecognize = getRevenueRecognizePeriodLC(slPobs, period);
+        row = worksheet.getRow(startRow++);
+        setCellValue(row, colNum, revenueToRecognize);
+
+        startRow = startRow + 2;
+        BigDecimal liquidatedDamagePeriod = getLiquidatedDamagesPeriod(pocPobs, period);
+        row = worksheet.getRow(startRow++);
+        setCellValue(row, colNum, liquidatedDamagePeriod);
+        liquidatedDamagePeriod = getLiquidatedDamagesPeriod(pitPobs, period);
+        row = worksheet.getRow(startRow++);
+        //getting NPE
+        setCellValue(row, colNum, liquidatedDamagePeriod);
+        liquidatedDamagePeriod = getLiquidatedDamagesPeriod(slPobs, period);
+        row = worksheet.getRow(startRow++);
+        setCellValue(row, colNum, liquidatedDamagePeriod);
+
+        startRow = startRow + 2;
+        BigDecimal netRevenue = getRevenueRecognizeCTD(pocPobs, period);
+        row = worksheet.getRow(startRow++);
+        setCellValue(row, colNum, netRevenue);
+        netRevenue = getRevenueRecognizeCTD(pitPobs, period);
+        row = worksheet.getRow(startRow++);
+        setCellValue(row, colNum, netRevenue);
+        netRevenue = getRevenueRecognizeCTD(slPobs, period);
+        row = worksheet.getRow(startRow++);
+        setCellValue(row, colNum, netRevenue);
+
+        startRow = startRow + 2;
+        BigDecimal costsIncurredCOGS = getCostGoodsSoldPeriodLC(pocPobs, period);
+        row = worksheet.getRow(startRow++);
+        setCellValue(row, colNum, costsIncurredCOGS);
+        costsIncurredCOGS = getCostGoodsSoldPeriodLC(pitPobs, period);
+        row = worksheet.getRow(startRow++);
+        setCellValue(row, colNum, costsIncurredCOGS);
+        costsIncurredCOGS = getCostGoodsSoldPeriodLC(slPobs, period);
+        row = worksheet.getRow(startRow++);
+        setCellValue(row, colNum, costsIncurredCOGS);
+
+        startRow = startRow + 2;
+        BigDecimal reserveLCM_COGS = getLossReservePeriodADJLC(pocPobs, period);
+        row = worksheet.getRow(startRow++);
+        setCellValue(row, colNum, reserveLCM_COGS);
+        reserveLCM_COGS = getLossReservePeriodADJLC(pitPobs, period);
+        row = worksheet.getRow(startRow++);
+        setCellValue(row, colNum, reserveLCM_COGS);
+        reserveLCM_COGS = getLossReservePeriodADJLC(slPobs, period);
+        row = worksheet.getRow(startRow++);
+        setCellValue(row, colNum, reserveLCM_COGS);
+
+        startRow = startRow + 2;
+        BigDecimal totalCOGS = getCumulativeCostGoodsSoldLC(pocPobs, period);
+        row = worksheet.getRow(startRow++);
+        setCellValue(row, colNum, totalCOGS);
+        totalCOGS = getCumulativeCostGoodsSoldLC(pitPobs, period);
+        row = worksheet.getRow(startRow++);
+        setCellValue(row, colNum, totalCOGS);
+        totalCOGS = getCumulativeCostGoodsSoldLC(slPobs, period);
+        row = worksheet.getRow(startRow++);
+        setCellValue(row, colNum, totalCOGS);
+
+        startRow = startRow + 3;
+        BigDecimal grossProfitCTD = getEstimatedGrossProfit(pocPobs, period);
+        row = worksheet.getRow(startRow++);
+        setCellValue(row, colNum, grossProfitCTD);
+        grossProfitCTD = getEstimatedGrossProfit(pitPobs, period);
+        row = worksheet.getRow(startRow++);
+        setCellValue(row, colNum, grossProfitCTD);
+        grossProfitCTD = getEstimatedGrossProfit(slPobs, period);
+        row = worksheet.getRow(startRow++);
+        setCellValue(row, colNum, grossProfitCTD);
+
+        startRow = startRow + 2;
+        BigDecimal grossMarginCTD = getEstimatedGrossMargin(pocPobs, period);
+        row = worksheet.getRow(startRow++);
+        setPercentCellValue(row, colNum, grossMarginCTD);
+        grossMarginCTD = getEstimatedGrossMargin(pitPobs, period);
+        row = worksheet.getRow(startRow++);
+        setPercentCellValue(row, colNum, grossMarginCTD);
+        grossMarginCTD = getEstimatedGrossMargin(slPobs, period);
+        row = worksheet.getRow(startRow++);
+        setPercentCellValue(row, colNum, grossMarginCTD);
+
+        startRow = startRow + 2;
+        BigDecimal tcp = getTPCIncured(ru, period);
+        row = worksheet.getRow(startRow++);
+        setCellValue(row, colNum, tcp);
+        BigDecimal acceleratedTPC = getAcceleratedTPC(ru, period);
+        row = worksheet.getRow(startRow++);
+        setCellValue(row, colNum, acceleratedTPC);
+        BigDecimal thirdPartyCommRegLC = getCThirdPartyCommRegLC(ru, period);
         row = worksheet.getRow(startRow++);
         setCellValue(row, colNum, thirdPartyCommRegLC);
     }
