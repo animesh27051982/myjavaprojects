@@ -649,13 +649,19 @@
                                         <p:column style="white-space:pre-line;">
                                             <p:cellEditor rendered="#{of:isInstance('com.flowserve.system606.model.CurrencyEvent', billEvent)}">
                                                 <f:facet name="output">
-                                                    <p:inputText value="#{billEvent.eventDate}" styleClass="#{empty billEvent.eventDate ? 'ui-state-error' : ''}" readonly="true">
+                                                    <p:inputText id="bDate" value="#{billEvent.eventDate}" styleClass="#{empty billEvent.eventDate ? 'ui-state-error' : ''}" readonly="true">
                                                         <f:convertDateTime pattern="dd-MMM-yyyy" type="localDate" />
                                                     </p:inputText>
                                                 </f:facet>
                                                 <f:facet name="input">
-                                                    <p:calendar value="#{billEvent.eventDate}" converter="localDateConverter" pattern="MM/dd/yyyy" navigator="true" mode="popup"
-                                                                disabled="#{not viewSupport.editable}" mindate="#{viewSupport.currentPeriodMinDate}" maxdate="#{viewSupport.currentPeriodMaxDate}"/>
+                                                    <p:calendar value="#{billEvent.eventDate}"
+                                                                converter="localDateConverter" pattern="MM/dd/yyyy" navigator="true" mode="popup"
+                                                                disabled="#{not viewSupport.editable}" mindate="#{viewSupport.currentPeriodMinDate}"
+                                                                maxdate="#{viewSupport.currentPeriodMaxDate}">
+                                                        <p:ajax event="dateSelect" process="@this" update="bDate"/>
+
+                                                    </p:calendar>
+
                                                 </f:facet>
                                             </p:cellEditor>
                                         </p:column>
@@ -853,18 +859,18 @@
                                         <p:column style="white-space:pre-line;">
                                             <p:cellEditor rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}">
                                                 <f:facet name="output">
-                                                    <p:inputText  value="#{viewSupport.getDateMetric('SL_START_DATE', pob).value}"
-                                                                  rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}"
-                                                                  styleClass="#{empty viewSupport.getDateMetric('SL_START_DATE', pob).value ? 'ui-state-error' : ''}"
-                                                                  readonly="true"
-                                                                  >
+                                                    <p:inputText id="slDate" value="#{viewSupport.getDateMetric('SL_START_DATE', pob).value}"
+                                                                 rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}"
+                                                                 styleClass="#{empty viewSupport.getDateMetric('SL_START_DATE', pob).value ? 'ui-state-error' : ''}"
+                                                                 readonly="true"
+                                                                 >
                                                         <f:convertDateTime pattern="dd-MMM-yyyy" type="localDate" />
                                                     </p:inputText>
                                                 </f:facet>
                                                 <f:facet name="input">
                                                     <p:calendar value="#{viewSupport.getDateMetric('SL_START_DATE', pob).value}" converter="localDateConverter" pattern="MM/dd/yyyy"
                                                                 navigator="true" mode="popup" disabled="#{not viewSupport.editable}">
-                                                        <p:ajax event="dateSelect" process="@this" listener="#{inputOnlineEntry.calculateOutputs(pob)}"/>
+                                                        <p:ajax event="dateSelect" process="@this" update="slDate" listener="#{inputOnlineEntry.calculateOutputs(pob)}"/>
 
                                                     </p:calendar>
                                                 </f:facet>
@@ -873,7 +879,7 @@
                                         <p:column style="white-space:pre-line;">
                                             <p:cellEditor rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}">
                                                 <f:facet name="output">
-                                                    <p:inputText  value="#{viewSupport.getDateMetric('SL_END_DATE', pob).value}"
+                                                    <p:inputText  id="slEndDate" value="#{viewSupport.getDateMetric('SL_END_DATE', pob).value}"
                                                                   rendered="#{of:isInstance('com.flowserve.system606.model.PerformanceObligation', pob)}"
                                                                   styleClass="#{empty viewSupport.getDateMetric('SL_END_DATE', pob).value ? 'ui-state-error' : ''}"
                                                                   readonly="true"
@@ -884,7 +890,7 @@
                                                 <f:facet name="input">
                                                     <p:calendar value="#{viewSupport.getDateMetric('SL_END_DATE', pob).value}" converter="localDateConverter" pattern="MM/dd/yyyy"
                                                                 navigator="true" mode="popup" disabled="#{not viewSupport.editable}">
-                                                        <p:ajax event="dateSelect" process="@this" listener="#{inputOnlineEntry.calculateOutputs(pob)}"/>
+                                                        <p:ajax event="dateSelect" process="@this" update="slEndDate" listener="#{inputOnlineEntry.calculateOutputs(pob)}"/>
                                                     </p:calendar>
                                                 </f:facet>
                                             </p:cellEditor>
