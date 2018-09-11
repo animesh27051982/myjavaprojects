@@ -50,7 +50,7 @@ public class PerformanceObligation extends BaseEntity<Long> implements MetricSto
     @JoinColumn(name = "CONTRACT_ID")
     private Contract contract;
     @Column(name = "IS_ACTIVE")
-    private boolean active;
+    private boolean active = true;
     @Column(name = "IS_VALID")
     private boolean valid = true;
     @OneToOne

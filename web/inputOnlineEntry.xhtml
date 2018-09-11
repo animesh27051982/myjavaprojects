@@ -87,7 +87,7 @@
                             <p:graphicImage value="/images/pbar-ani.gif" style="height: 30px; width: 300px;"/>
                         </p:dialog>
 
-                        <h4 style="margin: 1px;"><strong>#{webSession.currentPeriod.id} Performance Obligation Inputs - #{inputOnlineEntry.reportingUnit.name} - <i class="#{inputOnlineEntry.workflowStatus.icon}" style="#{inputOnlineEntry.workflowStatus.style}"></i> #{inputOnlineEntry.workflowStatus.description}</strong></h4>
+                        <h4 style="margin: 1px;"><strong>#{webSession.currentPeriod.id} Performance Obligation Inputs - #{inputOnlineEntry.reportingUnit.name} - <p:graphicImage value="#{inputOnlineEntry.workflowStatus.icon}" width="30px" height="20px" style="vertical-align: sub; margin-right: 2px;"/> #{inputOnlineEntry.workflowStatus.description}</strong></h4>
 
                         <p:panelGrid styleClass="ui-panelgrid-blank form-group" style="border: 0px none; margin-top: 10px; background-color:transparent;">
                             <p:row>

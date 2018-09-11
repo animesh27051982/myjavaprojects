@@ -76,40 +76,40 @@ public class BatchProcessingService {
 
     @PostConstruct
     public void init() {
-        reportingUnitsToProcess.add("1100");
-        reportingUnitsToProcess.add("5050");
-        reportingUnitsToProcess.add("7866");
-        reportingUnitsToProcess.add("8405");
-        reportingUnitsToProcess.add("1205");
-        reportingUnitsToProcess.add("8225");
+//        reportingUnitsToProcess.add("1200");
+//        reportingUnitsToProcess.add("1100");
+//        reportingUnitsToProcess.add("5050");
+//        reportingUnitsToProcess.add("7866");
+//        reportingUnitsToProcess.add("8405");
+//        reportingUnitsToProcess.add("1205");
+//        reportingUnitsToProcess.add("8225");
     }
 
-    //@Asynchronous
-    public void calculateAllFinancials(List<ReportingUnit> reportingUnits, FinancialPeriod startPeriod) throws Exception {
-
-        for (ReportingUnit reportingUnit : reportingUnits) {
-            if (reportingUnit.isParent()) {
-                continue;
-            }
-            if (!reportingUnitsToProcess.contains(reportingUnit.getCode())) {
-                continue;
-            }
-            try {
-                ut.begin();
-                logger.log(Level.INFO, "Calculating RU: " + reportingUnit.getCode() + " POB Count: " + reportingUnit.getPerformanceObligations().size());
-                calculationService.calculateAndSave(reportingUnit, startPeriod);
-                logger.log(Level.INFO, "Flushing and clearing EntityManager");
-                em.flush();
-                em.clear();
-                ut.commit();
-                logger.log(Level.INFO, "Completed RU: " + reportingUnit.getCode());
-            } catch (Exception e) {
-                ut.rollback();
-            }
-        }
-        logger.log(Level.INFO, "calculateAllFinancials() completed.");
-    }
-
+//    //@Asynchronous
+//    public void calculateAllFinancials(List<ReportingUnit> reportingUnits, FinancialPeriod startPeriod) throws Exception {
+//
+//        for (ReportingUnit reportingUnit : reportingUnits) {
+//            if (reportingUnit.isParent()) {
+//                continue;
+//            }
+//            if (!reportingUnitsToProcess.contains(reportingUnit.getCode())) {
+//                continue;
+//            }
+//            try {
+//                ut.begin();
+//                logger.log(Level.INFO, "Calculating RU: " + reportingUnit.getCode() + " POB Count: " + reportingUnit.getPerformanceObligations().size());
+//                calculationService.calculateAndSave(reportingUnit, startPeriod);
+//                logger.log(Level.INFO, "Flushing and clearing EntityManager");
+//                em.flush();
+//                em.clear();
+//                ut.commit();
+//                logger.log(Level.INFO, "Completed RU: " + reportingUnit.getCode());
+//            } catch (Exception e) {
+//                ut.rollback();
+//            }
+//        }
+//        logger.log(Level.INFO, "calculateAllFinancials() completed.");
+//    }
     //@Asynchronous
     public void processUploadedCalculationData(String msAccDB, String fileName) {
         logger.log(Level.INFO, "Processing POB input data: " + msAccDB);

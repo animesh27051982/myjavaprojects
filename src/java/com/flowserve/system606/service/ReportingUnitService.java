@@ -11,8 +11,6 @@ import com.flowserve.system606.model.User;
 import com.flowserve.system606.model.WorkflowAction;
 import com.flowserve.system606.model.WorkflowActionType;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
@@ -107,7 +105,7 @@ public class ReportingUnitService {
     }
 
     public void reject(ReportingUnit reportingUnit, FinancialPeriod period, User user) throws Exception {
-        if (period.isOpen() && !reportingUnit.isDraft(period)) {
+        if (period.isOpen() && reportingUnit.isRejectable(period, user)) {
             WorkflowAction action = new WorkflowAction(WorkflowActionType.REJECT, user);
             adminService.persist(action);
             reportingUnit.addWorkflowAction(period, action);
@@ -116,8 +114,8 @@ public class ReportingUnitService {
         }
     }
 
-    public void initializeDraft(ReportingUnit reportingUnit, FinancialPeriod period, User user) throws Exception {
-        Logger.getLogger(ReportingUnitService.class.getName()).log(Level.INFO, "initializeDraft()");
+    public void initialize(ReportingUnit reportingUnit, FinancialPeriod period, User user) throws Exception {
+        //Logger.getLogger(ReportingUnitService.class.getName()).log(Level.INFO, "initializeDraft()");
         if (period.isOpen()) {
             //Logger.getLogger(ReportingUnitService.class.getName()).log(Level.INFO, "initializeDraft() it's open.");
             WorkflowAction action = new WorkflowAction(WorkflowActionType.INITIALIZE, user);

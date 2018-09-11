@@ -268,8 +268,7 @@ public class ViewSupport implements Serializable {
         long end = System.currentTimeMillis();
         long interval = end - start;
 
-        Logger.getLogger(ViewSupport.class.getName()).log(Level.INFO, "generateNodeTree ms: " + interval);
-
+        //Logger.getLogger(ViewSupport.class.getName()).log(Level.INFO, "generateNodeTree ms: " + interval);
         return root;
     }
 
@@ -600,7 +599,7 @@ public class ViewSupport implements Serializable {
         User user = webSession.getUser();
         if (user.isGlobalViewer() || ru.getViewers().contains(user)) {
             return false;
-        } else if (period.isOpen() && ru.isDraft(period) && (user.isAdmin() || preparableReportingUnits.contains(ru))) {
+        } else if (period.isOpen() && (ru.isDraft(period) || ru.isInitialized(period) || ru.isRejected(period)) && (user.isAdmin() || preparableReportingUnits.contains(ru))) {
             return true;
         } else if (period.isUserFreeze() && user.isAdmin()) {
             return true;

@@ -750,9 +750,31 @@ rule "POB TPC & Other Inputs Rolling Next Month - End Date"
         modify (slEndDate) { value = (slEndDatePriorPeriod.value)};
 end
 
+//
+// Begin validation rules section
+//
+
+rule "Flag invalid if transaction price is null"
+    when
+        pob : PerformanceObligation(valid == true)
+        transactionPrice : CurrencyMetric(metricType.code == "TRANSACTION_PRICE_CC", ccValue == null)
+    then
+        modify (transactionPrice) { message = "The Transaction Price is empty." };
+        modify (pob) { valid = false };
+end
+
+rule "Clear Message: Flag invalid if transaction price is null"
+    when
+        pob : PerformanceObligation(valid == false)
+        transactionPrice : CurrencyMetric(metricType.code == "TRANSACTION_PRICE_CC", ccValue != null)
+    then
+        modify (transactionPrice) { message = null };
+        modify (pob) { valid = true };
+end
+
 
 //
-// Begin Validation Rules Section
+// Begin warning message rules section
 //
 
 rule "Transaction Price Validation Rule"

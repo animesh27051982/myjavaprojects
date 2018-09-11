@@ -5,11 +5,12 @@ package com.flowserve.system606.model;
  * @author kgraves
  */
 public enum WorkflowStatus {
-    DRAFT("Draft", "Draft", "fa fa-dot-circle-o", "color: grey; margin-right: 3px;"),
-    PREPARED("Prepared", "Pending Review", "fa fa-dot-circle-o", "color: yellow; margin-right: 3px;"),
-    REVIEWED("Reviewed", "Pending Approval", "fa fa-dot-circle-o", "color: yellow; margin-right: 3px;"),
-    REJECTED("Rejected", "Rejected", "fa fa-dot-circle-o", "color: red; margin-right: 3px;"),
-    APPROVED("Approved", "Approved", "fa fa-dot-circle-o", "color: green; margin-right: 3px;");
+    INITIALIZED("Not Started", "Not Started", "images/black_rounded.png", ""),
+    DRAFT("Draft", "In Progress", "images/grey_rounded.png", ""),
+    PREPARED("Prepared", "Pending Review", "images/yellow_rounded.png", ""),
+    REVIEWED("Reviewed", "Pending Approval", "images/orange_rounded.png", ""),
+    REJECTED("Rejected", "Rejected", "images/red_rounded.png", ""),
+    APPROVED("Approved", "Approved", "images/green_rounded.png", "");
 
     private String name;
     private String description;

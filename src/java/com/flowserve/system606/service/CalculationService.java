@@ -267,20 +267,20 @@ public class CalculationService {
 
     // KJG TODO - More validity work needed.  Just checking TP not good enough.
     private boolean isValidForCalculations(Measurable measurable, FinancialPeriod period) throws Exception {
-        if (measurable instanceof PerformanceObligation) {
-            if (isValid((PerformanceObligation) measurable, period)) {
-                return true;
-            }
-            return false;
-        }
-        if (measurable instanceof Contract) {
-            for (PerformanceObligation pob : ((Contract) measurable).getPerformanceObligations()) {
-                if (isValidForCalculations(pob, period) == true) {
-                    return true;
-                }
-            }
-            return false;
-        }
+//        if (measurable instanceof PerformanceObligation) {
+//            if (isValid((PerformanceObligation) measurable, period)) {
+//                return true;
+//            }
+//            return false;
+//        }
+//        if (measurable instanceof Contract) {
+//            for (PerformanceObligation pob : ((Contract) measurable).getPerformanceObligations()) {
+//                if (isValidForCalculations(pob, period) == true) {
+//                    return true;
+//                }
+//            }
+//            return false;
+//        }
 
         // All other types are valid since they will be rollups.
         return true;
@@ -294,11 +294,12 @@ public class CalculationService {
         if (ru.getPerformanceObligations().isEmpty()) {
             return false;
         }
-        for (PerformanceObligation pob : ru.getPerformanceObligations()) {
-            if (isValid(pob, period) == false) {
-                return false;
-            }
-        }
+//        for (PerformanceObligation pob : ru.getPerformanceObligations()) {
+//            if (isValid(pob, period) == false) {  // Need to rework this..
+//                //pob.setValid(false);
+//                return false;
+//            }
+//        }
 
         return true;
     }

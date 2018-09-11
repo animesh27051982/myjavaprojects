@@ -86,10 +86,16 @@ public class DataExtractionService {
             FinancialPeriod period = financialPeriodService.findById("NOV-17");
             do {
                 for (ReportingUnit reportingUnit : adminService.findAllReportingUnits()) {
+//                    if (!reportingUnit.getCode().equals("1100")) {
+//                        continue;
+//                    }
                     Logger.getLogger(DataExtractionService.class.getName()).log(Level.INFO, "Extracting period: " + period.getId() + " RU: " + reportingUnit.getCode());
                     for (Contract contract : reportingUnit.getContracts()) {
 
                         for (PerformanceObligation pob : contract.getPerformanceObligations()) {
+                            if (!pob.metricSetExistsForPeriod(period)) {
+                                continue;
+                            }
                             //Logger.getLogger(WebSession.class.getName()).log(Level.FINER, "Adding to tree POB ID: " + pob.getId());
                             pst.setString(1, period.getId());
                             pst.setString(2, reportingUnit.getCode());
@@ -235,10 +241,9 @@ public class DataExtractionService {
             PreparedStatement pobStructural = connection.prepareStatement("INSERT INTO POBs (POB_ID, IS_ACTIVE, POB_NAME, DESCRIPTION, REVENUE_METHOD, CONTRACT_ID) "
                     + "VALUES (?, ?, ?, ?, ?, ?)");
 
-            String[] reportingUnits = {"1100", "5050", "7866", "8405", "1205", "8225"};
-
-            for (String code : reportingUnits) {
-                ReportingUnit reportingUnit = adminService.findReportingUnitByCode(code);
+            //String[] reportingUnits = {"1100", "5050", "7866", "8405", "1205", "8225"};
+            //String[] reportingUnits = {"1100"};
+            for (ReportingUnit reportingUnit : adminService.findAllReportingUnits()) {
                 for (Contract contract : reportingUnit.getContracts()) {
                     contractStructural.setLong(1, contract.getId());
                     contractStructural.setLong(2, 1);

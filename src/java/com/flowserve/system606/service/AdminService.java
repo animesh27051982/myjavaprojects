@@ -586,7 +586,7 @@ public class AdminService {
                         WorkflowContext ar = new WorkflowContext();
                         ar.setReportingUnit(ru);
                         ar.setFinancialPeriod(period);
-                        ar.setWorkflowStatus(WorkflowStatus.DRAFT);
+                        ar.setWorkflowStatus(WorkflowStatus.INITIALIZED);
                         ru.putPeriodWorkflowContext(period, ar);
                         update(ru);
                     }

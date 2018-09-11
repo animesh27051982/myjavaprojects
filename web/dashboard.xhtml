@@ -102,7 +102,8 @@
                                     <h:outputText value="#{viewSupport.getRole(ru)}" />
                                 </p:column>
                                 <p:column headerText="Workflow Status">
-                                    <i class="#{dashboard.getWorkflowStatus(ru).icon}" style="#{dashboard.getWorkflowStatus(ru).style}"></i>
+                                    <!--<i class="#{dashboard.getWorkflowStatus(ru).icon}" style="#{dashboard.getWorkflowStatus(ru).style}"></i>-->
+                                    <p:graphicImage value="#{dashboard.getWorkflowStatus(ru).icon}" width="25px" height="15px" style="float: left; margin-top: 2px; margin-right: 2px;"/>
                                     <h:outputText value="#{dashboard.getWorkflowStatus(ru).description}" />
                                 </p:column>
                                 <p:column headerText="Last Action">
@@ -119,10 +120,10 @@
                                 <p:column headerText="Contracts">
                                     <h:outputText value="#{ru.contractCount}" />
                                 </p:column>
-                                <p:column headerText="Total POB Count">
+                                <p:column headerText="Total POB">
                                     <h:outputText value="#{ru.pobCount}" />
                                 </p:column>
-                                <p:column headerText="POB Input Required Count">
+                                <p:column headerText="Input Required">
                                     <h:outputText value="#{ru.pobInputRequiredCount}" />
                                 </p:column>
                                 <p:column headerText="Actions">

@@ -25,7 +25,7 @@
 
                     <div class="ui-g-12">
                         <div class="card card-w-title">
-                            <h4 style="margin: 1px;"><strong>#{webSession.currentPeriod.id} Reports and Workflow - #{reportsReview.reportingUnit.name} - <i class="#{reportsReview.workflowStatus.icon}" style="#{reportsReview.workflowStatus.style}"></i> #{reportsReview.workflowStatus.description}</strong></h4>
+                            <h4 style="margin: 1px;"><strong>#{webSession.currentPeriod.id} Reports and Workflow - #{reportsReview.reportingUnit.name} - <p:graphicImage value="#{reportsReview.workflowStatus.icon}" width="30px" height="20px" style="vertical-align: sub; margin-right: 2px;"/> #{reportsReview.workflowStatus.description}</strong></h4>
 
                             <p:panelGrid styleClass="ui-panelgrid-blank form-group" style="border: 0px none; margin-top: 10px; background-color:transparent;">
                                 <p:row>
@@ -176,10 +176,11 @@
                                 <f:facet name="right">
                                     <p:commandButton value="Back to Dashboard" icon="ui-icon-arrowthick-1-w" ajax="false" action="#{inputController.inputDashboard}"/>
                                     <p:commandButton value="Back to Inputs" icon="ui-icon-arrowthick-1-w" ajax="false" action="#{inputController.returnToOnlineEntry()}"/>
-                                    <p:commandButton value="Back to Calculation Review" icon="ui-icon-arrowthick-1-w" ajax="false"  action="pobCalculationReview.xhtml"/>
-                                    <p:commandButton value="Submit for Review" icon="ui-icon-check" ajax="false" action="#{inputController.submitForReview(pobCalculationReview.reportingUnit)}" rendered="#{pobCalculationReview.draft}" disabled="#{not pobCalculationReview.submittableForReview}"/>
-                                    <p:commandButton value="Submit for Approval" icon="ui-icon-check" ajax="false" action="#{inputController.submitForApproval(pobCalculationReview.reportingUnit)}" rendered="#{pobCalculationReview.submittableForApproval}"/>
-                                    <p:commandButton value="Approve" icon="ui-icon-check" ajax="false" action="#{inputController.approve(pobCalculationReview.reportingUnit)}" rendered="#{pobCalculationReview.approvable}"/>
+                                    <p:commandButton value="Back to Calculation Review" style="margin-right: 40px;;" icon="ui-icon-arrowthick-1-w" ajax="false"  action="pobCalculationReview.xhtml"/>
+                                    <p:commandButton value="Submit for Review" style="background-color: #43C86F;" icon="ui-icon-check" ajax="false" action="#{inputController.submitForReview(pobCalculationReview.reportingUnit)}" rendered="#{pobCalculationReview.submittableForReview}"/>
+                                    <p:commandButton value="Submit for Approval" style="background-color: #43C86F;" icon="ui-icon-check" ajax="false" action="#{inputController.submitForApproval(pobCalculationReview.reportingUnit)}" rendered="#{pobCalculationReview.submittableForApproval}"/>
+                                    <p:commandButton value="Approve" style="background-color: #43C86F;" icon="ui-icon-check" ajax="false" action="#{inputController.approve(pobCalculationReview.reportingUnit)}" rendered="#{pobCalculationReview.approvable}"/>
+                                    <p:commandButton value="Reject" style="background-color: #FF5733;" icon="ui-icon-cancel" ajax="false" action="#{inputController.reject(pobCalculationReview.reportingUnit)}" rendered="#{pobCalculationReview.rejectable}"/>
                                 </f:facet>
                             </p:toolbar>
                         </div>

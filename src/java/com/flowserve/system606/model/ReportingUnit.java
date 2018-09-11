@@ -100,6 +100,14 @@ public class ReportingUnit extends TransientMeasurable<Long> implements Measurab
     }
 
     public String getRole(FinancialPeriod period, User user) {
+        if (this.preparers.contains(user) && this.reviewers.contains(user)) {
+            if (this.isInitialized(period) || this.isDraft(period)) {
+                return "Preparer";
+            } else if (this.isPrepared(period)) {
+                return "Reviewer";
+            }
+        }
+
         if (this.approvers.contains(user)) {
             return "Approver";
         }
@@ -126,6 +134,13 @@ public class ReportingUnit extends TransientMeasurable<Long> implements Measurab
         return WorkflowStatus.DRAFT.equals(periodWorkflowContextMap.get(period).getWorkflowStatus());
     }
 
+    public boolean isInitialized(FinancialPeriod period) {
+        if (periodWorkflowContextMap.get(period) == null) {
+            return false;
+        }
+        return WorkflowStatus.INITIALIZED.equals(periodWorkflowContextMap.get(period).getWorkflowStatus());
+    }
+
     public boolean isPrepared(FinancialPeriod period) {
         if (periodWorkflowContextMap.get(period) == null) {
             return false;
@@ -140,6 +155,13 @@ public class ReportingUnit extends TransientMeasurable<Long> implements Measurab
         return WorkflowStatus.REVIEWED.equals(periodWorkflowContextMap.get(period).getWorkflowStatus());
     }
 
+    public boolean isRejected(FinancialPeriod period) {
+        if (periodWorkflowContextMap.get(period) == null) {
+            return false;
+        }
+        return WorkflowStatus.REJECTED.equals(periodWorkflowContextMap.get(period).getWorkflowStatus());
+    }
+
     public boolean isApproved(FinancialPeriod period) {
         if (periodWorkflowContextMap.get(period) == null) {
             return false;
@@ -151,7 +173,20 @@ public class ReportingUnit extends TransientMeasurable<Long> implements Measurab
         if (periodWorkflowContextMap.get(period) == null) {
             return false;
         }
+
+        if (WorkflowStatus.INITIALIZED.equals(periodWorkflowContextMap.get(period).getWorkflowStatus())) {
+            if (this.preparers.contains(user)) {
+                return true;
+            }
+        }
+
         if (WorkflowStatus.DRAFT.equals(periodWorkflowContextMap.get(period).getWorkflowStatus())) {
+            if (this.preparers.contains(user)) {
+                return true;
+            }
+        }
+
+        if (WorkflowStatus.REJECTED.equals(periodWorkflowContextMap.get(period).getWorkflowStatus())) {
             if (this.preparers.contains(user)) {
                 return true;
             }
@@ -177,6 +212,26 @@ public class ReportingUnit extends TransientMeasurable<Long> implements Measurab
     public boolean isApprovable(FinancialPeriod period, User user) {
         if (periodWorkflowContextMap.get(period) == null) {
             return false;
+        }
+
+        if (WorkflowStatus.REVIEWED.equals(periodWorkflowContextMap.get(period).getWorkflowStatus())) {
+            if (this.approvers.contains(user)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public boolean isRejectable(FinancialPeriod period, User user) {
+        if (periodWorkflowContextMap.get(period) == null) {
+            return false;
+        }
+
+        if (WorkflowStatus.PREPARED.equals(periodWorkflowContextMap.get(period).getWorkflowStatus())) {
+            if (this.reviewers.contains(user)) {
+                return true;
+            }
         }
 
         if (WorkflowStatus.REVIEWED.equals(periodWorkflowContextMap.get(period).getWorkflowStatus())) {

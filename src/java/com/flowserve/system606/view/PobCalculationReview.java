@@ -208,6 +208,7 @@ public class PobCalculationReview implements Serializable {
 
     public boolean isSubmittableForReview() throws Exception {
         if (!calculationService.isCalculationDataValid(reportingUnit, webSession.getCurrentPeriod())) {
+            Logger.getLogger(PobCalculationReview.class.getName()).log(Level.INFO, "isCalculationDataValid did not pass.");
             return false;
         }
 
@@ -224,6 +225,10 @@ public class PobCalculationReview implements Serializable {
 
     public boolean isApprovable() throws Exception {
         return reportingUnit.isApprovable(webSession.getCurrentPeriod(), webSession.getUser());
+    }
+
+    public boolean isRejectable() throws Exception {
+        return reportingUnit.isRejectable(webSession.getCurrentPeriod(), webSession.getUser());
     }
 
     public ReportingUnit getReportingUnit() {

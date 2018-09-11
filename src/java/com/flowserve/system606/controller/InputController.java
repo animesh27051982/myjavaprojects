@@ -76,4 +76,13 @@ public class InputController implements Serializable {
         return "dashboard";
     }
 
+    public String reject(ReportingUnit reportingUnit) throws Exception {
+        reportingUnitService.reject(reportingUnit, webSession.getCurrentPeriod(), webSession.getUser());
+
+        FacesMessage msg = new FacesMessage("Succesful", "Reporting unit rejected.");
+        FacesContext.getCurrentInstance().addMessage(null, msg);
+
+        return "dashboard";
+    }
+
 }

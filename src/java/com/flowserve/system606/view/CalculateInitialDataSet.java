@@ -41,11 +41,12 @@ public class CalculateInitialDataSet implements Serializable {
     @PostConstruct
     public void init() {
         reportingUnitsToProcess.add(adminService.findReportingUnitByCode("1100"));
-        reportingUnitsToProcess.add(adminService.findReportingUnitByCode("5050"));
-        reportingUnitsToProcess.add(adminService.findReportingUnitByCode("7866"));
-        reportingUnitsToProcess.add(adminService.findReportingUnitByCode("8405"));
-        reportingUnitsToProcess.add(adminService.findReportingUnitByCode("1205"));
-        reportingUnitsToProcess.add(adminService.findReportingUnitByCode("8225"));
+//        reportingUnitsToProcess.add(adminService.findReportingUnitByCode("1100"));
+//        reportingUnitsToProcess.add(adminService.findReportingUnitByCode("5050"));
+//        reportingUnitsToProcess.add(adminService.findReportingUnitByCode("7866"));
+//        reportingUnitsToProcess.add(adminService.findReportingUnitByCode("8405"));
+//        reportingUnitsToProcess.add(adminService.findReportingUnitByCode("1205"));
+//        reportingUnitsToProcess.add(adminService.findReportingUnitByCode("8225"));
     }
 
     public String calcAllNov17() throws Exception {

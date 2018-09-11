@@ -484,7 +484,7 @@ public class FinancialPeriodService {
                         WorkflowContext workflowContext = new WorkflowContext();
                         adminService.persist(workflowContext);
                         ru.putPeriodWorkflowContext(period, workflowContext);
-                        reportingUnitService.initializeDraft(ru, period, user);
+                        reportingUnitService.initialize(ru, period, user);
                     }
 
 //                    for (Contract contract : ru.getContracts()) {
