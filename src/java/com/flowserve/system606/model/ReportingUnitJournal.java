@@ -8,6 +8,8 @@ package com.flowserve.system606.model;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -51,7 +53,7 @@ public class ReportingUnitJournal {
         this.period = period;
     }
 
-    public JournalEntryLine getReportingUnitSummaryJournalEntryLine(Account account) {
+    public JournalEntryLine getReportingUnitSummaryJournalEntryLine(Account account, boolean includeInformational) {
         if (account == null) {
             return null;
         }
@@ -61,11 +63,17 @@ public class ReportingUnitJournal {
 
         for (ContractJournal contractJournal : contractJournals) {
             for (JournalEntryHeader header : contractJournal.getJournalEntryHeaders()) {
+                if (includeInformational == false && header.isInformational()) {
+                    continue;
+                }
                 if (header.containsAccount(account)) {
                     for (JournalEntryLine existingLine : header.getJournalEntryLines()) {
                         if (existingLine.getAccount().equals(account)) {
                             if (existingLine.getAmount() != null) {
                                 summaryLine.setAmount(summaryLine.getAmount().add(existingLine.getAmount()));
+                                if (account.getId().equals("STCONTLIAB")) {
+                                    Logger.getLogger(ReportingUnitJournal.class.getName()).log(Level.INFO, "Found non-informational STCONTLIAB amount: " + existingLine.getAmount().toPlainString());
+                                }
                             }
                         }
                     }
@@ -76,7 +84,7 @@ public class ReportingUnitJournal {
         return summaryLine;
     }
 
-    public JournalEntryLine getReportingUnitSummaryJournalOffsetEntryLine(Account account) {
+    public JournalEntryLine getReportingUnitSummaryJournalOffsetEntryLine(Account account, boolean includeInformational) {
         if (account == null || account.getOffsetAccount() == null) {
             return null;
         }
@@ -86,6 +94,9 @@ public class ReportingUnitJournal {
 
         for (ContractJournal contractJournal : contractJournals) {
             for (JournalEntryHeader header : contractJournal.getJournalEntryHeaders()) {
+                if (includeInformational == false && header.isInformational()) {
+                    continue;
+                }
                 if (header.getAccount().equals(account)) {
                     for (JournalEntryLine existingLine : header.getJournalEntryLines()) {
                         if (existingLine.getAccount().equals(account.getOffsetAccount())) {
@@ -101,7 +112,7 @@ public class ReportingUnitJournal {
         return summaryLine;
     }
 
-    public JournalEntryLine getReportingUnitSummaryJournalEntryLine(Account account, RevenueMethod revenueMethod) {
+    public JournalEntryLine getReportingUnitSummaryJournalEntryLine(Account account, RevenueMethod revenueMethod, boolean includeInformational) {
         if (account == null || revenueMethod == null) {
             return null;
         }
@@ -112,6 +123,9 @@ public class ReportingUnitJournal {
 
         for (ContractJournal contractJournal : contractJournals) {
             for (JournalEntryHeader header : contractJournal.getJournalEntryHeaders()) {
+                if (includeInformational == false && header.isInformational()) {
+                    continue;
+                }
                 if (header.containsAccount(account) && revenueMethod.equals(header.getRevenueMethod())) {
                     for (JournalEntryLine existingLine : header.getJournalEntryLines()) {
                         if (existingLine.getAccount().equals(account) && existingLine.getRevenueMethod().equals(revenueMethod)) {
@@ -130,7 +144,7 @@ public class ReportingUnitJournal {
     /**
      * Get the specific offset lines for a specific account, across all entries.
      */
-    public JournalEntryLine getReportingUnitSummaryJournalOffsetEntryLine(Account baseAccount, RevenueMethod revenueMethod) {
+    public JournalEntryLine getReportingUnitSummaryJournalOffsetEntryLine(Account baseAccount, RevenueMethod revenueMethod, boolean includeInformational) {
         if (baseAccount == null || baseAccount.getOffsetAccount() == null || revenueMethod == null) {
             return null;
         }
@@ -141,6 +155,9 @@ public class ReportingUnitJournal {
 
         for (ContractJournal contractJournal : contractJournals) {
             for (JournalEntryHeader header : contractJournal.getJournalEntryHeaders()) {
+                if (includeInformational == false && header.isInformational()) {
+                    continue;
+                }
                 if (header.getAccount().equals(baseAccount) && revenueMethod.equals(header.getRevenueMethod())) {
                     for (JournalEntryLine existingLine : header.getJournalEntryLines()) {
                         if (existingLine.getAccount().equals(baseAccount.getOffsetAccount()) && existingLine.getRevenueMethod().equals(revenueMethod)) {
@@ -156,7 +173,7 @@ public class ReportingUnitJournal {
         return summaryLine;
     }
 
-    public JournalEntryLine getReportingUnitSummaryJournalEntryLine(Account account, RevenueMethod revenueMethod1, RevenueMethod revenueMethod2) {
+    public JournalEntryLine getReportingUnitSummaryJournalEntryLine(Account account, RevenueMethod revenueMethod1, RevenueMethod revenueMethod2, boolean includeInformational) {
         if (account == null || revenueMethod1 == null || revenueMethod2 == null) {
             return null;
         }
@@ -167,6 +184,9 @@ public class ReportingUnitJournal {
 
         for (ContractJournal contractJournal : contractJournals) {
             for (JournalEntryHeader header : contractJournal.getJournalEntryHeaders()) {
+                if (includeInformational == false && header.isInformational()) {
+                    continue;
+                }
                 if (header.containsAccount(account) && (revenueMethod1.equals(header.getRevenueMethod()) || revenueMethod2.equals(header.getRevenueMethod()))) {
                     for (JournalEntryLine existingLine : header.getJournalEntryLines()) {
                         if (existingLine.getAccount().equals(account) && (existingLine.getRevenueMethod().equals(revenueMethod1) || existingLine.getRevenueMethod().equals(revenueMethod2))) {
@@ -182,7 +202,7 @@ public class ReportingUnitJournal {
         return summaryLine;
     }
 
-    public JournalEntryLine getContractSummaryJournalEntryLine(Contract contract, Account account, RevenueMethod revenueMethod) {
+    public JournalEntryLine getContractSummaryJournalEntryLine(Contract contract, Account account, RevenueMethod revenueMethod, boolean includeInformational) {
         if (account == null || revenueMethod == null) {
             return null;
         }
@@ -194,6 +214,9 @@ public class ReportingUnitJournal {
         for (ContractJournal contractJournal : contractJournals) {
             if (contractJournal.getContract().equals(contract)) {
                 for (JournalEntryHeader header : contractJournal.getJournalEntryHeaders()) {
+                    if (includeInformational == false && header.isInformational()) {
+                        continue;
+                    }
                     if (header.containsAccount(account) && revenueMethod.equals(header.getRevenueMethod())) {
                         for (JournalEntryLine existingLine : header.getJournalEntryLines()) {
                             if (existingLine.getAccount().equals(account) && existingLine.getRevenueMethod().equals(revenueMethod)) {

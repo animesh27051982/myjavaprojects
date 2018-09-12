@@ -1036,6 +1036,10 @@ public class AdminService {
                 acm.setOwnerEntityType(values[count++]);
                 acm.setRevenueMethod(RevenueMethod.fromShortName(values[count++]));
                 acm.setAccount(findAccountById(values[count++]));
+                String info = values[count++];
+                if (info != null) {
+                    acm.setInformational("INFORMATIONAL".equals(info));
+                }
                 persist(acm);
             }
         }

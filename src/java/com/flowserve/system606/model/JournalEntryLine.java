@@ -30,7 +30,6 @@ public class JournalEntryLine {
     @SequenceGenerator(name = "JE_LINE_SEQ", sequenceName = "JE_LINE_SEQ", allocationSize = 30)
     @Column(name = "JE_LINE_ID")
     private Long id;
-
     @OneToOne
     @JoinColumn(name = "ACCOUNT_ID")
     private Account account;

@@ -70,14 +70,13 @@ public class JournalService {
             ContractJournal contractJournal = new ContractJournal(reportingUnitJournal, period, contract);
             contractJournal.setJournalStatus(JournalStatus.NEW);
 
-            //Logger.getLogger(JournalService.class.getName()).log(Level.INFO, "checkpoint 3");
             for (AccountMapping accountMappingContract : findAllAccountMappingsByOwnerEntityType(MetricType.OWNER_ENTITY_TYPE_CONTRACT)) {
                 CurrencyMetric contractMetric = calculationService.getCurrencyMetric(accountMappingContract.getMetricType().getCode(), contract, period);
-                JournalEntryHeader journalEntryHeader = new JournalEntryHeader(contractJournal, contractMetric.getMetricType(), accountMappingContract.getAccount(), contract.getLocalCurrency(), LocalDate.now(), JournalEntryType.NORMAL);
+                JournalEntryHeader journalEntryHeader = new JournalEntryHeader(contractJournal, contractMetric.getMetricType(), accountMappingContract.getAccount(),
+                        contract.getLocalCurrency(), LocalDate.now(), JournalEntryType.NORMAL, accountMappingContract.isInformational());
                 generateJournalEntryLines(journalEntryHeader, contractMetric);
                 contractJournal.addJournalEntryHeader(journalEntryHeader);
             }
-            //Logger.getLogger(JournalService.class.getName()).log(Level.INFO, "checkpoint 4");
             List<PerformanceObligationGroup> pobGroupsByRevenueMethods = new ArrayList<PerformanceObligationGroup>();
 
             pobGroupsByRevenueMethods.add(new PerformanceObligationGroup("pocPobs", contract, RevenueMethod.PERC_OF_COMP, contract.getPobsByRevenueMethod(RevenueMethod.PERC_OF_COMP)));
@@ -86,12 +85,11 @@ public class JournalService {
             pobGroupsByRevenueMethods.add(new PerformanceObligationGroup("slPobs", contract, RevenueMethod.STRAIGHT_LINE, contract.getPobsByRevenueMethod(RevenueMethod.STRAIGHT_LINE)));
 
             for (AccountMapping accountMappingPOB : findAllAccountMappingsByOwnerEntityType(MetricType.OWNER_ENTITY_TYPE_POB)) {
-                //Logger.getLogger(JournalService.class.getName()).log(Level.INFO, "checkpoint 5");
                 for (PerformanceObligationGroup pobGroup : pobGroupsByRevenueMethods) {
                     if (pobGroup.getRevenueMethod().equals(accountMappingPOB.getRevenueMethod())) {
-                        //Logger.getLogger(JournalService.class.getName()).log(Level.INFO, "checkpoint 6");
                         CurrencyMetric pobGroupMetric = calculationService.getCurrencyMetric(accountMappingPOB.getMetricType().getCode(), pobGroup, period);
-                        JournalEntryHeader journalEntryHeader = new JournalEntryHeader(contractJournal, pobGroupMetric.getMetricType(), accountMappingPOB.getAccount(), contract.getLocalCurrency(), LocalDate.now(), JournalEntryType.NORMAL);
+                        JournalEntryHeader journalEntryHeader = new JournalEntryHeader(contractJournal, pobGroupMetric.getMetricType(), accountMappingPOB.getAccount(),
+                                contract.getLocalCurrency(), LocalDate.now(), JournalEntryType.NORMAL, accountMappingPOB.isInformational());
                         journalEntryHeader.setRevenueMethod(pobGroup.getRevenueMethod());
                         generateJournalEntryLines(journalEntryHeader, pobGroupMetric);
                         contractJournal.addJournalEntryHeader(journalEntryHeader);
@@ -254,108 +252,162 @@ public class JournalService {
         final int debitCol = 5;
         final int creditCol = 6;
 
+        final boolean INCLUDE_INFORMATIONAL = true;
+        final boolean EXCLUDE_INFORMATIONAL = false;
+
+        /**
+         * Combined entries
+         */
+        row = worksheet.getRow(22);
+        JournalEntryLine salesPocInLineCombined = reportingUnitJournal.getReportingUnitSummaryJournalEntryLine(findAccountById("SALESPOC.IN"), EXCLUDE_INFORMATIONAL);
+        setCellValue(row, debitCol, salesPocInLineCombined.getDebitAmount());
+        setCellValue(row, creditCol, salesPocInLineCombined.getCreditAmount());
+
+        row = worksheet.getRow(23);
+        JournalEntryLine salesLDPenaltyCombined = reportingUnitJournal.getReportingUnitSummaryJournalEntryLine(findAccountById("SALESLDPENALTY"), EXCLUDE_INFORMATIONAL);
+        setCellValue(row, debitCol, salesLDPenaltyCombined.getDebitAmount());
+        setCellValue(row, creditCol, salesLDPenaltyCombined.getCreditAmount());
+
+        row = worksheet.getRow(24);
+        JournalEntryLine cosPocInCombined = reportingUnitJournal.getReportingUnitSummaryJournalEntryLine(findAccountById("COSPOC.IN"), EXCLUDE_INFORMATIONAL);
+        setCellValue(row, debitCol, cosPocInCombined.getDebitAmount());
+        setCellValue(row, creditCol, cosPocInCombined.getCreditAmount());
+
+        row = worksheet.getRow(25);
+        JournalEntryLine invWipCombined = reportingUnitJournal.getReportingUnitSummaryJournalEntryLine(findAccountById("INV.WIP"), EXCLUDE_INFORMATIONAL);
+        setCellValue(row, debitCol, invWipCombined.getDebitAmount());
+        setCellValue(row, creditCol, invWipCombined.getCreditAmount());
+
+        row = worksheet.getRow(26);
+        JournalEntryLine lossReservePeriodAdjCombined = reportingUnitJournal.getReportingUnitSummaryJournalEntryLine(findAccountById("GLVAR.INVADJ"), EXCLUDE_INFORMATIONAL);
+        setCellValue(row, debitCol, lossReservePeriodAdjCombined.getDebitAmount());
+        setCellValue(row, creditCol, lossReservePeriodAdjCombined.getCreditAmount());
+
+        row = worksheet.getRow(28);
+        JournalEntryLine lossReservePeriodAdjContractLiabCombined = reportingUnitJournal.getReportingUnitSummaryJournalEntryLine(findAccountById("ACCLOSSRES"), EXCLUDE_INFORMATIONAL);
+        setCellValue(row, debitCol, lossReservePeriodAdjContractLiabCombined.getDebitAmount());
+        setCellValue(row, creditCol, lossReservePeriodAdjContractLiabCombined.getCreditAmount());
+
+        row = worksheet.getRow(31);
+        JournalEntryLine contrLiabCombined = reportingUnitJournal.getReportingUnitSummaryJournalEntryLine(findAccountById("STCONTLIAB"), EXCLUDE_INFORMATIONAL);
+        setCellValue(row, debitCol, contrLiabCombined.getDebitAmount());
+        setCellValue(row, creditCol, contrLiabCombined.getCreditAmount());
+
+        row = worksheet.getRow(32);
+        JournalEntryLine tpcExpenseCombined = reportingUnitJournal.getReportingUnitSummaryJournalEntryLine(findAccountById("COMMISH.EXP"), EXCLUDE_INFORMATIONAL);
+        setCellValue(row, debitCol, tpcExpenseCombined.getDebitAmount());
+        setCellValue(row, creditCol, tpcExpenseCombined.getCreditAmount());
+
+        row = worksheet.getRow(33);
+        JournalEntryLine tpcLiabCombined = reportingUnitJournal.getReportingUnitSummaryJournalEntryLine(findAccountById("ACCOTHEXP.ROYALTY"), EXCLUDE_INFORMATIONAL);
+        setCellValue(row, debitCol, tpcLiabCombined.getDebitAmount());
+        setCellValue(row, creditCol, tpcLiabCombined.getCreditAmount());
+
+        /**
+         * Component entries
+         */
         row = worksheet.getRow(41);
-        JournalEntryLine salesPocInLinePOC = reportingUnitJournal.getReportingUnitSummaryJournalEntryLine(findAccountById("SALESPOC.IN"), RevenueMethod.PERC_OF_COMP);
+        JournalEntryLine salesPocInLinePOC = reportingUnitJournal.getReportingUnitSummaryJournalEntryLine(findAccountById("SALESPOC.IN"), RevenueMethod.PERC_OF_COMP, INCLUDE_INFORMATIONAL);
         setCellValue(row, debitCol, salesPocInLinePOC.getDebitAmount());
         setCellValue(row, creditCol, salesPocInLinePOC.getCreditAmount());
 
         row = worksheet.getRow(42);
-        JournalEntryLine salesLDPenaltyPOC = reportingUnitJournal.getReportingUnitSummaryJournalEntryLine(findAccountById("SALESLDPENALTY"), RevenueMethod.PERC_OF_COMP);
+        JournalEntryLine salesLDPenaltyPOC = reportingUnitJournal.getReportingUnitSummaryJournalEntryLine(findAccountById("SALESLDPENALTY"), RevenueMethod.PERC_OF_COMP, INCLUDE_INFORMATIONAL);
         setCellValue(row, debitCol, salesLDPenaltyPOC.getDebitAmount());
         setCellValue(row, creditCol, salesLDPenaltyPOC.getCreditAmount());
 
         row = worksheet.getRow(43);
-        JournalEntryLine cosPocInPOC = reportingUnitJournal.getReportingUnitSummaryJournalEntryLine(findAccountById("COSPOC.IN"), RevenueMethod.PERC_OF_COMP);
+        JournalEntryLine cosPocInPOC = reportingUnitJournal.getReportingUnitSummaryJournalEntryLine(findAccountById("COSPOC.IN"), RevenueMethod.PERC_OF_COMP, INCLUDE_INFORMATIONAL);
         setCellValue(row, debitCol, cosPocInPOC.getDebitAmount());
         setCellValue(row, creditCol, cosPocInPOC.getCreditAmount());
 
         row = worksheet.getRow(44);
-        JournalEntryLine invWipPOC = reportingUnitJournal.getReportingUnitSummaryJournalEntryLine(findAccountById("INV.WIP"), RevenueMethod.PERC_OF_COMP);
+        JournalEntryLine invWipPOC = reportingUnitJournal.getReportingUnitSummaryJournalEntryLine(findAccountById("INV.WIP"), RevenueMethod.PERC_OF_COMP, INCLUDE_INFORMATIONAL);
         setCellValue(row, debitCol, invWipPOC.getDebitAmount());
         setCellValue(row, creditCol, invWipPOC.getCreditAmount());
 
         row = worksheet.getRow(45);
-        JournalEntryLine contrLiabPOC = reportingUnitJournal.getReportingUnitSummaryJournalEntryLine(findAccountById("STCONTLIAB"), RevenueMethod.PERC_OF_COMP);
+        JournalEntryLine contrLiabPOC = reportingUnitJournal.getReportingUnitSummaryJournalEntryLine(findAccountById("STCONTLIAB"), RevenueMethod.PERC_OF_COMP, INCLUDE_INFORMATIONAL);
         setCellValue(row, debitCol, contrLiabPOC.getDebitAmount());
         setCellValue(row, creditCol, contrLiabPOC.getCreditAmount());
 
         row = worksheet.getRow(48);
-        JournalEntryLine lossReservePeriodAdjContract = reportingUnitJournal.getReportingUnitSummaryJournalEntryLine(findAccountById("GLVAR.INVADJ"));
+        JournalEntryLine lossReservePeriodAdjContract = reportingUnitJournal.getReportingUnitSummaryJournalEntryLine(findAccountById("GLVAR.INVADJ"), INCLUDE_INFORMATIONAL);
         setCellValue(row, debitCol, lossReservePeriodAdjContract.getDebitAmount());
         setCellValue(row, creditCol, lossReservePeriodAdjContract.getCreditAmount());
 
         row = worksheet.getRow(50);
-        JournalEntryLine lossReservePeriodAdjContractLiab = reportingUnitJournal.getReportingUnitSummaryJournalEntryLine(findAccountById("ACCLOSSRES"));
+        JournalEntryLine lossReservePeriodAdjContractLiab = reportingUnitJournal.getReportingUnitSummaryJournalEntryLine(findAccountById("ACCLOSSRES"), INCLUDE_INFORMATIONAL);
         setCellValue(row, debitCol, lossReservePeriodAdjContractLiab.getDebitAmount());
         setCellValue(row, creditCol, lossReservePeriodAdjContractLiab.getCreditAmount());
 
         row = worksheet.getRow(61);
-        JournalEntryLine tpcExpense = reportingUnitJournal.getReportingUnitSummaryJournalEntryLine(findAccountById("COMMISH.EXP"));
+        JournalEntryLine tpcExpense = reportingUnitJournal.getReportingUnitSummaryJournalEntryLine(findAccountById("COMMISH.EXP"), INCLUDE_INFORMATIONAL);
         setCellValue(row, debitCol, tpcExpense.getDebitAmount());
         setCellValue(row, creditCol, tpcExpense.getCreditAmount());
 
         row = worksheet.getRow(62);
-        JournalEntryLine tpcLiab = reportingUnitJournal.getReportingUnitSummaryJournalEntryLine(findAccountById("ACCOTHEXP.ROYALTY"));
+        JournalEntryLine tpcLiab = reportingUnitJournal.getReportingUnitSummaryJournalEntryLine(findAccountById("ACCOTHEXP.ROYALTY"), INCLUDE_INFORMATIONAL);
         setCellValue(row, debitCol, tpcLiab.getDebitAmount());
         setCellValue(row, creditCol, tpcLiab.getCreditAmount());
 
         row = worksheet.getRow(65);
-        JournalEntryLine salesOutside = reportingUnitJournal.getReportingUnitSummaryJournalEntryLine(findAccountById("SALESOC"), RevenueMethod.STRAIGHT_LINE, RevenueMethod.RIGHT_TO_INVOICE);
+        JournalEntryLine salesOutside = reportingUnitJournal.getReportingUnitSummaryJournalEntryLine(findAccountById("SALESOC"), RevenueMethod.STRAIGHT_LINE, RevenueMethod.RIGHT_TO_INVOICE, INCLUDE_INFORMATIONAL);
         setCellValue(row, debitCol, salesOutside.getDebitAmount());
         setCellValue(row, creditCol, salesOutside.getCreditAmount());
 
         row = worksheet.getRow(66);
-        JournalEntryLine salesOutsideLD = reportingUnitJournal.getReportingUnitSummaryJournalEntryLine(findAccountById("SALESLDPENALTY"), RevenueMethod.STRAIGHT_LINE, RevenueMethod.RIGHT_TO_INVOICE);
+        JournalEntryLine salesOutsideLD = reportingUnitJournal.getReportingUnitSummaryJournalEntryLine(findAccountById("SALESLDPENALTY"), RevenueMethod.STRAIGHT_LINE, RevenueMethod.RIGHT_TO_INVOICE, INCLUDE_INFORMATIONAL);
         setCellValue(row, debitCol, salesOutsideLD.getDebitAmount());
         setCellValue(row, creditCol, salesOutsideLD.getCreditAmount());
 
         row = worksheet.getRow(67);
-        JournalEntryLine cosOsSLRTI = reportingUnitJournal.getReportingUnitSummaryJournalEntryLine(findAccountById("COSOC"), RevenueMethod.STRAIGHT_LINE, RevenueMethod.RIGHT_TO_INVOICE);
+        JournalEntryLine cosOsSLRTI = reportingUnitJournal.getReportingUnitSummaryJournalEntryLine(findAccountById("COSOC"), RevenueMethod.STRAIGHT_LINE, RevenueMethod.RIGHT_TO_INVOICE, INCLUDE_INFORMATIONAL);
         setCellValue(row, debitCol, cosOsSLRTI.getDebitAmount());
         setCellValue(row, creditCol, cosOsSLRTI.getCreditAmount());
 
         row = worksheet.getRow(68);
-        JournalEntryLine invWipOs = reportingUnitJournal.getReportingUnitSummaryJournalEntryLine(findAccountById("INV.WIP"), RevenueMethod.STRAIGHT_LINE, RevenueMethod.RIGHT_TO_INVOICE);
+        JournalEntryLine invWipOs = reportingUnitJournal.getReportingUnitSummaryJournalEntryLine(findAccountById("INV.WIP"), RevenueMethod.STRAIGHT_LINE, RevenueMethod.RIGHT_TO_INVOICE, INCLUDE_INFORMATIONAL);
         setCellValue(row, debitCol, invWipOs.getDebitAmount());
         setCellValue(row, creditCol, invWipOs.getCreditAmount());
 
         row = worksheet.getRow(69);
-        JournalEntryLine contrLiabSLRTI = reportingUnitJournal.getReportingUnitSummaryJournalEntryLine(findAccountById("STCONTLIAB"), RevenueMethod.STRAIGHT_LINE, RevenueMethod.RIGHT_TO_INVOICE);
+        JournalEntryLine contrLiabSLRTI = reportingUnitJournal.getReportingUnitSummaryJournalEntryLine(findAccountById("STCONTLIAB"), RevenueMethod.STRAIGHT_LINE, RevenueMethod.RIGHT_TO_INVOICE, INCLUDE_INFORMATIONAL);
         setCellValue(row, debitCol, contrLiabSLRTI.getDebitAmount());
         setCellValue(row, creditCol, contrLiabSLRTI.getCreditAmount());
 
         row = worksheet.getRow(73);
-        JournalEntryLine tradeRecContract = reportingUnitJournal.getReportingUnitSummaryJournalEntryLine(findAccountById("RECNET"));
+        JournalEntryLine tradeRecContract = reportingUnitJournal.getReportingUnitSummaryJournalEntryLine(findAccountById("RECNET"), INCLUDE_INFORMATIONAL);
         setCellValue(row, debitCol, tradeRecContract.getDebitAmount());
         setCellValue(row, creditCol, tradeRecContract.getCreditAmount());
 
         row = worksheet.getRow(74);
-        JournalEntryLine liabContract = reportingUnitJournal.getReportingUnitSummaryJournalOffsetEntryLine(findAccountById("RECNET"));
+        JournalEntryLine liabContract = reportingUnitJournal.getReportingUnitSummaryJournalOffsetEntryLine(findAccountById("RECNET"), INCLUDE_INFORMATIONAL);
         setCellValue(row, debitCol, liabContract.getDebitAmount());
         setCellValue(row, creditCol, liabContract.getCreditAmount());
 
         row = worksheet.getRow(77);
-        JournalEntryLine salesocLinePIT = reportingUnitJournal.getReportingUnitSummaryJournalEntryLine(findAccountById("SALESOC"), RevenueMethod.POINT_IN_TIME);
+        JournalEntryLine salesocLinePIT = reportingUnitJournal.getReportingUnitSummaryJournalEntryLine(findAccountById("SALESOC"), RevenueMethod.POINT_IN_TIME, INCLUDE_INFORMATIONAL);
         setCellValue(row, debitCol, salesocLinePIT.getDebitAmount());
         setCellValue(row, creditCol, salesocLinePIT.getCreditAmount());
 
         row = worksheet.getRow(78);
-        JournalEntryLine salesLDPenaltyPIT = reportingUnitJournal.getReportingUnitSummaryJournalEntryLine(findAccountById("SALESLDPENALTY"), RevenueMethod.POINT_IN_TIME);
+        JournalEntryLine salesLDPenaltyPIT = reportingUnitJournal.getReportingUnitSummaryJournalEntryLine(findAccountById("SALESLDPENALTY"), RevenueMethod.POINT_IN_TIME, INCLUDE_INFORMATIONAL);
         setCellValue(row, debitCol, salesLDPenaltyPIT.getDebitAmount());
         setCellValue(row, creditCol, salesLDPenaltyPIT.getCreditAmount());
 
         row = worksheet.getRow(79);
-        JournalEntryLine cosocPIT = reportingUnitJournal.getReportingUnitSummaryJournalEntryLine(findAccountById("COSOC"), RevenueMethod.POINT_IN_TIME);
+        JournalEntryLine cosocPIT = reportingUnitJournal.getReportingUnitSummaryJournalEntryLine(findAccountById("COSOC"), RevenueMethod.POINT_IN_TIME, INCLUDE_INFORMATIONAL);
         setCellValue(row, debitCol, cosocPIT.getDebitAmount());
         setCellValue(row, creditCol, cosocPIT.getCreditAmount());
 
         row = worksheet.getRow(80);
-        JournalEntryLine invWipPIT = reportingUnitJournal.getReportingUnitSummaryJournalEntryLine(findAccountById("INV.WIP"), RevenueMethod.POINT_IN_TIME);
+        JournalEntryLine invWipPIT = reportingUnitJournal.getReportingUnitSummaryJournalEntryLine(findAccountById("INV.WIP"), RevenueMethod.POINT_IN_TIME, INCLUDE_INFORMATIONAL);
         setCellValue(row, debitCol, invWipPIT.getDebitAmount());
         setCellValue(row, creditCol, invWipPIT.getCreditAmount());
 
         row = worksheet.getRow(81);
-        JournalEntryLine contrLiabPIT = reportingUnitJournal.getReportingUnitSummaryJournalEntryLine(findAccountById("STCONTLIAB"), RevenueMethod.POINT_IN_TIME);
+        JournalEntryLine contrLiabPIT = reportingUnitJournal.getReportingUnitSummaryJournalEntryLine(findAccountById("STCONTLIAB"), RevenueMethod.POINT_IN_TIME, INCLUDE_INFORMATIONAL);
         setCellValue(row, debitCol, contrLiabPIT.getDebitAmount());
         setCellValue(row, creditCol, contrLiabPIT.getCreditAmount());
 

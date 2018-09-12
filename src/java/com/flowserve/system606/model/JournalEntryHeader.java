@@ -36,7 +36,6 @@ public class JournalEntryHeader {
     @SequenceGenerator(name = "JE_SEQ", sequenceName = "JE_SEQ", allocationSize = 30)
     @Column(name = "JE_HEADER_ID")
     private Long id;
-
     @OneToOne
     @JoinColumn(name = "METRIC_TYPE_ID")
     private MetricType metricType;
@@ -54,19 +53,22 @@ public class JournalEntryHeader {
     @OneToOne
     @JoinColumn(name = "CONTRACT_JOURNAL_ID")
     private ContractJournal contractJournal;
+    @Column(name = "IS_INFORMATIONAL")
+    private boolean informational;
     @OneToMany(cascade = {CascadeType.ALL}, fetch = FetchType.LAZY, mappedBy = "journalEntryHeader", orphanRemoval = true)
     private List<JournalEntryLine> journalEntryLines = new ArrayList<JournalEntryLine>();
 
     public JournalEntryHeader() {
     }
 
-    public JournalEntryHeader(ContractJournal contractJournal, MetricType metricType, Account account, Currency currency, LocalDate transactionDate, JournalEntryType journalEntryType) {
+    public JournalEntryHeader(ContractJournal contractJournal, MetricType metricType, Account account, Currency currency, LocalDate transactionDate, JournalEntryType journalEntryType, boolean informational) {
         this.contractJournal = contractJournal;
         this.metricType = metricType;
         this.account = account;
         this.currency = currency;
         this.transactionDate = transactionDate;
         this.journalEntryType = journalEntryType;
+        this.informational = informational;
     }
 
     public void addJournalEntryLine(JournalEntryLine line) {
@@ -154,5 +156,13 @@ public class JournalEntryHeader {
 
     public List<JournalEntryLine> getJournalEntryLines() {
         return journalEntryLines;
+    }
+
+    public boolean isInformational() {
+        return informational;
+    }
+
+    public void setInformational(boolean informational) {
+        this.informational = informational;
     }
 }
