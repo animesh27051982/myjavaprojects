@@ -5,32 +5,23 @@
  */
 package com.flowserve.system606.view;
 
-import com.flowserve.system606.model.Company;
-import com.flowserve.system606.model.Holiday;
 import com.flowserve.system606.model.ReportingUnit;
 import com.flowserve.system606.model.WorkflowStatus;
-import com.flowserve.system606.service.AdminService;
-import com.flowserve.system606.service.FinancialPeriodService;
 import com.flowserve.system606.service.ReportingUnitService;
 import com.flowserve.system606.web.WebSession;
 import java.io.Serializable;
-import java.time.LocalDate;
-import java.time.ZoneOffset;
-import java.util.Date;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
+import org.apache.commons.collections4.ListUtils;
 import org.primefaces.event.SelectEvent;
-import org.primefaces.model.DefaultScheduleEvent;
-import org.primefaces.model.DefaultScheduleModel;
-import org.primefaces.model.ScheduleModel;
-import org.primefaces.model.TreeNode;
 
 /**
  *
@@ -41,22 +32,13 @@ import org.primefaces.model.TreeNode;
 public class Dashboard implements Serializable {
 
     private static final Logger logger = Logger.getLogger(Dashboard.class.getName());
-    private TreeNode rootTreeNode;
-    @Inject
-    private AdminService adminService;
     @Inject
     private WebSession webSession;
     @Inject
     private ReportingUnitService reportingUnitService;
     @Inject
     private ViewSupport viewSupport;
-    @Inject
-    private FinancialPeriodService financialPeriodService;
-    private Set<ReportingUnit> preparableReportingUnits = new TreeSet<ReportingUnit>();
-    private Set<ReportingUnit> reviewableReportingUnits = new TreeSet<ReportingUnit>();
-    private Set<ReportingUnit> approvableReportingUnits = new TreeSet<ReportingUnit>();
     private Set<ReportingUnit> relevantReportingUnits = new TreeSet<ReportingUnit>();
-    private ScheduleModel eventModel;
 
     @PostConstruct
     public void init() {
@@ -67,58 +49,42 @@ public class Dashboard implements Serializable {
         }
         for (ReportingUnit ru : reportingUnitService.getPreparableReportingUnits(webSession.getUser())) {
             relevantReportingUnits.add(ru);
-            if (ru.isPreparable(webSession.getCurrentPeriod(), webSession.getUser())) {
-                preparableReportingUnits.add(ru);
-            }
         }
         for (ReportingUnit ru : reportingUnitService.getReviewableReportingUnits(webSession.getUser())) {
             relevantReportingUnits.add(ru);
-            if (ru.isReviewable(webSession.getCurrentPeriod(), webSession.getUser())) {
-                reviewableReportingUnits.add(ru);
-
-            }
         }
         for (ReportingUnit ru : reportingUnitService.getApprovableReportingUnits(webSession.getUser())) {
             relevantReportingUnits.add(ru);
-            if (ru.isApprovable(webSession.getCurrentPeriod(), webSession.getUser())) {
-                reviewableReportingUnits.add(ru);
-            }
         }
 
         if (webSession.getCurrentReportingUnit() != null) {
             relevantReportingUnits.add(webSession.getCurrentReportingUnit());
         }
+    }
 
-        try {
-            List<Holiday> holidays = adminService.findHolidayList();
-            Company company = adminService.findCompanyById("FLS");
-            LocalDate freeze = financialPeriodService.calcInputFreezeWorkday(LocalDate.now(), holidays, company.getInputFreezeWorkday());
-            LocalDate poci = financialPeriodService.calcInputFreezeWorkday(LocalDate.now(), holidays, company.getPociDueWorkday());
-            eventModel = new DefaultScheduleModel();
+    public List<ReportingUnit> getRelevantReportingUnits() {
+        List<ReportingUnit> ruc = new ArrayList<ReportingUnit>();
+        List<ReportingUnit> rus = new ArrayList<ReportingUnit>();
 
-            for (Holiday holiday : holidays) {
-                Date date = Date.from(holiday.getHolidayDate().atStartOfDay(ZoneOffset.UTC).toInstant());
-                eventModel.addEvent(new DefaultScheduleEvent(holiday.getName(), date, date, true));
+        for (ReportingUnit ru : relevantReportingUnits) {
+            if (ru.getContractCount() != 0) {
+
+                ruc.add(ru);
+
+            } else {
+                rus.add(ru);
             }
-            Date Freezeday = Date.from(freeze.atStartOfDay(ZoneOffset.UTC).toInstant());
-            eventModel.addEvent(new DefaultScheduleEvent("Input Freeze Day", Freezeday, Freezeday, true));
-            Date Pociworkday = Date.from(poci.atStartOfDay(ZoneOffset.UTC).toInstant());
-            eventModel.addEvent(new DefaultScheduleEvent("POCI Due Workday", Pociworkday, Pociworkday, true));
-        } catch (Exception ex) {
-            Logger.getLogger(Calendar.class.getName()).log(Level.SEVERE, null, ex);
         }
-    }
+//        List<ReportingUnit> sortruc = ruc.stream().collect(Collectors.toList());
+//        List<ReportingUnit> sortrus = rus.stream().collect(Collectors.toList());
+//        ruc = new TreeSet<ReportingUnit>(sortruc);
+//        rus = new TreeSet<ReportingUnit>(sortrus);
+//        Set<ReportingUnit> combinedSet = Sets.union(ruc, rus);
+        Collections.sort(ruc, (ReportingUnit o1, ReportingUnit o2) -> o1.getCode().compareTo(o2.getCode()));
+        Collections.sort(rus, (ReportingUnit o1, ReportingUnit o2) -> o1.getCode().compareTo(o2.getCode()));
+        List<ReportingUnit> combinedSet = ListUtils.union(ruc, rus);
 
-    public ScheduleModel getEventModel() {
-        return eventModel;
-    }
-
-    public Set<ReportingUnit> getPreparableReportingUnits() {
-        return preparableReportingUnits;
-    }
-
-    public Set<ReportingUnit> getRelevantReportingUnits() {
-        return relevantReportingUnits;
+        return combinedSet;
     }
 
     public void onReportingUnitSelect(SelectEvent event) {
@@ -136,10 +102,6 @@ public class Dashboard implements Serializable {
         return reportingUnit.getWorkflowStatus(webSession.getCurrentPeriod());
     }
 
-    public int getPreparableReportingUnitCount() {
-        return preparableReportingUnits.size();
-    }
-
     public int getContractCount(ReportingUnit reportingUnit) {
         return reportingUnit.getContracts().size();
     }
@@ -153,11 +115,4 @@ public class Dashboard implements Serializable {
 
     }
 
-    public Set<ReportingUnit> getReviewableReportingUnits() {
-        return reviewableReportingUnits;
-    }
-
-    public Set<ReportingUnit> getApprovableReportingUnits() {
-        return approvableReportingUnits;
-    }
 }

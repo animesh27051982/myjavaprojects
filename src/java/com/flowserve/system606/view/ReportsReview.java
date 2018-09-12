@@ -211,6 +211,23 @@ public class ReportsReview implements Serializable {
         return file;
     }
 
+    public StreamedContent getRUFinancialSummaryReport(ReportingUnit ru) {
+        try {
+            String filename = "RU_FS_Report_" + ru.getCode() + ".xlsx";
+            inputStream = ReportContractEstimate.class.getResourceAsStream("/resources/excel_input_templates/Outputs_Summary_v2_ORIGINAL.xlsx");
+            File tempFile = File.createTempFile(filename, ".xlsx");
+            outputStream = new FileOutputStream(tempFile);
+            reportsService.generateRUReportFinancialSummary(inputStream, outputStream, ru);
+            InputStream inputStreamFromOutputStream = new FileInputStream(tempFile);
+            file = new DefaultStreamedContent(inputStreamFromOutputStream, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", filename);
+        } catch (Exception e) {
+            Logger.getLogger(ReportContractEstimate.class.getName()).log(Level.INFO, "Error generating report: ", e);
+            FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error generating Financial summary report: " + e.getMessage(), e.getMessage());
+            FacesContext.getCurrentInstance().addMessage(null, msg);
+        }
+        return file;
+    }
+
     public StreamedContent getJournalEntryReport(ReportingUnit reportingUnit) {
         try {
             String filename = "JE_Report_" + reportingUnit.getCode() + ".xlsx";
