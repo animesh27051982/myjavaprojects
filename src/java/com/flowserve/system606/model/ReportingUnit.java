@@ -170,24 +170,28 @@ public class ReportingUnit extends TransientMeasurable<Long> implements Measurab
     }
 
     public boolean isPreparable(FinancialPeriod period, User user) {
+        if (!period.isOpen()) {
+            return false;
+        }
+
         if (periodWorkflowContextMap.get(period) == null) {
             return false;
         }
 
         if (WorkflowStatus.INITIALIZED.equals(periodWorkflowContextMap.get(period).getWorkflowStatus())) {
-            if (this.preparers.contains(user)) {
+            if (this.preparers.contains(user) || user.isAdmin()) {
                 return true;
             }
         }
 
         if (WorkflowStatus.DRAFT.equals(periodWorkflowContextMap.get(period).getWorkflowStatus())) {
-            if (this.preparers.contains(user)) {
+            if (this.preparers.contains(user) || user.isAdmin()) {
                 return true;
             }
         }
 
         if (WorkflowStatus.REJECTED.equals(periodWorkflowContextMap.get(period).getWorkflowStatus())) {
-            if (this.preparers.contains(user)) {
+            if (this.preparers.contains(user) || user.isAdmin()) {
                 return true;
             }
         }
@@ -196,12 +200,16 @@ public class ReportingUnit extends TransientMeasurable<Long> implements Measurab
     }
 
     public boolean isReviewable(FinancialPeriod period, User user) {
+        if (!period.isOpen()) {
+            return false;
+        }
+
         if (periodWorkflowContextMap.get(period) == null) {
             return false;
         }
 
         if (WorkflowStatus.PREPARED.equals(periodWorkflowContextMap.get(period).getWorkflowStatus())) {
-            if (this.reviewers.contains(user)) {
+            if (this.reviewers.contains(user) || user.isAdmin()) {
                 return true;
             }
         }
@@ -210,12 +218,16 @@ public class ReportingUnit extends TransientMeasurable<Long> implements Measurab
     }
 
     public boolean isApprovable(FinancialPeriod period, User user) {
+        if (!period.isOpen()) {
+            return false;
+        }
+
         if (periodWorkflowContextMap.get(period) == null) {
             return false;
         }
 
         if (WorkflowStatus.REVIEWED.equals(periodWorkflowContextMap.get(period).getWorkflowStatus())) {
-            if (this.approvers.contains(user)) {
+            if (this.approvers.contains(user) || user.isAdmin()) {
                 return true;
             }
         }
@@ -224,18 +236,22 @@ public class ReportingUnit extends TransientMeasurable<Long> implements Measurab
     }
 
     public boolean isRejectable(FinancialPeriod period, User user) {
+        if (!period.isOpen()) {
+            return false;
+        }
+
         if (periodWorkflowContextMap.get(period) == null) {
             return false;
         }
 
         if (WorkflowStatus.PREPARED.equals(periodWorkflowContextMap.get(period).getWorkflowStatus())) {
-            if (this.reviewers.contains(user)) {
+            if (this.reviewers.contains(user) || user.isAdmin()) {
                 return true;
             }
         }
 
         if (WorkflowStatus.REVIEWED.equals(periodWorkflowContextMap.get(period).getWorkflowStatus())) {
-            if (this.approvers.contains(user)) {
+            if (this.approvers.contains(user) || user.isAdmin()) {
                 return true;
             }
         }

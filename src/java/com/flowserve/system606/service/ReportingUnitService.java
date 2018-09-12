@@ -65,7 +65,7 @@ public class ReportingUnitService {
      * KJG Enhance the methods below to check user role levels. Deferring that check due to lack of time. We'll handle that check in the UI for now.
      */
     public void submitForReview(ReportingUnit reportingUnit, FinancialPeriod period, User user) throws Exception {
-        if (period.isOpen() && reportingUnit.isDraft(period)) {
+        if (reportingUnit.isPreparable(period, user)) {
             WorkflowAction action = new WorkflowAction(WorkflowActionType.REQUEST_REVIEW, user);
             adminService.persist(action);
             reportingUnit.addWorkflowAction(period, action);
@@ -75,7 +75,7 @@ public class ReportingUnitService {
     }
 
     public void submitForApproval(ReportingUnit reportingUnit, FinancialPeriod period, User user) throws Exception {
-        if (period.isOpen() && reportingUnit.isReviewable(period, user)) {
+        if (reportingUnit.isReviewable(period, user)) {
             WorkflowAction action = new WorkflowAction(WorkflowActionType.REQUEST_APPROVAL, user);
             adminService.persist(action);
             reportingUnit.addWorkflowAction(period, action);
@@ -85,7 +85,7 @@ public class ReportingUnitService {
     }
 
     public void approve(ReportingUnit reportingUnit, FinancialPeriod period, User user) throws Exception {
-        if (period.isOpen() && reportingUnit.isApprovable(period, user)) {
+        if (reportingUnit.isApprovable(period, user)) {
             WorkflowAction action = new WorkflowAction(WorkflowActionType.APPROVE, user);
             adminService.persist(action);
             reportingUnit.addWorkflowAction(period, action);
@@ -95,7 +95,7 @@ public class ReportingUnitService {
     }
 
     public void review(ReportingUnit reportingUnit, FinancialPeriod period, User user) throws Exception {
-        if (period.isOpen() && reportingUnit.isReviewable(period, user)) {
+        if (reportingUnit.isReviewable(period, user)) {
             WorkflowAction action = new WorkflowAction(WorkflowActionType.REVIEW, user);
             adminService.persist(action);
             reportingUnit.addWorkflowAction(period, action);
@@ -105,7 +105,7 @@ public class ReportingUnitService {
     }
 
     public void reject(ReportingUnit reportingUnit, FinancialPeriod period, User user) throws Exception {
-        if (period.isOpen() && reportingUnit.isRejectable(period, user)) {
+        if (reportingUnit.isRejectable(period, user)) {
             WorkflowAction action = new WorkflowAction(WorkflowActionType.REJECT, user);
             adminService.persist(action);
             reportingUnit.addWorkflowAction(period, action);
