@@ -250,7 +250,7 @@
                                         </p:columnGroup>
 
                                         <p:column sortBy="#{pob.name}">
-                                            <h:outputText value="#{pob.name}" title="#{pob.description}" style="#{viewSupport.getStyle(pob)}}"/>
+                                            <h:outputText id="pobID" value="#{pob.name}" title="#{pob.description}" style="#{viewSupport.getStyle(pob)}}"/>
                                         </p:column>
 
                                         <p:column style="white-space:pre-line;">
@@ -279,7 +279,7 @@
                                                     <p:inputText value="#{viewSupport.getCurrencyMetric('TRANSACTION_PRICE_CC', pob).ccValue}"
                                                                  disabled="#{of:isInstance('com.flowserve.system606.model.Contract', pob) or not viewSupport.editable}">
                                                         <f:validateDoubleRange/>
-                                                        <p:ajax event="change" update="tpCurrent, :form:messages" process="@this" listener="#{inputOnlineEntry.calculateOutputs(pob)}"/>
+                                                        <p:ajax event="change" update="tpCurrent,pobID, :form:messages" process="@this" listener="#{inputOnlineEntry.calculateOutputs(pob)}"/>
                                                     </p:inputText>
                                                 </f:facet>
                                             </p:cellEditor>
@@ -338,7 +338,7 @@
                                                 <f:facet name="input">
                                                     <p:inputText value="#{viewSupport.getCurrencyMetric('ESTIMATED_COST_AT_COMPLETION_LC', pob).lcValue}"
                                                                  disabled="#{of:isInstance('com.flowserve.system606.model.Contract', pob) or not viewSupport.editable}">
-                                                        <p:ajax event="change" update="eacCurrent, eacPrior, eacChange, :form:messages" process="@this" listener="#{inputOnlineEntry.calculateOutputs(pob)}"/>
+                                                        <p:ajax event="change" update="eacCurrent, pobID, eacPrior, eacChange, :form:messages" process="@this" listener="#{inputOnlineEntry.calculateOutputs(pob)}"/>
                                                     </p:inputText>
                                                 </f:facet>
                                             </p:cellEditor>
@@ -422,7 +422,7 @@
                                             </p:row>
                                         </p:columnGroup>
                                         <p:column sortBy="#{pob.name}">
-                                            <h:outputText value="#{pob.name}" title="#{pob.description}"/>
+                                            <h:outputText id="pobIDSec" value="#{pob.name}" title="#{pob.description}" style="#{viewSupport.getStyle(pob)}}"/>
                                         </p:column>
 
                                         <p:column style="white-space:pre-line;">
@@ -446,7 +446,7 @@
                                                 <f:facet name="input">
                                                     <p:inputText value="#{viewSupport.getCurrencyMetric('LOCAL_COSTS_CTD_LC', pob).lcValue}"
                                                                  disabled="#{of:isInstance('com.flowserve.system606.model.Contract', pob) or not viewSupport.editable}">
-                                                        <p:ajax event="change" update="costCurrent, totalCTD" process="@this" listener="#{inputOnlineEntry.calculateOutputs(pob)}"/>
+                                                        <p:ajax event="change" update="costCurrent, pobIDSec, totalCTD" process="@this" listener="#{inputOnlineEntry.calculateOutputs(pob)}"/>
                                                     </p:inputText>
                                                 </f:facet>
                                             </p:cellEditor>

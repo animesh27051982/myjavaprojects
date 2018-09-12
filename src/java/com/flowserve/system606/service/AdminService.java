@@ -552,7 +552,16 @@ public class AdminService {
                 ru.setRegion(values[4]);
                 ru.setCoeRole(coeRole);
                 ru.setActive(true);
+                Country cn = findCountryByCode(values[5]);
+                if (cn != null) {
+                    ru.setCountry(cn);
+                }
                 persist(ru);
+                if (cn != null) {
+                    ReportingUnit addRU = findReportingUnitByCode(values[1].trim());
+                    cn.getReportingUnit().add(addRU);
+                    update(cn);
+                }
                 ru = findReportingUnitByCode(values[1].trim());
                 BusinessUnit bu = findBusinessUnitById(values[3]);
                 ru.setBusinessUnit(bu);

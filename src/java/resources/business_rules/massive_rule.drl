@@ -763,15 +763,50 @@ rule "Flag invalid if transaction price is null"
         modify (pob) { valid = false };
 end
 
-rule "Clear Message: Flag invalid if transaction price is null"
+rule "Flag invalid if EAC is null"
+    when
+        pob : PerformanceObligation(valid == true)
+        eac : CurrencyMetric(metricType.code == "ESTIMATED_COST_AT_COMPLETION_LC", lcValue == null)
+    then
+        modify (eac) { message = "Estimated Costs at Completion is empty." };
+        modify (pob) { valid = false };
+end
+
+rule "Flag invalid if Cost incurred is null only in POC and PIT Pob"
+    when
+        pob : PerformanceObligation(valid == true)
+        lcc : PerformanceObligation(revenueMethod.shortName == 'POC' || revenueMethod.shortName == 'PIT')
+        lccValue : CurrencyMetric(metricType.code == "LOCAL_COSTS_CTD_LC", lcValue == null)
+    then
+        modify (lccValue) { message = "Cost Incurred is empty." };
+        modify (pob) { valid = false };
+end
+
+rule "Clear Message: Flag invalid for pob with Cost Incurred"
     when
         pob : PerformanceObligation(valid == false)
         transactionPrice : CurrencyMetric(metricType.code == "TRANSACTION_PRICE_CC", ccValue != null)
+        eac : CurrencyMetric(metricType.code == "ESTIMATED_COST_AT_COMPLETION_LC", lcValue != null)
+        lcc : PerformanceObligation(revenueMethod.shortName == 'POC' || revenueMethod.shortName == 'PIT')
+        lccValue : CurrencyMetric(metricType.code == "LOCAL_COSTS_CTD_LC", lcValue != null)
     then
+        modify (eac) { message = null };
         modify (transactionPrice) { message = null };
+        modify (lccValue) { message = null };
         modify (pob) { valid = true };
 end
 
+rule "Clear Message: Flag invalid for pob without Cost Incurred"
+    when
+        pob : PerformanceObligation(valid == false)
+        transactionPrice : CurrencyMetric(metricType.code == "TRANSACTION_PRICE_CC", ccValue != null)
+        eac : CurrencyMetric(metricType.code == "ESTIMATED_COST_AT_COMPLETION_LC", lcValue != null)
+        lcc : PerformanceObligation(revenueMethod.shortName != 'POC' && revenueMethod.shortName != 'PIT')
+    then
+        modify (eac) { message = null };
+        modify (transactionPrice) { message = null };
+        modify (pob) { valid = true };
+end
 
 //
 // Begin warning message rules section
