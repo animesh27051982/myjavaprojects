@@ -256,6 +256,12 @@ public class ReportingUnit extends TransientMeasurable<Long> implements Measurab
             }
         }
 
+        if (WorkflowStatus.APPROVED.equals(periodWorkflowContextMap.get(period).getWorkflowStatus())) {
+            if (this.approvers.contains(user) || user.isAdmin()) {
+                return true;
+            }
+        }
+
         return false;
     }
 
