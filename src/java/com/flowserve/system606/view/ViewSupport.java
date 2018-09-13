@@ -138,9 +138,25 @@ public class ViewSupport implements Serializable {
 
     public List<ReportingUnit> completeReportingUnit(String searchString) {
         List<ReportingUnit> rUnit = null;
+        List<Long> userUnits = new ArrayList<Long>();
+        User user = webSession.getUser();
 
         try {
-            rUnit = adminService.searchReportingUnits(searchString);
+            if (user.isAdmin() || user.isGlobalViewer()) {
+                rUnit = adminService.searchReportingUnits(searchString);
+                return rUnit;
+            } else {
+                userUnits = webSession.getRuCodeList();
+                rUnit = adminService.searchReportingUnits(searchString);
+                List<ReportingUnit> fin = new ArrayList<ReportingUnit>();
+                for (ReportingUnit ch : rUnit) {
+                    if (userUnits.contains(Long.valueOf(ch.getCode()))) {
+                        fin.add(ch);
+                    }
+                }
+                return fin;
+            }
+
         } catch (Exception e) {
             FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", " RU search error  " + e.getMessage());
             FacesContext.getCurrentInstance().addMessage(null, msg);

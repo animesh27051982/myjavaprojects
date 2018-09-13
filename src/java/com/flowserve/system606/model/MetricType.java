@@ -42,7 +42,7 @@ public class MetricType extends BaseEntity<Long> implements Comparable<MetricTyp
     private String name;
     @Column(name = "CODE")
     private String code;
-    @Column(name = "DESCRIPTION")
+    @Column(name = "DESCRIPTION", length = 700)
     private String description;
     @Column(name = "METRIC_CURRENCY_TYPE")
     private CurrencyType inputCurrencyType;

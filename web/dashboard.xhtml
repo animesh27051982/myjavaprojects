@@ -72,9 +72,9 @@
                                             completeMethod="#{viewSupport.completeReportingUnit}"
                                             itemLabel="#{ru.name}"
                                             itemValue="#{ru}"
-                                            converter="reportingUnitConverter"
-                                            rendered="#{webSession.user.admin or webSession.user.globalViewer}">
+                                            converter="reportingUnitConverter" >
                                             <p:ajax event="itemSelect" listener="#{dashboard.onReportingUnitSelect}" update=":form" />
+                                            <p:ajax event="clear" listener="#{dashboard.clearTextReportingUnit(event)}" update=":form" />
                                         </p:autoComplete>
                                     </p:column>
                                     <p:column>
