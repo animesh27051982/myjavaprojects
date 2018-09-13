@@ -40,6 +40,10 @@
             body .ui-fileupload .ui-fileupload-buttonbar {
                 padding: 0px;
             }
+            .ui-tooltip {
+                max-width: 45%;
+                white-space:pre-wrap;
+            }
         </style>
 
     </ui:define>
@@ -187,7 +191,7 @@
                                                 <p:column  colspan="1" id="con" style="white-space:pre-line;">
                                                     <f:facet name="header">
                                                         <h:outputText  value="RU / Contract / POB" />
-                                                        <p:tooltip  for="con" value="RU / Contract / POB" showEffect="clip" hideEffect="clip" />
+                                                        <p:tooltip  for="con" value="RU / Contract / POB" showEffect="clip" hideEffect="clip" position="top" />
                                                     </f:facet>
                                                 </p:column>
 

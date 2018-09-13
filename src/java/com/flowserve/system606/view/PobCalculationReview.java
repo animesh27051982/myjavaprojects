@@ -207,9 +207,13 @@ public class PobCalculationReview implements Serializable {
     }
 
     public boolean isSubmittableForReview() throws Exception {
-        if (!calculationService.isCalculationDataValid(reportingUnit, webSession.getCurrentPeriod())) {
-            Logger.getLogger(PobCalculationReview.class.getName()).log(Level.INFO, "isCalculationDataValid did not pass.");
-            return false;
+//        if (!calculationService.isCalculationDataValid(reportingUnit, webSession.getCurrentPeriod())) {
+//            return false;
+//        }
+        for (PerformanceObligation pob : reportingUnit.getPerformanceObligations()) {
+            if (!pob.isValid()) {
+                return false;
+            }
         }
 
         return reportingUnit.isPreparable(webSession.getCurrentPeriod(), webSession.getUser());

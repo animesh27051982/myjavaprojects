@@ -14,7 +14,9 @@ import com.flowserve.system606.service.AppInitializeService;
 import com.flowserve.system606.service.FinancialPeriodService;
 import com.flowserve.system606.service.ReportingUnitService;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.SessionScoped;
@@ -51,7 +53,7 @@ public class WebSession implements Serializable {
     private MetricType metricType;
     //private Set<ReportingUnit> preparableReportingUnits = new TreeSet<ReportingUnit>();
     private Set<Long> expandedContractIds = new HashSet<Long>();
-
+    private List<Long> RuCodeList = new ArrayList<Long>();
     // The currently logged in user.
     private User user;
 
@@ -221,6 +223,14 @@ public class WebSession implements Serializable {
 
     public Set<Long> getExpandedContractIds() {
         return expandedContractIds;
+    }
+
+    public List<Long> getRuCodeList() {
+        return RuCodeList;
+    }
+
+    public void setRuCodeList(List<Long> RuCodeList) {
+        this.RuCodeList = RuCodeList;
     }
 
 }

@@ -6,7 +6,9 @@
 package com.flowserve.system606.view;
 
 import com.flowserve.system606.model.ReportingUnit;
+import com.flowserve.system606.model.User;
 import com.flowserve.system606.model.WorkflowStatus;
+import com.flowserve.system606.service.AdminService;
 import com.flowserve.system606.service.ReportingUnitService;
 import com.flowserve.system606.web.WebSession;
 import java.io.Serializable;
@@ -38,6 +40,8 @@ public class Dashboard implements Serializable {
     private ReportingUnitService reportingUnitService;
     @Inject
     private ViewSupport viewSupport;
+    @Inject
+    private AdminService asd;
     private Set<ReportingUnit> relevantReportingUnits = new TreeSet<ReportingUnit>();
 
     @PostConstruct
@@ -84,12 +88,27 @@ public class Dashboard implements Serializable {
         Collections.sort(rus, (ReportingUnit o1, ReportingUnit o2) -> o1.getCode().compareTo(o2.getCode()));
         List<ReportingUnit> combinedSet = ListUtils.union(ruc, rus);
 
+        List<Long> Rucodes = new ArrayList<Long>();
+
+        for (ReportingUnit unit : combinedSet) {
+
+            Rucodes.add(Long.parseLong(unit.getCode()));
+        }
+
+        webSession.setRuCodeList(Rucodes);
         return combinedSet;
     }
 
     public void onReportingUnitSelect(SelectEvent event) {
         webSession.setFilterText(null);
-        init();
+        User user = webSession.getUser();
+        if (user.isAdmin() || user.isGlobalViewer()) {
+            init();
+        } else {
+            relevantReportingUnits.clear();
+            webSession.setCurrentReportingUnit((ReportingUnit) event.getObject());
+            relevantReportingUnits.add(webSession.getCurrentReportingUnit());
+        }
     }
 
     public void clearReportingUnit(SelectEvent event) {
@@ -113,6 +132,12 @@ public class Dashboard implements Serializable {
     public long getPobInputRequiredCount(ReportingUnit reportingUnit) {
         return reportingUnit.getPobInputRequiredCount();
 
+    }
+
+    public void clearTextReportingUnit(SelectEvent event) {
+        webSession.setFilterText(null);
+        webSession.setCurrentReportingUnit(null);
+        init();
     }
 
 }
