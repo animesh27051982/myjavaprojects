@@ -121,6 +121,17 @@ rule "Percent Complete POB : Rev Rec Method is Percentage of Completion"
                                             costOfGoodsSoldCTD.lcValue / estimatedCostAtCompletion.lcValue)};
 end
 
+rule "Percent Complete POB Group: Rev Rec Method is Percentage of Completion"
+    when
+        pob : PerformanceObligationGroup( revenueMethod == RevenueMethod.PERC_OF_COMP)
+        costOfGoodsSoldCTD : CurrencyMetric(metricType.code == "COST_OF_GOODS_SOLD_CTD_LC", lcValue != null)
+        estimatedCostAtCompletion : CurrencyMetric(metricType.code == "ESTIMATED_COST_AT_COMPLETION_LC", lcValue != null)
+        percentComplete : Metric(metricType.code == "PERCENT_COMPLETE")
+    then
+        modify (percentComplete) { value = (costOfGoodsSoldCTD.lcValue == 0B || estimatedCostAtCompletion.lcValue == 0B ? 0B :
+                                            costOfGoodsSoldCTD.lcValue / estimatedCostAtCompletion.lcValue)};
+end
+
 rule "Percent Complete POB : Rev Rec Method is non-POC"
     when
         pob : PerformanceObligation(revenueMethod != RevenueMethod.PERC_OF_COMP)
@@ -154,21 +165,26 @@ end
 rule "Contract Revenue Earned to Date"
     when
         contract : Contract()
-        transactionPrice : CurrencyMetric(metricType.code == "TRANSACTION_PRICE_CC", lcValue != null)
-        contractPercentComplete : Metric(metricType.code == "PERCENT_COMPLETE", value != null)
-        contractRevenueToRecognizeCTD : CurrencyMetric(metricType.code == "REVENUE_TO_RECOGNIZE_CTD_LC")
+        period : FinancialPeriod()
+        currencyService : CurrencyService()
+        transactionPrice : CurrencyMetric(metricType.code == "TRANSACTION_PRICE_CC", ccValue != null)
+        contractPercentComplete : Metric(metricType.code == "CONTRACT_PERCENT_COMPLETE", value != null)
+        contractRevenueToRecognizeCTD : CurrencyMetric(metricType.code == "CONTRACT_REVENUE_TO_RECOGNIZE_CTD_CC")
     then
-        modify (contractRevenueToRecognizeCTD) { lcValue = (transactionPrice.lcValue * contractPercentComplete.value)};
+        modify (contractRevenueToRecognizeCTD) { ccValue = (transactionPrice.ccValue * contractPercentComplete.value)};
+        currencyService.convertCurrency(contractRevenueToRecognizeCTD, contract, period);  // Necessary due to mid rule-execution need for conversion.
+        logger.info("Calculated CONTRACT_REVENUE_TO_RECOGNIZE_CTD_CC");
 end
 
 rule "Contract Billings In Excess - Metric Renamed to CONTRACT_LIABILITY_LC"
     when
         contract : Contract()
-        contractRevenueToRecognizeCTD : CurrencyMetric(metricType.code == "REVENUE_TO_RECOGNIZE_CTD_LC", lcValue != null)
+        contractRevenueToRecognizeCTD : CurrencyMetric(metricType.code == "CONTRACT_REVENUE_TO_RECOGNIZE_CTD_CC", lcValue != null)
         contractBillingsCTDLC : CurrencyMetric(metricType.code == "CONTRACT_BILLINGS_CTD_CC", lcValue != null)
         contractBillingsInExcess : CurrencyMetric(metricType.code == "CONTRACT_LIABILITY_LC")
     then
         modify (contractBillingsInExcess) { lcValue = (contractBillingsCTDLC.lcValue <= contractRevenueToRecognizeCTD.lcValue ? 0B : contractBillingsCTDLC.lcValue - contractRevenueToRecognizeCTD.lcValue)};
+        logger.info("Contract billings in excess / liability calculated");
 end
 
 rule "Contract Period All Billing Events Convert CC to LC If LC null"
@@ -248,18 +264,17 @@ rule "Contract Billings CTD RC"
         modify (contractBillingsCTDRC) {rcValue = contractBillingsPeriodRC.rcValue + (contractBillingsCTDCCPriorPeriod.rcValue == null ? 0B: contractBillingsCTDCCPriorPeriod.rcValue)};
 end
 
-//This is named Costs in Excess on XLS : Need to investigate / confirm
-rule "Contract Revenue In Excess. Metric renamed to CONTRACT_ASSET_LC"
+
+rule "Contract Revenue In Excess : Contract Asset"
     when
         contract : Contract()
-        contractRevenueToRecognizeCTD : CurrencyMetric(metricType.code == "REVENUE_TO_RECOGNIZE_CTD_LC", lcValue != null)
+        contractRevenueToRecognizeCTD : CurrencyMetric(metricType.code == "CONTRACT_REVENUE_TO_RECOGNIZE_CTD_CC", ccValue != null)
         contractBillingsCTDLC : CurrencyMetric(metricType.code == "CONTRACT_BILLINGS_CTD_CC", lcValue != null)
         contractRevenueInExcess : CurrencyMetric(metricType.code == "CONTRACT_ASSET_LC")
     then
         modify (contractRevenueInExcess) { lcValue = (contractBillingsCTDLC.lcValue >= contractRevenueToRecognizeCTD.lcValue ? 0B : contractRevenueToRecognizeCTD.lcValue - contractBillingsCTDLC.lcValue)};
+        logger.info("Cotract asset: " + contractRevenueInExcess.lcValue);
 end
-
-
 
 
 

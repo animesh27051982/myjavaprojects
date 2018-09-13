@@ -101,7 +101,7 @@ public class FinancialPeriodService {
                         continue;  // KJG Tempoararily only create up to JUN-18
                     }
                     LocalDate lastOfMonth = date.with(TemporalAdjusters.lastDayOfMonth());
-                    FinancialPeriod thisPeriod = new FinancialPeriod(exPeriod, exPeriod, LocalDate.of(totalYear[i], Month.of(j), 1), lastOfMonth, totalYear[i], j, PeriodStatus.NEVER_OPENED);
+                    FinancialPeriod thisPeriod = new FinancialPeriod(exPeriod, exPeriod, LocalDate.of(totalYear[i], Month.of(j), 1), lastOfMonth, totalYear[i], j, PeriodStatus.OPENED);
                     thisPeriod.setCreationDate(LocalDateTime.now());
                     thisPeriod.setLastUpdateDate(LocalDateTime.now());
                     logger.info("Creating period: " + thisPeriod.getId());

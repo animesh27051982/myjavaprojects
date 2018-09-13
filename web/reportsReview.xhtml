@@ -86,12 +86,9 @@
 
                             <p:tabView id="topLevelTabView" dynamic="true" style="margin-top: 15px;">
                                 <p:tab title="Reports">
-                                    <p:treeTable value="#{reportsReview.rootTreeNode}" var="pob" >
+                                    <p:treeTable tableStyle="width: auto" value="#{reportsReview.rootTreeNode}" var="pob" >
 
-                                        <p:ajax event="expand" listener="#{viewSupport.onNodeExpand}"/>
-                                        <p:ajax event="collapse" listener="#{viewSupport.onNodeCollapse}"/>
-
-                                        <p:column headerText="Reporting Unit - Contract - POB" sortBy="#{pob.name}">
+                                        <p:column headerText="Reporting Unit - Contract - POB" sortBy="#{pob.name}" >
                                             <h:outputText value="#{pob.name}" title="#{pob.description}"/>
                                         </p:column>
                                         <p:column style="white-space:pre-line;" id="f1">
