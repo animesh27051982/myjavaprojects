@@ -1,11 +1,15 @@
 package com.flowserve.system606.controller;
 
+import com.flowserve.system606.model.PerformanceObligation;
+import com.flowserve.system606.model.ReportingUnit;
 import com.flowserve.system606.service.AdminService;
 import com.flowserve.system606.service.CalculationService;
 import com.flowserve.system606.web.WebSession;
 import java.io.Serializable;
 import java.util.logging.Logger;
 import javax.enterprise.context.RequestScoped;
+import javax.faces.application.FacesMessage;
+import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.inject.Named;
 
@@ -40,6 +44,14 @@ public class CalcReviewController implements Serializable {
     }
 
     public String reviewReports() throws Exception {
+        ReportingUnit ru = webSession.getCurrentReportingUnit();
+        for (PerformanceObligation pob : ru.getPerformanceObligations()) {
+            if (!pob.isValid()) {
+                FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", "This reporting unit is not valid for review.  Please return to the inputs section and correct the contracts marked in red.");
+                FacesContext.getCurrentInstance().addMessage(null, msg);
+
+            }
+        }
         return "reportsReview";
     }
 }
