@@ -5,6 +5,7 @@ import com.flowserve.system606.web.WebSession;
 import java.io.Serializable;
 import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
+import javax.faces.context.FacesContext;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -30,6 +31,7 @@ public class TempLogin implements Serializable {
 
     @PostConstruct
     public void init() {
+        FacesContext.getCurrentInstance().getExternalContext().invalidateSession();
     }
 
     public String getUsername() {
@@ -49,7 +51,7 @@ public class TempLogin implements Serializable {
     }
 
     public String login() throws Exception {
-        if (username == null) {
+        if (username == null || !"Flowserve1".equals(password)) {
             return "login";
         }
 

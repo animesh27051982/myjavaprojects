@@ -164,9 +164,12 @@ public class AdminController implements Serializable {
     }
 
     public String assumeIdentity(User u) throws Exception {
+        FacesContext.getCurrentInstance().getExternalContext().invalidateSession();
+
         webSession.setUser(u);
         webSession.init();
         webSession.setCurrentReportingUnit(null);
+
         return "dashboard";
     }
 

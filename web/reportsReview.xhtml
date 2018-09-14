@@ -19,7 +19,7 @@
     <ui:define name="content">
         <div style="min-height: calc(100vh - 235px);">
             <h:form id="mainForm">
-                <p:growl id="messages" showDetail="true" />
+                <p:growl id="messages" showDetail="true" sticky="true" />
 
                 <div class="ui-g">
 
@@ -106,7 +106,7 @@
                                                 <p:tooltip value="Contract Summary RU Level" for="f12" position="top" showEffect="slide" hideEffect="explode" />
                                             </f:facet>
                                             <p:commandButton value="Download" ajax="false" style="width:auto; font-size: 70%;" icon="ui-icon-arrowthick-1-s" rendered="#{of:isInstance('com.flowserve.system606.model.ReportingUnit', pob)}">
-                                                <p:fileDownload value="#{reportsReview.getRUSummaryReport(pob)}" />
+                                                <p:fileDownload value="#{reportsReview.getContractSummaryReportingUnitLevelReport(pob)}" />
                                             </p:commandButton>
                                         </p:column>
                                         <p:column style="white-space:pre-line;" id="f3">

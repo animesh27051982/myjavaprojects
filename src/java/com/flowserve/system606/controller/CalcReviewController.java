@@ -45,13 +45,15 @@ public class CalcReviewController implements Serializable {
 
     public String reviewReports() throws Exception {
         ReportingUnit ru = webSession.getCurrentReportingUnit();
+
         for (PerformanceObligation pob : ru.getPerformanceObligations()) {
             if (!pob.isValid()) {
-                FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", "This reporting unit is not valid for review.  Please return to the inputs section and correct the contracts marked in red.");
+                FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "Warning", "This reporting unit is not valid for review.  Please return to the inputs section and correct the contracts marked in red.");
                 FacesContext.getCurrentInstance().addMessage(null, msg);
-
+                break;
             }
         }
+
         return "reportsReview";
     }
 }

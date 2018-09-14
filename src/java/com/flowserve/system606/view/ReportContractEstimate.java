@@ -82,7 +82,7 @@ public class ReportContractEstimate implements Serializable {
             inputStream = RceInput.class.getResourceAsStream("/resources/excel_input_templates/Outputs_Summary_v2.xlsx");
             File tempFile = File.createTempFile(filename, ".xlsx");
             outputStream = new FileOutputStream(tempFile);
-            reportsService.generateRUSummaryReport(inputStream, outputStream, ru);
+            reportsService.generateContractSummaryReportingUnitLevelReport(inputStream, outputStream, ru);
             InputStream inputStreamFromOutputStream = new FileInputStream(tempFile);
             file = new DefaultStreamedContent(inputStreamFromOutputStream, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", filename);
         } catch (Exception e) {

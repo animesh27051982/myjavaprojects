@@ -596,40 +596,40 @@ rule "POB Group Level Estimated Gross Profit and Margin"
 end
 
 
+rule "POB Gross Profit and Margin CTD (non-estimated) used in Contract Summary Report"
+    when
+        pob : PerformanceObligation()
+        revenueToRecognizeCTD : CurrencyMetric(metricType.code == "REVENUE_TO_RECOGNIZE_CTD_CC", lcValue != null)
+        liquidatedDamagesToRecognizeCTD : CurrencyMetric(metricType.code == "LIQUIDATED_DAMAGES_TO_RECOGNIZE_CTD_CC", lcValue != null)
+        costOfGoodsSoldCTD : CurrencyMetric(metricType.code == "COST_OF_GOODS_SOLD_CTD_LC", lcValue != null)
+        grossProfitCTD : CurrencyMetric(metricType.code == "GROSS_PROFIT_CTD_LC")
+        grossMarginCTD : DecimalMetric(metricType.code == "GROSS_MARGIN_CTD")
+    then
+        modify (grossProfitCTD) { lcValue = (revenueToRecognizeCTD.lcValue - liquidatedDamagesToRecognizeCTD.lcValue - costOfGoodsSoldCTD.lcValue)};
+        modify (grossMarginCTD) { value = (grossProfitCTD.lcValue == 0B || (revenueToRecognizeCTD.lcValue - liquidatedDamagesToRecognizeCTD.lcValue) == 0B ? 0B :
+                                               grossProfitCTD.lcValue / (revenueToRecognizeCTD.lcValue - liquidatedDamagesToRecognizeCTD.lcValue) )};
+end
 
-
-
-
-
-
-//rule "POB Gross Profit and Margin CTD (non-estimated)"
-//    when
-//        pob : PerformanceObligation()
-//        contractRevenueCTD : CurrencyMetric(metricType.code == "REVENUE_TO_RECOGNIZE_CTD_CC", lcValue != null)
-//        liquidatedDamagesToRecognizeCTD : CurrencyMetric(metricType.code == "LIQUIDATED_DAMAGES_TO_RECOGNIZE_CTD_CC", lcValue != null)
-//        costOfGoodsSoldCTD : CurrencyMetric(metricType.code == "COST_OF_GOODS_SOLD_CTD_LC", lcValue != null)
-// continue here... snag on loss reserve, POB level?
-//        contractLossReserve : CurrencyMetric(metricType.code == "LOSS_RESERVE_CTD_LC", lcValue != null)
-//        contractGrossProfit : CurrencyMetric(metricType.code == "CONTRACT_GROSS_PROFIT_LC")
-//        contractGrossMargin : Metric(metricType.code == "CONTRACT_GROSS_MARGIN")
-//    then
-//        modify (contractGrossProfit) { lcValue = (contractRevenueCTD.lcValue - contractCOGSCTD.lcValue + contractLossReserve.lcValue)};
-//        modify (contractGrossMargin) { value = (contractGrossProfit.lcValue == 0B || (contractRevenueCTD.lcValue - contractLiquidatedDamagesCTD.lcValue) == 0B ? 0B :
-//                                               contractGrossProfit.lcValue / (contractRevenueCTD.lcValue - contractLiquidatedDamagesCTD.lcValue) )};
-//end
-
-
-
-
-
-
+rule "POBGroup Gross Margin CTD (non-estimated) used in Contract Summary Report"
+    when
+        pob : PerformanceObligationGroup()
+        revenueToRecognizeCTD : CurrencyMetric(metricType.code == "REVENUE_TO_RECOGNIZE_CTD_CC", lcValue != null)
+        liquidatedDamagesToRecognizeCTD : CurrencyMetric(metricType.code == "LIQUIDATED_DAMAGES_TO_RECOGNIZE_CTD_CC", lcValue != null)
+        costOfGoodsSoldCTD : CurrencyMetric(metricType.code == "COST_OF_GOODS_SOLD_CTD_LC", lcValue != null)
+        grossProfitCTD : CurrencyMetric(metricType.code == "GROSS_PROFIT_CTD_LC")
+        grossMarginCTD : DecimalMetric(metricType.code == "GROSS_MARGIN_CTD")
+    then
+        modify (grossProfitCTD) { lcValue = (revenueToRecognizeCTD.lcValue - liquidatedDamagesToRecognizeCTD.lcValue - costOfGoodsSoldCTD.lcValue)};
+        modify (grossMarginCTD) { value = (grossProfitCTD.lcValue == 0B || (revenueToRecognizeCTD.lcValue - liquidatedDamagesToRecognizeCTD.lcValue) == 0B ? 0B :
+                                               grossProfitCTD.lcValue / (revenueToRecognizeCTD.lcValue - liquidatedDamagesToRecognizeCTD.lcValue) )};
+end
 
 
 
 rule "Contract Gross Profit and Margin CTD"
     when
         contract : Contract()
-        revenueToRecognizeCTD : CurrencyMetric(metricType.code == "REVENUE_TO_RECOGNIZE_CTD_CC", lcValue != null)
+        contractRevenueCTD : CurrencyMetric(metricType.code == "CONTRACT_REVENUE_TO_RECOGNIZE_CTD_LC", lcValue != null)
         contractLiquidatedDamagesCTD : CurrencyMetric(metricType.code == "LIQUIDATED_DAMAGES_CTD_CC", ccValue != null)
         contractCOGSCTD : CurrencyMetric(metricType.code == "COST_OF_GOODS_SOLD_CTD_LC", lcValue != null)
         contractLossReserve : CurrencyMetric(metricType.code == "LOSS_RESERVE_CTD_LC", lcValue != null)
@@ -637,8 +637,7 @@ rule "Contract Gross Profit and Margin CTD"
         contractGrossMargin : Metric(metricType.code == "CONTRACT_GROSS_MARGIN")
     then
         modify (contractGrossProfit) { lcValue = (contractRevenueCTD.lcValue - contractCOGSCTD.lcValue + contractLossReserve.lcValue)};
-        modify (contractGrossMargin) { value = (contractGrossProfit.lcValue == 0B || (contractRevenueCTD.lcValue - contractLiquidatedDamagesCTD.lcValue) == 0B ? 0B :
-                                                contractGrossProfit.lcValue / (contractRevenueCTD.lcValue - contractLiquidatedDamagesCTD.lcValue) )};
+        modify (contractGrossMargin) { value = (contractGrossProfit.lcValue == 0B || (contractRevenueCTD.lcValue - contractLiquidatedDamagesCTD.lcValue) == 0B ? 0B : contractGrossProfit.lcValue / (contractRevenueCTD.lcValue - contractLiquidatedDamagesCTD.lcValue) )};
 end
 
 rule "Loss Reserve"

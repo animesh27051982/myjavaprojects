@@ -20,6 +20,7 @@ OUTPUT|ESTIMATED_GROSS_PROFIT_LC|POB||CurrencyMetric|LC|Convertible|Estimated Gr
 OUTPUT|GROSS_PROFIT_CTD_LC|POB||CurrencyMetric|LC|Convertible|Gross Profit CTD|Gross Profit CTD|POC POB Outputs|H|Group1|1||
 OUTPUT|CONTRACT_GROSS_PROFIT_LC|Contract||CurrencyMetric|LC|Convertible|Gross Profit|Gross Profit|POC POB Outputs|H|Group1|1||
 OUTPUT|ESTIMATED_GROSS_MARGIN|ALL||DecimalMetric||NonConvertible|Estimated Gross Margin|Estimated Gross Margin|POC POB Outputs|H|Group1|1||
+OUTPUT|GROSS_MARGIN_CTD|ALL||DecimalMetric||NonConvertible|Gross Margin CTD|Gross Margin CTD|POC POB Outputs|H|Group1|1||
 OUTPUT|PERCENT_COMPLETE|ALL||DecimalMetric|LC|NonConvertible|Percent Complete|Percent Complete|POC POB Outputs|H|Group1|1||
 OUTPUT|CONTRACT_COST_TO_COMPLETE_LC|Contract||CurrencyMetric|LC|Convertible|Cost to Complete|Cost to Complete-Remaining Estimate to Complete = Estimated Costs at Completion - Costs Incurred to Date|POC POB Outputs|H|Group1|1||
 OUTPUT|CONTRACT_BILLINGS_CTD_CC|Contract||CurrencyMetric|CC|NonConvertible|Billings CTD||POC POB Outputs|H|Group1|1||
