@@ -32,6 +32,7 @@ import java.util.ArrayList;
 import java.util.Currency;
 import java.util.List;
 import java.util.Locale;
+import java.util.concurrent.Callable;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.ejb.Stateless;
@@ -48,7 +49,8 @@ import javax.persistence.TypedQuery;
  */
 @Named
 @Stateless
-public class AdminService {
+public class AdminService 
+{
 
     @PersistenceContext(unitName = "FlowServePU")
     private EntityManager em;
@@ -59,6 +61,7 @@ public class AdminService {
 
     private static Logger logger = Logger.getLogger("com.flowserve.system606");
 
+    
     public List<User> searchUsers(String searchString) throws Exception {  // Need an application exception type defined.
         if (searchString == null || searchString.trim().length() < 2) {
             throw new Exception("Please supply a search string with at least 2 characters.");
@@ -186,7 +189,8 @@ public class AdminService {
         return em.find(WorkflowStatus.class, id);
     }
 
-    public MetricType findMetricTypeByCode(String code) {
+    public MetricType findMetricTypeByCode(String code) 
+    {
         Query query = em.createQuery("SELECT m FROM MetricType m WHERE UPPER(m.code)= :code");
         query.setParameter("code", code.toUpperCase());
         List<MetricType> list = query.getResultList();
@@ -196,7 +200,8 @@ public class AdminService {
         return null;
     }
 
-    public Account findAccountById(String id) {
+    public Account findAccountById(String id) 
+    {
         return em.find(Account.class, id);
     }
 

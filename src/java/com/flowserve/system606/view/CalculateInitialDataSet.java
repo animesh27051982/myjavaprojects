@@ -16,6 +16,7 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
@@ -37,10 +38,13 @@ public class CalculateInitialDataSet implements Serializable {
     private List<ReportingUnit> reportingUnitsToProcess = new ArrayList<ReportingUnit>();
 
     private static Logger logger = Logger.getLogger("com.flowserve.system606");
-
+    
+    final ExecutorService exService = Executors.newFixedThreadPool(6);
+    
     @PostConstruct
-    public void init() {
-        reportingUnitsToProcess.add(adminService.findReportingUnitByCode("1100"));
+    public void init()
+    {
+          reportingUnitsToProcess.add(adminService.findReportingUnitByCode("1100"));
 //        reportingUnitsToProcess.add(adminService.findReportingUnitByCode("1100"));
 //        reportingUnitsToProcess.add(adminService.findReportingUnitByCode("5050"));
 //        reportingUnitsToProcess.add(adminService.findReportingUnitByCode("7866"));

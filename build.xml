@@ -9,7 +9,7 @@
 <!-- in the project's Project Properties dialog box.-->
 <project name="FlowServe" default="default" basedir=".">
     <description>Builds, tests, and runs the project FlowServe.</description>
-    <property name="directory" value="C:\Users\kgraves\Dropbox\public"/>
+    <property name="directory" value="C:\flowserve"/>
     <import file="nbproject/build-impl.xml"/>
     <!--
 

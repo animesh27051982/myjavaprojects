@@ -51,7 +51,8 @@ public class FinancialPeriodService {
     private String[] monthNames = {"JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"};
 
     @PostConstruct
-    public void init() {
+    public void init() 
+    {
         company = adminService.findCompanyById("FLS");
     }
 
